@@ -54,7 +54,7 @@ test('grammar: rejects malformed and hostile input', () => {
     '',
     'BD',
     'XX-L-1',
-    'BD-T13-02O',
+    'BD-T14-02O', // T13 is a recognised anomaly since DOG-9; T14 is in nobody
     'BD-T00-02O',
     'BD-T07-13O',
     'BD-T07-00O',
@@ -217,8 +217,12 @@ test('body frame: a vertebral count anomaly is reported, not guessed', () => {
   const p = bodyLocalToMm(sixLumbar, { level: 'L06', u: 0.5, t: 0, r: 0.5 });
   assert.equal(encodeBody(sixLumbar, p, 4).address.startsWith('BD-L06'), true);
 
+  // 'variant', not 'absent': L06 is a recognised count anomaly, so the flag
+  // says "real anatomy this template lacks" rather than "canonical level this
+  // template lacks". A typo no longer reaches here at all — it is rejected by
+  // parse(). See the DECISION note on ANOMALOUS_LEVELS in bodySpine.ts.
   const located = locate('BD-L06-12O-531', { body: adult });
-  assert.equal(located.flags.homology, 'absent');
+  assert.equal(located.flags.homology, 'variant');
   assert.ok(Number.isNaN(located.pointMm[0]));
   assert.ok(located.flags.notes?.some((n) => n.includes('level mapping')));
 

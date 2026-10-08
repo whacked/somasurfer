@@ -202,6 +202,12 @@ export function bvLocate(
   return {
     pointMm: bvLocalToMm(template, box.hemisphere, mid),
     extentMm: [(box.a[1] - box.a[0]) * lateralExtent, bSpan, cSpan],
+    // The three extents are measured along the template's own orthonormal
+    // triad, in this order, so a BV cell is a true axis-aligned box in
+    // millimetres — including across the midline, where only the sign of the
+    // lateral offset changes.
+    axesMm: [template.left, template.anterior, template.superior],
+    templateId: template.id,
     flags,
   };
 }

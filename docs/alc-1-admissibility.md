@@ -22,7 +22,7 @@ ambiguous.
 | `anat-adult-large-girth` | L04 | posterior | **0.50** | 193 mm | 97 mm | 0/5000 | 0.00% |
 | `anat-adult-hyperkyphotic` | T06 | anterior | **0.56** | 271 mm | 151 mm | 0/5000 | 0.00% |
 | `anat-child-7y` | L04 | posterior | **0.28** | 141 mm | 40 mm | 0/5000 | 0.00% |
-| `anat-adult-p50-split-sacrum` | S04 | anterior | **1.43** | 78 mm | 111 mm | 42/5800 | 1.21% |
+| `anat-adult-p50-split-sacrum` | S04 | anterior | **1.43** | 78 mm | 111 mm | 45/5800 | 1.36% |
 
 `anat-adult-p50-split-sacrum` is the rejected design, kept to show the cost.
 
@@ -79,7 +79,7 @@ posterior.
 | `anat-adult-large-girth` | FAIL L01,L02,L03,L04,L05 | pass | 0 | L01,L02,L03,L04,L05 |
 | `anat-adult-hyperkyphotic` | pass | pass | 0 | - |
 | `anat-child-7y` | pass | pass | 0 | - |
-| `anat-adult-p50-split-sacrum` | FAIL S01,S02,S03,S04,S05 | FAIL S02,S03,S04 | 42 | S01,S05 |
+| `anat-adult-p50-split-sacrum` | FAIL S01,S02,S03,S04,S05 | FAIL S02,S03,S04 | 45 | S01,S05 |
 
 The exact verdict matches the observed failures in every row. The worst-case
 verdict condemns five lumbar levels of an ordinary wide-waisted adult whose

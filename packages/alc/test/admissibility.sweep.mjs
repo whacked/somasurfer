@@ -176,7 +176,7 @@ for (const params of [...PRESETS, ADULT_P50_SPLIT_SACRUM]) {
   const probe = measureRoundTrip(t, { samplesPerLevel: 200 });
   const falseAlarms = wc.violations.filter((v) => !exact.violations.some((d) => d.level === v.level));
   line(
-    `| \`${params.id}\` | ${wc.admissible ? 'pass' : 'FAIL ' + wc.violations.map((v) => v.level).join(',')} | ${exact.admissible ? 'pass' : 'FAIL ' + exact.violations.map((v) => v.level).join(',')} | ${probe.failures} | ${falseAlarms.length ? falseAlarms.map((v) => v.level).join(',') : '-'} |`,
+    `| \`${params.id}\` | ${wc.locallyAdmissible ? 'pass' : 'FAIL ' + wc.violations.map((v) => v.level).join(',')} | ${exact.locallyAdmissible ? 'pass' : 'FAIL ' + exact.violations.map((v) => v.level).join(',')} | ${probe.failures} | ${falseAlarms.length ? falseAlarms.map((v) => v.level).join(',') : '-'} |`,
   );
 }
 line();

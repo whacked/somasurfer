@@ -35,6 +35,20 @@ export const BD: FrameDescriptor = {
   summary: 'Body, anchored to the vertebral column: level, clock azimuth, normalised depth.',
 };
 
+// ---------------------------------------------------------------------------
+// The level set
+// ---------------------------------------------------------------------------
+
+/**
+ * The CANONICAL level set: ordinary adult anatomy, 7 + 12 + 5 cervical,
+ * thoracic and lumbar levels, plus the sacrum.
+ *
+ * `S02`-`S05` are in the set because the spec reserves them — a finer sacral
+ * frame can be added later without a breaking change — but no template
+ * realises them, and `locate()` reports them `homology: 'absent'` rather than
+ * guessing. See docs/alc-1-admissibility.md section 2 for why the shipping
+ * convention is one fused sacral level.
+ */
 export const VERTEBRAL_LEVELS: readonly string[] = [
   ...Array.from({ length: 7 }, (_, i) => `C0${i + 1}`),
   ...Array.from({ length: 12 }, (_, i) => `T${String(i + 1).padStart(2, '0')}`),
@@ -42,17 +56,111 @@ export const VERTEBRAL_LEVELS: readonly string[] = [
   ...Array.from({ length: 5 }, (_, i) => `S0${i + 1}`),
 ];
 
+/**
+ * Recognised vertebral COUNT ANOMALIES. Addressable, and reported as
+ * `homology: 'variant'` by any template that does not realise them.
+ *
+ * ---------------------------------------------------------------------------
+ * DECISION (DOG-9, finding 3). This set exists, rather than keeping a flat
+ * 1..12 bound on every prefix.
+ *
+ * The flat bound was incidental — a thoracic count applied to all four regions
+ * — and it failed in both directions at once. It admitted 19 labels that exist
+ * in no human (`C08`-`C12`, `L06`-`L12`, `S06`-`S12` all parsed, got a valid
+ * check symbol and were URL-linkable), and it rejected `T13`, the
+ * thirteenth-rib variant, which is about as common as the six lumbar vertebrae
+ * the same bound happened to admit.
+ *
+ * The second-order damage was worse than the first. Every bogus label resolved
+ * to `homology: 'absent'` with the note "a registration-supplied level mapping
+ * is required" — the signal the plan reserves for a genuine count anomaly. So
+ * a typo and a patient needing a level mapping produced the same flag and the
+ * same sentence, which devalues the one flag the design leans on hardest for
+ * anatomical honesty. Three outcomes need three answers, so there are three:
+ *
+ *   canonical level, realised       -> homology 'exact'
+ *   canonical level, not realised   -> homology 'absent'
+ *   anomaly, not realised           -> homology 'variant'   <- new
+ *   anything else                   -> rejected, 'bad_level'
+ *
+ * Why these three labels and not the four the review proposed:
+ *
+ *   T13  a supernumerary thoracic level with a thirteenth rib. Real, and
+ *        previously inexpressible, which is the defect that forced this.
+ *   L06  six lumbar vertebrae (lumbarisation of S1). Real and common.
+ *   S06  an extra sacral segment (sacralisation of L5). Real, and the
+ *        counterpart of L06 at the other end of the same transition.
+ *
+ * `C08` is deliberately NOT here. There is no eighth cervical *vertebra*; what
+ * exists is the C8 *nerve root*, which is universal and exits below C07. So
+ * `BD-C08` from a real user is overwhelmingly a category error rather than a
+ * variant, and admitting it as `variant` would silently accept the confusion
+ * instead of correcting it. `canonicalLevel` rejects it with that correction
+ * named. The asymmetry is intentional and safe in one direction only: adding a
+ * label to this set later is additive, removing one breaks addresses already
+ * issued. Reject now, widen if a registry ever produces the real thing.
+ *
+ * This is grammar, so it had to be settled before the asset pipeline issues a
+ * first address — the same argument plan section 1.1 makes for the sacral
+ * level count.
+ */
+export const ANOMALOUS_LEVELS: readonly string[] = ['T13', 'L06', 'S06'];
+
+/** Every level an ALC-1 `BD` address may name. The grammar, as a value. */
+export const ADDRESSABLE_LEVELS: readonly string[] = [...VERTEBRAL_LEVELS, ...ANOMALOUS_LEVELS];
+
+const CANONICAL_LEVEL_SET: ReadonlySet<string> = new Set(VERTEBRAL_LEVELS);
+const ANOMALOUS_LEVEL_SET: ReadonlySet<string> = new Set(ANOMALOUS_LEVELS);
+
+/** Which part of the grammar a canonical label belongs to, or null if neither. */
+export function levelClass(level: string): 'canonical' | 'anomaly' | null {
+  if (CANONICAL_LEVEL_SET.has(level)) return 'canonical';
+  if (ANOMALOUS_LEVEL_SET.has(level)) return 'anomaly';
+  return null;
+}
+
 const LEVEL_RE = /^([CTLS])(\d{1,2})$/;
 
-/** Accepts `T7`, `t07`, `T07`; returns the canonical `T07`. */
+const REGION_NAME: Record<string, string> = { C: 'cervical', T: 'thoracic', L: 'lumbar', S: 'sacral' };
+
+/**
+ * Why a syntactically well-formed label is not in the grammar. The message is
+ * the whole value of rejecting rather than resolving, so it names the
+ * correction rather than restating the range.
+ */
+function explainRejectedLevel(prefix: string, label: string): string {
+  if (label === 'C08') {
+    return 'there is no eighth cervical vertebra. The C8 *nerve root* does exist and exits below C07, '
+      + 'which is usually what is meant: address it as C07 or T01. (A supernumerary cervical vertebra '
+      + 'is too rare to put in the anomaly set; widening the set later is additive if a registry needs it.)';
+  }
+  const region = REGION_NAME[prefix] ?? 'vertebral';
+  const canonical = VERTEBRAL_LEVELS.filter((l) => l.startsWith(prefix));
+  const anomalies = ANOMALOUS_LEVELS.filter((l) => l.startsWith(prefix));
+  return `the ${region} region is addressable as ${canonical[0]}-${canonical[canonical.length - 1]}`
+    + (anomalies.length ? ` plus ${anomalies.join(', ')} as a recognised count anomaly` : '')
+    + '. This is rejected rather than resolved as an absent level, because '
+    + "homology 'absent' means anatomy a template does not realise, and a label outside the grammar "
+    + 'would be indistinguishable from a patient who needs a level mapping.';
+}
+
+/**
+ * Accepts `T7`, `t07`, `T07`; returns the canonical `T07`.
+ *
+ * Validates against `ADDRESSABLE_LEVELS` — the declared level set — rather
+ * than a numeric range. A label outside it is rejected here, at parse time,
+ * and never reaches `locate()`.
+ */
 export function canonicalLevel(input: string): string {
   const m = LEVEL_RE.exec(input.toUpperCase());
   if (!m) throw new AlcError(`not a vertebral level: ${JSON.stringify(input)}`, 'bad_level');
   const n = Number(m[2]);
-  if (!Number.isInteger(n) || n < 1 || n > 12) {
-    throw new AlcError(`vertebral level out of range: ${input}`, 'bad_level');
+  if (!Number.isInteger(n)) throw new AlcError(`not a vertebral level: ${JSON.stringify(input)}`, 'bad_level');
+  const label = `${m[1]}${String(n).padStart(2, '0')}`;
+  if (levelClass(label) === null) {
+    throw new AlcError(`${label} is not an addressable vertebral level: ${explainRejectedLevel(m[1], label)}`, 'bad_level');
   }
-  return `${m[1]}${String(n).padStart(2, '0')}`;
+  return label;
 }
 
 export interface BodyAnchor {
@@ -406,14 +514,68 @@ export function bodyLocalToMm(template: BodyTemplate, local: LocalBodyCoords): V
   return add(add(g.nodes[i], g.dirs[i], a), dirT, rho);
 }
 
+/** Signed distance from `p` to every bisector plane, positive caudal. */
+function planeDistances(g: SpineGeometry, p: Vec3): number[] {
+  const out: number[] = [];
+  for (let k = 0; k < g.nodes.length; k += 1) out.push(dot(sub(p, g.nodes[k]), g.normals[k]));
+  return out;
+}
+
+/** Distance from `p` to level `i`'s axis segment, mm. */
+function axisDistanceMm(g: SpineGeometry, i: number, p: Vec3): number {
+  const rel = sub(p, g.nodes[i]);
+  const along = Math.min(g.lens[i], Math.max(0, dot(rel, g.dirs[i])));
+  const axis = add(g.nodes[i], g.dirs[i], along);
+  return Math.hypot(p[0] - axis[0], p[1] - axis[1], p[2] - axis[2]);
+}
+
+/**
+ * Every level whose bisector-plane region claims this millimetre point,
+ * cranial to caudal.
+ *
+ * On an admissible template this returns exactly one level for every point
+ * inside the body, which is what "the levels tile space" means. It is exported
+ * because that is also the SOUND fold criterion — see `scanBodyTemplateFolds`
+ * — and because the per-level audit below cannot express it.
+ */
+export function levelsClaiming(template: BodyTemplate, p: Vec3): string[] {
+  const g = spineGeometry(template);
+  const s = planeDistances(g, p);
+  const out: string[] = [];
+  for (let i = 0; i < g.dirs.length; i += 1) {
+    if (s[i] >= 0 && s[i + 1] < 0) out.push(template.slabs[i].label);
+  }
+  return out;
+}
+
 /**
  * Template millimetres -> dimensionless local coordinates.
  *
- * Segment choice: prefer segments that bracket the point (axial fraction in
- * [0,1)); among those take the smallest perpendicular distance, breaking ties
- * toward the more cranial level. If no segment brackets the point — it is
- * beyond either end of the column — fall back to the nearest segment and flag
- * the result as clamped.
+ * Level choice. Level i owns { sigma_i >= 0 and sigma_(i+1) < 0 }. On an
+ * admissible template those regions tile space, so exactly one level claims
+ * any point and there is nothing to choose. Where the frame folds the regions
+ * overlap, and this function must both choose and SAY SO:
+ *
+ *   exactly one claimant  the ordinary case; u is the relative distance
+ *                         between the two bounding planes
+ *   more than one         a fold. Take the NEAREST claimant by distance to its
+ *                         own axis segment, and flag `folded` with a note
+ *                         naming every competing level
+ *   none, off either end  the point is beyond the column; clamp and say which
+ *                         end
+ *   none, mid-column      the concave-side gap of a fold. Nearest level,
+ *                         flagged `folded` too
+ *
+ * This used to scan cranial-to-caudal and `break` on the first claimant, which
+ * is where two defects came from at once (DOG-9, findings 1 and 2). The first
+ * claimant is the most CRANIAL one, so a point could come back silently
+ * assigned to a level five away — measured: 268 points with `flags: {}` on a
+ * known-folding template. And the fold note lived only in the no-claimant
+ * branch, which a fold does not produce: folding makes points DOUBLY claimed,
+ * not unclaimed. So the note was unreachable, the only thing the user saw was
+ * the radius clamp firing against the wrong level's surface, and they were
+ * told their point was outside the body when the truth was that the
+ * coordinate system had folded.
  */
 export function bodyMmToLocal(
   template: BodyTemplate,
@@ -424,51 +586,71 @@ export function bodyMmToLocal(
   const flags: LocateFlags = {};
   const notes: string[] = [];
 
-  // sigma[k] is the signed distance to bisector plane k, positive caudal.
-  // Level i owns { sigma[i] >= 0 and sigma[i+1] < 0 }, which tiles space.
-  const sigma = (k: number): number => dot(sub(p, g.nodes[k]), g.normals[k]);
+  // Computed once for the whole column: every claimant has to be found, so
+  // there is no early exit to preserve, and this is fewer dot products than
+  // the two-per-iteration version it replaces.
+  const sigma = planeDistances(g, p);
 
-  let index = -1;
+  const claimants: number[] = [];
   for (let i = 0; i < n; i += 1) {
-    if (sigma(i) >= 0 && sigma(i + 1) < 0) {
-      index = i;
-      break;
-    }
+    if (sigma[i] >= 0 && sigma[i + 1] < 0) claimants.push(i);
   }
 
+  /** Nearest by distance to its own axis segment; ties to the more cranial. */
+  const nearestOf = (candidates: number[]): number => {
+    let best = candidates[0];
+    let bestD = Infinity;
+    for (const i of candidates) {
+      const d = axisDistanceMm(g, i, p);
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    }
+    return best;
+  };
+
+  let index: number;
   let u: number;
-  if (index >= 0) {
-    const s0 = sigma(index);
-    const s1 = sigma(index + 1);
-    u = s0 / (s0 - s1);
-  } else if (sigma(0) < 0) {
+
+  if (claimants.length === 1) {
+    index = claimants[0];
+    u = sigma[index] / (sigma[index] - sigma[index + 1]);
+  } else if (claimants.length > 1) {
+    index = nearestOf(claimants);
+    u = sigma[index] / (sigma[index] - sigma[index + 1]);
+    flags.folded = true;
+    const competing = claimants.map((i) => template.slabs[i].label);
+    notes.push(
+      `template ${template.id} is inadmissible here: the BD frame folds, and this point is claimed by `
+      + `${competing.length} vertebral levels (${competing.join(', ')}). Resolved to the nearest, `
+      + `${template.slabs[index].label}, which is deterministic but not reliable — the address is `
+      + 'genuinely ambiguous at this point.',
+    );
+  } else if (sigma[0] < 0) {
     index = 0;
     u = 0;
     flags.clamped = true;
     notes.push('point lies above the cranial end of the vertebral column');
-  } else if (sigma(n) >= 0) {
+  } else if (sigma[n] >= 0) {
     index = n - 1;
     u = 1 - 1e-12;
     flags.clamped = true;
     notes.push('point lies below the caudal end of the vertebral column');
   } else {
-    // Bisector planes crossed inside the body: the template is inadmissible
-    // here. Fall back to the nearest level and say so rather than guess.
-    let nearest = { i: 0, d: Infinity };
-    for (let i = 0; i < n; i += 1) {
-      const rel = sub(p, g.nodes[i]);
-      const along = Math.min(g.lens[i], Math.max(0, dot(rel, g.dirs[i])));
-      const axis = add(g.nodes[i], g.dirs[i], along);
-      const d = Math.hypot(p[0] - axis[0], p[1] - axis[1], p[2] - axis[2]);
-      if (d < nearest.d) nearest = { i, d };
-    }
-    index = nearest.i;
-    const s0 = sigma(index);
-    const s1 = sigma(index + 1);
+    // Mid-column with no claimant: the other half of a fold. Where regions
+    // overlap on the convex side of a bend they leave a gap on the concave
+    // side, and this is a point in that gap.
+    index = nearestOf(Array.from({ length: n }, (_, i) => i));
+    const s0 = sigma[index];
+    const s1 = sigma[index + 1];
     u = Math.min(1 - 1e-12, Math.max(0, s0 - s1 !== 0 ? s0 / (s0 - s1) : 0));
+    flags.folded = true;
     flags.clamped = true;
     notes.push(
-      `template ${template.id} is inadmissible near ${template.slabs[index].label}: its bisector planes cross inside the body, so the level assignment here is deterministic but not reliable`,
+      `template ${template.id} is inadmissible near ${template.slabs[index].label}: the BD frame folds, `
+      + 'and this point falls in the gap no level claims, so its axial coordinate is clamped. The level '
+      + 'assignment here is deterministic but not reliable.',
     );
   }
 
@@ -490,7 +672,17 @@ export function bodyMmToLocal(
   if (r > 1) {
     r = 1 - 1e-12;
     flags.clamped = true;
-    notes.push('point is outside the modelled body surface');
+    // Attributing the right cause matters. Inside a fold the radius overflows
+    // because it is being measured against the surface of a level that is not
+    // really this point's level, so saying "outside the body" would name the
+    // wrong reason for data that is in fact inside the body.
+    notes.push(
+      flags.folded
+        ? `the depth here exceeds ${slab.label}'s surface radius, but that follows from the fold above `
+          + '— the radius is being measured against a level this point may not belong to — not from the '
+          + 'point lying outside the body'
+        : 'point is outside the modelled body surface',
+    );
   }
   if (notes.length) flags.notes = notes;
   return { local: { level: slab.label, u, t, r }, flags };
@@ -564,12 +756,214 @@ export interface LevelAudit {
 
 export interface TemplateAudit {
   templateId: string;
-  admissible: boolean;
+  /**
+   * No level violates its OWN two bisector planes. Necessary, NOT sufficient:
+   * this does not mean the template is free of folds.
+   *
+   * Named `locallyAdmissible` rather than `admissible` deliberately (DOG-9,
+   * finding 1). A point is lost to the frame as soon as ANY level claims it,
+   * and this criterion only ever looks at the two planes either side of a
+   * level. Across the physiological parameter box `anatomicalTemplates.ts`
+   * defines, 162 of 3,228 templates — 5.0% — satisfy this and still fold:
+   * with a tight kyphosis the planes fan out enormously on the convex side, so
+   * an upper-thoracic level's region sweeps down and swallows anterior skin
+   * five levels below it. The confirmed case has T06's own margin at +7.8 mm
+   * and its anterior skin decoding as T01.
+   *
+   * The old name read as a gate and could be used as one. Use
+   * `scanBodyTemplateFolds()` or `measureRoundTrip()` to gate; use this to
+   * LOCALISE a fold once one is known to exist, which is what the per-level
+   * margins are genuinely good at.
+   */
+  locallyAdmissible: boolean;
   violations: LevelAudit[];
   /** Every level, for the published audit report. */
   levels: LevelAudit[];
   /** Smallest margin anywhere in the template, mm. */
   worstMarginMm: number;
+}
+
+// ---------------------------------------------------------------------------
+// The sound fold criterion
+// ---------------------------------------------------------------------------
+
+/**
+ * How a level lost one of its own points.
+ *
+ *   ambiguous  more than one level claims it, so two addresses denote it and
+ *              `bodyMmToLocal` has to choose. Flagged at runtime as `folded`
+ *   lost       exactly one level claims it and it is the WRONG one, so this
+ *              level's address for the point decodes into another level.
+ *              Invisible at runtime: a decoder handed the millimetres alone
+ *              sees a single unambiguous claimant and has no way to know a
+ *              different level's address pointed here. Only a template-level
+ *              scan can see it, which is why templates are gated at build time
+ *   unclaimed  no level claims it — the concave-side gap of a fold
+ */
+export type FoldKind = 'ambiguous' | 'lost' | 'unclaimed';
+
+/** One place the frame was found not to be injective. */
+export interface FoldSite {
+  /** The level whose own coordinates generated the point. */
+  level: string;
+  kind: FoldKind;
+  /** Its dimensionless coordinates in that level. */
+  at: { u: number; t: number; r: number };
+  /** Every level claiming the resulting millimetre point. */
+  claimedBy: string[];
+  /** What `bodyMmToLocal` actually returns for it. */
+  decodesAs: string;
+  /** Distance from the point to `level`'s own axis segment, mm. */
+  radiusMm: number;
+}
+
+export interface FoldScan {
+  templateId: string;
+  /** Millimetre points examined. */
+  probed: number;
+  /** Points claimed by a number of levels other than exactly one. */
+  foldedPoints: number;
+  /** True when every probed point is claimed by exactly one level. */
+  sound: boolean;
+  /** Per level, how many of its own points were lost. Worst first. */
+  foldsByLevel: Array<{ level: string; folds: number }>;
+  /** One representative site per (level, claimant set). Shallowest first. */
+  sites: FoldSite[];
+}
+
+export interface FoldScanOptions {
+  /**
+   * Azimuths per level. Rounded UP to a whole multiple of the template's own
+   * `surfaceRadiiMm.length`, and always sampled ON those knots: the radii are
+   * linearly interpolated, so a knot is the only place a local maximum can
+   * sit, and a coarser grid of its own choosing can miss every one of them.
+   */
+  azimuths?: number;
+  /** Axial fractions to probe within each level. */
+  axialFractions?: readonly number[];
+  /** Normalised depths to probe. Must reach the skin to be a skin scan. */
+  radialFractions?: readonly number[];
+  /** Cap on recorded sites; the scan always counts everything. */
+  maxSites?: number;
+}
+
+const FOLD_SCAN_DEFAULTS: Required<FoldScanOptions> = {
+  azimuths: 240,
+  axialFractions: [0.02, 0.5, 0.98],
+  radialFractions: [0.5, 0.9, 1],
+  maxSites: 24,
+};
+
+/**
+ * The SOUND fold test: walk each level's own skin and assert that every
+ * millimetre point it generates is claimed by exactly that level.
+ *
+ * This is the criterion `auditBodyTemplate` cannot express, and it is cheap —
+ * a fold is a failure of the partition the frame actually uses, which needs no
+ * curvature argument at all. It catches non-local folds by construction,
+ * because it asks about every level rather than about a level and its two
+ * neighbours.
+ *
+ * The condition is `levelsClaiming(bodyLocalToMm(L, u, t, r)) === [L]`, and
+ * BOTH halves are load bearing. "Claimed by exactly one level" alone is not
+ * enough: past its own fold radius a level's planes stop bracketing its own
+ * points, and the point can then be claimed solely by a NEIGHBOUR. One
+ * claimant, no ambiguity to detect at runtime, and the first level's address
+ * for that point is silently lost anyway. Measured on the split-sacrum preset:
+ * `S02` at 1.05x its predicted fold radius is claimed only by `S01`. An
+ * earlier version of this scan counted claimants and missed exactly that case.
+ *
+ * Why the skin: `r` scales the radius linearly and the fold condition is
+ * monotone in it, so if the frame survives at the skin it survives everywhere
+ * inside. The skin is the extremal surface, not merely a convenient one.
+ *
+ * `measureRoundTrip()` in `testing/admissibilityProbe.ts` is the end-to-end
+ * gate, through the real encode and decode. Note it is NOT a superset of this:
+ * it samples each level's own coordinates and checks they come back, so it
+ * cannot see that some OTHER level's address also denotes the point. Its
+ * `inadmissibleNotes` counter covers the ambiguous case; this scan covers all
+ * three. Run both — they fail on different templates.
+ */
+export function scanBodyTemplateFolds(template: BodyTemplate, options: FoldScanOptions = {}): FoldScan {
+  const opts: Required<FoldScanOptions> = { ...FOLD_SCAN_DEFAULTS, ...options };
+  const g = spineGeometry(template);
+  const counts = new Map<string, number>();
+  const seen = new Set<string>();
+  const sites: FoldSite[] = [];
+  let probed = 0;
+  let foldedPoints = 0;
+
+  for (let i = 0; i < template.slabs.length; i += 1) {
+    const slab = template.slabs[i];
+    const knots = slab.surfaceRadiiMm.length;
+    const perKnot = Math.max(1, Math.ceil(opts.azimuths / knots));
+
+    for (let k = 0; k < knots; k += 1) {
+      for (let e = 0; e < perKnot; e += 1) {
+        const t = (k + e / perKnot) / knots;
+        for (const u of opts.axialFractions) {
+          for (const r of opts.radialFractions) {
+            let mm: Vec3;
+            try {
+              mm = bodyLocalToMm(template, { level: slab.label, u, t, r });
+            } catch {
+              continue; // degenerate geometry; STRUCTURE-class problem, not a fold
+            }
+            probed += 1;
+            const claimedBy = levelsClaiming(template, mm);
+            if (claimedBy.length === 1 && claimedBy[0] === slab.label) continue;
+            const kind: FoldKind = claimedBy.length > 1
+              ? 'ambiguous'
+              : claimedBy.length === 0 ? 'unclaimed' : 'lost';
+            foldedPoints += 1;
+            counts.set(slab.label, (counts.get(slab.label) ?? 0) + 1);
+            const key = `${slab.label}|${kind}|${claimedBy.join(',')}`;
+            if (!seen.has(key) && sites.length < opts.maxSites) {
+              seen.add(key);
+              sites.push({
+                level: slab.label,
+                kind,
+                at: { u, t, r },
+                claimedBy,
+                decodesAs: bodyMmToLocal(template, mm).local.level,
+                radiusMm: axisDistanceMm(g, i, mm),
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    templateId: template.id,
+    probed,
+    foldedPoints,
+    sound: foldedPoints === 0,
+    foldsByLevel: [...counts.entries()]
+      .map(([level, folds]) => ({ level, folds }))
+      .sort((a, b) => b.folds - a.folds),
+    sites: sites.sort((a, b) => a.radiusMm - b.radiusMm),
+  };
+}
+
+/** A fold scan a human can act on, and that CI can print. */
+export function formatFoldScan(scan: FoldScan): string {
+  if (scan.sound) {
+    return `template ${scan.templateId}: SOUND, ${scan.probed} skin points each claimed by exactly one level`;
+  }
+  const lines = [
+    `template ${scan.templateId}: FOLDS at ${scan.foldedPoints}/${scan.probed} skin points`,
+    `  by level: ${scan.foldsByLevel.map((f) => `${f.level} x${f.folds}`).join(', ')}`,
+  ];
+  for (const s of scan.sites) {
+    lines.push(
+      `  [${s.kind}] ${s.level} at u=${s.at.u} t=${s.at.t.toFixed(4)} r=${s.at.r} `
+      + `(${s.radiusMm.toFixed(0)} mm out) is claimed by `
+      + `[${s.claimedBy.length ? s.claimedBy.join(', ') : 'nothing'}] and decodes as ${s.decodesAs}`,
+    );
+  }
+  return lines.join('\n');
 }
 
 /** Azimuth resolution of the audit scan; finer than any plausible mesh sampling. */
@@ -668,7 +1062,7 @@ export function auditBodyTemplate(template: BodyTemplate): TemplateAudit {
 
   const violations = levels.filter((l) => l.marginMm <= 0);
   const worstMarginMm = levels.reduce((m, l) => Math.min(m, l.marginMm), Infinity);
-  return { templateId: template.id, admissible: violations.length === 0, violations, levels, worstMarginMm };
+  return { templateId: template.id, locallyAdmissible: violations.length === 0, violations, levels, worstMarginMm };
 }
 
 /**
@@ -682,7 +1076,7 @@ export function auditBodyTemplateWorstCase(template: BodyTemplate): TemplateAudi
   const violations = levels.filter((l) => l.marginMm <= 0);
   return {
     templateId: template.id,
-    admissible: violations.length === 0,
+    locallyAdmissible: violations.length === 0,
     violations,
     levels,
     worstMarginMm: levels.reduce((m, l) => Math.min(m, l.marginMm), Infinity),
@@ -700,11 +1094,28 @@ export function bodyLocate(template: BodyTemplate, box: BodyCellBox, digitCount:
   const found = findSlab(template, box.level);
   const flags: LocateFlags = {};
   if (!found) {
-    flags.homology = 'absent';
+    // Two different facts, two different flags. `variant` says the subject's
+    // anatomy differs from the template's in a way a registration can map;
+    // `absent` says the template simply does not realise a canonical level.
+    // Both return NaN millimetres: neither is ever guessed.
+    const anomaly = levelClass(box.level) === 'anomaly';
+    flags.homology = anomaly ? 'variant' : 'absent';
     flags.notes = [
-      `level ${box.level} is not present in template ${template.id}; a registration-supplied level mapping is required`,
+      anomaly
+        ? `level ${box.level} is a recognised vertebral count anomaly and is not present in template `
+          + `${template.id}; this is real anatomy rather than a mistyped level, and a `
+          + 'registration-supplied level mapping is required to place it'
+        : `level ${box.level} is not present in template ${template.id}; a registration-supplied level mapping is required`,
     ];
-    return { pointMm: [NaN, NaN, NaN], extentMm: [NaN, NaN, NaN], flags };
+    return {
+      pointMm: [NaN, NaN, NaN],
+      extentMm: [NaN, NaN, NaN],
+      // No slab, so no triad. NaN rather than a plausible-looking identity: a
+      // consumer that projects onto these gets NaN, not a confident number.
+      axesMm: [[NaN, NaN, NaN], [NaN, NaN, NaN], [NaN, NaN, NaN]],
+      templateId: template.id,
+      flags,
+    };
   }
   flags.homology = 'exact';
   if (digitCount > template.maxUsefulDigits) {
@@ -717,11 +1128,51 @@ export function bodyLocate(template: BodyTemplate, box: BodyCellBox, digitCount:
   const surface = radiusAt(slab, mid.t);
   // Axial extent comes from the shared polyline segment, not the stored slab
   // height, so it matches the coordinate the address is actually measured in.
-  const segmentLengthMm = spineGeometry(template).lens[found.index];
+  const g = spineGeometry(template);
+  const segmentLengthMm = g.lens[found.index];
   const extentMm: Vec3 = [
     (box.u[1] - box.u[0]) * segmentLengthMm,
     (box.t[1] - box.t[0]) * 2 * Math.PI * surface * mid.r, // arc length at the cell's own depth
     (box.r[1] - box.r[0]) * surface,
   ];
-  return { pointMm: bodyLocalToMm(template, mid), extentMm, flags };
+  // The triad the three extents are measured along, at the cell's centre and in
+  // the same order: down the column, around it, out from it. Quarter of a turn
+  // past the cell's own azimuth is the tangent to the arc, which is the
+  // direction the second extent is an arc length of.
+  const axesMm: readonly [Vec3, Vec3, Vec3] = [
+    g.dirs[found.index],
+    radialDirection(g, found.index, mid.t + 0.25),
+    radialDirection(g, found.index, mid.t),
+  ];
+  const pointMm = bodyLocalToMm(template, mid);
+
+  // Is this cell's own centre actually in this cell's own level?
+  //
+  // `locate()` knows something `bodyMmToLocal` does not: the level the caller
+  // ASKED for. So it can check the one thing a bare millimetre point can never
+  // reveal — that the address denotes a point some other level also owns, or
+  // owns outright. Without this the only honest signal is at template build
+  // time, and a consumer resolving a stored address has no way to learn that
+  // the answer is ambiguous (DOG-9, finding 2; previously filed as QA-1).
+  const claimedBy = levelsClaiming(template, pointMm);
+  if (!(claimedBy.length === 1 && claimedBy[0] === box.level)) {
+    flags.folded = true;
+    const notes = flags.notes ?? [];
+    notes.push(
+      claimedBy.length > 1
+        ? `template ${template.id} is inadmissible at this cell: the BD frame folds here and the point is `
+          + `claimed by ${claimedBy.length} levels (${claimedBy.join(', ')}), so this address and an `
+          + 'address in the other level(s) denote the same place. The millimetres are deterministic but '
+          + 'the cell is genuinely ambiguous.'
+        : claimedBy.length === 0
+          ? `template ${template.id} is inadmissible at this cell: the BD frame folds here and no level `
+            + `claims the point, so it falls in a gap between ${box.level} and its neighbours.`
+          : `template ${template.id} is inadmissible at this cell: the BD frame folds here, and the point `
+            + `this ${box.level} address denotes actually lies in ${claimedBy[0]} — decoding these `
+            + `millimetres returns ${claimedBy[0]}, so the address does not survive a round trip.`,
+    );
+    flags.notes = notes;
+  }
+
+  return { pointMm, extentMm, axesMm, templateId: template.id, flags };
 }
