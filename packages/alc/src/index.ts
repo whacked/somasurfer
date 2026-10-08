@@ -15,6 +15,15 @@ export {
 } from './address.ts';
 export { locate, encodeBody, encodeBrainVolume, type TemplateSet } from './locate.ts';
 export {
+  overlaps,
+  coveringsIntersect,
+  coveringIntersection,
+  samePlace,
+  recommendedDigits,
+  type SamePlaceResult,
+  type SamePlaceOptions,
+} from './compare.ts';
+export {
   BD,
   VERTEBRAL_LEVELS,
   bodyCellBox,

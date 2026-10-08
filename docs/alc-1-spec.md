@@ -296,6 +296,22 @@ Two consequences:
 This is a product requirement, not just a library note. Any screen or query
 that matches findings across subjects by comparing address strings is wrong.
 
+### The sanctioned comparisons
+
+`packages/alc/src/compare.ts` provides them, and deliberately makes the wrong
+one hard to reach:
+
+| Question | Call | Notes |
+| --- | --- | --- |
+| Do these two cells share volume? | `overlaps(a, b)` | Exact and cheap. Hierarchy cells are nested or disjoint, never partial. Valid **within one template** |
+| Do these two structures/findings touch? | `coveringsIntersect(A, B)`, `coveringIntersection(A, B)` | Operates on coverings; the finer cell of each overlapping pair is the intersection |
+| Are these the same place, across subjects or templates? | `samePlace(a, b, templates, { toleranceMm })` | **No default tolerance.** The caller must state what "same" means. Widens by each cell's own radius so a coarse address is not penalised for being coarse. Refuses to compare across frames, because their millimetres are not interchangeable. Reports `homology: 'absent'` instead of answering |
+| How many digits should I display? | `recommendedDigits(address, templates, residualMm)` | One cell should be no smaller than the uncertainty it stands in for |
+
+Measured on the brain template at 5 digits with a 5 mm residual: string
+equality recognises under 10% of matching pairs, `samePlace` with a 5 mm
+tolerance recognises over 99%.
+
 ## 7. Check symbol
 
 Optional, validated whenever present: `BD-T07-03O-531~K`.
@@ -384,14 +400,14 @@ untrusted input.
 
 ## 12. Conformance
 
-`packages/alc` — 21 conformance tests, all passing. Any implementation or new
+`packages/alc` — 30 conformance tests, all passing. Any implementation or new
 template must pass the same suite.
 
 ```
 cd packages/alc
-node --test test/conformance.test.ts    # correctness
-node test/healpix.probe.mjs             # HEALPix properties
-node test/measure.mjs                   # the tables in §5 and §6
+node --test test/conformance.test.ts test/compare.test.ts   # correctness
+node test/healpix.probe.mjs                                 # HEALPix properties
+node test/measure.mjs                                       # the tables in §5 and §6
 ```
 
 Load-bearing tests:
@@ -406,3 +422,6 @@ Load-bearing tests:
   452 are rejected.
 - Vertebral count anomaly is reported, not guessed.
 - Over-precision is declared, not implied.
+- `samePlace` recognises over 99% of 5 mm-displaced pairs that string
+  equality rejects, and still reports an absent anatomical level rather than
+  answering.
