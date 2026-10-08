@@ -1,13 +1,28 @@
 {
   "name": "@gstack/alc",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ALC-1: Anatomical Location Code. Short, human-transcribable, hierarchical addresses for locations in the human body and brain.",
   "type": "module",
-  "exports": { ".": "./src/index.ts" },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "browser": "./dist/alc.js",
+      "default": "./src/index.ts"
+    },
+    "./bundle": "./dist/alc.js",
+    "./esm/*": "./dist/esm/*",
+    "./src/*": "./src/*"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "sideEffects": false,
   "atlas": {
     "licenceClass": "code"
   },
   "scripts": {
+    "build": "node scripts/build.mjs",
     "test": "node --test --experimental-strip-types 'test/*.test.ts'",
     "probe": "node test/healpix.probe.mjs",
     "audit:print": "node --experimental-strip-types test/admissibility.sweep.mjs",
