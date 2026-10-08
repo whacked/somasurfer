@@ -64,11 +64,18 @@ npm run build && node packages/atlas-web/serve.mjs
 
 ### Why the test count is a gate
 
-`packages/alc`'s test script was `node --test test/`. On Node 24 that matches
-no files, runs zero tests, and exits non-zero. 37 tests were passing on a
-laptop and CI would have reported on none of them — and the symmetric mistake,
-an invocation that runs nothing and exits *zero*, is invisible to any check
-that only looks at the exit code.
+`packages/alc`'s test script was `node --test test/`. That runs none of the
+37 real tests. Measured on Node 24.21:
+
+| invocation | real tests run | exit code |
+| --- | --- | --- |
+| `node --test test/` | 0 | 1 |
+| `node --test 'test/*.nope.ts'` | 0 | **0** |
+| `node --test 'test/*.test.ts'` | all | 0 |
+
+The first is survivable — something goes red. The second is the one that ends
+careers: zero tests, clean exit, a green tick on a build that checked nothing.
+Nothing but the count distinguishes it from a passing run.
 
 So `ci/expected-test-counts.json` states how many tests each suite must
 actually run, and `tools/check-test-count.mjs` reads the count out of the TAP

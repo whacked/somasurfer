@@ -2,9 +2,9 @@
   "$comment": [
     "Minimum number of tests each suite must actually run, asserted by",
     "tools/check-test-count.mjs. A green exit code is not evidence that a",
-    "suite ran: `node --test test/` on Node 24 matched nothing, ran zero",
-    "tests, and the only signal was the exit code — which a slightly",
-    "different invocation would have made zero too.",
+    "suite ran. Measured on Node 24.21: `node --test test/` runs 0 real",
+    "tests and exits 1, but `node --test 'test/*.nope.ts'` runs 0 tests and",
+    "exits 0. One typo in a glob turns a whole suite into a silent green.",
     "",
     "Raise a number here when you add tests. Never lower one to make CI",
     "green: a drop means tests stopped being discovered or stopped existing,",

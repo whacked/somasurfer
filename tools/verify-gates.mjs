@@ -110,11 +110,34 @@ const CASES = [
     check: () => run('check-test-count.mjs'),
   },
   {
-    name: 'zero-tests-run',
+    name: 'zero-tests-run-silently',
     gate: 'test count',
-    criterion: 'the original bug: a pattern that matches nothing',
-    expect: [/no TAP summary/, /did not run/],
-    describe: "the `node --test test/` invocation that ran 0 of 37 tests on Node 24",
+    criterion: 'the dangerous case: zero tests run and the exit code is zero',
+    expect: [/ran 0 tests, expected at least \d+/, /stopped being discovered/],
+    describe: 'a test pattern that matches no files at all',
+    // Measured on Node 24.21: `node --test 'test/*.nope.ts'` runs 0 tests and
+    // exits 0. Nothing but the count distinguishes that from a clean run, which
+    // is the entire argument for this gate.
+    break: () => {
+      const config = JSON.parse(readFileSync(COUNTS, 'utf8'));
+      config.suites = config.suites.map((s) =>
+        s.id === 'alc-conformance' ? { ...s, pattern: 'test/*.nope.ts' } : s,
+      );
+      return substitute(COUNTS, JSON.stringify(config, null, 2) + '\n');
+    },
+    check: () => run('check-test-count.mjs'),
+  },
+  {
+    name: 'historical-broken-glob',
+    gate: 'test count',
+    criterion: 'the original bug: `node --test test/`',
+    expect: [/1 of 1 tests failed/, /not ok/],
+    describe: 'the `node --test test/` invocation that ran 0 of 37 real tests',
+    // On Node 24.21 this does not run zero tests quietly: it treats the
+    // directory as one test case, fails it, and exits 1. Still zero real tests,
+    // and still caught — but through the failure path, not the count. Pinned as
+    // its own case so a future Node changing this behaviour shows up here
+    // rather than in a surprise green build.
     break: () => {
       const config = JSON.parse(readFileSync(COUNTS, 'utf8'));
       config.suites = config.suites.map((s) => (s.id === 'alc-conformance' ? { ...s, pattern: 'test/' } : s));

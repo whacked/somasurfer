@@ -4,11 +4,17 @@
  * actually ran.
  *
  * The third assertion is the point. `packages/alc`'s test script was
- * `node --test test/`, which on Node 24 matches no files, runs nothing, and
- * exits non-zero. 37 tests passed on a laptop and CI would have reported on
- * none of them. The symmetric mistake — an invocation that runs nothing and
- * exits zero — is the one a plain exit-code check cannot see at all, so the
- * count is what we gate on.
+ * `node --test test/`, which runs none of the 37 real tests. Measured on
+ * Node 24.21:
+ *
+ *   node --test test/                 0 real tests, exit 1
+ *   node --test 'test/*.nope.ts'      0 tests,      exit 0
+ *   node --test 'test/*.test.ts'      all tests,    exit 0
+ *
+ * The first is survivable; something goes red. The second is not: zero tests,
+ * clean exit, and a green build that checked nothing. No exit-code check can
+ * tell it from a passing run, and a one-character typo in a glob produces it.
+ * So the count is what we gate on.
  *
  * Counts come from the TAP reporter's summary (`# tests N`, `# pass N`,
  * `# fail N`), which is a machine-readable contract rather than the spec
