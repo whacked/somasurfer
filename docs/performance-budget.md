@@ -109,18 +109,24 @@ node tools/perf-budget.mjs --json perf-measurement.json
 | `indexGzipBytes` | 0.8 KiB | 256.0 KiB | 0% |
 | `lowResAssetGzipBytes` | 96.2 KiB | 2560.0 KiB | 4% |
 | `indexParseMsNormalised` | 0.2 ms | 40 ms | 0% |
-| `lowResAssetParseMsNormalised` | 10.9 ms | 400 ms | 3% |
-| `derivedLowResAssetLoadMs` | **164 ms** | 2500 ms | 7% |
+| `lowResAssetParseMsNormalised` | 5–29 ms | 400 ms | 1–7% |
+| `derivedLowResAssetLoadMs` | **158–183 ms** | 2500 ms | 6–7% |
 | `derivedFirstInteractionMs` | **682 ms** | 3500 ms | 19% |
 
-Calibration on the measuring machine: 62.5 ms against a 120 ms reference, so
-parse times were scaled by 1.92.
+Byte lines are exact and reproduce identically on every run. Parse lines are
+given as the range over three consecutive runs on a contended machine, where
+calibration landed between 66 ms and 127 ms against the 120 ms reference. A
+6× spread on a line with 40× headroom does not threaten the gate, but it is
+the honest number and it is worth stating plainly: if a parse line ever comes
+within about 4× of its budget, this gate needs more samples per run before it
+can be trusted to distinguish a regression from a noisy runner.
 
-Read this as headroom, not as an achievement. 600 of the 682 ms is the render
-allowance placeholder, and the fixture is an analytic shell at 1/30th of the
-asset budget. The real mesh and the real viewer will consume most of the
-remaining room, which is the point of writing the budget down before either
-arrives: when the number moves, it will be obvious which line moved it.
+Read the whole table as headroom, not as an achievement. 600 of the 682 ms is
+the render allowance placeholder, and the fixture is an analytic shell at
+1/26th of the asset budget. The real mesh and the real viewer will consume
+most of the remaining room, which is the point of writing the budget down
+before either arrives: when the number moves, it will be obvious which line
+moved it.
 
 ## Changing a budget
 

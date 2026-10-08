@@ -11,6 +11,8 @@ Planning baseline: DOG-1. Atlas v1 technical plan: DOG-2.
   fails if it drifts from the code.
 - `docs/performance-budget.md` — the performance budget, the machine it is
   stated for, and the current measurement.
+- `docs/deploy.md` — how the static site deploys, and why it is not deployed
+  yet.
 - `packages/alc` — reference implementation of ALC-1, with its conformance
   suite. Apache-2.0.
 - `packages/atlas-web` — the static build: prebuilt JSON indexes plus a client
