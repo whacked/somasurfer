@@ -1,0 +1,133 @@
+/**
+ * ALC-1 string codec: digit alphabets, the optional transcription check symbol,
+ * and the shared parse/format machinery for every frame.
+ *
+ * Design rules (all deliberate, see docs/alc-1-spec.md):
+ *  - ASCII, case-insensitive, canonical form is UPPERCASE.
+ *  - `-` separates structural segments; `~` introduces the check symbol.
+ *  - Truncating whole trailing digits (and then whole trailing segments) always
+ *    yields a valid, strictly coarser address containing the original.
+ *  - No millimetres, no subject identity, and no parcellation name ever appear
+ *    in an address. Those live in templates and the name index.
+ */
+
+export const HEX = '0123456789ABCDEF';
+export const OCTAL = '01234567';
+/** Crockford base-32, minus I L O U, used only for the check symbol. */
+export const CROCKFORD = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
+export class AlcError extends Error {
+  code: string;
+
+  constructor(message: string, code: string) {
+    super(message);
+    this.name = 'AlcError';
+    this.code = code;
+  }
+}
+
+/** Hard cap on refinement digits. Prevents unbounded work from hostile input. */
+export const MAX_DIGITS = 16;
+
+export function digitsToValues(digits: string, alphabet: string, what: string): number[] {
+  const out: number[] = [];
+  for (const ch of digits) {
+    const v = alphabet.indexOf(ch);
+    if (v < 0) throw new AlcError(`invalid ${what} digit ${JSON.stringify(ch)}`, 'bad_digit');
+    out.push(v);
+  }
+  return out;
+}
+
+export function valuesToDigits(values: readonly number[], alphabet: string): string {
+  return values.map((v) => alphabet[v]).join('');
+}
+
+/**
+ * Every character that can legally appear in a canonical ALC-1 address body.
+ * Deliberately 23 symbols — under 32 — so that the one-character check symbol
+ * below can be injective in each position. Adding a frame that needs a new
+ * character means extending this list and bumping the spec version, because it
+ * changes every check symbol.
+ */
+// 0-9 and A-F for digits, B/D/V/R for frame ids, C/T/L/S for vertebral levels,
+// L/R for hemispheres, I/O for depth halves, and the separator. 24 symbols, so
+// the largest possible value difference is 23 and no substitution can be
+// congruent to zero mod 32.
+export const CHECK_ALPHABET = '0123456789ABCDEFILORSTV-';
+
+/**
+ * Position-weighted mod-32 check symbol.
+ *
+ * Weights are the odd numbers 1, 3, 5, ... Odd weights are invertible mod 32,
+ * so a change of Δ in any single position changes the sum by w·Δ ≢ 0 whenever
+ * Δ ≢ 0 — which gives a hard guarantee:
+ *
+ *   - EVERY single-character substitution within CHECK_ALPHABET is caught.
+ *   - Any character outside CHECK_ALPHABET is caught by the grammar instead.
+ *   - Transpositions are caught unless the two characters' values differ by
+ *     exactly 16 and sit an odd distance apart: 31 of every 32 pairs.
+ *
+ * It is a transcription guard for codes read aloud, written down, or retyped.
+ * It is not a cryptographic signature and not a storage integrity check.
+ */
+export function checkSymbol(canonicalBody: string): string {
+  let sum = 0;
+  for (let i = 0; i < canonicalBody.length; i += 1) {
+    const v = CHECK_ALPHABET.indexOf(canonicalBody[i]);
+    if (v < 0) {
+      throw new AlcError(
+        `character ${JSON.stringify(canonicalBody[i])} cannot appear in an ALC-1 address`,
+        'bad_character',
+      );
+    }
+    sum += (2 * i + 1) * (v + 1);
+  }
+  return CROCKFORD[sum % 32];
+}
+
+export interface RawAddress {
+  frame: string;
+  /** Frame-specific anchor segments, already uppercased. */
+  anchors: string[];
+  /** Refinement digits, possibly empty. */
+  digits: string;
+  /** Check symbol if the input carried one. */
+  check?: string;
+}
+
+const TOKEN = /^[0-9A-Z]+$/;
+
+/** Split an address string into segments without interpreting the frame. */
+export function splitAddress(input: string): { segments: string[]; check?: string } {
+  if (typeof input !== 'string') throw new AlcError('address must be a string', 'bad_type');
+  const trimmed = input.trim().toUpperCase();
+  if (!trimmed) throw new AlcError('empty address', 'empty');
+  if (trimmed.length > 64) throw new AlcError('address too long', 'too_long');
+
+  let body = trimmed;
+  let check: string | undefined;
+  const tilde = trimmed.indexOf('~');
+  if (tilde >= 0) {
+    body = trimmed.slice(0, tilde);
+    check = trimmed.slice(tilde + 1);
+    if (check.length !== 1 || CROCKFORD.indexOf(check) < 0) {
+      throw new AlcError('check symbol must be a single Crockford base-32 character', 'bad_check');
+    }
+  }
+
+  const segments = body.split('-');
+  if (segments.some((s) => s.length === 0)) throw new AlcError('empty segment', 'empty_segment');
+  if (segments.some((s) => !TOKEN.test(s))) {
+    throw new AlcError('segments must be alphanumeric', 'bad_segment');
+  }
+  if (check !== undefined && checkSymbol(body) !== check) {
+    throw new AlcError('check symbol does not match address', 'check_failed');
+  }
+  return { segments, check };
+}
+
+/** Append the check symbol to a canonical address body. */
+export function withCheck(canonicalBody: string): string {
+  return `${canonicalBody}~${checkSymbol(canonicalBody)}`;
+}

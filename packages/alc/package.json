@@ -1,0 +1,12 @@
+{
+  "name": "@gstack/alc",
+  "version": "0.1.0",
+  "description": "ALC-1: Anatomical Location Code. Short, human-transcribable, hierarchical addresses for locations in the human body and brain.",
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "test": "node --test test/",
+    "probe": "node test/healpix.probe.mjs"
+  },
+  "license": "Apache-2.0"
+}
