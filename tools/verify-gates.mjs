@@ -14,13 +14,15 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
 
 const ALC = join(REPO_ROOT, 'packages', 'alc');
 const WEB = join(REPO_ROOT, 'packages', 'atlas-web');
 const ASSETS = join(REPO_ROOT, 'packages', 'atlas-assets');
+const TEMPLATES = join(ASSETS, 'templates');
+const GATE_TEMPLATE = join(TEMPLATES, 'gate-verify.body.json');
 const AUDIT_DOC = join(REPO_ROOT, 'docs', 'alc-1-admissibility.md');
 const COUNTS = join(REPO_ROOT, 'ci', 'expected-test-counts.json');
 
@@ -162,6 +164,42 @@ const CASES = [
     check: () => run('check-audit-drift.mjs'),
   },
   {
+    name: 'template-folds-non-locally',
+    gate: 'body template audit',
+    criterion: 'the template gate catches a fold that auditBodyTemplate() clears',
+    expect: [/dense skin scan folds at \d+\/\d+ samples/, /auditBodyTemplate\(\) CLEARED this template/],
+    describe: 'a body template whose skin folds while the per-level audit calls it admissible',
+    // The case that justifies the third check in audit-real-template.mjs. These
+    // clinical parameters — 70 degree thoracic kyphosis, wide waist, reduced
+    // stature — produce a template that auditBodyTemplate() clears and that
+    // measureRoundTrip({ samplesPerLevel: 200 }) also clears, yet whose anterior
+    // thoracic skin decodes as T01, several levels away. Asserting on the
+    // CLEARED line is the point: it only prints when the other two checks found
+    // nothing, so this case cannot silently degrade into a demonstration that
+    // the audit works.
+    break: async () => {
+      const { buildAnatomicalBodyTemplate, ADULT_P50 } = await import(
+        '../packages/alc/src/testing/anatomicalTemplates.ts'
+      );
+      const template = buildAnatomicalBodyTemplate({
+        ...ADULT_P50,
+        id: 'gate-verify-non-local-fold',
+        thoracicKyphosisDeg: 70,
+        lumbarLordosisDeg: 38,
+        radialScale: 1.45,
+        axialScale: 0.88,
+      });
+      const hadDir = existsSync(TEMPLATES);
+      if (!hadDir) mkdirSync(TEMPLATES, { recursive: true });
+      writeFileSync(GATE_TEMPLATE, JSON.stringify(template, null, 2) + '\n');
+      return () => {
+        rmSync(GATE_TEMPLATE, { force: true });
+        if (!hadDir) rmSync(TEMPLATES, { recursive: true, force: true });
+      };
+    },
+    check: () => run('audit-real-template.mjs'),
+  },
+  {
     name: 'licence-dependency-edge',
     gate: 'licence separation',
     criterion: 'licence separation fails on a deliberate violation (dependency)',
@@ -233,6 +271,7 @@ const touched = [
   rel(AUDIT_DOC),
   rel(join(WEB, 'package.json')),
   rel(join(WEB, 'src', 'gate-verify.js')),
+  rel(GATE_TEMPLATE),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
@@ -248,7 +287,9 @@ for (const c of selected) {
   let restore = () => {};
   let verdict;
   try {
-    restore = c.break();
+    // Awaited so a case may load the frame implementation lazily: nothing is
+    // imported for a run that does not select the case that needs it.
+    restore = await c.break();
     const result = c.check();
     const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
     const missing = c.expect.filter((re) => !re.test(output));
@@ -295,9 +336,18 @@ for (const c of selected) {
 }
 
 // A failed restore is worse than a failed case: leave nothing behind.
-for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', 'gate-verify.js')]) {
+for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', 'gate-verify.js'), GATE_TEMPLATE]) {
   rmSync(path, { force: true });
   rmSync(`${path}.gate-verify-stash`, { force: true });
+}
+// A stray template here would make the next CI run audit a deliberately broken
+// one, so remove the directory too if we were the only reason it existed.
+if (existsSync(TEMPLATES)) {
+  try {
+    rmSync(TEMPLATES, { recursive: false });
+  } catch {
+    /* not empty: a real template lives here. Leave it alone. */
+  }
 }
 const leftover = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (leftover.status === 0 && leftover.stdout.trim()) {
