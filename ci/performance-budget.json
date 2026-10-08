@@ -1,0 +1,88 @@
+{
+  "$comment": [
+    "The performance budget, enforced by tools/perf-budget.mjs on every push.",
+    "docs/performance-budget.md explains where each number comes from and what",
+    "is and is not measured yet. Change a budget there and here together."
+  ],
+  "schema": "performance-budget/1",
+  "referenceMachine": {
+    "label": "mid-range laptop, 2026",
+    "cpu": "4 physical cores, ~2.4 GHz sustained, no discrete GPU",
+    "memoryGb": 8,
+    "network": { "downlinkMbps": 25, "rttMs": 40 },
+    "browser": "current Chrome or Firefox, cold HTTP cache, warm DNS",
+    "note": "Deliberately not a developer machine. The atlas is for clinicians and students on institutional hardware."
+  },
+  "transferModel": {
+    "comment": [
+      "Byte budgets are converted to time with an explicit, stated model rather",
+      "than a hand-wave: one RTT to connect, one RTT per round of requests, then",
+      "bytes at the downlink rate. HTTP/2 over a static host serves the whole",
+      "critical path in one round of requests.",
+      "",
+      "The model is pessimistic about bandwidth (no compression beyond gzip, no",
+      "CDN edge) and optimistic about nothing. It is a budget, not a prediction."
+    ],
+    "roundTrips": { "criticalPath": 2, "assets": 1 }
+  },
+  "budgets": {
+    "bundleGzipBytes": {
+      "limit": 153600,
+      "covers": "index.html + app/*.js + app/*.css, gzipped",
+      "why": "150 KiB is the point at which a 25 Mbit/s link spends more time on our own code than on a round trip. Past that the page shell, not the network, is the thing to fix."
+    },
+    "indexGzipBytes": {
+      "limit": 262144,
+      "covers": "data/*.json, gzipped",
+      "why": "The prebuilt indexes are on the critical path for first interaction, so they are capped well below the asset budget. 256 KiB holds the full ALC-1 level and frame tables with room for a label index per frame."
+    },
+    "lowResAssetGzipBytes": {
+      "limit": 2621440,
+      "covers": "dist/assets/**, gzipped, excluding LICENSE and ATTRIBUTION.md",
+      "why": "2.5 MiB at 25 Mbit/s is ~0.84 s of transfer, which fits the 2.5 s low-resolution asset budget with room for parse. It is also about the size a 20k-triangle body shell plus label sets lands at, so it constrains the asset pipeline without being unachievable."
+    },
+    "indexParseMsNormalised": {
+      "limit": 40,
+      "covers": "JSON.parse of data/*.json plus building the lookup maps, normalised to the reference machine",
+      "why": "Main-thread work before the page can respond. 40 ms keeps it inside one frame budget's worth of slack on a 60 Hz display even after layout."
+    },
+    "lowResAssetParseMsNormalised": {
+      "limit": 400,
+      "covers": "JSON.parse of the low-resolution asset payloads, normalised to the reference machine",
+      "why": "Off the critical path for first interaction but on it for seeing anything. The viewer is expected to move this to a worker; until it does, 400 ms is the ceiling."
+    },
+    "derivedLowResAssetLoadMs": {
+      "limit": 2500,
+      "covers": "navigation start to low-resolution geometry parsed and ready, on the reference machine, derived from the byte and parse budgets through the transfer model",
+      "why": "The number a user feels. Under 2.5 s an atlas feels like a document; over it, like an application that is loading."
+    },
+    "derivedFirstInteractionMs": {
+      "limit": 3500,
+      "covers": "navigation start to the first click being handled, on the reference machine, derived as above plus a fixed render allowance",
+      "why": "Interaction is the product. 3.5 s is the outer edge of acceptable for a first visit to a 3D atlas, and the target to beat once the viewer lands."
+    }
+  },
+  "renderAllowanceMs": {
+    "value": 600,
+    "comment": "Fixed allowance for layout, first paint and the viewer's first GPU upload on the reference machine. A placeholder with a stated basis, not a measurement: it needs the viewer and a real browser to measure. Flagged as such in every report."
+  },
+  "calibration": {
+    "comment": [
+      "CI runners are not mid-range laptops and their speed varies run to run,",
+      "so a raw parse time measured in CI cannot be compared to a budget stated",
+      "for a laptop. This fixed workload is run alongside the measurement and",
+      "used to normalise it:",
+      "",
+      "  normalised = measured * (referenceMs / observedCalibrationMs)",
+      "",
+      "referenceMs is what the workload takes on the reference machine. It is a",
+      "single scalar and a crude one: it corrects for clock speed and little",
+      "else. Raw and normalised numbers are both always reported, and the gate",
+      "refuses to run if the runner is so far from the reference that the",
+      "correction would be doing more work than the measurement."
+    ],
+    "referenceMs": 120,
+    "maxSpeedFactor": 4,
+    "minSpeedFactor": 0.25
+  }
+}

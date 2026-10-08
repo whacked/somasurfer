@@ -7,7 +7,17 @@ Planning baseline: DOG-1. Atlas v1 technical plan: DOG-2.
 ## Layout
 
 - `docs/alc-1-spec.md` — ALC-1, the anatomical addressing system v1 is built on.
-- `packages/alc` — reference implementation of ALC-1, with its conformance suite.
+- `docs/alc-1-admissibility.md` — measured admissibility report. Generated; CI
+  fails if it drifts from the code.
+- `docs/performance-budget.md` — the performance budget, the machine it is
+  stated for, and the current measurement.
+- `packages/alc` — reference implementation of ALC-1, with its conformance
+  suite. Apache-2.0.
+- `packages/atlas-web` — the static build: prebuilt JSON indexes plus a client
+  bundle, no backend. Apache-2.0.
+- `packages/atlas-assets` — atlas geometry, labels and templates. **Licensed
+  separately**; see below.
+- `tools/` — the CI gates. One script per gate, each runnable on its own.
 
 ## ALC-1 in one minute
 
@@ -26,8 +36,71 @@ easy to get wrong (never compare addresses across subjects with `===`).
 
 ## Checks
 
+Node is pinned in `.nvmrc`. Everything is dependency-free — there is nothing to
+install.
+
 ```
-cd packages/alc
-node --test test/conformance.test.ts
-node test/measure.mjs
+npm run ci                  # everything CI runs, in order
 ```
+
+Or one gate at a time:
+
+```
+npm run check:node          # the running Node matches .nvmrc
+npm run test:counted        # conformance suite + a floor on how many tests ran
+npm run audit:check         # generated docs are byte-identical to the code
+npm run audit:template      # body template admissibility (idle until one exists)
+npm run check:licences      # no asset licence can reach the Apache-2.0 code
+npm run build               # the static site into packages/atlas-web/dist
+npm run perf:check          # the performance budget, against the fixture
+npm run verify:gates        # break each gate on purpose; each must be caught
+```
+
+To look at the built site:
+
+```
+npm run build && node packages/atlas-web/serve.mjs
+```
+
+### Why the test count is a gate
+
+`packages/alc`'s test script was `node --test test/`. On Node 24 that matches
+no files, runs zero tests, and exits non-zero. 37 tests were passing on a
+laptop and CI would have reported on none of them — and the symmetric mistake,
+an invocation that runs nothing and exits *zero*, is invisible to any check
+that only looks at the exit code.
+
+So `ci/expected-test-counts.json` states how many tests each suite must
+actually run, and `tools/check-test-count.mjs` reads the count out of the TAP
+summary and fails if it is short. Raise the floor when you add tests. Never
+lower it to make CI green.
+
+## Licensing
+
+Code is **Apache-2.0** (root `LICENSE`). Atlas assets are licensed separately
+in `packages/atlas-assets`, which carries its own `LICENSE` and
+`ATTRIBUTION.md`.
+
+The separation is structural. If the atlas meshes arrive under a share-alike
+licence, the obligation must reach the assets and nothing else, so
+`tools/check-licence-separation.mjs` enforces on every push that:
+
+1. every package declares `atlas.licenceClass` as `code` or `asset`;
+2. no code package depends on an asset package;
+3. no code package imports from one;
+4. asset packages are outside the npm workspace list, so npm never links them
+   into `node_modules` where an import would resolve;
+5. every asset package has its own `LICENSE`, `ATTRIBUTION.md` and
+   `attribution.json`, and every payload file is attributed exactly once with a
+   licence, a holder and a source;
+6. no asset bytes appear in the shipped JavaScript, CSS, HTML or JSON indexes;
+7. every shipped asset copy is byte-identical to its source — a build that
+   re-encodes an asset has adapted it.
+
+The client fetches assets at runtime as separate files, served beside their own
+licence. `packages/atlas-web/build.mjs` only ever byte-copies them.
+
+The asset licence itself is **pending** decision D1 on DOG-2. Until that lands,
+`packages/atlas-assets` holds first-party placeholder geometry only. The
+mechanism above does not depend on the outcome, which is why it was built
+first.

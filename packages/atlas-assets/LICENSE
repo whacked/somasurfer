@@ -1,0 +1,36 @@
+Atlas assets — licence
+======================
+
+This directory holds atlas GEOMETRY, TEXTURES and LABEL SETS. It is licensed
+separately from the code in this repository, which is Apache-2.0 (see the
+LICENSE at the repository root).
+
+The separation is structural, not cosmetic. If any asset here arrives under a
+share-alike licence, that obligation must be able to reach the assets and the
+assets alone. `tools/check-licence-separation.mjs` enforces the boundary on
+every push: no code package may depend on or import this package, and no
+asset bytes may be embedded in the shipped JavaScript bundle. Assets are
+served as separate files, each carrying its own licence and attribution.
+
+Licence of the assets themselves: PENDING
+-----------------------------------------
+
+The mesh source and its licence are decision D1 on DOG-2 and are not settled.
+This file is the place that decision lands, and it is the only file that has
+to change when it does. Nothing downstream needs to move, because the
+mechanism is licence-agnostic: commissioned work-for-hire meshes and CC-BY-SA
+meshes both ship through the same separated package with the same per-asset
+attribution record.
+
+Until D1 is decided, no third-party asset may be committed to this package.
+Per-asset licensing is declared in `attribution.json` and rendered into the
+build as `ATTRIBUTION.md`; `attribution.json` is the authority and every entry
+in it must name a licence and a source.
+
+What is here today
+------------------
+
+Only first-party placeholder geometry written for this repository, listed in
+`attribution.json` as `Apache-2.0`, owned by GStack. It exists so the build,
+the performance budget and the licence separation check have something real to
+operate on, and it carries no third-party obligation of any kind.

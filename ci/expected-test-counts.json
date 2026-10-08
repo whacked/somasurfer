@@ -1,0 +1,22 @@
+{
+  "$comment": [
+    "Minimum number of tests each suite must actually run, asserted by",
+    "tools/check-test-count.mjs. A green exit code is not evidence that a",
+    "suite ran: `node --test test/` on Node 24 matched nothing, ran zero",
+    "tests, and the only signal was the exit code — which a slightly",
+    "different invocation would have made zero too.",
+    "",
+    "Raise a number here when you add tests. Never lower one to make CI",
+    "green: a drop means tests stopped being discovered or stopped existing,",
+    "and both are the failure this gate is for."
+  ],
+  "suites": [
+    {
+      "id": "alc-conformance",
+      "packageDir": "packages/alc",
+      "pattern": "test/*.test.ts",
+      "minTests": 37,
+      "note": "ALC-1 conformance, admissibility and comparison suites."
+    }
+  ]
+}

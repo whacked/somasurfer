@@ -1,0 +1,88 @@
+name: CI
+
+# Every push and every pull request. No path filters: the whole point of this
+# job is that it is not possible to change something and have it go unchecked.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # The Node version is pinned in .nvmrc and read from there, so CI and a
+      # laptop cannot disagree about it. This matters more than it sounds:
+      # `node --test test/` ran 37 tests on Node 22 and 0 tests on Node 24
+      # while exiting non-zero, and an unpinned runner would have made that
+      # difference invisible.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Node version matches the pin
+        run: node tools/check-node-version.mjs
+
+      # No dependencies to install. The ALC-1 package and the build are
+      # deliberately dependency-free, so there is no lockfile step and nothing
+      # between a push and the gates.
+      - name: No dependencies expected
+        run: node -e "const p=require('./package.json');if(p.dependencies)throw new Error('root gained runtime dependencies; update CI')"
+
+      # Gate 1: the conformance suite runs, every test passes, and at least the
+      # expected number of tests actually ran. The count is the assertion that
+      # matters; an exit code cannot tell "all green" from "nothing ran".
+      - name: Conformance suite, with a test-count floor
+        run: node tools/check-test-count.mjs
+
+      # Gate 2: the published admissibility report is byte-identical to what
+      # the code generates. The document is entirely computed, so it is a claim
+      # about the code and is not allowed to outlive it.
+      - name: Published audit reports match the code
+        run: node tools/check-audit-drift.mjs
+
+      # Gate 3: the body-template hook. Idle until the asset pipeline produces a
+      # real template, then it gates on auditBodyTemplate() and measureRoundTrip()
+      # with no change to this file.
+      - name: Body template admissibility
+        run: node tools/audit-real-template.mjs
+
+      # Gate 4: an asset licence cannot reach the Apache-2.0 code.
+      - name: Licence separation
+        run: node tools/check-licence-separation.mjs
+
+      - name: Static build
+        run: node packages/atlas-web/build.mjs
+
+      # Re-run after the build: rules 6 and 7 are about the artefact, and can
+      # only be checked once there is one.
+      - name: Licence separation in the built artefact
+        run: node tools/check-licence-separation.mjs
+
+      # Gate 5: the performance budget, measured against the committed fixture.
+      - name: Performance budget
+        run: node tools/perf-budget.mjs --json perf-measurement.json
+
+      # Gate 6: the gates themselves. Each one is broken on purpose and must be
+      # caught. A gate nobody has watched fail is decoration.
+      - name: Gates fail when they should
+        run: node tools/verify-gates.mjs
+
+      - name: Upload the build and the measurement
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlas-static-build
+          path: |
+            packages/atlas-web/dist
+            perf-measurement.json
+          retention-days: 14
