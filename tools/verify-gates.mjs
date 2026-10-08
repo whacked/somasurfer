@@ -167,7 +167,10 @@ const CASES = [
     name: 'template-folds-non-locally',
     gate: 'body template audit',
     criterion: 'the template gate catches a fold that auditBodyTemplate() clears',
-    expect: [/dense skin scan folds at \d+\/\d+ samples/, /auditBodyTemplate\(\) CLEARED this template/],
+    expect: [
+      /fold scan FAILS: \d+\/\d+ probed point\(s\) not claimed by exactly one level/,
+      /auditBodyTemplate\(\) CLEARED this template/,
+    ],
     describe: 'a body template whose skin folds while the per-level audit calls it admissible',
     // The case that justifies the third check in audit-real-template.mjs. These
     // clinical parameters — 70 degree thoracic kyphosis, wide waist, reduced

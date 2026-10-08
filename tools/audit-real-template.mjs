@@ -36,6 +36,20 @@
  * the mechanism and the margin, the probe covers the interior, the scan covers
  * the place folds actually are.
  *
+ * The scan comes from the library when the library has one. DOG-9 landed
+ * `scanBodyTemplateFolds()`, which is a better instrument than the local
+ * fallback below for a reason worth keeping: it samples azimuth ON the
+ * template's own `surfaceRadiiMm` knots, and since the radii are linearly
+ * interpolated a knot is the only place a local maximum can sit — so a
+ * uniform grid of someone else's choosing, like the fallback's 144 azimuths,
+ * can step over every one of them. It also asks the question directly ("is
+ * this millimetre point claimed by exactly one level?") instead of inferring
+ * a fold from a round-trip mismatch, so it names the claimant.
+ *
+ * The fallback exists only so this gate works on a base that predates that
+ * function. Do not grow it: if you want the criterion changed, change the
+ * library's, where the frame's own authors maintain it.
+ *
  * Templates are read as JSON data. The hook is CI tooling, not a shipped code
  * package, so this is not a build-time dependency of our Apache-2.0 code on
  * asset licences — see tools/check-licence-separation.mjs, which enforces that
@@ -63,15 +77,50 @@ if (found.length === 0) {
 
 // Imported lazily so a repo with no templates never pays for loading the
 // frame implementation, and so a broken import cannot fail the idle path.
-const { auditBodyTemplate, bodyLocalToMm, bodyMmToLocal } = await import('../packages/alc/src/index.ts');
+const { auditBodyTemplate, bodyLocalToMm, bodyMmToLocal, scanBodyTemplateFolds } = await import(
+  '../packages/alc/src/index.ts'
+);
 const { measureRoundTrip } = await import('../packages/alc/src/testing/admissibilityProbe.ts');
 
 /**
- * The surfaces a fold actually shows up on: just inside the skin, swept through
- * every azimuth, with u clustered towards both level boundaries because that is
- * where the bisector planes are. Deterministic — no seed, no sampling luck. The
- * three radii distinguish "the skin folds" from "a fifth of the tissue folds",
- * which is the difference between a template to fix and a template to reject.
+ * `auditBodyTemplate()`'s verdict field. DOG-9 renamed it from `admissible` to
+ * `locallyAdmissible` to stop it reading like a gate, which is the same
+ * conclusion the measurement above reached. Accept either name so this gate
+ * works whichever branch merges first, and say so loudly rather than quietly
+ * treating a shape change as a failing template.
+ */
+function localVerdict(audit, file, problems) {
+  if (typeof audit.locallyAdmissible === 'boolean') return audit.locallyAdmissible;
+  if (typeof audit.admissible === 'boolean') return audit.admissible;
+  problems.push(
+    `${file}: auditBodyTemplate() returned neither \`locallyAdmissible\` nor \`admissible\`.`,
+    `  Its shape changed. Fix this gate rather than inferring a verdict.`,
+  );
+  return false;
+}
+
+/** The library's scan, normalised to the shape this gate reports in. */
+function libraryFoldScan(template) {
+  const scan = scanBodyTemplateFolds(template);
+  const site = scan.sites[0];
+  return {
+    source: 'scanBodyTemplateFolds()',
+    samples: scan.probed,
+    failures: scan.foldedPoints,
+    byLevel: scan.foldsByLevel.map(({ level, folds }) => ({ level, failures: folds })),
+    worst: site
+      ? { level: site.level, ...site.at, claimedBy: site.decodesAs, alsoClaimedBy: site.claimedBy }
+      : null,
+  };
+}
+
+/**
+ * Fallback for a base without `scanBodyTemplateFolds()`. The surfaces a fold
+ * actually shows up on: just inside the skin, swept through every azimuth, with
+ * u clustered towards both level boundaries because that is where the bisector
+ * planes are. Deterministic — no seed, no sampling luck. The three radii
+ * distinguish "the skin folds" from "a fifth of the tissue folds", which is the
+ * difference between a template to fix and a template to reject.
  */
 const SKIN_AZIMUTHS = 144;
 const SKIN_U = [0.02, 0.08, 0.2, 0.35, 0.5, 0.65, 0.8, 0.92, 0.98];
@@ -116,6 +165,7 @@ function skinScan(template) {
   }
 
   return {
+    source: 'local skin scan — library scanBodyTemplateFolds() not available',
     samples,
     failures,
     byLevel: [...byLevel.entries()]
@@ -124,6 +174,8 @@ function skinScan(template) {
     worst,
   };
 }
+
+const foldScan = typeof scanBodyTemplateFolds === 'function' ? libraryFoldScan : skinScan;
 
 /** Structural validation, so a malformed template fails loudly here. */
 function validate(t, file, problems) {
@@ -174,9 +226,10 @@ for (const file of found) {
   const audit = auditBodyTemplate(template);
   const probe = measureRoundTrip(template, { samplesPerLevel: 200 });
   const worst = audit.levels.reduce((m, l) => (l.utilisation > m.utilisation ? l : m), audit.levels[0]);
+  const locallyAdmissible = localVerdict(audit, file, problems);
 
-  // Requirement 3: the audit must pass.
-  if (!audit.admissible) {
+  // Requirement 3: the audit must pass. Necessary, not sufficient — see 5.
+  if (!locallyAdmissible) {
     problems.push(`${file}: auditBodyTemplate() FAILS on ${audit.violations.length} level(s).`);
     for (const v of audit.violations) {
       problems.push(
@@ -192,16 +245,17 @@ for (const file of found) {
     for (const l of probe.failuresByLevel.slice(0, 8)) problems.push(`  ${l.level}: ${l.failures}`);
   }
 
-  // Requirement 5: the dense skin scan. This is the one that catches a fold the
+  // Requirement 5: the fold scan. This is the one that catches a fold the
   // per-level audit cannot see, because a distant level claimed the point. See
   // the header for why neither of the two above is sufficient on its own.
-  const scan = skinScan(template);
+  const scan = foldScan(template);
   if (scan.failures > 0) {
     problems.push(
-      `${file}: dense skin scan folds at ${scan.failures}/${scan.samples} samples` +
-        ` across ${scan.byLevel.length} level(s).`,
+      `${file}: fold scan FAILS: ${scan.failures}/${scan.samples} probed point(s)` +
+        ` not claimed by exactly one level, across ${scan.byLevel.length} level(s).`,
+      `  scan: ${scan.source}`,
     );
-    if (audit.admissible && probe.failures === 0) {
+    if (locallyAdmissible && probe.failures === 0) {
       problems.push(
         `  auditBodyTemplate() CLEARED this template and the interior probe found nothing.`,
         `  That combination means a non-local fold: the planes of a level several`,
@@ -210,18 +264,21 @@ for (const file of found) {
       );
     }
     const w = scan.worst;
-    problems.push(
-      `  shallowest fold: ${w.level} at u ${w.u}, azimuth ${w.t.toFixed(3)} turns, r ${w.r}` +
-        ` → decodes as ${w.claimedBy ?? 'a throw'}`,
-    );
+    if (w) {
+      problems.push(
+        `  shallowest fold: ${w.level} at u ${w.u}, azimuth ${w.t.toFixed(3)} turns, r ${w.r}` +
+          ` → decodes as ${w.claimedBy ?? 'a throw'}` +
+          (w.alsoClaimedBy ? ` (claimed by ${w.alsoClaimedBy.join(', ')})` : ''),
+      );
+    }
     for (const l of scan.byLevel.slice(0, 8)) problems.push(`  ${l.level}: ${l.failures}`);
   }
 
-  if (audit.admissible && probe.failures === 0 && scan.failures === 0) {
+  if (locallyAdmissible && probe.failures === 0 && scan.failures === 0) {
     report.push(
-      `${file}: admissible. Worst level ${worst.level} at utilisation ${worst.utilisation.toFixed(2)},` +
-        ` margin ${audit.worstMarginMm.toFixed(0)} mm, ${probe.samples} probe` +
-        ` and ${scan.samples} skin samples clean.`,
+      `${file}: no fold found. Worst level ${worst.level} at utilisation ${worst.utilisation.toFixed(2)},` +
+        ` margin ${audit.worstMarginMm.toFixed(0)} mm; ${probe.samples} interior probe` +
+        ` and ${scan.samples} fold scan sample(s) clean (${scan.source}).`,
     );
   }
 }
