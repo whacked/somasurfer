@@ -11,7 +11,9 @@ node --experimental-strip-types test/structural-review.probe.mjs      # all sect
 node --experimental-strip-types test/structural-review.probe.mjs 3    # one section
 ```
 
-The conformance suite is green — 37/37 — and it should be: the frame
+The conformance suite is green — **119/119**, including the in-flight
+[DOG-5](/DOG/issues/DOG-5) covering, query, resolve and translate work and
+[DOG-7](/DOG/issues/DOG-7)'s fuzz suite — and it should be: the frame
 mathematics is sound, the bisector partition is the right call, the hierarchy
 invariants hold (probe section 7), and `measureRoundTrip` is a genuinely
 adversarial ground-truth probe. Everything below survives a green suite.
@@ -22,8 +24,8 @@ Severity is about what reaches a user, not about how hard the fix is.
 | --- | --- | --- | --- |
 | 1 | The admissibility audit is per-level, so it misses non-local folds; 5.0% of a physiological parameter box is cleared and still folds | **high** | frames (CTO) |
 | 2 | The fold note is unreachable; folds are reported as "outside the body" or not at all, and the test asserting this passes vacuously | **high** | frames (CTO) |
-| 3 | `samePlace` reports the left hemisphere as the same place as the right | **high** | DOG-5 (Staff Eng) |
-| 4 | Covering primitives are quadratic with a `parse()` per comparison: ~71 s at 1,700 cells | medium | DOG-5 (Staff Eng) |
+| 3 | `samePlace` reports the left hemisphere as the same place as the right — and the new `coveringsSamePlace` inherits it in the cross-subject regime | **high** | DOG-5 (Staff Eng) |
+| 4 | Covering primitives are quadratic with a `parse()` per comparison: ~71 s at 1,700 cells. The new `coveringIntersect` has the same shape and `query.ts`'s prefix ranges are not wired into the set algebra | medium | DOG-5 (Staff Eng) |
 | 5 | The grammar admits 19 vertebral labels that exist in no human and rejects T13, which does | medium | spec (CTO) |
 | 6 | The check symbol is not canonical: the symbol issued with an address is rejected against a spelling the parser accepts | low | DOG-5 (Staff Eng) |
 
@@ -167,6 +169,23 @@ bare boolean, so the UI can distinguish "identical" from "adjacent".
 Research findings are mapped at region granularity, which is the coarse end.
 This fires exactly where the product uses it.
 
+**It has already propagated.** The in-flight DOG-5 work adds
+`coveringsSamePlace`, now the sanctioned entry point, with an explicit regime
+so a caller must say what "same" means. The `within: 'template'` regime is
+correct — it intersects cell sets and returns `false` here. But the
+`across: 'subjects'` regime delegates per cell pair to `samePlace`, so it
+inherits the defect in exactly the regime the design exists for:
+
+```
+coveringsSamePlace(['BV-L'], ['BV-R'], {across:'subjects', toleranceMm:0})
+  -> same=true  basis=tolerance  shared=0  gap=68.0mm  budget=218.3mm
+   within-template regime -> same=false     (correct)
+```
+
+Note `shared=0` beside `same=true`: the result says "no shared cells" and
+"same place" at once. Fixing `cellRadiusMm` fixes both call sites; nothing in
+the new layer needs redesigning.
+
 ## 4. Covering primitives are quadratic, with a `parse()` per comparison
 
 ```
@@ -190,9 +209,24 @@ Also: one malformed member aborts the whole query (`unknown_frame` propagates
 out of `coveringIntersection`), so a single bad curator row takes out an entire
 research overlay instead of being reported as one bad row.
 
+**The in-flight DOG-5 work does not fix this yet.** `query.ts` builds exactly
+the right primitive — `prefixRange`, `descendantScan`, `scanSorted`, with the
+binary-collation hazard called out — but the set algebra in `covering.ts` does
+not use it. `coveringIntersect` is the same nested `contains` loop and then
+calls `covering(out)`, which normalises again:
+
+```
+n=1680:  covering() build=27737ms   coveringIntersect=71074ms
+         (old coveringIntersection=74644ms, for comparison)
+```
+
+So the `Covering` type currently adds a 28 s constructor on top of the same
+asymptotics. Both old and new intersections stay exported from `index.ts`.
+
 Mine, under [DOG-5](/DOG/issues/DOG-5): sort once, parse once, intersect by
-prefix range scan over sorted arrays, and add a `childCount(frame, level)` to
-the descriptor.
+prefix range scan over sorted arrays — the primitive `query.ts` already has —
+and add a `childCount(frame, level)` to the frame descriptor so
+`normalizeCovering` stops parsing 24 addresses to learn a group size.
 
 ## 5. The grammar admits levels that exist in nobody, and rejects one that does
 
