@@ -5,8 +5,9 @@
   "type": "module",
   "exports": { ".": "./src/index.ts" },
   "scripts": {
-    "test": "node --test test/",
-    "probe": "node test/healpix.probe.mjs"
+    "test": "node --test 'test/*.test.ts'",
+    "probe": "node test/healpix.probe.mjs",
+    "audit:report": "node --experimental-strip-types test/admissibility.sweep.mjs > ../../docs/alc-1-admissibility.md"
   },
   "license": "Apache-2.0"
 }

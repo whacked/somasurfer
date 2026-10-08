@@ -511,35 +511,182 @@ export function bodyMmToLocal(
  * function), but the inverse becomes ambiguous and the library resolves it
  * deterministically rather than correctly. Templates must therefore be
  * checked, and the violating levels published, not discovered in production.
+ *
+ * ---------------------------------------------------------------------------
+ * The criterion is DIRECTIONAL, and getting that wrong costs real templates.
+ *
+ * The forward map is p(u, t, r) = axis(u) + rho(t) * r * e(t). Its Jacobian
+ * determinant carries the factor
+ *
+ *     1 - kappa * rho * cos(psi)
+ *
+ * where kappa is the local curvature and psi is the angle between the radial
+ * direction e(t) and the curvature normal — the direction the tangent turns
+ * *toward*, i.e. the concave side. So the map folds at radius
+ * R_curv / cos(psi) on the concave side, and never folds at all on the convex
+ * side, where cos(psi) < 0 and adjacent normal rays diverge forever.
+ *
+ * An earlier version of this audit compared `max(surfaceRadiiMm)` against
+ * R_curv, which silently assumes the widest tissue faces the concave side. In
+ * a trunk it faces the opposite way: the spinal canal sits far posterior, so
+ * at the lumbar lordosis — concave *posteriorly* — there is ~65 mm of tissue
+ * on the binding side and ~165 mm on the harmless anterior side. The
+ * worst-case test therefore rejected ordinary adult bodies that round-trip
+ * perfectly, and it would have sent the asset pipeline hunting for a fix to a
+ * problem that does not exist. Measured in `test/admissibility.test.ts`:
+ * worst-case flags physiological templates that have zero round-trip failures;
+ * the directional test flags exactly the ones that fail.
+ *
+ * Where the constraint does bind is the sacrum, because that is the one place
+ * the curve is tight AND its concavity faces the deep pelvis. See
+ * docs/alc-1-admissibility.md.
  */
+export interface LevelAudit {
+  level: string;
+  /** Largest radius at this level, any direction. Informational only. */
+  maxRadiusMm: number;
+  /** Continuous local radius of curvature, mm. Informational; see below. */
+  curvatureRadiusMm: number;
+  /**
+   * Exact radius at which this level's two bounding bisector planes meet,
+   * along the worst azimuth. The frame folds beyond it.
+   */
+  foldRadiusMm: number;
+  /** Body radius at that same azimuth, mm. */
+  radiusAtWorstMm: number;
+  /** foldRadiusMm - radiusAtWorstMm. Zero or negative is a violation. */
+  marginMm: number;
+  /** radiusAtWorstMm / foldRadiusMm. 1 or more is a violation. */
+  utilisation: number;
+  /** Azimuth in turns where the margin is worst, for the audit report. */
+  worstAzimuthTurns: number;
+}
+
 export interface TemplateAudit {
   templateId: string;
   admissible: boolean;
-  violations: Array<{ level: string; maxRadiusMm: number; curvatureRadiusMm: number }>;
+  violations: LevelAudit[];
+  /** Every level, for the published audit report. */
+  levels: LevelAudit[];
+  /** Smallest margin anywhere in the template, mm. */
+  worstMarginMm: number;
+}
+
+/** Azimuth resolution of the audit scan; finer than any plausible mesh sampling. */
+const AUDIT_AZIMUTH_SAMPLES = 360;
+
+/**
+ * Local curvature radius from the turn between adjacent segments. Reported for
+ * context only: it is a continuous-geometry estimate, and at a junction of very
+ * unequal segment lengths — L5 against a single fused sacral level — it is too
+ * pessimistic by tens of millimetres. The gate below uses the exact discrete
+ * condition instead.
+ */
+function curvatureRadiusAt(g: SpineGeometry, i: number): number {
+  let r = Infinity;
+  for (const j of [i - 1, i + 1]) {
+    if (j < 0 || j >= g.dirs.length) continue;
+    const c = Math.max(-1, Math.min(1, dot(g.dirs[i], g.dirs[j])));
+    const turn = Math.acos(c);
+    if (turn > 1e-9) {
+      const chord = (g.lens[i] + g.lens[j]) / 2;
+      r = Math.min(r, chord / (2 * Math.sin(turn / 2)));
+    }
+  }
+  return r;
 }
 
 export function auditBodyTemplate(template: BodyTemplate): TemplateAudit {
   const g = spineGeometry(template);
-  const violations: TemplateAudit['violations'] = [];
+  const levels: LevelAudit[] = [];
+
   for (let i = 0; i < template.slabs.length; i += 1) {
-    const maxRadiusMm = Math.max(...template.slabs[i].surfaceRadiiMm);
-    // Discrete curvature from the turn angle between adjacent segments:
-    // R = (chord length) / (2 sin(turn / 2)).
-    let curvatureRadiusMm = Infinity;
-    for (const j of [i - 1, i + 1]) {
-      if (j < 0 || j >= g.dirs.length) continue;
-      const c = Math.max(-1, Math.min(1, dot(g.dirs[i], g.dirs[j])));
-      const turn = Math.acos(c);
-      if (turn > 1e-9) {
-        const chord = (g.lens[i] + g.lens[j]) / 2;
-        curvatureRadiusMm = Math.min(curvatureRadiusMm, chord / (2 * Math.sin(turn / 2)));
+    const slab = template.slabs[i];
+    const maxRadiusMm = Math.max(...slab.surfaceRadiiMm);
+    const curvatureRadiusMm = curvatureRadiusAt(g, i);
+
+    // Exact discrete fold condition, derived from the partition this frame
+    // actually uses. Level i owns the axial offsets a (along dirs[i], from
+    // node i) satisfying
+    //
+    //     sigma_i     = c_i * a + rho * e_i        >= 0
+    //     sigma_(i+1) = c_(i+1) * (a - len) + rho * e_(i+1) < 0
+    //
+    // which is a non-empty interval in a exactly while
+    //
+    //     rho * (e_(i+1)/c_(i+1) - e_i/c_i) < len.
+    //
+    // So along azimuth t the level survives out to
+    //
+    //     foldRadius(t) = len / (e_(i+1)/c_(i+1) - e_i/c_i)
+    //
+    // when that denominator is positive, and out to infinity when it is not —
+    // the convex side, where adjacent normal rays diverge forever. In the
+    // symmetric small-angle limit this reduces to R_curv / cos(psi), the
+    // continuous criterion, but it stays exact at unequal segment lengths and
+    // needs no special case for the end levels (there e_i = 0 identically,
+    // because the end planes are perpendicular to the column).
+    const ci = dot(g.dirs[i], g.normals[i]);
+    const ci1 = dot(g.dirs[i], g.normals[i + 1]);
+
+    let worst: LevelAudit = {
+      level: slab.label,
+      maxRadiusMm,
+      curvatureRadiusMm,
+      foldRadiusMm: Infinity,
+      radiusAtWorstMm: maxRadiusMm,
+      marginMm: Infinity,
+      utilisation: 0,
+      worstAzimuthTurns: 0,
+    };
+
+    if (Math.abs(ci) > 1e-9 && Math.abs(ci1) > 1e-9) {
+      for (let k = 0; k < AUDIT_AZIMUTH_SAMPLES; k += 1) {
+        const t = k / AUDIT_AZIMUTH_SAMPLES;
+        const e = radialDirection(g, i, t);
+        const denom = dot(e, g.normals[i + 1]) / ci1 - dot(e, g.normals[i]) / ci;
+        if (denom <= 1e-12) continue; // convex side: never folds
+        const foldRadiusMm = g.lens[i] / denom;
+        const radiusAtWorstMm = radiusAt(slab, t);
+        const utilisation = radiusAtWorstMm / foldRadiusMm;
+        if (utilisation > worst.utilisation) {
+          worst = {
+            level: slab.label,
+            maxRadiusMm,
+            curvatureRadiusMm,
+            foldRadiusMm,
+            radiusAtWorstMm,
+            marginMm: foldRadiusMm - radiusAtWorstMm,
+            utilisation,
+            worstAzimuthTurns: t,
+          };
+        }
       }
     }
-    if (maxRadiusMm >= curvatureRadiusMm) {
-      violations.push({ level: template.slabs[i].label, maxRadiusMm, curvatureRadiusMm });
-    }
+    levels.push(worst);
   }
-  return { templateId: template.id, admissible: violations.length === 0, violations };
+
+  const violations = levels.filter((l) => l.marginMm <= 0);
+  const worstMarginMm = levels.reduce((m, l) => Math.min(m, l.marginMm), Infinity);
+  return { templateId: template.id, admissible: violations.length === 0, violations, levels, worstMarginMm };
+}
+
+/**
+ * The superseded worst-case criterion, kept so the comparison in
+ * `test/admissibility.test.ts` stays honest and so the regression cannot
+ * quietly come back. Do not use it to gate a template.
+ */
+export function auditBodyTemplateWorstCase(template: BodyTemplate): TemplateAudit {
+  const directional = auditBodyTemplate(template);
+  const levels = directional.levels.map((l) => ({ ...l, marginMm: l.curvatureRadiusMm - l.maxRadiusMm }));
+  const violations = levels.filter((l) => l.marginMm <= 0);
+  return {
+    templateId: template.id,
+    admissible: violations.length === 0,
+    violations,
+    levels,
+    worstMarginMm: levels.reduce((m, l) => Math.min(m, l.marginMm), Infinity),
+  };
 }
 
 /** Cell centre and extent in template millimetres. */

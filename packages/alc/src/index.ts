@@ -26,6 +26,11 @@ export {
 export {
   BD,
   VERTEBRAL_LEVELS,
+  auditBodyTemplate,
+  auditBodyTemplateWorstCase,
+  spineGeometry,
+  type TemplateAudit,
+  type LevelAudit,
   bodyCellBox,
   bodyEncodeLocal,
   bodyLocalToMm,

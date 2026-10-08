@@ -103,7 +103,8 @@ containment queries with a prefix range scan.
 BD-T07-03O-531
 │  │   │   └── octree refinement, octal digits, optional
 │  │   └────── azimuth clock sector 01-12 + depth half I or O
-│  └────────── vertebral level: C01-C07, T01-T12, L01-L05, S01-S05
+│  └────────── vertebral level: C01-C07, T01-T12, L01-L05, S01
+│              (S02-S05 reserved, not realised by any template)
 └───────────── frame
 ```
 
@@ -144,13 +145,55 @@ of a curve, which is also how a clinician reads "the T7 level" on a curved
 spine. `bodyLocalToMm` solves the matching linear equation so forward and
 inverse are exact inverses.
 
-**Template admissibility.** The frame is a tubular neighbourhood of a curve,
-which is only well behaved while the body radius stays below the spine's local
-radius of curvature. Where that fails — plausible at the lumbar lordosis,
-where the trunk is widest and the curve tightest — the mm-to-address map
-becomes ambiguous. `auditBodyTemplate()` checks the condition and names the
-violating levels. **Every real template must be audited before it ships**, and
-violations must be published, not discovered in production.
+**Level set.** Templates realise `C01`-`C07`, `T01`-`T12`, `L01`-`L05` and a
+single sacral level `S01` covering the whole fused sacrum. `S02`-`S05` remain
+reserved in the grammar — so a finer sacral frame can be added later without a
+breaking change — but no template realises them, and `locate()` reports them as
+`homology: 'absent'` rather than guessing. This is a measured requirement, not
+a convenience: see **template admissibility** below.
+
+**Template admissibility.** The frame is a tubular neighbourhood of a curve, so
+it folds where the body is thicker than the distance at which a level's two
+bounding bisector planes meet. Beyond the fold two addresses denote the same
+millimetre point and `encode(locate(a))` no longer returns `a`.
+
+The condition is *directional*, and that is the whole of it. For a level of
+length `len` whose bounding planes have normals `n_i`, `n_i+1`, the frame
+survives along azimuth direction `e` out to
+
+```
+foldRadius(e) = len / ( (e . n_i+1)/(d . n_i+1) - (e . n_i)/(d . n_i) )
+```
+
+when that denominator is positive, and out to infinity when it is not — the
+convex side, where adjacent normal rays diverge forever. In the symmetric
+small-angle limit this reduces to `R_curvature / cos(psi)`, but it stays exact
+at a junction of unequal segment lengths, and needs no special case at the ends
+of the column.
+
+Two conclusions from the measured sweep in `docs/alc-1-admissibility.md`, both
+of which contradict the obvious guess:
+
+1. **The lumbar lordosis is not the binding constraint.** The lordosis is
+   concave *posteriorly*, and the spinal canal sits far posterior, so only
+   ~65 mm of tissue faces the binding side while the ~165 mm of abdomen faces
+   the harmless convex side. Mid-lumbar levels run at about half the fold
+   radius even on a wide-waisted adult. A worst-case-radius test condemns them
+   anyway, which is why this spec uses the directional one.
+2. **The sacrum is where it binds**, if the fused sacrum is cut into five short
+   addressable levels: each cut shortens the chord and tightens the turn, and
+   the sacral concavity faces the deep pelvis. Measured cost: 1.2-3.2% of body
+   volume ambiguous, all of it pelvis. Hence the single `S01` level above.
+   With one sacral level, that level's axis direction must follow the **upper
+   sacral endplate** rather than the sacrum's chord; the chord convention puts
+   a ~30° kink at L5/S1 and folds bodies past roughly a 110 cm waist.
+
+`auditBodyTemplate()` checks the exact condition and returns a per-level table
+of fold radius, body radius, margin and utilisation. **Every real template must
+be audited before it ships**, violations must be published rather than
+discovered in production, and the audit must run in CI.
+`auditBodyTemplateWorstCase()` exists only to keep the superseded criterion
+available for comparison; do not gate on it.
 
 ### `BV` — brain volume, AC-PC proportional
 
