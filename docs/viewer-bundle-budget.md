@@ -139,3 +139,63 @@ That makes the eager shell `index.html` + `style.css` + `@gstack/alc` =
 realistic 24 KiB figure above. Comfortably inside the existing line. The gate
 as currently shaped charges us for the deferred renderer chunk anyway, which
 is finding 2.
+
+---
+
+## Update, 2026-10-09 — the bundler, and what stage A actually shipped
+
+Everything above stands as measured. One premise of it did not survive contact
+with the build, and it changed finding 1's conclusion.
+
+### The measurements above assume a bundler. There is not one.
+
+Both three.js figures — 169,614 B published, 126,469 B tree-shaken — were taken
+with `esbuild --bundle --minify`. That tool is not in this repository and
+cannot casually be added:
+
+- `packages/atlas-web/build.mjs` copies `src/*.js` verbatim as native ES
+  modules. No tree-shaking, no minification, no resolution of bare specifiers.
+- `.github/workflows/ci.yml` never runs `npm ci` or `npm install`. There is no
+  `node_modules` on the runner, so the build cannot copy a dependency out of
+  one, and there is no lockfile.
+- `ci.yml` asserts the root `package.json` has gained no runtime
+  `dependencies`, failing with *"root gained runtime dependencies; update
+  CI"*. That gate exists precisely so adding one is a deliberate decision.
+
+So the only way to serve three.js under today's CI is to commit its build into
+the repository and serve it as published: **2.1 MB raw, ~407 KiB gzipped** —
+about **2.8×** the 143,360 B `rendererGzipBytes` line DOG-41 landed, because
+that line was sized for the tree-shaken figure that needs the bundler.
+
+### What stage A shipped instead
+
+`packages/atlas-web/src/viewer/renderer.js`: WebGL2, no dependency, solid
+region colour mode, loaded by dynamic `import()`. Measured in the committed
+build, `bundleGzipBytes` is **95.4 KiB of 150 KiB (64%)** with the library's
+unminified bundle included, and `derivedFirstInteractionMs` is **718 ms of
+3,500 ms**. Every gate is green with no number widened.
+
+**This does not retract finding 1.** R3F is still measured out of v1, and
+vanilla three.js over R3F is still the right call *if a renderer library is
+used at all*. What changed is that "use three.js" is not a free swap today —
+it is a build-spine change, and it costs a bundler, a lockfile, a CI
+dependency step and the licence gate's treatment of vendored third-party code.
+
+### The seam, so this stays a contained decision
+
+`renderer.js`'s entire interface is `createRenderer()` returning
+`uploadSurface`, `uploadCell`, `uploadPolyline`, `projectPoint`, `release`,
+`render` and `dispose`. Nothing above it knows what draws — `app.js` loads it
+with `await import()` and runs without it, which is also the degradation
+requirement. Replacing the body of that file with three.js calls changes no
+other file.
+
+So the order of operations, if the project wants three.js:
+
+1. Release Engineering adds a bundler and a CI install step, and decides how
+   `tools/check-licence-separation.mjs` classifies vendored MIT code.
+2. The renderer swap lands behind the seam and is charged to
+   `rendererGzipBytes`, where DOG-41's 143,360 B holds the 126,469 B figure
+   with 16.5 KiB of headroom.
+
+Neither step blocks stage A, and stage A does not presume either one happens.
