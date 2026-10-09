@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { buildNameIndex, type NameIndex } from '../../alc/src/index.ts';
 import { BRAIN_ADULT, buildBrainTemplate } from '../../alc/src/testing/syntheticTemplates.ts';
 import { browseByAnatomy, browseByResearch, buildResearchIndex, loadDataset } from '../src/index.ts';
-import { PKG_DIR, readJson } from './helpers.ts';
+import { PKG_DIR, readJson, renameStructure } from './helpers.ts';
 
 const RAW_NAMES = readJson('data/names-seed.json') as { version: string; structures: [] };
 const seedNames: NameIndex = buildNameIndex({ version: RAW_NAMES.version, structures: RAW_NAMES.structures });
@@ -123,12 +123,9 @@ test('the resolution check can fail: an unknown structure is reported, not swall
   // The must-pass case for the test above. A gate that cannot go red is not a
   // gate, so this builds the failure it is supposed to catch and asserts it is
   // visible rather than silently resolving to something.
-  const broken = structuredClone(readJson('data/research-seed.json')) as {
-    findings: { mappings: { structureId: string }[] }[];
-  };
-  broken.findings[0].mappings[0].structureId = 'ATLAS-LABEL:not-a-real-structure';
+  const broken = renameStructure(readJson('data/research-seed.json'), 'HCP-MMP1:44', 'HCP-MMP1:not-a-real-structure');
   const brokenIndex = buildResearchIndex({ dataset: loadDataset(broken), names: seedNames });
-  const hit = brokenIndex.unresolved.find((m) => m.structureId === 'ATLAS-LABEL:not-a-real-structure');
+  const hit = brokenIndex.unresolved.find((m) => m.structureId === 'HCP-MMP1:not-a-real-structure');
   assert.ok(hit, 'an unknown structure must surface as unresolved');
   assert.equal(hit.unresolvedReason, 'unknown-structure');
   assert.equal(hit.covering.cells.length, 0, 'and must paint nothing');

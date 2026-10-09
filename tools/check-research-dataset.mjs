@@ -490,9 +490,13 @@ function selfTest() {
     failures.push('a dataset with a `javascript:` source URL loaded; check 1 cannot go red.');
   }
 
-  // A dataset naming a structure the index does not have must report it.
+  // A dataset naming a structure the index does not have must report it. The
+  // id keeps its own namespace: `structureIdSource` is cross-checked against
+  // the prefix now, and a dataset wrong in two ways would be refused for the
+  // other one and prove nothing about resolution.
   const badStructure = structuredClone(base);
-  badStructure.findings[0].mappings[0].structureId = 'ATLAS-LABEL:not-a-real-structure';
+  const victim = badStructure.findings[0].mappings[0];
+  victim.structureId = `${victim.structureIdSource}:not-a-real-structure`;
   const loaded = validateDataset(badStructure).dataset;
   if (loaded === null) {
     failures.push('the unknown-structure fixture failed to load, so check 2 was not exercised.');

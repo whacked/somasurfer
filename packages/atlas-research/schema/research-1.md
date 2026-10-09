@@ -49,6 +49,64 @@ name-index version it resolved through, because a stored or shared highlight
 without both versions is not reproducible — the same argument `resolve()` makes
 for name indexes in `@gstack/alc`.
 
+`structureIdSources` lists every namespace the mappings use, so a reviewer can
+see at a glance whether any part of the dataset is still on placeholders. It is
+checked against the mappings in **both** directions: a namespace in use and not
+declared hides a placeholder, and a namespace declared and unused claims a
+placeholder that is no longer there — which is how a finished crosswalk goes
+unnoticed. Where a `structureId` is a CURIE, its prefix must equal that
+mapping's `structureIdSource`; a bare id like `FMA9968` has no prefix to
+disagree with.
+
+### Authored against — one index, or a partition
+
+```jsonc
+// one index names the whole dataset
+"authoredAgainst": { "nameIndexVersion": "fixture-names-2026.10.1", "status": "fixture" }
+
+// different parts were authored against different indexes, and at least one
+// part has no cleared index at all
+"authoredAgainst": {
+  "status": "partitioned",
+  "partitions": [
+    { "id": "body-bd", "status": "real",
+      "nameIndexVersion": "bp3d-4.0+uberon-...",
+      "structureIds": ["FMA7088", "FMA7197", "..."] },
+    { "id": "brain-parcellation", "status": "placeholder",
+      "nameIndexVersion": "seed-names-2026.10.2",
+      "structureIds": ["HCP-MMP1:44", "ATLAS-LABEL:hippocampus", "..."],
+      "reason": "docs/asset-licensing.md §4 returns VERDICT: NOT CLEARED ..." }
+  ]
+}
+```
+
+`status` is the field that stops a placeholder dataset from reading as a
+verified one. `partitioned` exists because of a fact rather than a preference:
+the cleared anatomical index covers gross body anatomy, and **no brain
+parcellation is licensed for redistribution**. A dataset of mostly-brain
+findings therefore cannot be authored against one real index, and both
+single-index answers are false — whole-dataset `fixture` understates the body
+half, whole-dataset `real` overstates the brain half.
+
+Four rules make a partition a statement rather than an escape hatch:
+
+- `nameIndexVersion` is **absent** at the top level when partitioned. A single
+  version string there would let a consumer pin half the truth and believe it
+  covered everything; each partition pins its own.
+- The partitions are **exhaustive and disjoint** over the structure ids the
+  mappings use. An id in no partition would be gated by nothing, and an id in
+  two would be authored against two indexes at once.
+- No partition may list a structure **no mapping uses**. Stale is how a
+  `placeholder` entry outlives the licence problem that justified it.
+- A `placeholder` partition **must** carry a `reason` and a `real` one must
+  not. An unexplained placeholder is indistinguishable from unfinished work.
+
+A `placeholder` partition is a pass, not a deferral — but only because
+`tools/check-research-dataset.mjs` checks the claim in both directions. Its ids
+must resolve against the index the partition declares, and must **not** resolve
+against the real one; the day a cleared index can name them, the gate goes red
+and says so, because then the reason has expired.
+
 `findings` is a flat list keyed by `paperId` rather than nested inside each
 paper. Findings are what the anatomy-side query returns, and a flat list is what
 an index over mappings is built from; nesting would make the common query walk
@@ -137,23 +195,33 @@ highlight traces back to.
 
 ### Structure id namespaces
 
-`structureIdSource` names the namespace `structureId` is drawn from. Two are in
-use, and the difference is a provenance decision rather than a detail:
+`structureIdSource` names the namespace `structureId` is drawn from. Three are
+in use, and the difference is a provenance decision rather than a detail:
 
+- **`FMA<concept>`** — a real accession, and the only namespace in the seed set
+  that resolves against a published index. **Bare, not a CURIE**: `FMA9968`,
+  because that is the form the BodyParts3D release carries and the form
+  `packages/atlas-assets/labels/names.json` is keyed on. UBERON appears in that
+  index only as a cross-reference and is never the identifier.
 - **`HCP-MMP1:<area>`** — that parcellation identifies its parcels by label, so
   `HCP-MMP1:44` is the real id and carries no risk of pointing somewhere else.
-- **`ATLAS-LABEL:<kebab-name>`** — a declared **placeholder**. Gross anatomical
-  structures have UBERON and FMA accessions, and the curator of the seed set did
-  not have verified accession numbers available (nothing in this repository
-  resolves one, by the trust-boundary rule below). A plausible-looking but wrong
-  accession does not fail — it resolves to a *different structure* and looks
-  authoritative doing it, which is the worst available outcome for a provenance
-  trail. So the id is the label, the namespace says so, and crosswalking onto
-  real accessions is a named part of stage B, done against the same
-  `coverings.json` that supplies the geometry.
+  It still resolves to **no cleared index**: see the licence note below.
+- **`ATLAS-LABEL:<kebab-name>`** — a declared **placeholder**. A
+  plausible-looking but wrong accession does not fail — it resolves to a
+  *different structure* and looks authoritative doing it, which is the worst
+  available outcome for a provenance trail. So the id is the label and the
+  namespace says so.
 
-A dataset must list every namespace it uses in `structureIdSources`, so a
-reviewer can see at a glance whether any part of it is still on placeholders.
+**Why placeholders are permanent for v1 rather than pending.** The crosswalk
+onto real accessions was stage B's job and it is done for everything a cleared
+index can name: the 14 gross body structures the `BD` index carries are on
+`FMA` ids. The rest stay placeholders because of
+`docs/asset-licensing.md` §4, which returns **VERDICT: NOT CLEARED** for every
+redistributable brain parcellation, and because that index is `BD`-only — the
+brain is absent from it entirely, by measurement, and there is no `BV` name
+index. `BV` addresses locate and round-trip but **do not resolve to a name**.
+That is recorded per structure in `authoredAgainst.partitions`, so the two
+halves can be gated on what is true of each.
 
 `structureLabel` is a convenience for a list before the index has loaded, and
 for diagnosing a mapping whose `structureId` is not in the index. The viewer

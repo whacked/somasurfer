@@ -514,6 +514,128 @@ test('the dataset must say which index it was authored against', () => {
   );
 });
 
+test('a partitioned dataset must say, per structure, which index should name it', () => {
+  /** The fixture, re-declared as partitioned over the namespaces it uses. */
+  const partitioned = (edit: (p: Raw) => void): Raw => {
+    const ids = new Set<string>();
+    for (const f of RAW.findings) for (const m of f.mappings) ids.add(m.structureId);
+    const a: Raw = {
+      status: 'partitioned',
+      partitions: [
+        {
+          id: 'everything',
+          status: 'placeholder',
+          nameIndexVersion: 'fixture-names-2026.10.1',
+          structureIds: [...ids].sort(),
+          reason: 'the fixture is synthetic by construction',
+        },
+      ],
+    };
+    edit(a);
+    return a;
+  };
+
+  // A version pinned at the top level alongside partitions would read as if it
+  // covered the whole dataset.
+  hasProblem(
+    broken((d) => {
+      d.authoredAgainst = partitioned(() => {});
+      d.authoredAgainst.nameIndexVersion = 'fixture-names-2026.10.1';
+    }),
+    '$.authoredAgainst.nameIndexVersion',
+    'must be absent when status is "partitioned"',
+  );
+
+  // Partitions on a non-partitioned dataset: two declarations, one of them
+  // unchecked.
+  hasProblem(
+    broken((d) => {
+      d.authoredAgainst = { nameIndexVersion: 'fixture-names-2026.10.1', status: 'fixture', partitions: [] };
+    }),
+    '$.authoredAgainst.partitions',
+    'must be absent unless status is "partitioned"',
+  );
+
+  // The exhaustiveness rule, in both directions. An id in no partition is
+  // gated by nothing; a partition entry no mapping uses is a stale claim.
+  hasProblem(
+    broken((d) => {
+      d.authoredAgainst = partitioned((p) => {
+        p.partitions[0].structureIds = p.partitions[0].structureIds.slice(1);
+      });
+    }),
+    '$.authoredAgainst.partitions',
+    'no partition contains',
+  );
+  hasProblem(
+    broken((d) => {
+      d.authoredAgainst = partitioned((p) => {
+        p.partitions[0].structureIds.push('HCP-MMP1:never-mapped');
+      });
+    }),
+    '$.authoredAgainst.partitions',
+    'which no mapping uses',
+  );
+  hasProblem(
+    broken((d) => {
+      d.authoredAgainst = partitioned((p) => {
+        p.partitions.push({ ...p.partitions[0], id: 'twice' });
+      });
+    }),
+    '$.authoredAgainst.partitions',
+    'is in both',
+  );
+
+  // A placeholder with no reason is indistinguishable from unfinished work;
+  // a reason on a resolvable partition is an excuse for nothing.
+  hasProblem(
+    broken((d) => {
+      d.authoredAgainst = partitioned((p) => {
+        delete p.partitions[0].reason;
+      });
+    }),
+    '$.authoredAgainst.partitions[0].reason',
+    'must record why',
+  );
+  hasProblem(
+    broken((d) => {
+      d.authoredAgainst = partitioned((p) => {
+        p.partitions[0].status = 'real';
+      });
+    }),
+    '$.authoredAgainst.partitions[0].reason',
+    'only a placeholder partition',
+  );
+});
+
+test('structureIdSources must describe the namespaces the mappings actually use', () => {
+  // The hole this closes: the declaration was checked for shape and never
+  // against the data, in either direction.
+  hasProblem(
+    broken((d) => {
+      d.structureIdSources = ['HCP-MMP1'];
+    }),
+    '$.structureIdSources',
+    'does not declare "ATLAS-LABEL"',
+  );
+  hasProblem(
+    broken((d) => {
+      d.structureIdSources = ['HCP-MMP1', 'ATLAS-LABEL', 'FMA'];
+    }),
+    '$.structureIdSources[2]',
+    'which no mapping uses',
+  );
+  // A CURIE that disagrees with the namespace it claims. This is the shape a
+  // half-finished crosswalk leaves behind.
+  hasProblem(
+    broken((d) => {
+      d.findings[0].mappings[0].structureIdSource = 'FMA';
+    }),
+    /mappings\[0\]\.structureId$/,
+    'but structureIdSource says "FMA"',
+  );
+});
+
 test('the curation record is required in full', () => {
   for (const key of ['curatedBy', 'curatedOn', 'method', 'citationCheck', 'notRecorded']) {
     hasProblem(

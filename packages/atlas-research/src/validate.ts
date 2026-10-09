@@ -32,6 +32,8 @@ import { AlcError, covering, parse } from '../../alc/src/index.ts';
 
 import { isSafeUrl } from './links.ts';
 import type {
+  AuthoredAgainst,
+  AuthoredAgainstPartition,
   Confidence,
   EvidenceKind,
   Finding,
@@ -534,6 +536,201 @@ function curation(c: Collector, path: string, v: unknown) {
 }
 
 /**
+ * `authoredAgainst`, including the partition list when there is one.
+ *
+ * Shape only. Whether the partitions actually account for the structure ids the
+ * mappings use is checked in `crossCheckPartitions`, once the findings have
+ * been parsed.
+ */
+function authoredAgainst(c: Collector, path: string, v: unknown): AuthoredAgainst | null {
+  if (!isObject(v)) {
+    c.add(path, 'a dataset must say which name index its mappings were authored against');
+    return null;
+  }
+  const mark = c.mark;
+  const status = enumValue(c, `${path}.status`, v.status, ['fixture', 'real', 'partitioned'] as const);
+
+  // `nameIndexVersion` XOR `partitions`, keyed off status. Both present would
+  // let a reader pin a version that names only part of the dataset and believe
+  // it covers all of it; neither present says nothing at all.
+  if (status === 'partitioned') {
+    if (v.nameIndexVersion !== undefined) {
+      c.add(
+        `${path}.nameIndexVersion`,
+        'must be absent when status is "partitioned": no single index names the whole dataset, and' +
+          ' `partitions[].nameIndexVersion` is where each part says what it was authored against',
+      );
+    }
+    if (!Array.isArray(v.partitions) || v.partitions.length === 0) {
+      c.add(`${path}.partitions`, 'status "partitioned" needs at least one partition');
+      return null;
+    }
+  } else {
+    if (v.partitions !== undefined) {
+      c.add(
+        `${path}.partitions`,
+        `must be absent unless status is "partitioned", got status ${JSON.stringify(v.status)}`,
+      );
+    }
+    const nameIndexVersion = text(c, `${path}.nameIndexVersion`, v.nameIndexVersion, MAX_SHORT_TEXT);
+    if (!c.cleanSince(mark) || status === null || nameIndexVersion === null) return null;
+    return Object.freeze({ nameIndexVersion, status });
+  }
+
+  const partitions: AuthoredAgainstPartition[] = [];
+  const seenPartitionIds = new Set<string>();
+  (v.partitions as unknown[]).forEach((p, i) => {
+    const where = `${path}.partitions[${i}]`;
+    if (!isObject(p)) {
+      c.add(where, 'expected a partition object');
+      return;
+    }
+    const pMark = c.mark;
+    const id = text(c, `${where}.id`, p.id, MAX_SHORT_TEXT);
+    const pStatus = enumValue(c, `${where}.status`, p.status, ['real', 'placeholder'] as const);
+    const nameIndexVersion = text(c, `${where}.nameIndexVersion`, p.nameIndexVersion, MAX_SHORT_TEXT);
+    const structureIds = stringArray(c, `${where}.structureIds`, p.structureIds, { minLength: 1 });
+
+    // The reason is what makes a `placeholder` partition a pass rather than a
+    // silence. Required there, and refused on a `real` one, where it would be
+    // an excuse attached to something that needs none.
+    let reason: string | null = null;
+    if (pStatus === 'placeholder') {
+      reason = text(c, `${where}.reason`, p.reason, MAX_TEXT);
+      if (reason === null && p.reason === undefined) {
+        c.add(
+          `${where}.reason`,
+          'a placeholder partition must record why no cleared index names these structures;' +
+            ' an unexplained placeholder is indistinguishable from unfinished work',
+        );
+      }
+    } else if (p.reason !== undefined) {
+      c.add(`${where}.reason`, 'only a placeholder partition carries a reason');
+    }
+
+    if (id !== null) {
+      if (seenPartitionIds.has(id)) c.add(`${where}.id`, `duplicate partition id ${JSON.stringify(id)}`);
+      seenPartitionIds.add(id);
+    }
+    if (structureIds !== null) {
+      const dupes = structureIds.filter((s, j) => structureIds.indexOf(s) !== j);
+      if (dupes.length > 0) {
+        c.add(`${where}.structureIds`, `lists ${JSON.stringify(dupes[0])} more than once`);
+      }
+    }
+    if (!c.cleanSince(pMark)) return;
+    partitions.push(
+      Object.freeze({
+        id: id!,
+        status: pStatus!,
+        nameIndexVersion: nameIndexVersion!,
+        structureIds: Object.freeze(structureIds!),
+        ...(reason === null ? {} : { reason }),
+      }),
+    );
+  });
+
+  if (!c.cleanSince(mark)) return null;
+  return Object.freeze({ status: 'partitioned' as const, partitions: Object.freeze(partitions) });
+}
+
+/** One mapping's declared namespace, with the path to report problems against. */
+interface MappingSite {
+  readonly path: string;
+  readonly structureId: string;
+  readonly structureIdSource: string;
+}
+
+/**
+ * `structureIdSources` must describe the namespaces the mappings actually use.
+ *
+ * Checking only that it is a non-empty array of strings left the declaration
+ * free to drift from the data in both directions, and the declaration is the
+ * one place a reviewer looks to answer "is any part of this still on
+ * placeholders?". An undeclared namespace hides a placeholder; a declared but
+ * unused one claims a placeholder that is no longer there, which is how a
+ * finished crosswalk goes unnoticed.
+ */
+function crossCheckSources(c: Collector, declared: readonly string[], sites: readonly MappingSite[]): void {
+  const used = new Set(sites.map((s) => s.structureIdSource));
+  const declaredSet = new Set(declared);
+  for (const source of [...used].sort()) {
+    if (!declaredSet.has(source)) {
+      c.add(
+        '$.structureIdSources',
+        `does not declare ${JSON.stringify(source)}, which ${
+          sites.filter((s) => s.structureIdSource === source).length
+        } mapping(s) use`,
+      );
+    }
+  }
+  for (const [i, source] of declared.entries()) {
+    if (!used.has(source)) {
+      c.add(`$.structureIdSources[${i}]`, `declares ${JSON.stringify(source)}, which no mapping uses`);
+    }
+  }
+  // A CURIE must agree with the namespace it claims. `FMA9968` is a bare
+  // concept id and carries no prefix to disagree with, which is the shape the
+  // BodyParts3D index publishes; `HCP-MMP1:44` is a CURIE and must match.
+  for (const site of sites) {
+    const colon = site.structureId.indexOf(':');
+    if (colon < 0) continue;
+    const prefix = site.structureId.slice(0, colon);
+    if (prefix !== site.structureIdSource) {
+      c.add(
+        `${site.path}.structureId`,
+        `is prefixed ${JSON.stringify(prefix)} but structureIdSource says ${JSON.stringify(site.structureIdSource)}`,
+      );
+    }
+  }
+}
+
+/**
+ * The partitions must account for every structure the mappings use, exactly
+ * once, and must not claim structures the dataset no longer has.
+ *
+ * Both directions matter. An unpartitioned id would be gated by nothing — the
+ * hole a partition scheme creates if it is not exhaustive. A partitioned id no
+ * mapping uses is a stale declaration, and stale is how a `placeholder` entry
+ * outlives the licence problem that justified it.
+ */
+function crossCheckPartitions(c: Collector, a: AuthoredAgainst, sites: readonly MappingSite[]): void {
+  if (a.partitions === undefined) return;
+  const owner = new Map<string, string>();
+  for (const part of a.partitions) {
+    for (const id of part.structureIds) {
+      const prior = owner.get(id);
+      if (prior !== undefined) {
+        c.add(
+          '$.authoredAgainst.partitions',
+          `structure ${JSON.stringify(id)} is in both ${JSON.stringify(prior)} and ${JSON.stringify(part.id)};` +
+            ' a structure is authored against one index',
+        );
+        continue;
+      }
+      owner.set(id, part.id);
+    }
+  }
+  const used = new Set(sites.map((s) => s.structureId));
+  for (const id of [...used].sort()) {
+    if (!owner.has(id)) {
+      c.add(
+        '$.authoredAgainst.partitions',
+        `no partition contains ${JSON.stringify(id)}, so nothing says which index should name it`,
+      );
+    }
+  }
+  for (const [id, part] of [...owner].sort()) {
+    if (!used.has(id)) {
+      c.add(
+        '$.authoredAgainst.partitions',
+        `partition ${JSON.stringify(part)} lists ${JSON.stringify(id)}, which no mapping uses`,
+      );
+    }
+  }
+}
+
+/**
  * Validate without throwing. Returns the dataset, or `null` plus every problem.
  *
  * Used by `tools/check-research-dataset.mjs`, which wants to print all the
@@ -561,14 +758,7 @@ export function validateDataset(raw: unknown): {
   const structureIdSources = stringArray(c, '$.structureIdSources', raw.structureIdSources, { minLength: 1, max: 40 });
   const cur = curation(c, '$.curation', raw.curation);
 
-  let authoredAgainst: { nameIndexVersion: string; status: 'fixture' | 'real' } | null = null;
-  if (!isObject(raw.authoredAgainst)) {
-    c.add('$.authoredAgainst', 'a dataset must say which name index its mappings were authored against');
-  } else {
-    const nameIndexVersion = text(c, '$.authoredAgainst.nameIndexVersion', raw.authoredAgainst.nameIndexVersion, MAX_SHORT_TEXT);
-    const status = enumValue(c, '$.authoredAgainst.status', raw.authoredAgainst.status, ['fixture', 'real'] as const);
-    if (nameIndexVersion !== null && status !== null) authoredAgainst = { nameIndexVersion, status };
-  }
+  const authored = authoredAgainst(c, '$.authoredAgainst', raw.authoredAgainst);
 
   const papers: Paper[] = [];
   const paperIds = new Set<string>();
@@ -591,6 +781,7 @@ export function validateDataset(raw: unknown): {
   const findingIds = new Set<string>();
   const mappingIds = new Set<string>();
   const papersWithFindings = new Set<string>();
+  const sites: MappingSite[] = [];
   if (!Array.isArray(raw.findings)) {
     c.add('$.findings', 'expected an array of findings');
   } else {
@@ -609,6 +800,13 @@ export function validateDataset(raw: unknown): {
         return;
       }
       let duplicateMapping = false;
+      parsed.mappings.forEach((m, j) => {
+        sites.push({
+          path: `$.findings[${i}].mappings[${j}]`,
+          structureId: m.structureId,
+          structureIdSource: m.structureIdSource,
+        });
+      });
       for (const m of parsed.mappings) {
         if (mappingIds.has(m.id)) {
           // Mapping ids are what a highlight traces back to. Two highlights
@@ -633,6 +831,11 @@ export function validateDataset(raw: unknown): {
     }
   }
 
+  // Declarations against data. Both of these are about a statement at the top
+  // of the file still describing the mappings at the bottom of it.
+  if (structureIdSources !== null) crossCheckSources(c, structureIdSources, sites);
+  if (authored !== null) crossCheckPartitions(c, authored, sites);
+
   if (c.problems.length > 0) return { dataset: null, problems: c.problems };
 
   return {
@@ -640,7 +843,7 @@ export function validateDataset(raw: unknown): {
       schema: SCHEMA_ID,
       version: version!,
       structureIdSources: Object.freeze(structureIdSources!),
-      authoredAgainst: Object.freeze(authoredAgainst!),
+      authoredAgainst: authored!,
       curation: cur!,
       papers: Object.freeze(papers),
       findings: Object.freeze(findings),
