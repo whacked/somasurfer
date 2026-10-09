@@ -32,9 +32,11 @@
  *     catches it. (QA-10)
  *
  *   - A fold can displace rather than duplicate: the point is claimed by one
- *     *other* level, so nothing is ambiguous at runtime and the flag stays
- *     quiet, while the original address for that point is gone. The scan's
- *     `lost` kind is what catches it. (QA-13)
+ *     *other* level, so a claim-counting detector finds nothing ambiguous while
+ *     the original address for that point is gone. The scan's `lost` kind is
+ *     what catches it here, and `bodyMmToLocal` now flags it at runtime as
+ *     well, by asking which levels have an address for the point rather than
+ *     how many claim it. (QA-13)
  *
  * Usage, from the asset pipeline or a test:
  *

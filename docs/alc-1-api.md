@@ -424,7 +424,7 @@ hoisting everything into one scope, which is why.
 
 | Code | Meaning |
 | --- | --- |
-| `empty`, `too_long`, `bad_type` | Input shape |
+| `empty`, `too_long`, `bad_type`, `non_ascii` | Input shape. `non_ascii` is raised on the raw input, before trimming and case mapping, because §3 of the spec makes ASCII part of the grammar |
 | `unknown_frame`, `missing_anchor`, `too_many_segments`, `empty_segment`, `bad_segment` | Grammar |
 | `bad_level`, `bad_azimuth`, `bad_hemisphere`, `bad_base_face`, `bad_index` | Anchor out of range. `bad_index` is a `BR` HEALPix index out of range for its order |
 | `bad_digit`, `bad_precision`, `missing_digits`, `missing_azimuth` | Refinement |

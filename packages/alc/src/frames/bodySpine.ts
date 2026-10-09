@@ -549,33 +549,169 @@ export function levelsClaiming(template: BodyTemplate, p: Vec3): string[] {
 }
 
 /**
+ * Level `i`'s own coordinates for `p`, whatever they come out to be.
+ *
+ * This is the exact inverse of `bodyLocalToMm` restricted to one level, with no
+ * clamping and no range test, and both omissions are deliberate: `u` outside
+ * [0, 1] and `r` above 1 are the two ways a level can fail to own a point, and
+ * a caller that needs to know which cannot be handed a clamped answer.
+ *
+ * `u` comes from the same ratio the forward map solves, so
+ * `bodyLocalToMm(level, localInLevel(level, p)) === p` to rounding for EVERY
+ * level and every point, not only for the level that owns `p`.
+ */
+function localInLevel(
+  template: BodyTemplate,
+  g: SpineGeometry,
+  i: number,
+  p: Vec3,
+  sIn: number,
+  sOut: number,
+): LocalBodyCoords {
+  const slab = template.slabs[i];
+  const rel = sub(p, g.nodes[i]);
+  const along = dot(rel, g.dirs[i]);
+  const perp: Vec3 = [
+    rel[0] - g.dirs[i][0] * along,
+    rel[1] - g.dirs[i][1] * along,
+    rel[2] - g.dirs[i][2] * along,
+  ];
+  const ca = dot(perp, g.anterior[i]);
+  const sa = dot(perp, g.left[i]);
+  let t = Math.atan2(sa, ca) / (2 * Math.PI);
+  if (t < 0) t += 1;
+  if (t >= 1) t = 0;
+  const surface = radiusAt(slab, t);
+  const denom = sIn - sOut;
+  return {
+    level: slab.label,
+    u: denom === 0 ? 0 : sIn / denom,
+    t,
+    r: surface > 0 ? Math.hypot(ca, sa) / surface : 0,
+  };
+}
+
+/** One level's in-body address for a millimetre point. */
+export interface LevelAddress {
+  level: string;
+  /** Index of the level in `template.slabs`. */
+  index: number;
+  /** The coordinates in that level whose forward map is the point. */
+  at: LocalBodyCoords;
+  /**
+   * True when the level's two bounding planes bracket the point in the ordinary
+   * cranial-to-caudal order, i.e. when `levelsClaiming` also names this level.
+   *
+   * False means the planes bracket it the other way round: they have crossed
+   * before reaching the point, which is what a fold IS. The level still has a
+   * perfectly ordinary-looking address for the point — `u` in range, `r` inside
+   * the skin — and that address is the one that gets lost.
+   */
+  claims: boolean;
+}
+
+/**
+ * Every level that has an in-body address denoting `p`, cranial to caudal.
+ *
+ * This is the honest form of the question `levelsClaiming` approximates, and it
+ * is the one the frame's guarantee is stated in: an address denotes a point, so
+ * injectivity means *exactly one level has an address for each point*. On an
+ * admissible template this returns exactly one entry, with `claims: true`, for
+ * every point inside the body.
+ *
+ * Why claim-counting is not the same question. Level i's forward map puts `p`
+ * at `u = sigma_i / (sigma_i - sigma_(i+1))`, and that ratio lands in [0, 1]
+ * in TWO cases, not one:
+ *
+ *   sigma_i >= 0, sigma_(i+1) < 0    the planes bracket p in order. The level
+ *                                    claims p, and `levelsClaiming` sees it
+ *   sigma_i < 0, sigma_(i+1) >= 0    the planes have crossed before p. The
+ *                                    ratio is still in [0, 1], so the level
+ *                                    still has an address for p — and
+ *                                    `levelsClaiming` does NOT see it
+ *
+ * The second case is the whole of QA-13. A point past `S02`'s fold radius is
+ * claimed, in the ordered sense, only by `S01`; one claimant, nothing for a
+ * claim-counting detector to report. But `S02`'s address for that point exists
+ * and is inside `S02`'s skin, so two addresses denote one millimetre point and
+ * one of them decodes into the wrong vertebra. Counting claimants finds the
+ * overlap half of a fold (spec section 4's "wedge on the convex side") and is
+ * blind to the displacement half; asking which levels have an address finds
+ * both, because both are the same fact.
+ *
+ * `r <= 1` is a necessary part of the test, not a tidy-up. Any curved column's
+ * bisector planes cross SOMEWHERE — that is what a bend is — so crossed pairs
+ * can always be found far enough out. What distinguishes a fold from harmless
+ * geometry is whether the crossing happens where there is tissue to address.
+ */
+export function levelsAddressing(template: BodyTemplate, p: Vec3): LevelAddress[] {
+  const g = spineGeometry(template);
+  const sigma = planeDistances(g, p);
+  const out: LevelAddress[] = [];
+  for (let i = 0; i < g.dirs.length; i += 1) {
+    const found = straddleIn(template, g, i, p, sigma);
+    if (found && found.at.r <= 1) out.push(found);
+  }
+  return out;
+}
+
+/**
+ * The one level's side of `levelsAddressing`, without the `r <= 1` test, so a
+ * caller can apply its own depth rule. Null means the level's two planes do not
+ * straddle the point in either orientation, which is the only case where the
+ * level has no coordinates for it at all.
+ */
+function straddleIn(
+  template: BodyTemplate,
+  g: SpineGeometry,
+  i: number,
+  p: Vec3,
+  sigma: number[],
+): LevelAddress | null {
+  const sIn = sigma[i];
+  const sOut = sigma[i + 1];
+  const claims = sIn >= 0 && sOut < 0;
+  if (!claims && !(sIn < 0 && sOut >= 0)) return null;
+  const at = localInLevel(template, g, i, p, sIn, sOut);
+  return { level: at.level, index: i, at, claims };
+}
+
+/**
  * Template millimetres -> dimensionless local coordinates.
  *
  * Level choice. Level i owns { sigma_i >= 0 and sigma_(i+1) < 0 }. On an
  * admissible template those regions tile space, so exactly one level claims
- * any point and there is nothing to choose. Where the frame folds the regions
- * overlap, and this function must both choose and SAY SO:
+ * any point and there is nothing to choose. Where the frame folds this function
+ * must both choose and SAY SO:
  *
  *   exactly one claimant  the ordinary case; u is the relative distance
  *                         between the two bounding planes
- *   more than one         a fold. Take the NEAREST claimant by distance to its
- *                         own axis segment, and flag `folded` with a note
- *                         naming every competing level
+ *   more than one         Take the NEAREST claimant by distance to its own
+ *                         axis segment
  *   none, off either end  the point is beyond the column; clamp and say which
  *                         end
- *   none, mid-column      the concave-side gap of a fold. Nearest level,
- *                         flagged `folded` too
+ *   none, mid-column      the concave-side gap of a fold. Nearest level
  *
- * This used to scan cranial-to-caudal and `break` on the first claimant, which
- * is where two defects came from at once (DOG-9, findings 1 and 2). The first
- * claimant is the most CRANIAL one, so a point could come back silently
- * assigned to a level five away — measured: 268 points with `flags: {}` on a
- * known-folding template. And the fold note lived only in the no-claimant
- * branch, which a fold does not produce: folding makes points DOUBLY claimed,
- * not unclaimed. So the note was unreachable, the only thing the user saw was
- * the radius clamp firing against the wrong level's surface, and they were
- * told their point was outside the body when the truth was that the
- * coordinate system had folded.
+ * The FLAG is then a separate question from the choice, and asking it correctly
+ * is QA-13. It is not "does a second level claim this point" — that finds only
+ * the overlap half of a fold. It is "does a second level have an in-body
+ * ADDRESS for this point", i.e. would some other level's coordinates encode
+ * back to these millimetres. That one question covers both halves, because both
+ * halves are the same fact: the inverse is not a function here. See
+ * `levelsAddressing`.
+ *
+ * Two earlier versions were wrong, and in instructive ways:
+ *
+ *   - It scanned cranial-to-caudal and `break`ed on the first claimant, which is
+ *     the most CRANIAL one, so a point could come back silently assigned to a
+ *     level five away — measured: 268 points with `flags: {}` on a known-folding
+ *     template. And the fold note lived only in the no-claimant branch, which a
+ *     fold does not produce. (DOG-9, findings 1 and 2)
+ *   - It then counted claimants. That detects a point two levels fight over and
+ *     stays quiet about a point one level has quietly taken from another, which
+ *     is the same defect seen from the concave side of the bend. Measured on
+ *     `anat-adult-p50-split-sacrum`: `S02`'s skin at t=0.9917 came back as `S01`
+ *     with `flags: {}`. (QA-13)
  */
 export function bodyMmToLocal(
   template: BodyTemplate,
@@ -592,8 +728,16 @@ export function bodyMmToLocal(
   const sigma = planeDistances(g, p);
 
   const claimants: number[] = [];
+  // Levels whose two planes have crossed before reaching this point. They are
+  // the candidates for a displacing fold, and on an admissible template there
+  // are none at any point inside the body — so this costs one sign test per
+  // level and the round-trip check below costs nothing at all. That is the
+  // reason the test is shaped as a cheap screen plus a narrow follow-up rather
+  // than a second full scan.
+  let crossed = false;
   for (let i = 0; i < n; i += 1) {
     if (sigma[i] >= 0 && sigma[i + 1] < 0) claimants.push(i);
+    else if (sigma[i] < 0 && sigma[i + 1] >= 0) crossed = true;
   }
 
   /** Nearest by distance to its own axis segment; ties to the more cranial. */
@@ -613,20 +757,9 @@ export function bodyMmToLocal(
   let index: number;
   let u: number;
 
-  if (claimants.length === 1) {
-    index = claimants[0];
+  if (claimants.length >= 1) {
+    index = claimants.length === 1 ? claimants[0] : nearestOf(claimants);
     u = sigma[index] / (sigma[index] - sigma[index + 1]);
-  } else if (claimants.length > 1) {
-    index = nearestOf(claimants);
-    u = sigma[index] / (sigma[index] - sigma[index + 1]);
-    flags.folded = true;
-    const competing = claimants.map((i) => template.slabs[i].label);
-    notes.push(
-      `template ${template.id} is inadmissible here: the BD frame folds, and this point is claimed by `
-      + `${competing.length} vertebral levels (${competing.join(', ')}). Resolved to the nearest, `
-      + `${template.slabs[index].label}, which is deterministic but not reliable — the address is `
-      + 'genuinely ambiguous at this point.',
-    );
   } else if (sigma[0] < 0) {
     index = 0;
     u = 0;
@@ -655,20 +788,47 @@ export function bodyMmToLocal(
   }
 
   const slab = template.slabs[index];
-  const rel = sub(p, g.nodes[index]);
-  const along = dot(rel, g.dirs[index]);
-  const perp: Vec3 = [
-    rel[0] - g.dirs[index][0] * along,
-    rel[1] - g.dirs[index][1] * along,
-    rel[2] - g.dirs[index][2] * along,
-  ];
-  const ca = dot(perp, g.anterior[index]);
-  const sa = dot(perp, g.left[index]);
-  let t = Math.atan2(sa, ca) / (2 * Math.PI);
-  if (t < 0) t += 1;
-  if (t >= 1) t = 0;
-  const surface = radiusAt(slab, t);
-  let r = surface > 0 ? Math.hypot(ca, sa) / surface : 0;
+
+  // The round-trip question, asked only where it can answer yes. A rival is any
+  // other level that reaches this point: either it claims the territory (the
+  // convex-side overlap) or its planes crossed before the point and its own
+  // in-body address for it has been quietly taken over by this level (the
+  // concave-side displacement, QA-13).
+  //
+  // The depth test applies to the second kind only, and the asymmetry is
+  // deliberate. A claim is a statement about territory, so it stands wherever
+  // the skin happens to be. A crossed pair is not: EVERY curved column's
+  // bisector planes cross somewhere, so without `r <= 1` the second test would
+  // fire far outside the body on templates that are perfectly admissible.
+  if (claimants.length > 1 || crossed) {
+    const rivals: LevelAddress[] = [];
+    for (let i = 0; i < n; i += 1) {
+      if (i === index) continue;
+      const other = straddleIn(template, g, i, p, sigma);
+      if (other && (other.claims || other.at.r <= 1)) rivals.push(other);
+    }
+    if (rivals.length > 0) {
+      flags.folded = true;
+      const displaced = rivals.filter((o) => !o.claims);
+      notes.push(
+        `template ${template.id} is inadmissible here: the BD frame folds, and ${rivals.length + 1} `
+        + `vertebral levels (${[slab.label, ...rivals.map((o) => o.level)].join(', ')}) reach this `
+        + `point. Resolved to ${slab.label}, which is deterministic but not reliable — the address is `
+        + 'genuinely ambiguous here.'
+        + (displaced.length
+          ? ` ${displaced.map((o) => o.level).join(', ')} `
+            + `${displaced.length === 1 ? 'reaches' : 'reach'} this point past `
+            + `${displaced.length === 1 ? 'its' : 'their'} own fold radius, so `
+            + `${displaced.length === 1 ? 'that address decodes' : 'those addresses decode'} here `
+            + `as ${slab.label} instead.`
+          : ''),
+      );
+    }
+  }
+
+  const local = localInLevel(template, g, index, p, sigma[index], sigma[index + 1]);
+  const t = local.t;
+  let r = local.r;
   if (r > 1) {
     r = 1 - 1e-12;
     flags.clamped = true;
@@ -793,11 +953,11 @@ export interface TemplateAudit {
  *   ambiguous  more than one level claims it, so two addresses denote it and
  *              `bodyMmToLocal` has to choose. Flagged at runtime as `folded`
  *   lost       exactly one level claims it and it is the WRONG one, so this
- *              level's address for the point decodes into another level.
- *              Invisible at runtime: a decoder handed the millimetres alone
- *              sees a single unambiguous claimant and has no way to know a
- *              different level's address pointed here. Only a template-level
- *              scan can see it, which is why templates are gated at build time
+ *              level's address for the point decodes into another level. Also
+ *              flagged `folded` at runtime, but only since QA-13: a decoder
+ *              that counts claimants sees one unambiguous claimant and cannot
+ *              tell that a different level's address pointed here, which is
+ *              why `bodyMmToLocal` asks `levelsAddressing` instead
  *   unclaimed  no level claims it — the concave-side gap of a fold
  */
 export type FoldKind = 'ambiguous' | 'lost' | 'unclaimed';

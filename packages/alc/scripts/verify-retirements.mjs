@@ -11,6 +11,7 @@ import {
   bodyMmToLocal,
   canonicalLevel,
   encodeBody,
+  levelsAddressing,
   levelsClaiming,
   locate,
   samePlace,
@@ -20,6 +21,7 @@ import {
   ADULT_P50,
   ADULT_P50_SPLIT_SACRUM,
   ADULT_HYPERKYPHOTIC_SHORT_WIDE,
+  PRESETS,
   buildAnatomicalBodyTemplate,
 } from '../src/testing/anatomicalTemplates.ts';
 import { measureRoundTrip } from '../src/testing/admissibilityProbe.ts';
@@ -200,6 +202,60 @@ say('\n--- QA-12: samePlace() over all disjoint cell pairs at toleranceMm 0');
   }
   say(`  distinct-address pairs: ${disjoint}, reported same at tolerance 0: ${wrong}`);
   verdict('QA-12', wrong === 0, `${wrong} of ${disjoint} distinct pairs called the same place`);
+}
+
+// ---------------------------------------------------------------------------
+// QA-13 — a fold that DISPLACES rather than duplicates was silent.
+// Original measurement (report §QA-13): the S02 skin point at t = 0.9917,
+// r = 0.76 came back as S01 with `flags: {}`, because exactly one level claims
+// it and the detector counted claimants.
+say('\n--- QA-13: the displacement half of a fold on anat-adult-p50-split-sacrum');
+{
+  const AZ = 0.9917;
+  const ray = (r) => bodyMmToLocal(split, bodyLocalToMm(split, { level: 'S02', u: 0.5, t: AZ, r }));
+  const reported = ray(0.76);
+  const mm = bodyLocalToMm(split, { level: 'S02', u: 0.5, t: AZ, r: 0.76 });
+  say(`bodyMmToLocal(S02 u0.5 t${AZ} r0.76) -> level ${reported.local.level}`);
+  say(`  flags = ${JSON.stringify({ ...reported.flags, notes: undefined })}`);
+  say(`  notes = ${JSON.stringify(reported.flags.notes ?? [])}`);
+  say(`levelsClaiming(that point)   = ${JSON.stringify(levelsClaiming(split, mm))}`);
+  say(`levelsAddressing(that point) = ${JSON.stringify(
+    levelsAddressing(split, mm).map((a) => `${a.level}${a.claims ? '' : ' (planes crossed)'} r=${a.at.r.toFixed(3)}`),
+  )}`);
+
+  // The four regimes the finding tabulated, and whether each is now declared.
+  for (const r of [0.6, 0.68, 0.72, 0.76]) {
+    const res = ray(r);
+    say(`  r=${r.toFixed(2)} -> ${res.local.level}, folded=${Boolean(res.flags.folded)}`);
+  }
+
+  // And the other direction: the check must stay quiet on every preset, or the
+  // flag stops meaning anything.
+  let falsePositives = 0;
+  let probed = 0;
+  for (const params of PRESETS) {
+    const t = buildAnatomicalBodyTemplate(params);
+    for (const slab of t.slabs) {
+      const knots = slab.surfaceRadiiMm.length;
+      for (let k = 0; k < knots; k += 1) {
+        for (const r of [0.5, 0.9, 0.995]) {
+          probed += 1;
+          if (bodyMmToLocal(t, bodyLocalToMm(t, { level: slab.label, u: 0.5, t: k / knots, r })).flags.folded) {
+            falsePositives += 1;
+          }
+        }
+      }
+    }
+  }
+  say(`  presets: ${falsePositives} of ${probed} knot points falsely declared folded`);
+
+  const notes = (reported.flags.notes ?? []).join(' | ');
+  verdict(
+    'QA-13',
+    Boolean(reported.flags.folded) && /S02/.test(notes) && falsePositives === 0,
+    `displaced point folded=${Boolean(reported.flags.folded)}, note names S02=${/S02/.test(notes)}, `
+    + `preset false positives=${falsePositives}`,
+  );
 }
 
 say('\n=== SUMMARY');

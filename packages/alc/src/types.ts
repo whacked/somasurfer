@@ -30,8 +30,16 @@ export interface LocateFlags {
   clamped?: boolean;
   /**
    * The frame is not injective at this point in this template: more than one
-   * anchor's region claims it, or none does. The answer is deterministic but
+   * anchor has an address for it, or none does. The answer is deterministic but
    * the address is ambiguous, and the notes name the competing anchors.
+   *
+   * "Has an address for it", not "claims it". A fold both duplicates and
+   * displaces — spec §4's wedge on the convex side of a bend and gap on the
+   * concave side — and a detector that counts how many anchors claim the point
+   * sees only the first. In the displacement case exactly one anchor claims the
+   * point, it is the wrong one, and the right one's address has quietly become
+   * unreachable. That was QA-13, and it is why this flag is raised from the
+   * round-trip question rather than from a claim count.
    *
    * Distinct from `clamped` on purpose. `clamped` says the point left the
    * modelled body; `folded` says the point is inside the body and the

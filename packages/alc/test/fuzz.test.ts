@@ -224,6 +224,136 @@ test('fuzz: digit-alphabet validation happens once, in parse, for every frame', 
   }
 });
 
+/**
+ * Hostile code points, named by number rather than written as literals.
+ *
+ * That is load-bearing, not fussiness. Every one of these is a homoglyph of an
+ * ASCII character by construction (U+212A KELVIN SIGN is indistinguishable
+ * from `K` in most fonts) or invisible (U+200B, U+FEFF) or a control code. A
+ * literal in the source is one careless copy-paste, one editor that strips
+ * invisibles, one `git` filter away from silently becoming its ASCII twin --
+ * and then the vector still looks right and asserts nothing. The first draft
+ * of this suite used a literal U+212A; it arrived as an ASCII `K` and the test
+ * passed for the wrong reason.
+ *
+ * `shape` is an all-ASCII template and `@` is where the code point goes.
+ */
+const HOSTILE_CODE_POINTS: ReadonlyArray<{ name: string; code: number; shape: string }> = [
+  // Code points whose uppercase form is a legal ALC character. These are the
+  // ones that used to survive `toUpperCase()` into a valid address.
+  { name: 'U+0131 DOTLESS I -> I, the depth half', code: 0x0131, shape: 'bd-t07-03@' },
+  { name: 'U+017F LONG S -> S, the sacral prefix', code: 0x017f, shape: 'bd-@01-03o' },
+  { name: 'U+00DF SHARP S -> SS, length-changing', code: 0x00df, shape: 'bd-@01-03o' },
+  { name: 'U+FB01 LIGATURE FI -> FI, length-changing', code: 0xfb01, shape: 'br-l-7a3@' },
+  // Code points whose uppercase form is not legal. Already caught by the
+  // grammar before this fix, and asserted here so the guard that now catches
+  // them first cannot change the verdict.
+  { name: 'U+212A KELVIN SIGN', code: 0x212a, shape: 'bd-t07-03@' },
+  { name: 'U+2170 SMALL ROMAN NUMERAL ONE', code: 0x2170, shape: 'bd-t07-03@' },
+  { name: 'U+FF22 FULLWIDTH CAPITAL B', code: 0xff22, shape: '@d-t07' },
+  { name: 'U+0456 CYRILLIC BYELORUSSIAN-UKRAINIAN I', code: 0x0456, shape: 'bd-t07-03@' },
+  { name: 'U+13A5 CHEROKEE LETTER V', code: 0x13a5, shape: 'bd-t07-03@' },
+  { name: 'U+0307 COMBINING DOT ABOVE, an NFD address', code: 0x0307, shape: 'BD-T@07-03O' },
+  // The sub-case the report names: `trim()` strips Unicode whitespace, so
+  // padding in these code points used to be accepted in silence. Same class of
+  // character, same one-line fix.
+  { name: 'U+00A0 NO-BREAK SPACE as padding', code: 0x00a0, shape: '@BD-T07-03O' },
+  { name: 'U+2007 FIGURE SPACE as padding', code: 0x2007, shape: 'BD-T07-03O@' },
+  { name: 'U+3000 IDEOGRAPHIC SPACE as padding', code: 0x3000, shape: '@BD-T07-03O' },
+  { name: 'U+FEFF BYTE ORDER MARK', code: 0xfeff, shape: '@BD-T07-03O' },
+  { name: 'U+200B ZERO WIDTH SPACE, embedded', code: 0x200b, shape: 'BD-T07@-03O' },
+  // Separator lookalikes: accepting one would split segments on a character
+  // that is not the separator.
+  { name: 'U+2010 HYPHEN', code: 0x2010, shape: 'BD@T07' },
+  { name: 'U+2212 MINUS SIGN', code: 0x2212, shape: 'BD@T07' },
+  { name: 'U+FF0D FULLWIDTH HYPHEN-MINUS', code: 0xff0d, shape: 'BD@T07' },
+  // Lone surrogates, to prove no decoder panics on the way to the rejection.
+  { name: 'a lone high surrogate', code: 0xd800, shape: 'BD-T07@' },
+  { name: 'a lone low surrogate', code: 0xdfff, shape: 'BD-T07@' },
+  // ASCII control characters are not printable ASCII either, and `trim()`
+  // strips several of them, so they take the same route.
+  { name: 'U+0009 TAB as padding', code: 0x0009, shape: '@BD-T07-03O' },
+  { name: 'U+000A LINE FEED as padding', code: 0x000a, shape: 'BD-T07-03O@' },
+  { name: 'U+000D CARRIAGE RETURN as padding', code: 0x000d, shape: 'BD-T07-03O@' },
+  { name: 'U+000B VERTICAL TAB, embedded', code: 0x000b, shape: 'BD-T07@-03O' },
+  { name: 'U+0000 NUL, embedded', code: 0x0000, shape: 'BD-T07@-03O' },
+  { name: 'U+007F DELETE as padding', code: 0x007f, shape: 'BD-T07-03O@' },
+];
+
+test('fuzz: a non-ASCII code point is rejected before case mapping can make it legal', () => {
+  // This was the QA-7 characterisation test in known-defects.test.ts, inverted.
+  // Spec section 3 says an address is ASCII and section 10 says the alphabet is
+  // validated before anything else runs. `splitAddress` used to uppercase first
+  // and validate second, which made the effective alphabet "every code point
+  // whose uppercase form happens to be legal", so two distinct byte sequences
+  // denoted one address: a consumer comparing a raw URL parameter against a
+  // stored canonical form, or running the section 10 prefix range scan on the
+  // unnormalised string, then disagreed with the library about whether two
+  // addresses name the same place. That is the one thing the whole addressing
+  // design exists to prevent.
+  //
+  // Note what the rejection has to be: `non_ascii`, from the alphabet guard,
+  // and not whatever the grammar would have said later. Half of these were
+  // always rejected -- by `TOKEN`, or by the azimuth parser -- and a fix that
+  // only caught the four whose uppercase form is legal would leave the rule
+  // "an ALC address is ASCII" still unstated and still one `toUpperCase()`
+  // table change away from breaking.
+  for (const { name, code, shape } of HOSTILE_CODE_POINTS) {
+    const input = shape.replace('@', String.fromCodePoint(code));
+    assert.notEqual(input, shape, `${name}: the vector lost its code point`);
+    assert.equal(isValid(input), false, `${name}: ${JSON.stringify(input)} must be rejected`);
+    assert.throws(
+      () => parse(input),
+      (e: unknown) => (e as AlcError).code === 'non_ascii',
+      `${name}: the rejection must come from the alphabet guard, with code non_ascii`,
+    );
+  }
+
+  // The two that actually collided, stated the way the report stated them.
+  // Case mapping rewrites each onto a legal address, which is the whole reason
+  // the guard has to run before the mapping: the ASCII reading stays a valid
+  // address, and the byte sequence that merely uppercases onto it no longer
+  // names the same place. (The length-changing pair above -- U+00DF -> SS,
+  // U+FB01 -> FI -- was always caught by the grammar instead, which is why the
+  // blast radius was two code points and not twenty.)
+  const collided: ReadonlyArray<[number, string, string]> = [
+    [0x0131, 'bd-t07-03@', 'BD-T07-03I'],
+    [0x017f, 'bd-@01-03o', 'BD-S01-03O'],
+  ];
+  for (const [code, shape, ascii] of collided) {
+    const input = shape.replace('@', String.fromCodePoint(code));
+    assert.equal(input.toUpperCase(), ascii, 'precondition: case mapping lands on the ASCII reading');
+    assert.equal(isValid(ascii), true, `${ascii} is still a valid address`);
+    assert.equal(isValid(input), false, 'but the confusable spelling of it is not');
+    assert.notEqual(input, ascii.toLowerCase(), 'precondition: they are distinct byte sequences');
+  }
+
+  // The guarantee in general form, over the whole confusable set and every
+  // position the corpus pokes: no input carrying a code point outside printable
+  // ASCII is accepted, whatever its uppercase form happens to be. Asserted
+  // directly here so it does not depend on the corpus continuing to cover these
+  // positions -- this is the statement INV-ASCII makes over the corpus.
+  let probed = 0;
+  for (const w of CONFUSABLES) {
+    for (const probe of [
+      `BD-T07-03${w}`, `BD-${w}01-03O`, `B${w}-T07`, `${w}BD-T07`, `BD-T07${w}`,
+      `BV-L-47${w}`, `BD-T07-03O${w}531`, `BD-T07${w}03O`, `BR-L-7A3${w}`,
+    ]) {
+      if (!/[^\x20-\x7e]/.test(probe)) continue; // the ASCII members of the set
+      probed += 1;
+      assert.equal(isValid(probe), false, `${JSON.stringify(probe)} must be rejected`);
+    }
+  }
+  assert.ok(probed > 100, `expected a meaningful number of probes, got ${probed}`);
+
+  // And the narrowing stops exactly there. Printable ASCII canonicalises as it
+  // always did, including the space padding and the case folding, which are the
+  // two courtesies section 3 does grant.
+  assert.equal(format(' bd-t07-03o '), 'BD-T07-03O');
+  assert.equal(format('BD-T07-03O'), 'BD-T07-03O');
+  assert.equal(isValid('BD-T07-03O'), true);
+});
+
 test('fuzz: a confusable never silently becomes a different legal address', () => {
   // QA-7 is that some confusables are accepted at all. This test is narrower
   // and holds regardless: whatever is accepted must canonicalise to the address

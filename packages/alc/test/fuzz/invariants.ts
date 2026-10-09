@@ -92,24 +92,19 @@ export const KNOWN_DEFECTS: ReadonlyArray<{
   summary: string;
   expectHits: number;
 }> = [
-  {
-    invariant: 'INV-ASCII',
-    defectId: 'QA-7',
-    summary: 'Unicode confusables survive toUpperCase() into the canonical form (U+0131 -> I, U+017F -> S).',
-    expectHits: 1,
-  },
-  {
-    invariant: 'INV-CHECK-CANONICAL',
-    defectId: 'QA-5',
-    summary: 'The check symbol is validated against the input body, not the canonical body (spec section 7).',
-    expectHits: 1,
-  },
-  {
-    invariant: 'INV-CHECK-ACCEPTS-LOOSE-CANONICAL',
-    defectId: 'QA-5',
-    summary: 'A correct canonical check symbol is rejected when the body is written in an accepted loose form.',
-    expectHits: 1,
-  },
+  // QA-7 (INV-ASCII) was retired on 2026-10-09: `splitAddress` now rejects any
+  // code point outside printable ASCII on the *raw* input, before `trim()` and
+  // `toUpperCase()` can rewrite it. The 59 hits this entry carried were the
+  // U+0131/U+017F confusables plus the tab- and newline-padded seeds, and all
+  // 59 are now rejections. The invariant stands unqualified above.
+  //
+  // QA-5 (INV-CHECK-CANONICAL and INV-CHECK-ACCEPTS-LOOSE-CANONICAL) was
+  // retired on 2026-10-09: `parse()` verifies the supplied symbol against the
+  // canonical body it resolved to, not against the uppercased input. Both
+  // invariants stand unqualified above, and they are two halves of one
+  // statement — a guard must validate the thing it resolves to, in both
+  // directions.
+  //
   // QA-6 (INV-GRAMMAR-LEVEL) was retired on 2026-10-08: canonicalLevel() now
   // holds a per-level set, admitting the three real count anomalies and
   // rejecting everything else with the correction named. The invariant stands

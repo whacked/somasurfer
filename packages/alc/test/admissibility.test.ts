@@ -260,9 +260,9 @@ test('admissibility: the exact criterion is a safe bound, and binds where it say
   //
   // So the honest assertion is that the prediction is never optimistic:
   // failure begins at or before it. Replacing "within 5% from both sides" with
-  // this is a weaker claim, and the weaker claim is the true one. (The wording
-  // in docs/alc-1-admissibility.md §4 still says "not merely a safe bound";
-  // DOG-18 carries that documentation fix along with QA-13 itself.)
+  // this is a weaker claim, and the weaker claim is the true one. The regimes
+  // are published, measured, in docs/alc-1-admissibility.md §4 under "The
+  // per-level fold radius is a one-sided bound, not a threshold".
   for (const params of [ADULT_P50_SPLIT_SACRUM, { ...ADULT_P50, id: 'chord', sacralTangentFraction: 0.5, radialScale: 1.45 }]) {
     const template = buildAnatomicalBodyTemplate(params);
     for (const level of auditBodyTemplate(template).violations) {

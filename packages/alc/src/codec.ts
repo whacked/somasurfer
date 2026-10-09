@@ -98,9 +98,44 @@ export interface RawAddress {
 
 const TOKEN = /^[0-9A-Z]+$/;
 
-/** Split an address string into segments without interpreting the frame. */
+/**
+ * Printable ASCII, decided on the *raw* input.
+ *
+ * Spec section 3 says an address is ASCII and section 10 says the alphabet is
+ * validated before anything else runs, so this cannot wait until after
+ * canonicalisation. `trim()` strips Unicode whitespace (U+00A0, U+2007,
+ * U+FEFF) and `toUpperCase()` maps non-ASCII code points onto legal ALC
+ * characters — U+0131 DOTLESS I onto the depth half `I`, U+017F LONG S onto
+ * the sacral prefix `S`. Validating the alphabet after either one makes the
+ * effective alphabet "every code point whose uppercase form happens to be
+ * legal", which let two distinct byte sequences denote one address: a consumer
+ * comparing a raw URL parameter against a stored canonical form, or running
+ * the section 10 prefix range scan on the unnormalised string, then disagrees
+ * with this library about whether two addresses name the same place. That was
+ * QA-7 in docs/alc-1-attack-report.md.
+ */
+const NON_ASCII = /[^\x20-\x7e]/;
+
+/**
+ * Split an address string into segments without interpreting the frame.
+ *
+ * Note what this deliberately does *not* do: verify the check symbol. The
+ * symbol is a sum over the **canonical** body (spec section 7) and this
+ * function cannot canonicalise — padding `T7` to `T07` is frame-specific. It
+ * validates the symbol's shape and hands it back; `parse()` verifies it once
+ * the canonical body exists. Checking it here, against the uppercased input,
+ * was QA-5.
+ */
 export function splitAddress(input: string): { segments: string[]; check?: string } {
   if (typeof input !== 'string') throw new AlcError('address must be a string', 'bad_type');
+  const offender = NON_ASCII.exec(input);
+  if (offender !== null) {
+    const cp = input.codePointAt(offender.index)!.toString(16).toUpperCase().padStart(4, '0');
+    throw new AlcError(
+      `an ALC-1 address is printable ASCII; found U+${cp} at index ${offender.index}`,
+      'non_ascii',
+    );
+  }
   const trimmed = input.trim().toUpperCase();
   if (!trimmed) throw new AlcError('empty address', 'empty');
   if (trimmed.length > 64) throw new AlcError('address too long', 'too_long');
@@ -120,9 +155,6 @@ export function splitAddress(input: string): { segments: string[]; check?: strin
   if (segments.some((s) => s.length === 0)) throw new AlcError('empty segment', 'empty_segment');
   if (segments.some((s) => !TOKEN.test(s))) {
     throw new AlcError('segments must be alphanumeric', 'bad_segment');
-  }
-  if (check !== undefined && checkSymbol(body) !== check) {
-    throw new AlcError('check symbol does not match address', 'check_failed');
   }
   return { segments, check };
 }

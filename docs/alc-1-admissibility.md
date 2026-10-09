@@ -108,6 +108,47 @@ once one is known to exist, which is what they are genuinely good at,
 and gate on `scanBodyTemplateFolds()` or `measureRoundTrip()`. The
 library renamed the flag `locallyAdmissible` for this reason.
 
+### The per-level fold radius is a one-sided bound, not a threshold
+
+Walking outward along each flagged level's worst azimuth, at mid-slab, and
+asking at every radius which level the point decodes back to:
+
+| template | level | predicted fold `r` | first wrong answer | radii that answer correctly | first flagged `r` |
+| --- | --- | --- | --- | --- | --- |
+| `anat-adult-p50-split-sacrum` | S02 | 0.747 | 0.666 | 0.000–0.666, 0.693–0.748 | 0.636 |
+| `anat-adult-p50-split-sacrum` | S03 | 0.721 | 0.671 | 0.000–0.671 | 0.654 |
+| `anat-adult-p50-split-sacrum` | S04 | 0.702 | 0.702 | 0.000–0.702 | 0.702 |
+| `anat-chord-axis-large` | L05 | 0.847 | 0.848 | 0.000–0.848 | 0.848 |
+
+Three things to read off it, in order of how much they cost to get wrong.
+
+1. **The prediction is a bound, and failure can start well inside it.** The
+   predicted radius is where a level's own two bisector planes meet, so
+   past it the level certainly cannot bracket its own point. Before it,
+   nothing is promised: a level several places away can claim the point
+   first. Measured above, that happens on 2 of the 4 rays,
+   by up to **10.9%** of the radius (`anat-adult-p50-split-sacrum` S02).
+   An assertion of the form "safe just inside, folded just outside" is
+   therefore ill-posed from the inner side, which is why
+   `test/admissibility.test.ts` asserts only `firstFailure <= predicted`.
+2. **Correctness is not monotone in radius.** A level can lose a point,
+   then recover at a larger radius, then lose it again to a different
+   level, so its correct radii are not one interval but several:
+   - `anat-adult-p50-split-sacrum` S02: 2 separate correct intervals.
+   There is therefore no single radius at which a level stops working,
+   and no utilisation figure that means "ambiguous beyond here".
+3. **The flag is not left behind by either of those.** The first flagged
+   radius is at or below the first wrong answer on every row, because
+   `bodyMmToLocal` no longer asks how many levels claim the point — which
+   is a question with gaps — but whether any *other* level has an in-body
+   address for it, which is the fold itself. Both halves of spec §4's
+   "wedge on the convex side and gap on the concave side" answer it.
+   (QA-13; the displacement half used to be silent.)
+
+None of this weakens the gate. The gate is `scanBodyTemplateFolds()` being
+sound, which is a statement about every probed point rather than about a
+radius, and it is unaffected by where along a ray the failure starts.
+
 ## 5. Requirements this puts on the asset pipeline
 
 1. A body template realises **one** addressable sacral level, `S01`,

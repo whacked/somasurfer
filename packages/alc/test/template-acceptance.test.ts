@@ -20,6 +20,8 @@ import {
   bodyLocalToMm,
   bodyMmToLocal,
   encodeBody,
+  levelsAddressing,
+  levelsClaiming,
   scanBodyTemplateFolds,
   type BodyTemplate,
   type VertebralSlab,
@@ -28,6 +30,7 @@ import {
   ADULT_HYPERKYPHOTIC_SHORT_WIDE,
   ADULT_P50,
   ADULT_P50_SPLIT_SACRUM,
+  FOLD_REGRESSIONS,
   PRESETS,
   buildAnatomicalBodyTemplate,
 } from '../src/testing/anatomicalTemplates.ts';
@@ -191,7 +194,12 @@ test('acceptance: a localised bulge folds a template the per-level audit gives 2
   const ambiguous = bodyMmToLocal(template, bodyLocalToMm(template, { level: 'L05', u: 0.1, t: 0.5, r: 0.8 }));
   assert.equal(ambiguous.flags.folded, true, 'the ambiguity must be declared even when resolved correctly');
   assert.equal(ambiguous.flags.clamped, undefined, 'a point inside the body is not clamped');
-  assert.match((ambiguous.flags.notes ?? []).join(' '), /claimed by \d+ vertebral levels/);
+  const ambiguousNote = (ambiguous.flags.notes ?? []).join(' ');
+  assert.match(ambiguousNote, /\d+ vertebral levels .* reach this point/);
+  // Both sides of the ambiguity named, not just the one that won.
+  for (const level of ['L05', 'L01']) {
+    assert.ok(ambiguousNote.includes(level), `the note must name ${level}: ${ambiguousNote}`);
+  }
 
   // Deeper in, the tie-break picks the wrong level — still declared, and still
   // not described as leaving the body.
@@ -371,68 +379,198 @@ test('acceptance: the utilisation ceiling is a real gate, not decoration', () =>
   if (audit.locallyAdmissible) assert.equal(auditStage.passed, true, 'a loose ceiling should clear the audit stage');
 });
 
-test('acceptance: QA-13 — a fold that displaces rather than duplicates is still silent', () => {
-  // The gap half of the non-partition, and the half `flags.folded` misses.
+test('acceptance: a fold that displaces rather than duplicates is declared too', () => {
+  // Was the QA-13 characterisation test, which asserted `flags: {}` here.
   //
-  // Spec §4 describes both halves: adjacent regions "overlap in a wedge on the
-  // convex side and leave a gap on the concave side". The bisector-plane design
-  // removes that for *adjacent* levels, and QA-2's fix detects the overlap half
-  // by counting how many levels claim a point. But where the map folds, the
-  // regions globally are neither a partition nor merely overlapping: there is
-  // also territory whose sole claimant is some *other* level. One level claims
-  // it, so the multi-claim detector is correctly quiet — and the answer is a
-  // different vertebra.
+  // The gap half of the non-partition. Spec §4 describes both halves: adjacent
+  // regions "overlap in a wedge on the convex side and leave a gap on the
+  // concave side". The bisector-plane design removes that for *adjacent*
+  // levels, and QA-2's fix detected the overlap half by counting how many
+  // levels claim a point. Where the map folds, the regions globally are neither
+  // a partition nor merely overlapping: there is also territory whose sole
+  // claimant is some *other* level. One claimant, so the claim-counting
+  // detector was correctly quiet — and the answer was a different vertebra with
+  // no flag at all.
   //
-  // Measured along S02's worst azimuth on `anat-adult-p50-split-sacrum`, the
-  // ray passes through four regimes, which is also why "the fold radius" is not
-  // a threshold:
-  //
-  //     r 0.64-0.66  claimed by S02 and S05  -> S02  folded   (right, flagged)
-  //     r 0.67-0.69  claimed by S02 and S05  -> S05  folded   (wrong, flagged)
-  //     r 0.70-0.74  claimed by S02 alone    -> S02  --       (right, quiet)
-  //     r 0.75-1.00  claimed by S01 alone    -> S01  --       (WRONG, quiet)
+  // The fix is not a second detector beside the first. Both halves are one
+  // fact — the inverse is not a function here — and one question finds both:
+  // does any OTHER level have an in-body address for this point. See
+  // `levelsAddressing`.
   const template = buildAnatomicalBodyTemplate(ADULT_P50_SPLIT_SACRUM);
   const worstAzimuth = 0.9917;
+  const decode = (r: number) =>
+    bodyMmToLocal(template, bodyLocalToMm(template, { level: 'S02', u: 0.5, t: worstAzimuth, r }));
 
-  const mm = bodyLocalToMm(template, { level: 'S02', u: 0.5, t: worstAzimuth, r: 0.76 });
-  const back = bodyMmToLocal(template, mm);
-
+  // The reported case: displaced a whole level, and now flagged, with the level
+  // whose address was taken over named in the note.
+  const back = decode(0.76);
   assert.equal(back.local.level, 'S01', 'precondition: this point is displaced a whole level');
-  assert.deepEqual(
-    back.flags,
-    {},
-    'QA-13 appears fixed: a displacing fold now carries a flag. Delete this test and assert the '
-      + 'flag instead — the detector should check that the requested level claims the point, not '
-      + 'only that no second level does.',
+  assert.equal(back.flags.folded, true, 'the displacement half must be declared');
+  assert.equal(back.flags.clamped, undefined, 'a point inside the body is not clamped');
+  const note = (back.flags.notes ?? []).join(' ');
+  assert.ok(note.includes('S02'), `the note must name the displaced level: ${note}`);
+  assert.ok(!/outside the modelled body surface/.test(note), note);
+
+  // And it is one question answering for both halves, not two detectors: S02's
+  // address for the point exists, is inside S02's skin, and is invisible to a
+  // claim count, which names S01 alone.
+  const mm = bodyLocalToMm(template, { level: 'S02', u: 0.5, t: worstAzimuth, r: 0.76 });
+  assert.deepEqual(levelsClaiming(template, mm), ['S01'], 'precondition: one claimant, hence silent before');
+  const addressing = levelsAddressing(template, mm);
+  assert.deepEqual(addressing.map((a) => a.level).sort(), ['S01', 'S02']);
+  const displaced = addressing.find((a) => a.level === 'S02')!;
+  assert.equal(displaced.claims, false, 'S02 reaches the point with its planes already crossed');
+  assert.ok(Math.abs(displaced.at.r - 0.76) < 1e-9, `S02's own address is recovered: r=${displaced.at.r}`);
+
+  // The four regimes along this ray, asserted individually. Correctness is NOT
+  // monotone in radius — right, wrong, right again, then wrong — which is why
+  // no single "fold radius" describes the folded set and why
+  // `admissibility.test.ts` asserts a one-sided bound. The flag covers all four.
+  const REGIMES: Array<[number, string, boolean]> = [
+    [0.60, 'S02', false], // inside everything; correct and quiet
+    [0.68, 'S05', true], //  overlap: two claimants, resolved to the wrong one
+    [0.72, 'S02', true], //  correct again — the non-monotonicity
+    [0.76, 'S01', true], //  displacement: one claimant, the wrong level
+  ];
+  for (const [r, level, folded] of REGIMES) {
+    const got = decode(r);
+    assert.equal(got.local.level, level, `at r=${r} the ray decodes to ${got.local.level}, not ${level}`);
+    assert.equal(got.flags.folded ?? false, folded, `at r=${r} folded should be ${folded}`);
+  }
+  // Correct-but-flagged is the right answer at r=0.72, not an over-report: S03
+  // also has an in-body address for that point, so the address IS ambiguous
+  // even though the tie-break lands on the level that generated it.
+  const recovered = decode(0.72);
+  assert.ok(Math.abs(recovered.local.r - 0.72) < 1e-6, 'r=0.72 still round-trips exactly');
+  assert.ok(
+    levelsAddressing(template, bodyLocalToMm(template, { level: 'S02', u: 0.5, t: worstAzimuth, r: 0.72 }))
+      .length > 1,
+    'a flag at r=0.72 would be an over-report if only one level addressed the point',
   );
 
-  // The flagged band exists too, so this is a hole in the detector rather than
-  // the detector being absent.
-  const flagged = bodyMmToLocal(
-    template,
-    bodyLocalToMm(template, { level: 'S02', u: 0.5, t: worstAzimuth, r: 0.68 }),
-  );
-  assert.equal(flagged.local.level, 'S05');
-  assert.equal(flagged.flags.folded, true, 'the overlap half is detected');
-
-  // Consequence worth asserting on its own: the folded set is not radially
-  // connected, so no single "fold radius" describes it. `admissibility.test.ts`
-  // assumes one and is red because of it.
-  const roundTripsAt = (r: number): boolean => {
-    const p = bodyLocalToMm(template, { level: 'S02', u: 0.5, t: worstAzimuth, r });
-    const b = bodyMmToLocal(template, p);
-    return b.local.level === 'S02' && Math.abs(b.local.r - r) < 1e-6;
-  };
-  assert.equal(roundTripsAt(0.66), true, 'inside the first folded shell');
-  assert.equal(roundTripsAt(0.68), false, 'the first folded shell');
-  assert.equal(roundTripsAt(0.72), true, 'the safe band beyond it — this is the non-monotonicity');
-  assert.equal(roundTripsAt(0.78), false, 'and the displaced region beyond that');
-
-  // The gate still rejects the template, which is what keeps this out of a
-  // shipping asset: all three measuring stages see it even though one flag does not.
+  // The gate still rejects the template. The flag is honesty at runtime; it is
+  // not a licence to ship a folding template.
   const report = acceptBodyTemplate(template, QUICK);
   assert.equal(report.accepted, false);
   assert.equal(report.stages.find((s) => s.stage === 'PROBE')!.passed, false);
+});
+
+test('acceptance: on a folding template no point answers with the wrong level unflagged', () => {
+  // The guarantee the QA-13 characterisation test stood in for, stated where it
+  // is hard to hold: on the templates that DO fold, rather than on the presets
+  // that do not. "No shipping preset is silently wrong" is below and is the
+  // property a consumer depends on; this is the property that makes it a
+  // property of the frame rather than of the gate.
+  //
+  // Walked on each level's own azimuth KNOTS, the way `scanBodyTemplateFolds`
+  // does, and not on a round grid of its own choosing: the surface radii are
+  // interpolated between knots, so a local maximum can only sit on one, and
+  // QA-13's own report shows a uniform grid stepping over the regime
+  // boundaries. `perKnot` subdivisions keep the between-knot interior covered.
+  const TOL = 1e-6;
+  const PER_KNOT = 3;
+  let probed = 0;
+  let wrong = 0;
+  let silent = 0;
+  const examples: string[] = [];
+
+  for (const { params } of FOLD_REGRESSIONS) {
+    const template = buildAnatomicalBodyTemplate(params);
+    for (const slab of template.slabs) {
+      const knots = slab.surfaceRadiiMm.length;
+      for (let k = 0; k < knots; k += 1) {
+        for (let e = 0; e < PER_KNOT; e += 1) {
+          const t = (k + e / PER_KNOT) / knots;
+          for (const u of [0.02, 0.5, 0.98]) {
+            for (const r of [0.25, 0.5, 0.75, 0.9, 0.995]) {
+              probed += 1;
+              let back;
+              try {
+                back = bodyMmToLocal(template, bodyLocalToMm(template, { level: slab.label, u, t, r }));
+              } catch {
+                continue; // a throw is loud, which is the point
+              }
+              let dt = Math.abs(back.local.t - t);
+              dt = Math.min(dt, 1 - dt);
+              const good = back.local.level === slab.label
+                && Math.abs(back.local.u - u) < TOL
+                && dt < TOL
+                && Math.abs(back.local.r - r) < TOL;
+              if (good) continue;
+              wrong += 1;
+              if (!back.flags.folded && !back.flags.clamped) {
+                silent += 1;
+                if (examples.length < 5) {
+                  examples.push(
+                    `${params.id} ${slab.label} u=${u} t=${t.toFixed(4)} r=${r} -> `
+                    + `${back.local.level} flags=${JSON.stringify(back.flags)}`,
+                  );
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert.ok(probed > 80000, `only ${probed} points probed`);
+  // The templates must really fold, or the assertion below is vacuous.
+  assert.ok(wrong > 100, `expected material folding across the fixtures, got ${wrong} wrong answers`);
+  assert.equal(silent, 0, `${silent}/${wrong} wrong answers carried no flag:\n  ${examples.join('\n  ')}`);
+});
+
+test('acceptance: the round-trip check costs nothing on an admissible template', () => {
+  // The other half of the detector being honest: it must not cry fold on a
+  // template that does not fold. A detector that flags the presets would be
+  // worse than the silence it replaced, because the flag would stop meaning
+  // anything — and it would also make the check expensive, since the cheap
+  // screen is exactly "has any level's plane pair crossed before this point".
+  for (const params of PRESETS) {
+    const template = buildAnatomicalBodyTemplate(params);
+    let flagged = 0;
+    let probed = 0;
+    for (const slab of template.slabs) {
+      const knots = slab.surfaceRadiiMm.length;
+      for (let k = 0; k < knots; k += 1) {
+        for (const u of [0.02, 0.5, 0.98]) {
+          for (const r of [0.5, 0.9, 0.995]) {
+            probed += 1;
+            const back = bodyMmToLocal(template, bodyLocalToMm(template, { level: slab.label, u, t: k / knots, r }));
+            if (back.flags.folded) flagged += 1;
+          }
+        }
+      }
+    }
+    assert.ok(probed > 1000, `${params.id}: only ${probed} points probed`);
+    assert.equal(flagged, 0, `${params.id}: ${flagged}/${probed} points falsely declared folded`);
+  }
+});
+
+test('acceptance: every fold the scan calls `lost` is flagged at runtime', () => {
+  // The scan's three kinds used to split by whether a runtime caller could see
+  // them: `ambiguous` was visible through `flags.folded`, `lost` was not, and
+  // that asymmetry was QA-13. It is gone, and this is the test that keeps it
+  // gone — stated over the scan's own site list so a new fold kind cannot be
+  // added without confronting it.
+  let lost = 0;
+  for (const { params } of FOLD_REGRESSIONS) {
+    const template = buildAnatomicalBodyTemplate(params);
+    const scan = scanBodyTemplateFolds(template);
+    assert.equal(scan.sound, false, `precondition: ${params.id} must fold`);
+    for (const site of scan.sites) {
+      const mm = bodyLocalToMm(template, { level: site.level, ...site.at });
+      const back = bodyMmToLocal(template, mm);
+      assert.equal(
+        back.flags.folded,
+        true,
+        `${params.id}: a ${site.kind} site at ${site.level} u=${site.at.u} t=${site.at.t} `
+        + `r=${site.at.r} decodes as ${back.local.level} with flags ${JSON.stringify(back.flags)}`,
+      );
+      if (site.kind === 'lost') lost += 1;
+    }
+  }
+  assert.ok(lost > 0, 'no `lost` site was exercised, so this test cannot see the defect it pins');
 });
 
 test('acceptance: no shipping preset ever answers with the wrong level unflagged', () => {

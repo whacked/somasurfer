@@ -12,6 +12,7 @@ import {
   checkSymbol,
   children,
   contains,
+  CROCKFORD,
   encodeBody,
   encodeBrainVolume,
   format,
@@ -100,6 +101,65 @@ test('check symbol: round-trips and catches single-character damage', () => {
   }
   assert.ok(total > 100, `expected a meaningful number of mutations, got ${total}`);
   assert.equal(caught, total, `${total - caught}/${total} single-character mutations slipped through`);
+});
+
+test('check symbol: verified against the canonical body, in both directions', () => {
+  // This was the QA-5 characterisation test in known-defects.test.ts, inverted.
+  // Spec section 7 defines the symbol as a sum over the *canonical* body, and
+  // `parse()` accepts loose bodies — `BD-T7-3O` for `BD-T07-03O` — so the two
+  // facts only compose if canonicalisation happens first. It used to not, and
+  // that got both directions wrong at once.
+  //
+  // Dropping a leading zero is exactly what a human does with a code read
+  // aloud, and guarding that transcription is the only thing this symbol is
+  // for, so the loose case is the one that matters most.
+  const pairs: Array<[string, string]> = [
+    ['BD-T7-3O', 'BD-T07-03O'],
+    ['bd-t7-3o', 'BD-T07-03O'],
+    ['BD-T7-3O-531', 'BD-T07-03O-531'],
+    ['bd-s1-12i-7', 'BD-S01-12I-7'],
+    ['bv-l-471025', 'BV-L-471025'],
+    ['br-l-7a3f', 'BR-L-7A3F'],
+  ];
+
+  for (const [loose, canonical] of pairs) {
+    assert.equal(parse(loose).canonical, canonical, 'precondition: the loose form is accepted');
+    const good = checkSymbol(canonical);
+
+    // 1. The correct symbol on a loose body is accepted, and the address it
+    //    resolves to re-emits that same symbol. A guard must validate the thing
+    //    the parser resolves to.
+    assert.equal(isValid(`${loose}~${good}`), true, `${loose}~${good} should be accepted`);
+    assert.equal(parse(`${loose}~${good}`).canonical, canonical);
+    assert.equal(parse(`${loose}~${good}`).withCheck, `${canonical}~${good}`);
+    assert.equal(format(`${loose}~${good}`, { check: true }), `${canonical}~${good}`);
+
+    // 2. Exactly one of the 32 Crockford symbols is accepted on that body, and
+    //    it is the canonical one. The mirror-image failure was a symbol computed
+    //    over the *loose* body being accepted for an address that then re-emits
+    //    a different one, so assert this exhaustively rather than on one sample.
+    const accepted = [...CROCKFORD].filter((c) => isValid(`${loose}~${c}`));
+    assert.deepEqual(accepted, [good], `${loose}: only the canonical symbol may be accepted`);
+
+    // 3. And specifically: the symbol over the loose body, where it differs, is
+    //    rejected with the code a caller branches on.
+    const looseSymbol = checkSymbol(loose.toUpperCase());
+    if (looseSymbol !== good) {
+      assert.throws(
+        () => parse(`${loose}~${looseSymbol}`),
+        (e: unknown) => (e as { code?: string }).code === 'check_failed',
+        `${loose}~${looseSymbol} is the symbol for the wrong body and must be refused`,
+      );
+    }
+  }
+
+  // The canonical form is the fixed point of all of this: an address plus its
+  // own symbol always parses, for every address the library can produce.
+  for (const addr of ['BD-T07', 'BD-T07-02O-5316', 'BV-R-471025', 'BR-L-7A3F']) {
+    const a = parse(addr);
+    assert.equal(parse(a.withCheck).canonical, a.canonical);
+    assert.equal(parse(a.withCheck).withCheck, a.withCheck);
+  }
 });
 
 // ---------------------------------------------------------------------------

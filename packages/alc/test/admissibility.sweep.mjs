@@ -17,11 +17,19 @@ import {
 } from '../src/index.ts';
 import {
   ADULT_P50,
+  FOLD_REGRESSIONS,
   PRESETS,
   ADULT_P50_SPLIT_SACRUM,
   buildAnatomicalBodyTemplate,
 } from '../src/testing/anatomicalTemplates.ts';
 import { measureRoundTrip } from '../src/testing/admissibilityProbe.ts';
+
+/**
+ * The committed regression fixture, taken from the ledger rather than rebuilt
+ * here, so this document cannot describe a template the gate no longer watches.
+ */
+const CHORD_AXIS_LARGE = FOLD_REGRESSIONS
+  .find((f) => f.params.id === 'anat-chord-axis-large').params;
 
 const out = [];
 const line = (s = '') => out.push(s);
@@ -254,6 +262,102 @@ if (missedRows.length === 0) {
   line('and gate on `scanBodyTemplateFolds()` or `measureRoundTrip()`. The');
   line('library renamed the flag `locallyAdmissible` for this reason.');
 }
+line();
+
+// ---------------------------------------------------------------------------
+// QA-13 / DOG-18. Two claims used to be made about the per-level fold radius
+// that this walk does not support: that the verdict matches the observed
+// failures row for row (retired above, on DOG-10), and that the radius is a
+// SHARP threshold rather than a one-sided bound. The second is retired here,
+// with the measurement that retires it, because an asset pipeline reading a
+// utilisation of 0.9 deserves to know what the 0.1 of margin does and does not
+// buy. Walked on the knots of the level's own radius samples, not a round grid:
+// the radii are interpolated between knots, so a local maximum can only sit on
+// one and a coarser grid steps over the regime boundaries entirely.
+line('### The per-level fold radius is a one-sided bound, not a threshold');
+line();
+line('Walking outward along each flagged level\'s worst azimuth, at mid-slab, and');
+line('asking at every radius which level the point decodes back to:');
+line();
+line('| template | level | predicted fold `r` | first wrong answer | radii that answer correctly | first flagged `r` |');
+line('| --- | --- | --- | --- | --- | --- |');
+const RAY_STEPS = 2000;
+const rays = [];
+for (const params of [ADULT_P50_SPLIT_SACRUM, CHORD_AXIS_LARGE]) {
+  const t = buildAnatomicalBodyTemplate(params);
+  for (const v of auditBodyTemplate(t).violations) {
+    const predicted = 1 / v.utilisation;
+    let firstWrong = null;
+    let firstFlagged = null;
+    const bands = [];
+    let open = null;
+    for (let k = 1; k <= RAY_STEPS; k += 1) {
+      const r = (k / RAY_STEPS) * 0.999;
+      let res;
+      try {
+        res = bodyMmToLocal(t, bodyLocalToMm(t, { level: v.level, u: 0.5, t: v.worstAzimuthTurns, r }));
+      } catch {
+        continue;
+      }
+      const ok = res.local.level === v.level && Math.abs(res.local.r - r) < 1e-6;
+      if (!ok && firstWrong === null) firstWrong = r;
+      if (res.flags.folded && firstFlagged === null) firstFlagged = r;
+      if (ok && open === null) open = r;
+      if (!ok && open !== null) {
+        bands.push([open, r]);
+        open = null;
+      }
+    }
+    if (open !== null) bands.push([open, 0.999]);
+    const fmt = (x) => (x === null ? 'never' : x.toFixed(3));
+    line(
+      `| \`${params.id}\` | ${v.level} | ${predicted.toFixed(3)} | ${fmt(firstWrong)} `
+      + `| ${bands.map(([a, b]) => `${a.toFixed(3)}–${b.toFixed(3)}`).join(', ')} `
+      + `| ${fmt(firstFlagged)} |`,
+    );
+    rays.push({ id: params.id, level: v.level, predicted, firstWrong, firstFlagged, bands });
+  }
+}
+line();
+line('Three things to read off it, in order of how much they cost to get wrong.');
+line();
+{
+  const early = rays
+    .filter((r) => r.firstWrong !== null && r.firstWrong < r.predicted)
+    .map((r) => ({ ...r, short: (r.predicted - r.firstWrong) / r.predicted }))
+    .sort((a, b) => b.short - a.short);
+  const broken = rays.filter((r) => r.bands.length > 1);
+  line('1. **The prediction is a bound, and failure can start well inside it.** The');
+  line('   predicted radius is where a level\'s own two bisector planes meet, so');
+  line('   past it the level certainly cannot bracket its own point. Before it,');
+  line('   nothing is promised: a level several places away can claim the point');
+  line(`   first. Measured above, that happens on ${early.length} of the ${rays.length} rays,`);
+  line(
+    `   by up to **${(early.length ? early[0].short * 100 : 0).toFixed(1)}%** of the radius`
+    + `${early.length ? ` (\`${early[0].id}\` ${early[0].level})` : ''}.`,
+  );
+  line('   An assertion of the form "safe just inside, folded just outside" is');
+  line('   therefore ill-posed from the inner side, which is why');
+  line('   `test/admissibility.test.ts` asserts only `firstFailure <= predicted`.');
+  line('2. **Correctness is not monotone in radius.** A level can lose a point,');
+  line('   then recover at a larger radius, then lose it again to a different');
+  line('   level, so its correct radii are not one interval but several:');
+  for (const r of broken) line(`   - \`${r.id}\` ${r.level}: ${r.bands.length} separate correct intervals.`);
+  if (broken.length === 0) line('   - no row above, at this sampling.');
+  line('   There is therefore no single radius at which a level stops working,');
+  line('   and no utilisation figure that means "ambiguous beyond here".');
+}
+line('3. **The flag is not left behind by either of those.** The first flagged');
+line('   radius is at or below the first wrong answer on every row, because');
+line('   `bodyMmToLocal` no longer asks how many levels claim the point — which');
+line('   is a question with gaps — but whether any *other* level has an in-body');
+line('   address for it, which is the fold itself. Both halves of spec §4\'s');
+line('   "wedge on the convex side and gap on the concave side" answer it.');
+line('   (QA-13; the displacement half used to be silent.)');
+line();
+line('None of this weakens the gate. The gate is `scanBodyTemplateFolds()` being');
+line('sound, which is a statement about every probed point rather than about a');
+line('radius, and it is unaffected by where along a ray the failure starts.');
 line();
 
 // ---------------------------------------------------------------------------

@@ -48,14 +48,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import {
-  BR,
-  checkSymbol,
-  format,
-  isValid,
-  parse,
-  recommendedDigits,
-} from '../src/index.ts';
+import { BR, isValid, recommendedDigits } from '../src/index.ts';
 import { BRAIN_ADULT, buildBrainTemplate } from '../src/testing/syntheticTemplates.ts';
 
 /** Every defect id, so the index above cannot drift from the report. */
@@ -66,74 +59,19 @@ export const INDEX = [
 
 const brain = buildBrainTemplate(BRAIN_ADULT);
 
+// QA-5 and QA-7 were retired on 2026-10-09. Both were the same mistake in the
+// same function — `splitAddress` doing work on the raw input that spec §7 and
+// §3 put after canonicalisation — and both characterisation tests were
+// replaced by the guarantee they stood in for, in the suite that owns it:
+//
+//   QA-5  check symbol verified against the input body, not the canonical one
+//         -> conformance.test.ts, 'check symbol: verified against the
+//            canonical body, in both directions'
+//   QA-7  Unicode confusables surviving toUpperCase() into a valid address
+//         -> fuzz.test.ts, 'fuzz: a non-ASCII code point is rejected before
+//            case mapping can make it legal'
+//
 // ---------------------------------------------------------------------------
-test('QA-5: the check symbol is validated against the input body, not the canonical one', () => {
-  // Spec section 7: "Position-weighted sum mod 32 over the canonical body."
-  // `splitAddress` computes it over the uppercased *input* instead, and `parse`
-  // accepts loose input such as `BD-T7-3O`. Both directions are wrong.
-  const canonical = 'BD-T07-03O';
-  const canonicalCheck = checkSymbol(canonical);
-  assert.equal(parse(canonical).withCheck, `${canonical}~${canonicalCheck}`);
-
-  // 1. A human drops the leading zeros — which parse() accepts — and transcribes
-  //    the check symbol correctly. The code is rejected as damaged.
-  assert.equal(
-    isValid(`BD-T7-3O~${canonicalCheck}`),
-    false,
-    'QA-5 appears fixed: a canonical check symbol on a loose body is now accepted. Delete this test.',
-  );
-  assert.throws(
-    () => parse(`BD-T7-3O~${canonicalCheck}`),
-    (e: unknown) => (e as { code?: string }).code === 'check_failed',
-  );
-
-  // 2. The mirror image: a check symbol that does NOT match the address's own
-  //    canonical form is accepted, and the address silently re-emits a different
-  //    one. A guard that validates something other than what it resolves to is
-  //    not a guard.
-  const looseCheck = checkSymbol('BD-T7-3O');
-  assert.notEqual(looseCheck, canonicalCheck, 'precondition: the two bodies differ');
-  assert.equal(isValid(`BD-T7-3O~${looseCheck}`), true);
-  assert.equal(parse(`BD-T7-3O~${looseCheck}`).withCheck, `${canonical}~${canonicalCheck}`);
-  assert.equal(format(`BD-T7-3O~${looseCheck}`, { check: true }), `${canonical}~${canonicalCheck}`);
-
-  // Suggested fix: canonicalise first, then verify the supplied symbol against
-  // the canonical body. That makes both cases come out right and costs one
-  // reordering in parse().
-});
-
-test('QA-7: Unicode confusables survive case mapping into a valid address', () => {
-  // Spec section 3 says an address is ASCII and section 10 says the alphabet is
-  // validated before anything runs. `splitAddress` uppercases first and
-  // validates second, and JavaScript's `toUpperCase` maps several non-ASCII
-  // code points onto legal ALC characters.
-  const cases: Array<[string, string, string]> = [
-    ['U+0131 LATIN SMALL LETTER DOTLESS I', 'bd-t07-03ı', 'BD-T07-03I'],
-    ['U+017F LATIN SMALL LETTER LONG S', 'bd-ſ01-03o', 'BD-S01-03O'],
-  ];
-  for (const [name, input, canonical] of cases) {
-    assert.equal(
-      isValid(input),
-      true,
-      `QA-7 appears fixed for ${name}: ${JSON.stringify(input)} is now rejected. `
-        + 'Delete this case and assert the rejection in fuzz.test.ts instead.',
-    );
-    assert.equal(parse(input).canonical, canonical);
-    // The damage: two distinct byte sequences are one address, so a consumer
-    // comparing a raw URL parameter against a stored canonical form disagrees
-    // with the library about whether they are the same address.
-    assert.notEqual(input.toUpperCase(), input);
-    assert.equal(parse(canonical).canonical, parse(input).canonical);
-  }
-
-  // Characters whose uppercase form is not a legal ALC character are caught, so
-  // the gap is narrow and the fix is correspondingly cheap: reject any input
-  // containing a non-ASCII code point before uppercasing it.
-  for (const bad of ['bd-t07-03K', 'bd-t07-03ⅰ', 'Ｂd-t07']) {
-    assert.equal(isValid(bad), false, `${JSON.stringify(bad)} should still be rejected`);
-  }
-});
-
 test('QA-11: recommendedDigits returns a precision the BR frame cannot express', () => {
   // `BR` requires at least one refinement digit, so zero is not a legal BR
   // precision — but recommendedDigits returns 0 for a BR address, and a caller

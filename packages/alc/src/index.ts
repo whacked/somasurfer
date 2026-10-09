@@ -103,6 +103,8 @@ export {
   auditBodyTemplate,
   auditBodyTemplateWorstCase,
   levelsClaiming,
+  levelsAddressing,
+  type LevelAddress,
   scanBodyTemplateFolds,
   formatFoldScan,
   spineGeometry,
