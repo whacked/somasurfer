@@ -5,65 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Linked 3D Atlas Explorer</title>
     <link rel="stylesheet" href="{{BASE}}app/style.css" />
-    <!-- The index is small and on the critical path; the asset payload is not,
-         and is fetched by app.js only when the user asks for geometry. -->
+    <!-- The index and the name index are the critical path to a usable address
+         bar. The renderer is not, and app.js imports it after first paint, so a
+         renderer that fails to load cannot take address resolution with it. -->
     <link rel="preload" href="{{BASE}}data/atlas-index.json" as="fetch" crossorigin />
     <script type="module" src="{{BASE}}app/app.js"></script>
   </head>
   <body>
-    <header>
-      <h1>Linked 3D Atlas Explorer</h1>
-      <p class="tagline">Explore anatomy and research through linked, reusable 3D atlas views.</p>
-      <p class="status" data-skeleton>
-        Build skeleton. The viewer is not here yet — this page proves the static
-        pipeline, the prebuilt indexes, the asset separation and the performance
-        budget are all real and measured.
-      </p>
-    </header>
+    <p id="boot-error" class="boot-error" hidden role="alert"></p>
 
-    <main>
-      <section id="frames">
-        <h2>Addressing frames</h2>
-        <p>From <code>@gstack/alc</code>, baked into <code>data/atlas-index.json</code> at build time.</p>
-        <div id="frames-out" aria-busy="true">Loading index…</div>
-      </section>
+    <div id="shell" hidden>
+      <header>
+        <h1>Linked 3D Atlas Explorer</h1>
+        <div class="atlas-bar">
+          <strong id="atlas-name">Body atlas</strong>
+          <span id="template-id" class="muted"></span>
+          <button id="open-other-atlas" type="button" data-testid="open-other-atlas">Open brain atlas</button>
+          <button id="return" type="button" data-testid="return" hidden></button>
+        </div>
+        <p id="template-caveat" class="caveat"></p>
+      </header>
 
-      <section id="levels">
-        <h2>Addressable body levels</h2>
-        <p>
-          <code>S02</code>–<code>S05</code> are reserved in the ALC-1 grammar and
-          absent from templates: the fused sacrum is one addressable level.
-        </p>
-        <div id="levels-out" aria-busy="true">Loading index…</div>
-      </section>
+      <main>
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="canvas" data-testid="canvas" aria-label="3D atlas view"></canvas>
+            <div id="labels" class="labels" aria-hidden="true"></div>
+            <p id="canvas-message" class="canvas-message" hidden role="status"></p>
+          </div>
 
-      <section id="assets">
-        <h2>Low-resolution assets</h2>
-        <p>
-          Fetched at runtime as separate files, never linked into this bundle.
-          First interaction is measured from the click below.
-        </p>
-        <button id="load-assets" type="button">Load low-resolution geometry</button>
-        <div id="assets-out"></div>
-      </section>
+          <div class="stage-controls">
+            <button id="reset-camera" type="button" data-testid="reset-camera">Reset view</button>
+            <button id="reset-layers" type="button" data-testid="reset-layers">Reset layers</button>
+            <label><input id="labels-toggle" type="checkbox" data-testid="labels-toggle" checked /> Labels</label>
+            <label class="precision">
+              Precision
+              <input id="precision" type="range" min="0" max="5" step="1" value="3" data-testid="precision" />
+              <output id="precision-value">3</output> digits
+            </label>
+            <p class="hint">Drag to rotate · shift-drag or right-drag to pan · wheel to zoom · click to address</p>
+            <p id="precision-note" class="hint"></p>
+          </div>
+        </section>
 
-      <section id="perf">
-        <h2>This session</h2>
-        <div id="perf-out">Measuring…</div>
+        <aside class="panels">
+          <form id="address-form" class="address-form" autocomplete="off">
+            <label for="address-input">Address</label>
+            <input
+              id="address-input"
+              name="address"
+              type="text"
+              maxlength="64"
+              placeholder="BD-T07-03O-531"
+              data-testid="address-input"
+            />
+            <button type="submit" data-testid="address-submit">Go</button>
+          </form>
+
+          <div id="notices" class="notices" hidden role="status"></div>
+          <div id="address-panel" class="address-panel"></div>
+
+          <section class="search">
+            <label for="search-input">Find a structure</label>
+            <input id="search-input" type="search" placeholder="lung, rib, kidney…" data-testid="search-input" />
+            <ul id="search-results" class="search-results" data-testid="search-results"></ul>
+          </section>
+
+          <section class="layers-section">
+            <h2>Layers</h2>
+            <div id="layers" class="layers" data-testid="layers"></div>
+          </section>
+        </aside>
+      </main>
+
+      <footer>
+        <h2>Asset attribution</h2>
+        <p id="attribution-status" class="licence-status">{{LICENCE_STATUS}}</p>
+        {{ATTRIBUTION}}
         <p class="note">
-          Budget and the CI measurement: <code>docs/performance-budget.md</code>.
+          Code is Apache-2.0. Atlas assets are licensed separately and ship with
+          their own licence and attribution; neither obligation reaches the other.
         </p>
-      </section>
-    </main>
-
-    <footer>
-      <h2>Asset attribution</h2>
-      <p class="licence-status">{{LICENCE_STATUS}}</p>
-      {{ATTRIBUTION}}
-      <p class="note">
-        Code is Apache-2.0. Atlas assets are licensed separately and ship with
-        their own licence and attribution; neither obligation reaches the other.
-      </p>
-    </footer>
+        <p class="note">
+          Templates and structure names in this build are <strong>synthetic fixtures</strong>,
+          not anatomy. Every name list shows the index version it came from.
+        </p>
+      </footer>
+    </div>
   </body>
 </html>

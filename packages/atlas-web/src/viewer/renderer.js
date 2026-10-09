@@ -376,6 +376,37 @@ export function createRenderer(canvas) {
     }
   }
 
+  /**
+   * World millimetres -> canvas CSS pixels, or `null` when behind the camera.
+   *
+   * Lives here rather than in the shell so labels are projected with the same
+   * matrices the geometry was drawn with. A label derived from an independently
+   * re-derived projection drifts from the thing it labels as soon as either
+   * side's near plane or field of view changes, and a label a few pixels off
+   * the structure it names is worse than no label.
+   */
+  function projectPoint(point, camera, width, height) {
+    const eye = eyeOf(camera);
+    const far = camera.distance * 4 + 2000;
+    const viewProjection = multiply(
+      perspective(FOV_Y, width / height, Math.max(1, camera.distance * 0.01), far),
+      lookAt(eye, camera.target, UP),
+    );
+    const clip = [0, 0, 0, 0];
+    for (let row = 0; row < 4; row += 1) {
+      clip[row] =
+        viewProjection[row] * point[0] +
+        viewProjection[4 + row] * point[1] +
+        viewProjection[8 + row] * point[2] +
+        viewProjection[12 + row];
+    }
+    if (!(clip[3] > 1e-6)) return null;
+    return [
+      ((clip[0] / clip[3]) * 0.5 + 0.5) * width,
+      (0.5 - (clip[1] / clip[3]) * 0.5) * height,
+    ];
+  }
+
   function uploadPolyline(points) {
     const flat = new Float32Array(points.length * 3);
     points.forEach((p, i) => flat.set(p, i * 3));
@@ -389,5 +420,5 @@ export function createRenderer(canvas) {
     gl.deleteProgram(line);
   }
 
-  return { uploadSurface, uploadCell, uploadPolyline, release, render, dispose };
+  return { uploadSurface, uploadCell, uploadPolyline, projectPoint, release, render, dispose };
 }
