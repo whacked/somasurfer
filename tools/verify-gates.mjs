@@ -11,10 +11,18 @@
  * Every mutation is reversible and every restore is in a `finally`. The script
  * refuses to start if the working tree is dirty in a file it needs to touch,
  * so an interrupted run can never be mistaken for a developer's edit.
+ *
+ * A few cases assert the opposite: `mustPass` means the gate is required NOT to
+ * fail on a condition it is put into. A gate that fails on something that is
+ * not a defect is as broken as one that passes a defect, and costs more — it
+ * burns the credibility that makes a red build worth stopping for. DOG-29 was
+ * exactly that: the performance gate went red on a merge commit that changed no
+ * file contents, because the runner was fast. Those cases pin the fix.
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
 
@@ -25,6 +33,21 @@ const TEMPLATES = join(ASSETS, 'templates');
 const GATE_TEMPLATE = join(TEMPLATES, 'gate-verify.body.json');
 const AUDIT_DOC = join(REPO_ROOT, 'docs', 'alc-1-admissibility.md');
 const COUNTS = join(REPO_ROOT, 'ci', 'expected-test-counts.json');
+const PERF_BUDGET = join(REPO_ROOT, 'ci', 'performance-budget.json');
+
+/** The performance cases all need a build to measure. Say so once, clearly. */
+function requireBuild() {
+  if (!existsSync(join(WEB, 'dist', 'app', 'app.js'))) {
+    throw new Error('dist/ is not built; run `npm run build` before verifying this case');
+  }
+}
+
+/** `ci/performance-budget.json` with one budget line's limit replaced. */
+function withBudgetLimit(line, limit) {
+  const budget = JSON.parse(readFileSync(PERF_BUDGET, 'utf8'));
+  budget.budgets[line] = { ...budget.budgets[line], limit };
+  return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
+}
 
 const run = (script, args = []) =>
   spawnSync(process.execPath, [join(REPO_ROOT, 'tools', script), ...args], {
@@ -250,6 +273,100 @@ const CASES = [
     },
     check: () => run('check-licence-separation.mjs'),
   },
+  {
+    name: 'perf-fast-runner-is-not-a-failure',
+    gate: 'performance budget',
+    criterion: 'the performance gate does NOT fail merely because the runner is fast',
+    mustPass: true,
+    expect: [
+      /speed factor 4\.80, OUTSIDE \[0\.25, 4\]/,
+      /lowResAssetParseMsNormalised\s+≥.*not evaluated/,
+      /NOT EVALUATED THIS RUN/,
+      /A green result here is not a statement about those lines/,
+    ],
+    describe: 'a runner 4.8× faster than the reference, the DOG-29 case, with nothing else wrong',
+    // The report contract, checked on the same run. The console output is for a
+    // human; this is for whatever reads the JSON, and it is the half that can
+    // regress without anyone noticing.
+    audit: () => {
+      const dir = mkdtempSync(join(tmpdir(), 'perf-report-'));
+      const path = join(dir, 'perf.json');
+      try {
+        run('perf-budget.mjs', ['--calibration-ms', '25', '--json', path]);
+        const report = JSON.parse(readFileSync(path, 'utf8'));
+        const problems = [];
+        const expectNull = (key) => {
+          if (report.measurements[key] !== null) {
+            problems.push(`measurements.${key} is ${JSON.stringify(report.measurements[key])}, expected null:`);
+            problems.push(`  off-band this key is named for a normalised figure that was not computed.`);
+          }
+          if (report.utilisation[key] !== null) {
+            problems.push(`utilisation.${key} is ${JSON.stringify(report.utilisation[key])}, expected null.`);
+          }
+          if (typeof report.verdicts[key]?.reported !== 'number') {
+            problems.push(`verdicts.${key}.reported is not a number; the bound was lost, not relocated.`);
+          }
+        };
+        expectNull('indexParseMsNormalised');
+        expectNull('lowResAssetParseMsNormalised');
+        if (report.calibration.decisionBasis !== 'one-sided-bound-from-raw') {
+          problems.push(`calibration.decisionBasis is ${JSON.stringify(report.calibration.decisionBasis)}.`);
+        }
+        // Byte lines are exact on any runner, so nulling them would be a
+        // different bug: the fallback silently swallowing what it should gate.
+        if (typeof report.measurements.bundleGzipBytes !== 'number') {
+          problems.push(`measurements.bundleGzipBytes is not a number; byte lines must survive a bad calibration.`);
+        }
+        return problems;
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    },
+    // 25 ms against the 120 ms reference is the reading GitHub's runner
+    // actually produced on run 37890971145, which failed `gate` on a merge
+    // commit that changed no file contents. The build is clean here; the only
+    // unusual thing is the hardware. A red build would be a lie about the code.
+    break: () => {
+      requireBuild();
+      return () => {};
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
+  {
+    name: 'perf-fast-runner-still-gates-on-certainty',
+    gate: 'performance budget',
+    criterion: 'off-band parse lines are still gated where the unnormalised time alone proves it',
+    expect: [
+      /lowResAssetParseMsNormalised: at least \d+ ms on the reference machine, against a budget of 1 ms/,
+      /over budget\s+here is over budget there/,
+    ],
+    describe: 'an asset parse budget the raw time busts, on a runner too fast to normalise',
+    // The other half of the case above, and the reason it is not just a
+    // suppression. Unnormalised time on a runner faster than the reference is a
+    // lower bound on what the reference pays, so a line over budget here is
+    // over budget there whatever the correction would have been. Dropping the
+    // budget to 1 ms is how a regression past that bound is staged on demand.
+    break: () => {
+      requireBuild();
+      return withBudgetLimit('lowResAssetParseMsNormalised', 1);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
+  {
+    name: 'perf-byte-budgets-survive-a-bad-calibration',
+    gate: 'performance budget',
+    criterion: 'byte budgets stay hard when the calibration is useless',
+    expect: [/bundleGzipBytes: [\d.]+ KiB against a budget of 1\.0 KiB/, /OUTSIDE \[0\.25, 4\]/],
+    describe: 'a bundle over its byte budget on a runner too fast to normalise parse times',
+    // Bytes never touch the calibration, so a runner off the band cannot excuse
+    // them. This is the case that keeps the fallback from quietly becoming a
+    // way to ship an oversized bundle on fast hardware.
+    break: () => {
+      requireBuild();
+      return withBudgetLimit('bundleGzipBytes', 1024);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -275,6 +392,7 @@ const touched = [
   rel(join(WEB, 'package.json')),
   rel(join(WEB, 'src', 'gate-verify.js')),
   rel(GATE_TEMPLATE),
+  rel(PERF_BUDGET),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
@@ -296,19 +414,31 @@ for (const c of selected) {
     const result = c.check();
     const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
     const missing = c.expect.filter((re) => !re.test(output));
-    if (result.status === 0) {
+    // A case may also assert on something the console output cannot carry — the
+    // shape of the JSON report, say. Problems come back as lines.
+    const audited = c.audit ? await c.audit() : [];
+    if (c.mustPass && result.status !== 0) {
+      verdict = { ok: false, why: `the gate FAILED. It should have passed on ${c.describe}.`, output };
+    } else if (!c.mustPass && result.status === 0) {
       verdict = { ok: false, why: `the gate PASSED. It should have failed on ${c.describe}.`, output };
     } else if (missing.length > 0) {
       verdict = {
         ok: false,
-        why: `the gate failed, but without the expected explanation: ${missing.map(String).join(', ')}`,
+        why:
+          `the gate ${c.mustPass ? 'passed' : 'failed'}, but without the expected explanation: ` +
+          missing.map(String).join(', '),
         output,
+      };
+    } else if (audited.length > 0) {
+      verdict = {
+        ok: false,
+        why: `the gate behaved, but its report did not:\n      ${audited.join('\n      ')}`,
       };
     } else {
       const headline = output
         .split('\n')
         .map((l) => l.trim())
-        .find((l) => l && !l.startsWith('✗'));
+        .find((l) => l && !l.startsWith('✗') && !l.startsWith('✓'));
       verdict = { ok: true, headline };
     }
   } catch (error) {
@@ -317,14 +447,15 @@ for (const c of selected) {
     restore();
   }
 
+  const staged = c.mustPass ? 'allowed:' : 'broke:  ';
   if (verdict.ok) {
     console.log(`✓ ${c.name}`);
-    console.log(`    broke: ${c.describe}`);
-    console.log(`    gate:  ${c.gate} → ${verdict.headline}`);
+    console.log(`    ${staged} ${c.describe}`);
+    console.log(`    gate:    ${c.gate} → ${verdict.headline}`);
   } else {
     failures += 1;
     console.error(`✗ ${c.name}`);
-    console.error(`    broke: ${c.describe}`);
+    console.error(`    ${staged} ${c.describe}`);
     console.error(`    ${verdict.why}`);
     if (verdict.output) {
       console.error(
@@ -360,8 +491,13 @@ if (leftover.status === 0 && leftover.stdout.trim()) {
 }
 
 console.log('');
+const breakages = selected.filter((c) => !c.mustPass).length;
+const allowances = selected.length - breakages;
 if (failures > 0) {
-  console.error(`✗ verify gates: ${failures} of ${selected.length} gate(s) did not fail as designed.\n`);
+  console.error(`✗ verify gates: ${failures} of ${selected.length} gate(s) did not behave as designed.\n`);
   process.exit(1);
 }
-console.log(`✓ verify gates: ${selected.length} deliberate breakage(s), ${selected.length} caught.\n`);
+console.log(
+  `✓ verify gates: ${breakages} deliberate breakage(s), ${breakages} caught` +
+    (allowances > 0 ? `; ${allowances} non-defect(s), ${allowances} let through.\n` : '.\n'),
+);
