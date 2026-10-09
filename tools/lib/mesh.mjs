@@ -435,6 +435,116 @@ export function firstHit(grid, origin, dir, maxDistance = Infinity) {
   }
 }
 
+/**
+ * Number of times a ray from `origin` along `dir` crosses the surface.
+ *
+ * Odd means inside, for a closed surface. Used to turn an organ mesh into
+ * interior sample points, which is what a structure covering has to be built
+ * from: a covering made of surface points is a shell, and a shell says the
+ * middle of the liver is not liver.
+ *
+ * Triangles can be registered in several grid cells, so a crossing can be
+ * found more than once. Distances are collected and deduplicated at 1e-7 mm
+ * rather than counted as they are found — double-counting one crossing flips
+ * the parity, and a flipped parity is a hole in the middle of an organ.
+ */
+export function countCrossings(grid, origin, dir) {
+  const { V, F, lo, hi, cell, dim, starts, items } = grid;
+  const hits = [];
+
+  let tEnter = 0;
+  let tExit = Infinity;
+  for (let a = 0; a < 3; a += 1) {
+    const o = origin[a]; const d = dir[a];
+    if (Math.abs(d) < 1e-12) {
+      if (o < lo[a] || o > hi[a]) return 0;
+      continue;
+    }
+    let t0 = (lo[a] - o) / d;
+    let t1 = (hi[a] - o) / d;
+    if (t0 > t1) { const s = t0; t0 = t1; t1 = s; }
+    if (t0 > tEnter) tEnter = t0;
+    if (t1 < tExit) tExit = t1;
+    if (tEnter > tExit) return 0;
+  }
+
+  const idx = (t, a) => {
+    const i = Math.floor((origin[a] + dir[a] * t - lo[a]) / cell);
+    return i < 0 ? 0 : i >= dim[a] ? dim[a] - 1 : i;
+  };
+  let cx = idx(tEnter, 0); let cy = idx(tEnter, 1); let cz = idx(tEnter, 2);
+  const step = [0, 0, 0];
+  const tDelta = [0, 0, 0];
+  const tMax = [0, 0, 0];
+  const c0 = [cx, cy, cz];
+  for (let a = 0; a < 3; a += 1) {
+    const d = dir[a];
+    if (Math.abs(d) < 1e-12) { step[a] = 0; tDelta[a] = Infinity; tMax[a] = Infinity; continue; }
+    step[a] = d > 0 ? 1 : -1;
+    tDelta[a] = Math.abs(cell / d);
+    tMax[a] = (lo[a] + (c0[a] + (d > 0 ? 1 : 0)) * cell - origin[a]) / d;
+  }
+
+  const limit = (dim[0] + dim[1] + dim[2]) * 3 + 8;
+  for (let guard = 0; guard <= limit; guard += 1) {
+    const c = (cz * dim[1] + cy) * dim[0] + cx;
+    for (let i = starts[c]; i < starts[c + 1]; i += 1) {
+      const s = rayTriangle(V, F, items[i], origin[0], origin[1], origin[2], dir[0], dir[1], dir[2]);
+      if (s > 0 && s <= tExit) hits.push(s);
+    }
+    const tNext = Math.min(tMax[0], tMax[1], tMax[2]);
+    if (tNext > tExit) break;
+    if (tMax[0] <= tMax[1] && tMax[0] <= tMax[2]) { cx += step[0]; tMax[0] += tDelta[0]; }
+    else if (tMax[1] <= tMax[2]) { cy += step[1]; tMax[1] += tDelta[1]; }
+    else { cz += step[2]; tMax[2] += tDelta[2]; }
+    if (cx < 0 || cy < 0 || cz < 0 || cx >= dim[0] || cy >= dim[1] || cz >= dim[2]) break;
+  }
+
+  hits.sort((a, b) => a - b);
+  let n = 0;
+  let last = -Infinity;
+  for (const h of hits) {
+    if (h - last > 1e-7) { n += 1; last = h; }
+  }
+  return n;
+}
+
+/**
+ * Is the point inside the union of these closed parts?
+ *
+ * Union, not parity over the merged mesh, and the distinction is load bearing.
+ * BodyParts3D builds a large concept out of element meshes — the heart is 83 of
+ * them, chambers and valves and vessel stubs — and those parts share walls. A
+ * single parity test over the merged triangle soup crosses two coincident
+ * surfaces at an internal wall and reports the chamber beyond it as outside. So
+ * each part is tested on its own and the answers are OR-ed, which is what a
+ * union of solids means.
+ *
+ * Two orthogonal directions are tried before concluding "outside". A single
+ * ray that grazes an edge or runs along a coincident face gives an even count
+ * from inside; two do not agree on that by accident, and disagreement is
+ * reported so the caller can publish how often the mesh was ambiguous rather
+ * than quietly taking one ray's word.
+ */
+export function insideParts(parts, point, stats) {
+  let ambiguous = false;
+  for (const part of parts) {
+    const { lo, hi } = part;
+    if (point[0] < lo[0] || point[0] > hi[0]
+      || point[1] < lo[1] || point[1] > hi[1]
+      || point[2] < lo[2] || point[2] > hi[2]) continue;
+    const a = countCrossings(part.grid, point, [0, 0, 1]) % 2 === 1;
+    const b = countCrossings(part.grid, point, [1, 0, 0]) % 2 === 1;
+    if (a !== b) { ambiguous = true; continue; }
+    if (a) {
+      if (stats && ambiguous) stats.ambiguous += 1;
+      return true;
+    }
+  }
+  if (stats && ambiguous) stats.ambiguous += 1;
+  return false;
+}
+
 // ---------------------------------------------------------------------------
 // Small vector helpers, in the same style as the frame implementation
 // ---------------------------------------------------------------------------
