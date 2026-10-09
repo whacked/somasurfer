@@ -10,14 +10,16 @@
   },
   "workspaces": [
     "packages/alc",
+    "packages/atlas-research",
     "packages/atlas-web"
   ],
   "scripts": {
-    "ci": "npm run check:node && npm run test:counted && npm run audit:check && npm run audit:template && npm run check:licences && npm run build && npm run check:licences && npm run perf:check && npm run verify:gates",
+    "ci": "npm run check:node && npm run test:counted && npm run audit:check && npm run audit:template && npm run check:research && npm run check:licences && npm run build && npm run check:licences && npm run perf:check && npm run verify:gates",
     "check:node": "node tools/check-node-version.mjs",
     "test:counted": "node tools/check-test-count.mjs",
     "audit:check": "node tools/check-audit-drift.mjs",
     "audit:template": "node tools/audit-real-template.mjs",
+    "check:research": "node tools/check-research-dataset.mjs",
     "check:licences": "node tools/check-licence-separation.mjs",
     "build": "node packages/atlas-web/build.mjs",
     "perf:check": "node tools/perf-budget.mjs",

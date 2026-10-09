@@ -1,0 +1,155 @@
+{
+  "$comment": [
+    "SYNTHETIC. This is not an anatomical name index and must never be shipped as one.",
+    "",
+    "The real index comes from the asset pipeline (plan task 4) as coverings.json, with",
+    "cells derived from BodyParts3D meshes and an ICBM152 parcellation. Until it lands,",
+    "this file lets the research model, both browse modes and the solid-colour layers be",
+    "built and tested end to end. The CELLS ARE INVENTED, chosen only to exercise the",
+    "shapes that matter:",
+    "",
+    "  - a containment chain  (inferior frontal gyrus BV-L-04 contains areas 44, 45, 55b)",
+    "  - a midline structure spanning both BV hemisphere roots",
+    "  - overlapping structures in one cell (7th rib and lower lobe of left lung)",
+    "  - structures in both frames, so a cross-atlas selection can be exercised",
+    "",
+    "`authoredAgainst.status` in a dataset says `fixture` while its mappings are authored",
+    "against this file. Switching to the real index is a dataset edit, not a code edit.",
+    "",
+    "## Two id namespaces, and why",
+    "",
+    "`HCP-MMP1:<area>` is that parcellation's own label namespace, so those ids are real.",
+    "",
+    "`ATLAS-LABEL:<kebab-name>` is a PLACEHOLDER namespace for everything else. The gross",
+    "anatomical structures here have UBERON and FMA accessions, and the curator did not",
+    "have verified accession numbers to hand — so rather than write plausible-looking",
+    "numbers that would be unfalsifiable without checking the ontology, the id is the",
+    "label itself. Crosswalking ATLAS-LABEL onto the accessions the real coverings.json",
+    "uses is a named part of stage B, owned jointly with the asset pipeline. An invented",
+    "accession would resolve to the WRONG structure and look authoritative doing it."
+  ],
+  "version": "fixture-names-2026.10.1",
+  "synthetic": true,
+  "structures": [
+    {
+      "id": "ATLAS-LABEL:inferior-frontal-gyrus",
+      "name": "inferior frontal gyrus",
+      "source": "ATLAS-LABEL",
+      "cells": ["BV-L-04"]
+    },
+    {
+      "id": "HCP-MMP1:44",
+      "name": "Area 44 (pars opercularis)",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-040", "BV-L-041"]
+    },
+    {
+      "id": "HCP-MMP1:45",
+      "name": "Area 45 (pars triangularis)",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-042"]
+    },
+    {
+      "id": "HCP-MMP1:55b",
+      "name": "Area 55b",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-043"]
+    },
+    {
+      "id": "HCP-MMP1:10d",
+      "name": "Area 10d",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-200", "BV-L-201"]
+    },
+    {
+      "id": "HCP-MMP1:13l",
+      "name": "Area 13l",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-202"]
+    },
+    {
+      "id": "HCP-MMP1:A1",
+      "name": "Primary auditory cortex (A1)",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-300"]
+    },
+    {
+      "id": "HCP-MMP1:STSdp",
+      "name": "Superior temporal sulcus, dorsal posterior",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-301"]
+    },
+    {
+      "id": "HCP-MMP1:V1",
+      "name": "Primary visual cortex (V1)",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-600", "BV-R-600"]
+    },
+    {
+      "id": "ATLAS-LABEL:caudate-nucleus",
+      "name": "caudate nucleus",
+      "source": "ATLAS-LABEL",
+      "cells": ["BV-L-100", "BV-R-100"]
+    },
+    {
+      "id": "ATLAS-LABEL:amygdala",
+      "name": "amygdala",
+      "source": "ATLAS-LABEL",
+      "cells": ["BV-L-101", "BV-R-101"]
+    },
+    {
+      "id": "ATLAS-LABEL:brainstem",
+      "name": "brainstem",
+      "source": "ATLAS-LABEL",
+      "cells": ["BV-L-110", "BV-R-110"]
+    },
+    {
+      "id": "ATLAS-LABEL:left-lung",
+      "name": "left lung",
+      "source": "ATLAS-LABEL",
+      "cells": ["BD-T07-03O", "BD-T07-04O"]
+    },
+    {
+      "id": "ATLAS-LABEL:lower-lobe-of-left-lung",
+      "name": "lower lobe of left lung",
+      "source": "ATLAS-LABEL",
+      "cells": ["BD-T07-03O-4", "BD-T07-03O-5"]
+    },
+    {
+      "id": "ATLAS-LABEL:rib-7",
+      "name": "7th rib",
+      "source": "ATLAS-LABEL",
+      "cells": ["BD-T07-03O-52", "BD-T07-03O-53"]
+    },
+    {
+      "id": "ATLAS-LABEL:intercostal-muscle",
+      "name": "intercostal muscle",
+      "source": "ATLAS-LABEL",
+      "cells": ["BD-T07-03O-51"]
+    },
+    {
+      "id": "ATLAS-LABEL:heart",
+      "name": "heart",
+      "source": "ATLAS-LABEL",
+      "cells": ["BD-T06-01I", "BD-T07-01I", "BD-T07-02I"]
+    },
+    {
+      "id": "ATLAS-LABEL:liver",
+      "name": "liver",
+      "source": "ATLAS-LABEL",
+      "cells": ["BD-T10-10O", "BD-T10-11O", "BD-T11-10O"]
+    },
+    {
+      "id": "ATLAS-LABEL:left-kidney",
+      "name": "left kidney",
+      "source": "ATLAS-LABEL",
+      "cells": ["BD-L01-08O", "BD-L02-08O"]
+    },
+    {
+      "id": "ATLAS-LABEL:spinal-cord",
+      "name": "spinal cord",
+      "source": "ATLAS-LABEL",
+      "cells": ["BD-C05-12I", "BD-C06-12I", "BD-T03-12I"]
+    }
+  ]
+}
