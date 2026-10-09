@@ -3,16 +3,18 @@ import test from 'node:test';
 
 import {
   AlcError,
+  children,
   coveringIntersection,
   coveringsIntersect,
   encodeBody,
   encodeBrainVolume,
   overlaps,
+  parse,
   recommendedDigits,
   samePlace,
 } from '../src/index.ts';
 import { bodyLocalToMm } from '../src/frames/bodySpine.ts';
-import { bvLocalToMm } from '../src/frames/brainVolume.ts';
+import { bvCellBox, bvLocalToMm } from '../src/frames/brainVolume.ts';
 import {
   ADULT_MALE,
   BRAIN_ADULT,
@@ -126,6 +128,97 @@ test('samePlace: reports which of precision or residual dominates', () => {
   assert.equal(r1.same, true, 'a cell and its own ancestor are the same place');
   assert.ok(r1.cellRadiiMm[0] > r1.cellRadiiMm[1], 'the coarse cell should have the larger radius');
   assert.ok(r1.budgetMm > r1.gapMm);
+});
+
+test('samePlace: the separation it compares against the tolerance is the true one', () => {
+  // The other half of the QA-12 fix, and the half the zero-tolerance invariant
+  // in equality-guard.test.ts cannot see: at zero tolerance the structural
+  // short-circuit answers disjoint cells of one template whatever the geometry
+  // says, so a regression in the geometry would leave that test green and only
+  // show up at a *stated* tolerance — the direction a caller actually uses.
+  //
+  // What is pinned here is that `separationMm` is the real distance between the
+  // two cells. Two measured failures it rules out, both permissive:
+  //
+  //   the half-diagonal      BV-L-44 vs BV-R: budget 117.4 mm against a 124.9 mm
+  //                          centre gap, so "same place" at a 7.5 mm tolerance
+  //   one direction only     the same pair: separation 7.4 mm, so "same place"
+  //                          at any tolerance over that, against a true 51.0 mm
+  //
+  // The expected value is re-derived here from the cell boxes rather than taken
+  // from the library, so this is a check and not a restatement.
+  const boxMm = (address: string): Array<[number, number]> => {
+    const a = parse(address);
+    const box = bvCellBox(a.anchors[0] as 'L' | 'R', a.digits);
+    const { extents } = brainAdult;
+    const sign = a.anchors[0] === 'L' ? 1 : -1;
+    const lateral = extents[sign > 0 ? 'left' : 'right'];
+    // The piecewise-proportional fraction -> millimetre map, spelled out again.
+    const unsplit = (f: number, neg: number, pos: number): number =>
+      (f < 0.5 ? (f - 0.5) * 2 * neg : (f - 0.5) * 2 * pos);
+    const span = (lo: number, hi: number): [number, number] => [Math.min(lo, hi), Math.max(lo, hi)];
+    return [
+      span(box.a[0] * lateral * sign, box.a[1] * lateral * sign),
+      span(unsplit(box.b[0], extents.posterior, extents.anterior), unsplit(box.b[1], extents.posterior, extents.anterior)),
+      span(unsplit(box.c[0], extents.inferior, extents.superior), unsplit(box.c[1], extents.inferior, extents.superior)),
+    ];
+  };
+  // Two axis-aligned boxes: per-axis gaps, combined in quadrature.
+  const trueSeparationMm = (a: string, b: string): number => {
+    const [A, B] = [boxMm(a), boxMm(b)];
+    let sumOfSquares = 0;
+    for (let k = 0; k < 3; k += 1) {
+      const gap = Math.max(A[k][0] - B[k][1], B[k][0] - A[k][1], 0);
+      sumOfSquares += gap * gap;
+    }
+    return Math.sqrt(sumOfSquares);
+  };
+
+  const brain = { brainVolume: brainAdult };
+  let cells = ['BV-L', 'BV-R'];
+  const sweep = [...cells];
+  for (let depth = 0; depth < 3; depth += 1) {
+    cells = cells.flatMap((c) => children(c).map((x) => x.canonical)).slice(0, 40);
+    sweep.push(...cells);
+  }
+
+  let pairs = 0;
+  let worst = 0;
+  let worstPair = '';
+  for (let i = 0; i < sweep.length; i += 1) {
+    for (let j = i + 1; j < sweep.length; j += 1) {
+      const [a, b] = [sweep[i], sweep[j]];
+      if (overlaps(a, b)) continue;
+      pairs += 1;
+      const error = Math.abs(
+        samePlace(a, b, brain, { toleranceMm: 0 }).separationMm - trueSeparationMm(a, b),
+      );
+      if (error > worst) {
+        worst = error;
+        worstPair = `${a} vs ${b}`;
+      }
+    }
+  }
+  assert.ok(pairs > 2000, `expected a wide sweep, got ${pairs} disjoint pairs`);
+  // Exactly, not approximately: a BV cell is a true axis-aligned box in
+  // millimetres, so there is nothing here to approximate.
+  assert.ok(
+    worst < 1e-9,
+    `separationMm is off by ${worst.toFixed(3)} mm at ${worstPair}, over ${pairs} pairs.\n`
+      + 'It must be the distance between the two cells. Measuring only along the line between\n'
+      + 'the centres understates it — that is QA-12 again, one tolerance up.',
+  );
+
+  // The quoted case, as a number a reader can check by hand.
+  assert.ok(Math.abs(trueSeparationMm('BV-L-44', 'BV-R') - 51) < 0.5);
+  assert.equal(samePlace('BV-L-44', 'BV-R', brain, { toleranceMm: 50 }).same, false);
+  assert.equal(samePlace('BV-L-44', 'BV-R', brain, { toleranceMm: 52 }).same, true);
+  // And the two superseded measures would both have said yes at 50 mm: the
+  // half-diagonal because the budget covers the centre gap, the one-direction
+  // projection because it puts these 7.4 mm apart.
+  const r = samePlace('BV-L-44', 'BV-R', brain, { toleranceMm: 50 });
+  assert.ok(r.gapMm < 50 + r.cellRadiiMm[0] + r.cellRadiiMm[1], 'the half-diagonal budget would have matched');
+  assert.ok(r.gapMm - r.reachMm[0] - r.reachMm[1] < 50, 'the one-direction projection would have matched');
 });
 
 test('samePlace: surfaces an absent anatomical level instead of answering', () => {
