@@ -53,7 +53,7 @@ if (flag('help')) {
       '                       build is that nothing is allowed to be skipped.',
       '  --own-fixture        Use the harness fixture even if a curated one exists.',
       '  --json <path>        Write the full report as JSON.',
-      '  --negative-control   Run the thirteen broken builds and report whether each',
+      '  --negative-control   Run the fourteen broken builds and report whether each',
       '                       was caught by the case that declares it owns it.',
       '',
       'Exit: 0 product pass, 1 failure, 2 could not measure.',

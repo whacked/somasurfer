@@ -146,6 +146,58 @@ test('the fold and clamp messages are never asserted together', () => {
   }
 });
 
+test('each frame-level refusal answers the fallback question exactly once', () => {
+  // Plan §4 and §6 require `frame_disabled` and `no_template` to say what can
+  // be done instead. There are two honest answers and a row must pick one:
+  // either a coarser address is on offer, or none can be placed and the
+  // refusal says so. Asserting both is incoherent; asserting neither is the
+  // dead end the plan is avoiding.
+  //
+  // This test is the structural half of DOG-70. The matrix used to demand
+  // `coarsest_ancestor_offered` on both rows unconditionally — including in the
+  // two situations where every ancestor is in the unavailable frame — so the
+  // only build that could satisfy it was one that invented an offer.
+  for (const row of DEEP_LINK_MATRIX) {
+    const msgs = new Set<string>(row.expect.messages);
+    const forbidden = new Set<string>(row.expect.forbiddenMessages ?? []);
+    if (!msgs.has('frame_disabled') && !msgs.has('no_template')) continue;
+    const answers = ['coarsest_ancestor_offered', 'no_ancestor_resolvable'].filter((c) => msgs.has(c));
+    assert.equal(
+      answers.length,
+      1,
+      `row ${row.id} gives ${answers.length} answers to the fallback question (${answers.join(', ') || 'none'})`,
+    );
+    if (msgs.has('no_ancestor_resolvable')) {
+      assert.ok(
+        forbidden.has('coarsest_ancestor_offered'),
+        `row ${row.id} says no ancestor resolves but does not forbid an offer being made anyway, which `
+        + 'is the fabricated-offer defect',
+      );
+    }
+  }
+});
+
+test('the coarsest-ancestor class has a row that can see a fabricated offer', () => {
+  // The class's coverage is not "a row mentions the offer". A row whose
+  // address has no ancestors at all — `BR-L-1` — cannot distinguish a build
+  // that checked resolvability from one that truncated the string, because
+  // there is nothing to truncate. So the class needs at least one row whose
+  // address HAS ancestors and which forbids the offer.
+  const rows = rowsByClass('coarsest-ancestor');
+  const discriminating = rows.filter(
+    (r) =>
+      r.mustPass
+      && (r.expect.forbiddenMessages ?? []).includes('coarsest_ancestor_offered')
+      && r.input.kind === 'url'
+      && /a=B[RV]-[A-Z]-[0-7]{2,}/.test(r.input.url),
+  );
+  assert.ok(
+    discriminating.length >= 1,
+    'no must-pass coarsest-ancestor row poses the question against an address that has ancestors of its '
+    + 'own, so the class cannot tell a resolvability check from a string truncation',
+  );
+});
+
 test('a must-pass row cannot be demoted without this suite noticing', () => {
   // The count is pinned deliberately. Demoting a row to advisory is a
   // legitimate change and a reviewable one; doing it silently is not, and this
@@ -153,8 +205,8 @@ test('a must-pass row cannot be demoted without this suite noticing', () => {
   // must-pass rows; lower it only in the same commit as the reason.
   assert.equal(
     MUST_PASS_ROW_IDS.length,
-    30,
-    `the matrix has ${MUST_PASS_ROW_IDS.length} must-pass rows, this suite expects 30. If you added `
+    31,
+    `the matrix has ${MUST_PASS_ROW_IDS.length} must-pass rows, this suite expects 31. If you added `
     + 'rows, raise the number. If a row was demoted or deleted, say why in the commit.',
   );
 });

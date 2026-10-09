@@ -13,8 +13,8 @@ requirement, and the build has to come to it.
 ```
 npm run qa:journey              # run the journey + matrix, print the report
 npm run qa:journey -- --strict  # a must-pass case that cannot be evaluated FAILS
-npm run qa:negative-control     # the thirteen broken builds, and what catches each
-npm test --workspace @gstack/atlas-qa    # the 56 gates that work with no viewer
+npm run qa:negative-control     # the fourteen broken builds, and what catches each
+npm test --workspace @gstack/atlas-qa    # the 60 gates that work with no viewer
 ```
 
 Today `qa:journey` exits **2** — `UNVERIFIED`. There is no product build to
@@ -128,11 +128,30 @@ with any of them now** — that is much cheaper than discovering it during task 
    template's limit.** Not silently truncated: the user's address is not wrong,
    only finer than this template can answer.
 
-5. **A refusal with no resolvable ancestor still offers a route forward.** For a
-   `BR` address or a missing template, nothing in the address's own frame
-   resolves, so the message names the enabled frame to use instead and says
-   plainly that no ancestor resolves. A dead end with an apology is what plan §4
-   is avoiding.
+5. **A refusal must answer the fallback question, and there are two answers.**
+   `frame_disabled` and `no_template` either name a coarser address that can be
+   placed (`coarsest_ancestor_offered`) or say plainly that none can
+   (`no_ancestor_resolvable`) — never neither, which is the dead end plan §4 is
+   avoiding, and never an offer that cannot be honoured.
+
+   Which answer is correct is a measured fact rather than a choice. `locate()`
+   raises both codes from the **frame**, before it looks at a cell, and
+   `ancestors()` never leaves the frame — so when the obstruction is the frame
+   itself (`BR` ships disabled; the `no-brain` set has no `BV` template) every
+   rung fails identically and there is nothing to offer. In v1 that covers every
+   reachable case; the offer branch becomes reachable the day a frame ships a
+   template that can place its coarse cells but not its fine ones. Until then
+   the checkable half of the requirement is that the offer is derived from
+   resolvability rather than from truncating the string, which is what
+   `br-offer-is-not-fabricated-by-truncation` and its mutant hold a build to.
+   (DOG-70: the matrix demanded the offer in exactly the two cases where it
+   cannot exist, so neither row could pass against a correct build.)
+
+   Those two rows also stopped requiring the selection to be untouched. The
+   refusal is reported *against the address the user gave*, so recording that
+   address is correct and recording nothing is correct; landing on some other
+   address is not, and `selectionAddressAnyOf` is how the row says exactly that.
+   What they guarantee is that the camera and the layers do not move.
 
 6. **The body atlas's brain is addressed at `BD-C01`.** The `BD` frame is
    anchored to the vertebral column and cannot address above `C01` at all, so
@@ -161,7 +180,7 @@ Which message appears, what the camera does, what does not change — all litera
 Digit counts and encoded addresses — derived from the bound template. `maxUsefulDigits`
 is a measured property of the mesh that will legitimately rise when the mesh gets
 finer, and a test that hard-pins it goes red on a *correct* improvement to the
-asset. A false red in a suite carrying thirteen deliberate failures is worse than
+asset. A false red in a suite carrying fourteen deliberate failures is worse than
 a missing case: it teaches everyone to discount the colour.
 
 The fold address stays literal, with its reason in the code: it has to be an
@@ -173,14 +192,14 @@ it in both directions instead.
 
 ## The negative control
 
-A harness nobody has watched fail is decoration. `src/mutants.ts` holds thirteen
+A harness nobody has watched fail is decoration. `src/mutants.ts` holds fourteen
 builds, each breaking exactly **one** guarantee, each declaring which case must
 notice — and `caughtBy` is asserted, so a mutant failing for an unrelated reason
 does not count. The unmutated control passes 40/40 in the same run, which is what
 makes a mutant's failure attributable to its mutation rather than to ambient
 breakage.
 
-The thirteenth breaks nothing about the viewer at all. It declines a capability a
+The last one breaks nothing about the viewer at all. It declines a capability a
 must-pass row needs — the shape a false green actually takes: no error, no red,
 and the case simply did not run. **If that one ever passes, the other twelve are
 worthless**, because any of them could be skipped the same way.
@@ -225,14 +244,14 @@ must never print the same.
 | file | what |
 | --- | --- |
 | `src/contract.ts` | the `ViewerDriver` and `ViewState` a build must expose |
-| `src/matrix.ts` | 32 enumerated deep-link rows, 30 must-pass |
+| `src/matrix.ts` | 33 enumerated deep-link rows, 31 must-pass |
 | `src/journey.ts` | the eight DOG-1 §7 clauses as ordered, dependency-aware steps |
 | `src/runner.ts` | the pass/fail/unverified algebra and the report |
 | `src/referenceViewer.ts` | the conformant stand-in that makes the suite executable |
-| `src/mutants.ts` | thirteen broken builds and what must catch each |
+| `src/mutants.ts` | fourteen broken builds and what must catch each |
 | `src/templates.ts` | the templates harness and build must agree on |
 | `src/fixture.ts` | fixture loading, pinning, and the curated-schema adapter |
-| `test/` | the 56 gates that work with no viewer in existence |
+| `test/` | the 60 gates that work with no viewer in existence |
 | `bin/qa-journey.mjs` | the CLI task 7 executes |
 
 ## What is *not* here

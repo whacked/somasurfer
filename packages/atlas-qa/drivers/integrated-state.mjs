@@ -65,6 +65,25 @@ function pageResearch() {
   return { doc, version: doc.version ?? index.research?.version ?? null };
 }
 
+/**
+ * The fallback half of a `no-template` / `frame-disabled` notice.
+ *
+ * `offer` set means a coarser address can be placed and is on offer; `offer`
+ * null means the notice declares there is nothing coarser to offer. Two states,
+ * two codes, and neither is silence — a refusal that said nothing about the
+ * fallback would be the dead end plan §4 is avoiding, and must be visible as a
+ * missing message rather than as an absent assertion.
+ */
+function offerMessage(notice) {
+  return notice.offer
+    ? { code: 'coarsest_ancestor_offered', severity: 'notice', text: String(notice.offer) }
+    : {
+      code: 'no_ancestor_resolvable',
+      severity: 'notice',
+      text: 'No coarser ancestor of this address can be placed either, so there is nothing to offer.',
+    };
+}
+
 /** Viewer notice -> harness MESSAGE_CODE. Returns [] where no code fits. */
 function toMessages(notices) {
   const out = [];
@@ -81,13 +100,23 @@ function toMessages(notices) {
       case 'homology-variant': push('homology_variant'); break;
       case 'homology-absent': push('homology_absent'); break;
       case 'atlas-unavailable': push('assets_unavailable'); break;
+      // The fallback slot, in the build's own terms. `flags.js` puts
+      // `coarsestResolvable()`'s answer on the notice as `offer`, and `app.js`
+      // branches on exactly that field: an offer button when it is set, and
+      // "No coarser ancestor of this address can be placed either, so there is
+      // nothing to offer." when it is null (app.js:297-313). So both states are
+      // declared by the state layer and rendered by the shell, and the two
+      // harness codes read the same field the shell reads.
+      //
+      // What this cannot say is that the sentence reached the screen — nothing
+      // in this runner observes the DOM, which is what `buildId` says out loud.
       case 'no-template':
         push('no_template');
-        if (n.offer) out.push({ code: 'coarsest_ancestor_offered', severity: 'notice', text: String(n.offer) });
+        out.push(offerMessage(n));
         break;
       case 'frame-disabled':
         push('frame_disabled');
-        if (n.offer) out.push({ code: 'coarsest_ancestor_offered', severity: 'notice', text: String(n.offer) });
+        out.push(offerMessage(n));
         break;
       case 'clamped': {
         // The contract requires cranial and caudal to stay distinct, and the

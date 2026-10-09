@@ -134,10 +134,12 @@ function truncateDigits(address: string, digits: number): string {
  *
  * DECISION: where nothing in the address's own frame resolves — a `BR` address
  * with the frame disabled, or any address when its template is missing — the
- * refusal still has to offer a route forward, so the message names the enabled
- * frame to use instead and says plainly that no ancestor resolves. A dead end
- * with an apology is what plan §4 is trying to avoid; the offer degenerating to
- * "nothing here resolves, try BV" is still a route.
+ * refusal still has to answer the question, so it says plainly that no ancestor
+ * resolves and names the enabled frame to use instead. A dead end with an
+ * apology is what plan §4 is trying to avoid; "nothing here resolves, try BV"
+ * is still an answer. What it is NOT is an offer, and since DOG-70 it no longer
+ * claims to be one: `null` here produces `no_ancestor_resolvable`, and only a
+ * non-null result produces `coarsest_ancestor_offered`.
  */
 function coarsestResolvableAncestor(address: string, templates: TemplateChoice): string | null {
   let chain: string[];
@@ -405,14 +407,24 @@ export class ReferenceViewer implements ViewerDriver {
 
     if (messageCode === 'no_template' || messageCode === 'frame_disabled') {
       const ancestor = coarsestResolvableAncestor(input, this.template);
-      v.messages.push({
-        code: 'coarsest_ancestor_offered',
-        severity: 'notice',
-        text: ancestor
-          ? `The coarsest address that does resolve here is ${ancestor}; open that instead.`
-          : 'No ancestor of this address resolves in this build either. The enabled brain frame in v1 is '
-            + 'BV, the AC-PC proportional volume frame; address the location there.',
-      });
+      // Two states, two codes — see `contract.ts`. This used to push
+      // `coarsest_ancestor_offered` for both, with the degenerate case hidden
+      // in the prose, which made the stand-in claim an offer it had not made
+      // and let the matrix demand one where none can exist (DOG-70).
+      v.messages.push(ancestor
+        ? {
+          code: 'coarsest_ancestor_offered',
+          severity: 'notice',
+          text: `The coarsest address that does resolve here is ${ancestor}; open that instead.`,
+        }
+        : {
+          code: 'no_ancestor_resolvable',
+          severity: 'notice',
+          text:
+            'No ancestor of this address resolves in this build either, so there is nothing coarser to '
+            + 'offer. The enabled brain frame in v1 is BV, the AC-PC proportional volume frame; address '
+            + 'the location there.',
+        });
     }
     // A rejection changes nothing else: no camera move, no selection, no URL.
   }
