@@ -19,6 +19,8 @@
     "check": "node ../../tools/check-licence-separation.mjs",
     "geometry:make": "node ../../tools/make-placeholder-geometry.mjs",
     "attribution:print": "node ../../tools/render-attribution.mjs",
-    "attribution:report": "npm run -s attribution:print > ATTRIBUTION.md"
+    "attribution:report": "npm run -s attribution:print > ATTRIBUTION.md",
+    "templates:audit:print": "node --experimental-strip-types ../../tools/report-template-audit.mjs",
+    "templates:audit": "npm run -s templates:audit:print > ../../docs/alc-1-body-template-audit.md"
   }
 }
