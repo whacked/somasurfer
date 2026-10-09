@@ -87,6 +87,65 @@ function observedTestCount() {
   return Number(m[1]);
 }
 
+const LABELS = join(ASSETS, 'labels');
+const REAL_NAMES = join(LABELS, 'names.json');
+const REAL_COVERINGS = join(LABELS, 'coverings.json');
+
+/**
+ * Stand up a correctly shaped real index for the seed's `real` partition.
+ *
+ * The asset pipeline's index is not on this branch, so without this the whole
+ * partition machinery in `check-research-dataset.mjs` is unreachable in CI: the
+ * gate would report UNVERIFIED, pass, and never once run the checks that decide
+ * whether a crosswalk is right. A gate whose interesting half only executes
+ * when a dependency happens to be present is a gate nobody has run.
+ *
+ * Everything is derived from the committed dataset — the version string, the
+ * ids, the parent cell each curated sub-region must sit inside — so these cases
+ * keep testing the real declaration rather than a copy of it that can go stale.
+ *
+ * The cells are invented, and that is fine here: these cases are about whether
+ * the gate's *checks* fire, not about where a liver is.
+ */
+function standUpRealIndex({ omit = [], alsoName = [], strayFrom = null } = {}) {
+  const raw = JSON.parse(readFileSync(RESEARCH_SEED, 'utf8'));
+  const part = (raw.authoredAgainst.partitions ?? []).find((p) => p.status === 'real');
+  if (!part) throw new Error('the seed declares no `real` partition to stand an index up for');
+
+  // The cell a curated sub-region must be a descendant of: its own cell with
+  // the last refinement digit dropped.
+  const parentOf = (cell) => {
+    const parts = cell.split('-');
+    const digits = parts.at(-1);
+    return digits.length > 1 ? `${parts.slice(0, -1).join('-')}-${digits.slice(0, -1)}` : parts.slice(0, -1).join('-');
+  };
+  const required = new Map();
+  for (const f of raw.findings) {
+    for (const m of f.mappings) {
+      if (m.spatial.kind !== 'cells' || !part.structureIds.includes(m.structureId)) continue;
+      required.set(m.structureId, m.spatial.cells.map(parentOf));
+    }
+  }
+
+  const synthetic = (k) => `BD-T07-${String((k % 12) + 1).padStart(2, '0')}${k % 2 ? 'O' : 'I'}-${k % 8}`;
+  const ids = [...part.structureIds.filter((id) => !omit.includes(id)), ...alsoName];
+  const names = { version: part.nameIndexVersion, frame: 'BD', structures: [] };
+  const coverings = { indexVersion: part.nameIndexVersion, frame: 'BD', coverings: [] };
+  ids.forEach((id, k) => {
+    names.structures.push({ id, name: `stand-in for ${id}`, source: id.startsWith('FMA') ? 'FMA' : 'SYNTHETIC' });
+    const own = id === strayFrom ? [] : (required.get(id) ?? []);
+    coverings.coverings.push({ id, cells: [...own, synthetic(k)] });
+  });
+
+  mkdirSync(LABELS, { recursive: true });
+  const restoreNames = substitute(REAL_NAMES, `${JSON.stringify(names, null, 2)}\n`);
+  const restoreCoverings = substitute(REAL_COVERINGS, `${JSON.stringify(coverings, null, 2)}\n`);
+  return () => {
+    restoreCoverings();
+    restoreNames();
+  };
+}
+
 const CASES = [
   {
     name: 'conformance-fails',
@@ -217,6 +276,97 @@ const CASES = [
       raw.paperCount = raw.rows.length;
       raw.tally = raw.rows.reduce((a, r) => ({ ...a, [r.status]: (a[r.status] ?? 0) + 1 }), {});
       return substitute(CITATION_REPORT, `${JSON.stringify(raw, null, 2)}\n`);
+    },
+    check: () => run('check-research-dataset.mjs'),
+  },
+  {
+    name: 'real-index-binds-by-shape',
+    gate: 'research dataset',
+    criterion: 'the gate binds the index it can read, and checks the real partition against it',
+    mustPass: true,
+    expect: [/real index: \d+ structures, frame BD/, /body-bd: all \d+ non-coordinate mappings resolve/, /lie wholly inside their structure/],
+    describe: 'a correctly shaped name index and covering index, both present',
+    // The must-pass case for DOG-46's correction 1. The candidate list used to
+    // be a priority order with coverings.json ahead of names.json, so the gate
+    // would hand `{version: undefined}` to buildNameIndex and throw. Selection
+    // is by shape now, and the two halves are joined — which this proves by
+    // asserting the partition was actually measured, not merely found.
+    break: () => standUpRealIndex(),
+    check: () => run('check-research-dataset.mjs'),
+  },
+  {
+    name: 'real-index-only-one-half',
+    gate: 'research dataset',
+    criterion: 'half an index is reported, not measured, and never crashes the gate',
+    mustPass: true,
+    expect: [/UNVERIFIED/, /found a covering index .* but no name index/],
+    describe: 'a covering index with no name index beside it',
+    // The other half of correction 1. A covering index carries indexVersion and
+    // coverings, so it cannot become a NameIndex; the old code would throw
+    // `bad_index_version` from the middle of the run. A stack trace is not a
+    // gate result, and neither is a silent pass.
+    break: () => {
+      const restore = standUpRealIndex();
+      const hidden = hide(REAL_NAMES);
+      return () => {
+        hidden();
+        restore();
+      };
+    },
+    check: () => run('check-research-dataset.mjs'),
+  },
+  {
+    name: 'real-partition-loses-a-structure',
+    gate: 'research dataset',
+    criterion: 'CI fails if a structure declared resolvable does not resolve',
+    expect: [/declares status "real" but \d+ of/, /do not resolve against/],
+    describe: 'an index that no longer carries one of the accessions the crosswalk claims',
+    // The crosswalk's own failure mode: an accession that was right when it was
+    // authored and is not in the index any more. Nothing else in the build
+    // would notice — the dataset still loads and the id still looks plausible.
+    break: () => {
+      const raw = JSON.parse(readFileSync(RESEARCH_SEED, 'utf8'));
+      const part = (raw.authoredAgainst.partitions ?? []).find((p) => p.status === 'real');
+      return standUpRealIndex({ omit: [part.structureIds[0]] });
+    },
+    check: () => run('check-research-dataset.mjs'),
+  },
+  {
+    name: 'real-index-subregion-strays',
+    gate: 'research dataset',
+    criterion: 'CI fails if a curated sub-region is not inside the structure it is filed under',
+    expect: [/do not lie wholly inside the structure they are filed under/],
+    describe: 'a sub-region cell that is not a descendant of its structure in the real index',
+    // "Re-check the sub-regions against real geometry" is a check only if this
+    // can fail. `dataset.ts` records the disagreement as a note rather than
+    // trimming the covering — deliberately, since the curator may be right —
+    // and in a `real` partition that note is a failure, because there the cells
+    // were authored FROM this index.
+    break: () => {
+      const raw = JSON.parse(readFileSync(RESEARCH_SEED, 'utf8'));
+      const part = (raw.authoredAgainst.partitions ?? []).find((p) => p.status === 'real');
+      const withCells = raw.findings
+        .flatMap((f) => f.mappings)
+        .find((m) => m.spatial.kind === 'cells' && part.structureIds.includes(m.structureId));
+      if (!withCells) throw new Error('no curated sub-region in the real partition to strand');
+      return standUpRealIndex({ strayFrom: withCells.structureId });
+    },
+    check: () => run('check-research-dataset.mjs'),
+  },
+  {
+    name: 'placeholder-the-index-can-name',
+    gate: 'research dataset',
+    criterion: 'CI fails if a declared placeholder is a structure the cleared index can name',
+    expect: [/is declared a placeholder, but the real index NAMES/, /recorded reason has expired/],
+    describe: 'an index that has started naming a structure the dataset calls licence-blocked',
+    // The second direction, and the one that keeps a placeholder honest. A
+    // placeholder partition passes because a reason is recorded; the day that
+    // reason stops being true, the pass has to stop with it. Otherwise the
+    // partition is a way to retire a mapping from being checked at all.
+    break: () => {
+      const raw = JSON.parse(readFileSync(RESEARCH_SEED, 'utf8'));
+      const part = (raw.authoredAgainst.partitions ?? []).find((p) => p.status === 'placeholder');
+      return standUpRealIndex({ alsoName: [part.structureIds[0]] });
     },
     check: () => run('check-research-dataset.mjs'),
   },
@@ -445,6 +595,8 @@ const touched = [
   rel(PERF_BUDGET),
   rel(RESEARCH_SEED),
   rel(CITATION_REPORT),
+  rel(REAL_NAMES),
+  rel(REAL_COVERINGS),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
