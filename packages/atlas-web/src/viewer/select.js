@@ -42,7 +42,7 @@ import {
   resolve,
 } from '../alc.js';
 import { bodyCellMesh, brainCellMesh, cellBoxOf } from './cell.js';
-import { errorNotice, locateNotices } from './flags.js';
+import { errorNotice, locateNotices, unnamedFrameNotice } from './flags.js';
 
 /** The frame's template in a template set, or undefined. */
 const templateFor = (frame, templates) =>
@@ -63,6 +63,30 @@ export function demote(address, maxDigits) {
   return parse(digits ? `${stem}-${digits}` : stem).canonical;
 }
 
+const FRAME_CACHE = new WeakMap();
+
+/**
+ * Which frames a name index actually covers, read off the index itself.
+ *
+ * Derived rather than declared, because a declaration drifts: an index that
+ * said `frames: ['BD', 'BV']` and shipped only `BD` coverings would produce
+ * exactly the misreport this exists to prevent. Each covering's cells are all
+ * in one frame by construction, so the first cell of each is enough.
+ *
+ * Memoised on the index object, so this is ~one parse per structure, once.
+ */
+export function nameIndexFrames(nameIndex) {
+  if (!nameIndex) return new Set();
+  const cached = FRAME_CACHE.get(nameIndex);
+  if (cached) return cached;
+  const frames = new Set();
+  for (const covering of nameIndex.coverings) {
+    if (covering.cells.length > 0) frames.add(parse(covering.cells[0]).frame);
+  }
+  FRAME_CACHE.set(nameIndex, frames);
+  return frames;
+}
+
 /**
  * Ranked names for a cell, with fractions and the index version.
  *
@@ -70,11 +94,38 @@ export function demote(address, maxDigits) {
  * they came from: a stored resolution with no version is not reproducible, and
  * a single winner is how an atlas starts lying about a cell that straddles
  * three structures.
+ *
+ * ## A frame with no index is not a frame with no matches
+ *
+ * `resolve()` cannot tell those apart — asked about a `BV` address against a
+ * `BD`-only index it reports zero matches, `unclaimedFraction: 1` and a note
+ * saying no structure overlaps, which reads as a coverage gap in an index that
+ * covers this frame. It does not cover it at all. `BV` ships in v1 as
+ * coordinates without names because every candidate brain parcellation failed
+ * licence clearance, so the honest answer is a different *kind* of answer, and
+ * `covered: false` is how the caller tells them apart. Reporting the `BD`
+ * index's version beside a `BV` selection would also borrow one artefact's
+ * provenance for a frame it says nothing about.
  */
 export function namesFor(address, nameIndex) {
   if (!nameIndex) return null;
+  const frame = parse(address).frame;
+  if (!nameIndexFrames(nameIndex).has(frame)) {
+    return {
+      covered: false,
+      frame,
+      // Deliberately no indexVersion: no index spoke, so none is cited.
+      indexVersion: null,
+      measure: 'frame',
+      matches: [],
+      unclaimedFraction: 0,
+      containing: [],
+      notes: [`no name index in this build covers frame ${frame}`],
+    };
+  }
   const resolution = resolve(address, nameIndex);
   return {
+    covered: true,
     indexVersion: resolution.indexVersion,
     measure: resolution.measure,
     matches: resolution.matches.map((m) => ({
@@ -197,6 +248,13 @@ export function selectAddress(input, options = {}) {
     if (Number.isFinite(located.pointMm[0])) {
       cell = cellMeshFor(displayAddress, templates);
     }
+  }
+
+  // Said once, next to the geometry notices, so a brain selection explains
+  // itself rather than appearing to be a resolution that silently found
+  // nothing. Appended after the locate notices because it is not a fault.
+  if (names && names.covered === false) {
+    notices = [...notices, unnamedFrameNotice(names.frame)];
   }
 
   if (nameError) {

@@ -41,6 +41,7 @@ import { fitCamera, flyToCell, pan, rayThrough, rotate, zoom } from './viewer/ca
 import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
 import { atlasUnavailableNotice } from './viewer/flags.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity } from './viewer/state.js';
+import { nameIndexFrames } from './viewer/select.js';
 import {
   TemplateError,
   bodySpinePolyline,
@@ -296,6 +297,17 @@ function renderAddressPanel() {
       ? `${fmt(extent[0], 2)} × ${fmt(extent[1], 2)} × ${fmt(extent[2], 2)} mm`
       : 'not placed in this template',
   }));
+  // The millimetre centre, always. On a named frame it is corroboration; on an
+  // unnamed one it is the whole answer, so it is not conditional on names.
+  const centre = selection.pointMm ?? [NaN, NaN, NaN];
+  facts.append(el('dt', { textContent: 'Cell centre' }));
+  const centreDd = el('dd', {
+    textContent: Number.isFinite(centre[0])
+      ? `${fmt(centre[0], 1)}, ${fmt(centre[1], 1)}, ${fmt(centre[2], 1)} mm`
+      : 'not placed in this template',
+  });
+  centreDd.dataset.testid = 'cell-centre';
+  facts.append(centreDd);
   facts.append(el('dt', { textContent: 'Template' }));
   facts.append(el('dd', { textContent: selection.templateId ?? 'none bound' }));
   panel.append(facts);
@@ -324,6 +336,34 @@ function renderNames(selection) {
     names.append(el('p', { className: 'empty', textContent: 'No name index is loaded.' }));
     return names;
   }
+
+  /**
+   * A frame with no index gets its own presentation, not an empty list.
+   *
+   * No heading citing a version — no index spoke, so quoting the `BD` index's
+   * version here would borrow its provenance for a frame it says nothing
+   * about. No "0 structures overlap", no fraction language, no spinner: those
+   * all imply a lookup that ran and came back empty, and would read as a gap
+   * about to close. What the viewer has here is a location, and it says so.
+   */
+  if (selection.names.covered === false) {
+    names.dataset.covered = 'false';
+    names.append(el('h3', { textContent: 'Location only' }));
+    names.append(el('p', {
+      className: 'unnamed',
+      textContent: `Frame ${selection.names.frame} ships without a name index in v1, so this `
+        + 'selection is a place rather than a named structure. The address and the millimetres '
+        + 'above are exact.',
+    }));
+    names.append(el('p', {
+      className: 'measure',
+      textContent: 'No brain parcellation cleared licensing for redistribution, so "unnamed" is '
+        + 'the shipping state here, not a gap waiting to close.',
+    }));
+    return names;
+  }
+
+  names.dataset.covered = 'true';
   names.append(el('h3', {}, [
     'Names ',
     el('span', {
@@ -459,6 +499,19 @@ function renderChrome() {
   }
   $('precision-value').textContent = precision.value;
   $('labels-toggle').checked = ui.labels;
+
+  // Structure search spans every indexed frame, which on the brain atlas means
+  // it finds body structures and nothing local. Said plainly, because a search
+  // box that returns ribs while you are looking at a brain otherwise looks
+  // broken rather than correctly scoped.
+  const searchable = [...nameIndexFrames(nameIndex)];
+  const localFrame = viewer.atlas === 'body' ? 'BD' : 'BV';
+  $('search-scope').textContent = searchable.length === 0
+    ? 'No name index is loaded, so there is nothing to search.'
+    : searchable.includes(localFrame)
+      ? `Searching ${searchable.join(', ')}.`
+      : `No names exist for ${localFrame}, so results come from ${searchable.join(', ')} and `
+        + 'selecting one will not leave this atlas.';
 }
 
 // ---------------------------------------------------------------------------

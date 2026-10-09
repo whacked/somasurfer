@@ -12,8 +12,14 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { locate, parse } from '../src/alc.js';
-import { NOTICE_CODES, coarsestResolvable, errorNotice, locateNotices } from '../src/viewer/flags.js';
-import { demote, selectAddress } from '../src/viewer/select.js';
+import {
+  NOTICE_CODES,
+  coarsestResolvable,
+  errorNotice,
+  locateNotices,
+  unnamedFrameNotice,
+} from '../src/viewer/flags.js';
+import { demote, nameIndexFrames, selectAddress } from '../src/viewer/select.js';
 import { meshBounds } from '../src/viewer/template.js';
 import { foldingTemplates, nameIndex, templates } from './support.js';
 
@@ -202,6 +208,7 @@ describe('every flag surfaces, and folded is never conflated with clamped', () =
       errorNotice({ code: 'no_template' }, 'BD-T07-03O', {}),
       errorNotice({ code: 'frame_disabled' }, 'BR-L-5', {}),
       errorNotice({ code: 'bad_level', message: 'nope' }, 'BD-C08', {}),
+      unnamedFrameNotice('BV'),
     ];
     for (const notice of samples) {
       assert.ok(NOTICE_CODES.includes(notice.code), `${notice.code} must be declared`);
@@ -267,6 +274,66 @@ describe('degrading visibly', () => {
     assert.ok(model.names.matches.length > 0);
     assert.equal(model.cell, null);
     assert.ok(codesOf(model).includes('no-template'));
+  });
+});
+
+describe('a frame with no name index is a location, not an empty result', () => {
+  // BV ships as coordinates without names: every candidate brain parcellation
+  // failed licence clearance, so "unnamed" is the shipping state rather than a
+  // gap. The viewer has to say that, and must not say it the way it says
+  // "nothing happened to overlap".
+  it('reports covered:false for BV against a BD-only index', () => {
+    const model = selectAddress('BV-L-471', { templates: templates(), nameIndex: nameIndex() });
+    assert.ok(model.ok);
+    assert.equal(model.names.covered, false);
+    assert.equal(model.names.frame, 'BV');
+    assert.deepEqual(model.names.matches, []);
+  });
+
+  it('cites no index version, rather than borrowing the BD index’s', () => {
+    const model = selectAddress('BV-L-471', { templates: templates(), nameIndex: nameIndex() });
+    assert.equal(model.names.indexVersion, null);
+    // The regression: the BD index's version appearing beside a BV selection.
+    const bd = selectAddress('BD-T07-03O', { templates: templates(), nameIndex: nameIndex() });
+    assert.ok(bd.names.indexVersion, 'the BD side must still cite its version');
+    assert.notEqual(model.names.indexVersion, bd.names.indexVersion);
+  });
+
+  it('surfaces a distinct notice, so the state is never silent', () => {
+    const model = selectAddress('BV-L-471', { templates: templates(), nameIndex: nameIndex() });
+    assert.ok(codesOf(model).includes('frame-unnamed'));
+    const notice = model.notices.find((n) => n.code === 'frame-unnamed');
+    assert.equal(notice.severity, 'info', 'nothing is wrong, so this is not a warning');
+    assert.match(notice.detail, /shipping state/);
+    // It must not imply a lookup ran and found nothing.
+    assert.ok(!/overlap/.test(notice.detail));
+  });
+
+  it('does not claim the cell is unclaimed — no lookup ran', () => {
+    const model = selectAddress('BV-L-471', { templates: templates(), nameIndex: nameIndex() });
+    // `resolve()` would have said 1 here, which reads as "100% unnamed space
+    // in an index that covers this frame". It does not cover it.
+    assert.equal(model.names.unclaimedFraction, 0);
+  });
+
+  it('still gives the brain selection exact millimetres — the whole answer', () => {
+    const model = selectAddress('BV-L-471', { templates: templates(), nameIndex: nameIndex() });
+    assert.ok(model.pointMm.every(Number.isFinite));
+    assert.ok(model.extentMm.every((v) => Number.isFinite(v) && v > 0));
+    assert.ok(model.cell, 'an unnamed cell still draws at its true extent');
+  });
+
+  it('keeps BD covered, so this is a per-frame fact and not a blanket opt-out', () => {
+    const model = selectAddress('BD-T07-03O', { templates: templates(), nameIndex: nameIndex() });
+    assert.equal(model.names.covered, true);
+    assert.ok(!codesOf(model).includes('frame-unnamed'));
+    assert.ok(model.names.matches.length > 1);
+  });
+
+  it('reads coverage off the index rather than a declaration', () => {
+    const frames = nameIndexFrames(nameIndex());
+    assert.deepEqual([...frames].sort(), ['BD']);
+    assert.equal(nameIndexFrames(null).size, 0);
   });
 });
 

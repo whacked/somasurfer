@@ -205,6 +205,36 @@ export function errorNotice(error, address, templates = {}) {
   );
 }
 
+/**
+ * The notice for a frame the name index does not cover at all.
+ *
+ * This is **not** "nothing happened to overlap". It is "there is no name index
+ * for this coordinate system", and the two must not read alike. `BV` ships in
+ * v1 as coordinates without names: every candidate brain parcellation —
+ * Harvard-Oxford, AAL, Julich-Brain — failed licence clearance, and per
+ * `docs/asset-licensing.md` §4 the absence of verification *is* the verdict. So
+ * unnamed is the shipping state, not a gap waiting to close, and saying "no
+ * structure overlaps this cell" would invite a user to wait for one.
+ *
+ * It is also why this notice is `info` rather than a warning. Nothing is wrong:
+ * the address is valid, the frame is verified, the millimetres round-trip. The
+ * atlas simply has coordinates and no vocabulary here, and the honest
+ * presentation is to say so and show the coordinates.
+ */
+export function unnamedFrameNotice(frame) {
+  return notice(
+    'frame-unnamed',
+    'info',
+    'This frame ships without names',
+    `No name index covers frame ${frame} in v1, so this selection is a location rather than a `
+    + 'named structure. The address and its millimetres are exact — what is missing is a '
+    + 'parcellation that could be redistributed, not precision. Every candidate brain '
+    + 'parcellation failed licence clearance, so treat "unnamed" as the shipping state here '
+    + 'rather than a gap that is about to close.',
+    { frame },
+  );
+}
+
 /** The notice shown when a template or index failed to load at all. */
 export function atlasUnavailableNotice(detail) {
   return notice(
@@ -230,6 +260,7 @@ export const NOTICE_CODES = Object.freeze([
   'homology-absent',
   'no-template',
   'frame-disabled',
+  'frame-unnamed',
   'rejected',
   'atlas-unavailable',
 ]);

@@ -68,6 +68,7 @@
           <section class="search">
             <label for="search-input">Find a structure</label>
             <input id="search-input" type="search" placeholder="lung, rib, kidney…" data-testid="search-input" />
+            <p id="search-scope" class="hint" data-testid="search-scope"></p>
             <ul id="search-results" class="search-results" data-testid="search-results"></ul>
           </section>
 
@@ -88,7 +89,10 @@
         </p>
         <p class="note">
           Templates and structure names in this build are <strong>synthetic fixtures</strong>,
-          not anatomy. Every name list shows the index version it came from.
+          not anatomy. Where names exist, the list shows the index version they came from.
+          The brain frame <code>BV</code> ships <strong>without names</strong> — no brain
+          parcellation cleared licensing for redistribution — so a brain selection is a
+          location, not a named structure.
         </p>
       </footer>
     </div>
