@@ -9,15 +9,15 @@
     "dataset even at a glance.",
     "",
     "The real ~30-paper seed set is DOG-37's deliverable and will land at",
-    "packages/atlas-research/fixtures/. This file exists so the §7 journey is",
+    "packages/atlas-research/fixtures/. This file exists so the \u00a77 journey is",
     "executable BEFORE that, and the harness prefers the real fixture the",
-    "moment one appears — see src/fixture.ts. It is retained after that as the",
+    "moment one appears \u2014 see src/fixture.ts. It is retained after that as the",
     "harness's own self-test input, because a suite whose only input is another",
     "team's deliverable cannot be run when that deliverable is broken.",
     "",
     "The five papers are shaped by what the journey has to be able to do:",
     "  P-02 is found via BA44 and ALSO maps BA10 and BA13, which is the",
-    "       DOG-1 §3 filter-leak case and the reason the fixture needs a paper",
+    "       DOG-1 \u00a73 filter-leak case and the reason the fixture needs a paper",
     "       whose mappings reach outside any plausible filter.",
     "  P-01, P-02 and P-04 all map BA44, so two-paper comparison has a real",
     "       overlap to hatch and a third selection to distinguish it from.",
@@ -32,7 +32,7 @@
     "BD-T04-12O, so resolving the sternum's cell returns TWO structures with",
     "different containment fractions (1.0 and 0.125). It was added after the",
     "negative-control run: every other structure here claims its cells alone,",
-    "which made 'a ranked name list, never one name' untestable — the mutant",
+    "which made 'a ranked name list, never one name' untestable \u2014 the mutant",
     "that returns only the top match passed, because there was never a second",
     "match to drop. A fixture where every cell has one owner cannot pose the",
     "question plan section 6 asks."
@@ -42,7 +42,6 @@
   "kind": "synthetic-qa-fixture",
   "notForPublication": true,
   "nameIndexVersion": "qa-names-0.1.0",
-
   "_structureNote": [
     "The body atlas's brain structure is addressed at BD-C01, the topmost",
     "level the BD frame has. The frame is anchored to the vertebral column and",
@@ -56,64 +55,90 @@
       "id": "BA44",
       "name": "inferior frontal gyrus, pars opercularis (fixture BA44)",
       "atlas": "brain",
-      "cells": ["BV-L-46", "BV-L-47"]
+      "cells": [
+        "BV-L-46",
+        "BV-L-47"
+      ]
     },
     {
       "id": "BA45",
       "name": "inferior frontal gyrus, pars triangularis (fixture BA45)",
       "atlas": "brain",
-      "cells": ["BV-L-44", "BV-L-45"]
+      "cells": [
+        "BV-L-44",
+        "BV-L-45"
+      ]
     },
     {
       "id": "BA10",
       "name": "frontal pole (fixture BA10)",
       "atlas": "brain",
-      "cells": ["BV-L-56", "BV-L-57"]
+      "cells": [
+        "BV-L-56",
+        "BV-L-57"
+      ]
     },
     {
       "id": "BA13",
       "name": "insular cortex (fixture BA13)",
       "atlas": "brain",
-      "cells": ["BV-L-25"]
+      "cells": [
+        "BV-L-25"
+      ]
     },
     {
       "id": "BA13R",
       "name": "insular cortex, right (fixture BA13R)",
       "atlas": "brain",
-      "cells": ["BV-R-25"]
+      "cells": [
+        "BV-R-25"
+      ]
     },
     {
       "id": "BODY-BRAIN",
       "name": "brain, as seen from the body atlas (fixture)",
       "atlas": "body",
-      "cells": ["BD-C01-12O", "BD-C01-01O", "BD-C01-11O"]
+      "cells": [
+        "BD-C01-12O",
+        "BD-C01-01O",
+        "BD-C01-11O"
+      ]
     },
     {
       "id": "BODY-STERNUM",
       "name": "sternum (fixture)",
       "atlas": "body",
-      "cells": ["BD-T04-12O", "BD-T05-12O"]
+      "cells": [
+        "BD-T04-12O",
+        "BD-T05-12O"
+      ]
     },
     {
       "id": "BODY-COSTAL-CARTILAGE",
       "name": "fourth costal cartilage (fixture)",
       "atlas": "body",
-      "cells": ["BD-T04-12O-1"]
+      "cells": [
+        "BD-T04-12O-1"
+      ]
     },
     {
       "id": "BODY-THORAX-ANT",
       "name": "anterior thoracic wall (fixture)",
       "atlas": "body",
-      "cells": ["BD-T06-12O", "BD-T07-12O"]
+      "cells": [
+        "BD-T06-12O",
+        "BD-T07-12O"
+      ]
     },
     {
       "id": "BODY-T07-SECTOR",
       "name": "seventh thoracic level, two-o'clock sector (fixture)",
       "atlas": "body",
-      "cells": ["BD-T07-03O"]
+      "cells": [
+        "BD-T07-03O"
+      ]
     }
   ],
-
   "papers": [
     {
       "id": "P-01",
@@ -123,16 +148,25 @@
         {
           "id": "F-01",
           "summary": "Fixture finding: opercular activation during a synthetic task.",
-          "regions": ["BA44"],
-          "cells": ["BV-L-46", "BV-L-47"],
+          "regions": [
+            "BA44"
+          ],
+          "cells": [
+            "BV-L-46",
+            "BV-L-47"
+          ],
           "evidence": "fixture evidence, table 1",
           "spatialDetail": true
         },
         {
           "id": "F-02",
           "summary": "Fixture finding: triangular part, weaker synthetic effect.",
-          "regions": ["BA45"],
-          "cells": ["BV-L-45"],
+          "regions": [
+            "BA45"
+          ],
+          "cells": [
+            "BV-L-45"
+          ],
           "evidence": "fixture evidence, table 2",
           "spatialDetail": true
         }
@@ -146,24 +180,37 @@
         {
           "id": "F-03",
           "summary": "Fixture finding: opercular component of a synthetic control task.",
-          "regions": ["BA44"],
-          "cells": ["BV-L-47"],
+          "regions": [
+            "BA44"
+          ],
+          "cells": [
+            "BV-L-47"
+          ],
           "evidence": "fixture evidence, figure 2a",
           "spatialDetail": true
         },
         {
           "id": "F-04",
           "summary": "Fixture finding: frontal-pole component of the same synthetic task.",
-          "regions": ["BA10"],
-          "cells": ["BV-L-56", "BV-L-57"],
+          "regions": [
+            "BA10"
+          ],
+          "cells": [
+            "BV-L-56",
+            "BV-L-57"
+          ],
           "evidence": "fixture evidence, figure 2b",
           "spatialDetail": true
         },
         {
           "id": "F-05",
           "summary": "Fixture finding: insular component of the same synthetic task.",
-          "regions": ["BA13"],
-          "cells": ["BV-L-25"],
+          "regions": [
+            "BA13"
+          ],
+          "cells": [
+            "BV-L-25"
+          ],
           "evidence": "fixture evidence, figure 2c",
           "spatialDetail": true
         }
@@ -177,8 +224,12 @@
         {
           "id": "F-06",
           "summary": "Fixture finding: a single insular locus.",
-          "regions": ["BA13"],
-          "cells": ["BV-L-25"],
+          "regions": [
+            "BA13"
+          ],
+          "cells": [
+            "BV-L-25"
+          ],
           "evidence": "fixture evidence, figure 1",
           "spatialDetail": true
         }
@@ -192,17 +243,26 @@
         {
           "id": "F-07",
           "summary": "Fixture finding: opercular selectivity, overlapping P-01 and P-02.",
-          "regions": ["BA44"],
-          "cells": ["BV-L-47"],
+          "regions": [
+            "BA44"
+          ],
+          "cells": [
+            "BV-L-47"
+          ],
           "evidence": "fixture evidence, table 3",
           "spatialDetail": true
         },
         {
           "id": "F-08",
           "summary": "Fixture finding reported at region level only: the paper names the triangular part but gives no coordinates, no volume and no figure from which any could be recovered.",
-          "regions": ["BA45"],
-          "cells": [],
-          "evidence": "fixture evidence, discussion paragraph 4 — named in prose only",
+          "regions": [
+            "BA45"
+          ],
+          "cells": [
+            "BV-L-44",
+            "BV-L-45"
+          ],
+          "evidence": "fixture evidence, discussion paragraph 4 \u2014 named in prose only",
           "spatialDetail": false
         }
       ]
@@ -215,16 +275,24 @@
         {
           "id": "F-09",
           "summary": "Fixture finding: right insula.",
-          "regions": ["BA13R"],
-          "cells": ["BV-R-25"],
+          "regions": [
+            "BA13R"
+          ],
+          "cells": [
+            "BV-R-25"
+          ],
           "evidence": "fixture evidence, figure 4",
           "spatialDetail": true
         },
         {
           "id": "F-10",
           "summary": "Fixture finding: an anterior thoracic body region, in the same paper as a brain finding.",
-          "regions": ["BODY-THORAX-ANT"],
-          "cells": ["BD-T06-12O"],
+          "regions": [
+            "BODY-THORAX-ANT"
+          ],
+          "cells": [
+            "BD-T06-12O"
+          ],
           "evidence": "fixture evidence, figure 5",
           "spatialDetail": true
         }

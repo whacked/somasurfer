@@ -44,8 +44,26 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 export const PACKAGE_ROOT = dirname(HERE);
 const REPO_ROOT = dirname(dirname(PACKAGE_ROOT));
 
-/** Where DOG-37's fixture is expected. Agreed on DOG-38; if it moves, this is the one line to change. */
-export const RESEARCH_FIXTURE_DIR = join(REPO_ROOT, 'packages', 'atlas-research', 'fixtures');
+/**
+ * Where DOG-37's research data lives, richest first.
+ *
+ * `data/` holds the curated v1 seed set — 30 papers, 120 findings — and
+ * `fixtures/` holds the 5-paper subset the engineers were given early to build
+ * against. Both are real; the seed set is simply a better input, and searching
+ * only `fixtures/` meant the journey ran against the subset and reported
+ * `compare-two-papers` UNVERIFIED, because in the 5-paper subset two papers
+ * share a region but never a CELL (12 of its 14 findings are region-level-only,
+ * so there is nothing to intersect).
+ *
+ * Preference order rather than a single path, because which one is "the"
+ * dataset is DOG-37's call to change and should not need a change here.
+ */
+export const RESEARCH_DATA_DIRS = [
+  join(REPO_ROOT, 'packages', 'atlas-research', 'data'),
+  join(REPO_ROOT, 'packages', 'atlas-research', 'fixtures'),
+];
+/** Kept as the first entry's alias for callers that want to name the location. */
+export const RESEARCH_FIXTURE_DIR = RESEARCH_DATA_DIRS[1];
 export const OWN_FIXTURE_PATH = join(PACKAGE_ROOT, 'fixtures', 'journey-5papers.json');
 
 export interface FixtureFinding {
@@ -159,6 +177,13 @@ export const FIXTURE_REQUIREMENTS: ReadonlyArray<{
   },
 ];
 
+/** The declared cells of one structure in a raw fixture object. */
+function structureCellsOf(raw: Record<string, unknown>, structureId: string): string[] {
+  const structures = (raw.structures as Array<Record<string, unknown>>) ?? [];
+  const found = structures.find((s) => s.id === structureId);
+  return ((found?.cells as string[]) ?? []);
+}
+
 function sha256(text: string): string {
   return createHash('sha256').update(text).digest('hex');
 }
@@ -265,8 +290,21 @@ export function fixtureShapeProblems(raw: unknown, path: string): string[] {
       if (fi.spatialDetail && (fi.cells ?? []).length === 0) {
         problems.push(at(`finding ${fi.id} claims spatial detail but lists no cells`));
       }
+      // A finding without spatial detail MAY still carry cells: a region-level
+      // finding localises to a parcel and lights that parcel. What it must not
+      // do is carry cells FINER than the regions it names, which would be
+      // inventing a locus the paper never reported. That is the interpolation
+      // the plan forbids, and it is checked rather than the cell count.
       if (!fi.spatialDetail && (fi.cells ?? []).length > 0) {
-        problems.push(at(`finding ${fi.id} denies spatial detail but lists cells`));
+        const allowed = new Set((fi.regions ?? []).flatMap((r) => structureCellsOf(o, r)));
+        const finer = (fi.cells ?? []).filter((c) => !allowed.has(c));
+        if (finer.length > 0) {
+          problems.push(at(
+            `finding ${fi.id} reports no locus within its region but lights `
+            + `${JSON.stringify(finer.slice(0, 3))}, which is not among its regions' own cells. `
+            + 'Lighting the region is reporting it; lighting something finer is interpolating.',
+          ));
+        }
       }
     }
   }
@@ -367,8 +405,34 @@ function adaptCurated(research: Record<string, unknown>, names: Record<string, u
       .join('. ');
   };
 
-  const cellsOfMapping = (spatial: CuratedSpatial, where: string): { cells: string[]; detail: boolean } => {
-    if (spatial.kind === 'region-level') return { cells: [], detail: false };
+  const structureCells = new Map<string, string[]>(
+    structures.map((s) => [s.id as string, ((s.cells as string[]) ?? [])]),
+  );
+
+  const cellsOfMapping = (
+    spatial: CuratedSpatial,
+    structureId: string,
+    where: string,
+  ): { cells: string[]; detail: boolean } => {
+    if (spatial.kind === 'region-level') {
+      // A region-level mapping is NOT "no spatial information". DOG-37's own
+      // reason field says it exactly: "the parcellation defines the parcel as a
+      // whole; no locus within it is reported". So the finding localises to the
+      // parcel, and what gets lit is the parcel's own covering — at that
+      // precision and no finer.
+      //
+      // Mapping it to no cells, which this adapter did first, had a
+      // consequence worth recording: across the 30-paper seed set it left only
+      // 6 papers with any cells and ZERO paper pairs sharing one, so
+      // `compare-two-papers` reported UNVERIFIED and the hatching requirement
+      // looked untestable against the real data. It was an artefact of the
+      // adapter throwing the region away, not a gap in the curation.
+      //
+      // `detail: false` still, because there is no locus WITHIN the parcel —
+      // that is what the marker says, and lighting the parcel is reporting the
+      // region, not interpolating a position inside it.
+      return { cells: structureCells.get(structureId) ?? [], detail: false };
+    }
     if (spatial.kind === 'cells') {
       const cells = spatial.cells ?? [];
       if (cells.length === 0) throw new Error(`${where}: spatial kind "cells" with no cells`);
@@ -416,7 +480,8 @@ function adaptCurated(research: Record<string, unknown>, names: Record<string, u
         findings: (byPaper.get(id) ?? []).map((f) => {
           const mappings = (f.mappings as Array<Record<string, unknown>>) ?? [];
           const where = `${paths.research}: finding ${f.id as string}`;
-          const parts = mappings.map((m) => cellsOfMapping(m.spatial as CuratedSpatial, where));
+          const parts = mappings.map((m) =>
+            cellsOfMapping(m.spatial as CuratedSpatial, m.structureId as string, where));
           return {
             id: f.id as string,
             summary: (f.statement as string) ?? '',
@@ -453,8 +518,16 @@ export function resolveFixture(options: { preferOwn?: boolean } = {}): ResearchF
   return loadFixtureFile(OWN_FIXTURE_PATH);
 }
 
-/** DOG-37's fixture pair, or null when it is not there yet. */
+/** DOG-37's data, richest directory first, or null when none of it is there yet. */
 export function loadCuratedFixture(): ResearchFixture | null {
+  for (const dir of RESEARCH_DATA_DIRS) {
+    const loaded = loadCuratedFrom(dir);
+    if (loaded) return loaded;
+  }
+  return null;
+}
+
+function loadCuratedFrom(RESEARCH_FIXTURE_DIR: string): ResearchFixture | null {
   if (!existsSync(RESEARCH_FIXTURE_DIR)) return null;
   const files = readdirSync(RESEARCH_FIXTURE_DIR).filter((f) => f.endsWith('.json'));
   // Selected by content, not by filename order: the directory holds a names

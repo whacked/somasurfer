@@ -115,7 +115,24 @@ export function planJourney(fixture: ResearchFixture): JourneyPlan {
     .map((id) => ({ id, regions: regionsOfPaper(fixture, id) }))
     .sort((a, b) => b.regions.length - a.regions.length || a.id.localeCompare(b.id));
   const primary = byBreadth[0];
-  const second = byBreadth.find((p) => p.id !== primary.id) ?? byBreadth[0];
+
+  // The comparison paper is chosen to make the hatching step POSSIBLE, not
+  // merely different: it must share at least one CELL with the primary, because
+  // the overlap is a covering intersection and two papers sharing only a region
+  // intersect in nothing.
+  //
+  // Picking by breadth alone reported `compare-two-papers` as UNVERIFIED
+  // against DOG-37's curated data, where most findings are region-level-only
+  // and the broadest pair happened not to overlap. That read as "the data
+  // cannot pose the question" when the truth was "the harness chose badly" —
+  // exactly the kind of false UNVERIFIED that makes the third outcome
+  // untrustworthy. Falling back to breadth keeps the step's own `unverifiable`
+  // check as the honest answer when no overlapping pair exists at all.
+  const primaryCovering = coveringOfPaper(fixture, primary.id);
+  const overlapping = byBreadth
+    .filter((p) => p.id !== primary.id)
+    .filter((p) => coveringsOverlap(primaryCovering, coveringOfPaper(fixture, p.id)));
+  const second = overlapping[0] ?? byBreadth.find((p) => p.id !== primary.id) ?? byBreadth[0];
 
   return {
     bodyStructureId: bodyStructure.id,
@@ -553,7 +570,21 @@ export const JOURNEY: readonly JourneyStep[] = [
         c.must(h !== undefined, `finding ${f.id} has no spatial detail and was dropped rather than marked`);
         if (h) {
           c.equal(h.regionLevelOnly, true, `finding ${f.id} must be marked region-level only`);
-          c.equal(h.cells, [], `finding ${f.id} has no spatial detail but was given cells — that is interpolation`);
+          // It lights its REGION, and nothing finer. A region-level finding
+          // localises to a parcel — that is what the marker says — so showing
+          // the parcel is reporting it, and showing a sub-cell of the parcel is
+          // inventing a locus the paper never reported. Asserting `cells === []`
+          // here, as this step first did, would forbid the correct behaviour.
+          const allowed = new Set(
+            f.regions.flatMap((r) => ctx.fixture.structures.find((s) => s.id === r)?.cells ?? []),
+          );
+          const finer = h.cells.filter((cell) => !allowed.has(cell));
+          c.equal(
+            finer,
+            [],
+            `finding ${f.id} reports no locus within its region but lit ${JSON.stringify(finer)}, which `
+            + 'is finer than the regions it names. Missing spatial detail must be visible, not interpolated.',
+          );
         }
       }
       if (spatialless.length > 0) {
