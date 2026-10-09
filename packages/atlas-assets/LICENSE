@@ -27,18 +27,23 @@ which this file is where they land:
     Derived files are licensed CC BY-SA 4.0 International, which is the current
     version of the same licence with the same elements.
 
-  * **The atlas geometry therefore cannot be made proprietary.** That is a
-    consequence of D1, not of this file, and reversing it is the owner's
-    decision and not an engineering one.
+  * **The atlas geometry cannot be made proprietary. This is MANDATORY.** The
+    repository owner was asked, on 2026-10-09, whether the share-alike
+    consequence of D1 was an obligation or a choice, and answered that it is
+    mandatory: the atlas geometry can never be made proprietary. No future
+    release may relicense it, and a later finding that upstream is more
+    permissive than D1 assumed does not reopen this. See
+    docs/asset-licensing.md §3.
 
   * Code packages remain Apache-2.0 and take no build-time dependency on any
     asset licence. First-party assets in this package stay Apache-2.0 and are
     listed as such; share-alike applies per asset, not per directory.
 
-`docs/asset-licensing.md` is the memo: what was measured upstream, including a
-discrepancy in how DBCLS states the licence that the owner should know about,
-and the separate and still-unresolved question of the brain parcellation
-licence.
+`docs/asset-licensing.md` is the memo: what was measured upstream, the
+discrepancy in how DBCLS states its own licence and the owner's decision on it,
+and the brain parcellation verdict — NOT CLEARED, with the owner's direction to
+route around it using first-party labels rather than adopt someone else's
+parcellation.
 
 Per-asset licensing is declared in `attribution.json` and rendered into the
 build as `ATTRIBUTION.md`; `attribution.json` is the authority and every entry
