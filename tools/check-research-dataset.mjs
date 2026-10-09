@@ -39,11 +39,12 @@
  *                         release gate, once the index is expected to exist.
  */
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { REPO_ROOT, fail, pass } from './lib/repo.mjs';
+import { REPO_ROOT, fail, pass, rel } from './lib/repo.mjs';
 import { JUSTIFYING_STATUSES, renderCitationSummary } from './lib/citation-summary.mjs';
 import { buildNameIndex } from '../packages/alc/src/index.ts';
 import { buildResearchIndex, loadDataset, validateDataset } from '../packages/atlas-research/src/index.ts';
@@ -51,18 +52,43 @@ import { buildResearchIndex, loadDataset, validateDataset } from '../packages/at
 const PKG = join(REPO_ROOT, 'packages', 'atlas-research');
 
 /**
- * Where the asset pipeline (plan task 4) may publish the real index.
+ * Where the asset pipeline may publish the two halves of the real index.
  *
- * Several candidates on purpose: the pipeline has not landed, so the exact path
- * is its decision rather than this gate's. Naming them all means whichever it
- * picks is found, and the UNVERIFIED message tells its author where to look.
+ * Several candidates on purpose: the exact path is the pipeline's decision
+ * rather than this gate's. But the list is NOT a priority order and the gate
+ * does not take the first path that exists — see `loadRealIndex`. It takes the
+ * file whose *shape* it can read, because the two halves are different
+ * documents with similar names:
+ *
+ *   names.json      `version` + `structures[]`   ids, terms, cross-references
+ *   coverings.json  `indexVersion` + `coverings[]`   the cells per id
+ *
+ * Binding by path order was a latent bug with two distinct failure modes, and
+ * both of them look like a working gate from the outside:
+ *
+ *   - `coverings.json` first: `buildNameIndex({ version: undefined, ... })`
+ *     throws `bad_index_version` out of the middle of the gate. A stack trace
+ *     is not a gate result.
+ *   - `names.json` alone: it carries no `cells` at all, so every structure
+ *     builds with an EMPTY covering and every mapping resolves
+ *     `empty-covering`. That reads as "the curation is wrong" when what is
+ *     actually wrong is that the gate was handed half an index.
+ *
+ * So the real index is the JOIN of the two, by `id`, and a half is reported as
+ * UNVERIFIED rather than measured. `names.json` says so itself: "Load with
+ * buildNameIndex({ version, structures }) after joining coverings.json by id."
  */
 const REAL_INDEX_CANDIDATES = [
-  'packages/atlas-assets/templates/coverings.json',
-  'packages/atlas-assets/labels/coverings.json',
   'packages/atlas-assets/labels/names.json',
+  'packages/atlas-assets/labels/coverings.json',
+  'packages/atlas-assets/templates/names.json',
+  'packages/atlas-assets/templates/coverings.json',
+  'packages/atlas-web/dist/data/names.json',
   'packages/atlas-web/dist/data/coverings.json',
 ];
+
+/** Where a real `TemplateSet` may be published. See `loadTemplates`. */
+const TEMPLATE_DIR = 'packages/atlas-assets/templates';
 
 /** The datasets this gate owns, each with the index it declares. */
 const DATASETS = [
@@ -272,6 +298,178 @@ function indexFrom(raw) {
   return buildNameIndex({ version: raw.version, structures: raw.structures });
 }
 
+// ---------------------------------------------------------------------------
+// The real index: found by shape, built by joining the two halves.
+// ---------------------------------------------------------------------------
+
+/** `version` + `structures[]`: the half that carries ids and terms. */
+const isNameIndexShape = (raw) => typeof raw?.version === 'string' && Array.isArray(raw?.structures);
+
+/** `indexVersion` + `coverings[]`: the half that carries the cells. */
+const isCoveringIndexShape = (raw) => typeof raw?.indexVersion === 'string' && Array.isArray(raw?.coverings);
+
+/**
+ * Build the real name index from whichever candidate files are present.
+ *
+ * Returns `{ index, names, coverings, frame }` when both halves are present and
+ * agree, or `{ index: null, why: [...] }` with the reason it could not be built.
+ * **Never throws for an absent or wrong-shaped file**, because "the index is not
+ * here yet" and "the index is broken" are different reports and only the second
+ * one is this gate's business to fail on.
+ *
+ * `paths` is injectable so `realIndexSelfTest` can prove the shape detection on
+ * fixtures it constructs, rather than on whatever happens to be in the tree.
+ */
+function loadRealIndex(paths = REAL_INDEX_CANDIDATES.map((p) => join(REPO_ROOT, p))) {
+  const found = { names: [], coverings: [], unreadable: [] };
+
+  for (const path of paths) {
+    if (!existsSync(path)) continue;
+    let raw;
+    try {
+      raw = JSON.parse(readFileSync(path, 'utf8'));
+    } catch (e) {
+      found.unreadable.push(`${rel(path)}: not JSON (${e.message})`);
+      continue;
+    }
+    if (isNameIndexShape(raw)) found.names.push({ path, raw });
+    else if (isCoveringIndexShape(raw)) found.coverings.push({ path, raw });
+    else {
+      found.unreadable.push(
+        `${rel(path)}: neither a name index (version + structures[]) nor a covering index (indexVersion + coverings[])`,
+      );
+    }
+  }
+
+  const why = [...found.unreadable];
+  if (found.names.length === 0 && found.coverings.length === 0) {
+    return { index: null, why: ['no name index and no covering index are present.'] };
+  }
+  if (found.names.length === 0) {
+    return {
+      index: null,
+      why: [
+        ...why,
+        `found a covering index (${found.coverings.map((c) => rel(c.path)).join(', ')}) but no name index.`,
+        '  A covering index carries `indexVersion` and `coverings` — the cells, with no terms. It cannot be',
+        '  built into a NameIndex on its own, and feeding it to buildNameIndex() would throw rather than report.',
+      ],
+    };
+  }
+  if (found.coverings.length === 0) {
+    return {
+      index: null,
+      why: [
+        ...why,
+        `found a name index (${found.names.map((n) => rel(n.path)).join(', ')}) but no covering index.`,
+        '  A name index carries ids and terms but NO cells, so building from it alone would give every',
+        '  structure an empty covering and report every mapping as `empty-covering`. That is a false',
+        '  negative dressed as a curation error, so it is refused rather than measured.',
+      ],
+    };
+  }
+  if (found.names.length > 1 || found.coverings.length > 1) {
+    return {
+      index: null,
+      why: [
+        ...why,
+        'more than one index of the same shape is present, so which one the dataset was authored against is ambiguous:',
+        ...found.names.map((n) => `    name index:     ${rel(n.path)}`),
+        ...found.coverings.map((c) => `    covering index: ${rel(c.path)}`),
+      ],
+    };
+  }
+
+  const names = found.names[0];
+  const coverings = found.coverings[0];
+  if (coverings.raw.indexVersion !== names.raw.version) {
+    return {
+      index: null,
+      why: [
+        ...why,
+        `the two halves describe different indexes: ${rel(names.path)} is version` +
+          ` ${JSON.stringify(names.raw.version)} but ${rel(coverings.path)} declares indexVersion` +
+          ` ${JSON.stringify(coverings.raw.indexVersion)}.`,
+        '  Joining them would attach one index\'s cells to another index\'s terms.',
+      ],
+    };
+  }
+
+  // The join. Both directions are checked: a term with no cells would resolve
+  // empty, and cells with no term would be geometry nothing can name.
+  const cellsById = new Map();
+  for (const c of coverings.raw.coverings ?? []) {
+    if (typeof c?.id !== 'string') {
+      why.push(`${rel(coverings.path)}: a covering entry has no id.`);
+      continue;
+    }
+    if (cellsById.has(c.id)) why.push(`${rel(coverings.path)}: duplicate covering for ${c.id}.`);
+    cellsById.set(c.id, Array.isArray(c.cells) ? c.cells : []);
+  }
+
+  const structures = [];
+  const unnamed = new Set(cellsById.keys());
+  for (const s of names.raw.structures) {
+    if (typeof s?.id !== 'string') {
+      why.push(`${rel(names.path)}: a structure entry has no id.`);
+      continue;
+    }
+    unnamed.delete(s.id);
+    if (!cellsById.has(s.id)) {
+      why.push(`${rel(names.path)}: structure ${s.id} ("${s.name}") has no covering in ${rel(coverings.path)}.`);
+      continue;
+    }
+    structures.push({ id: s.id, name: s.name, source: s.source, cells: cellsById.get(s.id) });
+  }
+  for (const id of unnamed) {
+    why.push(`${rel(coverings.path)}: covering ${id} has no entry in ${rel(names.path)}, so nothing can name it.`);
+  }
+
+  if (why.length > 0) return { index: null, why };
+
+  let index;
+  try {
+    index = buildNameIndex({ version: names.raw.version, structures });
+  } catch (e) {
+    return { index: null, why: [`the joined index did not build: ${e.message}`] };
+  }
+  return {
+    index,
+    names: rel(names.path),
+    coverings: rel(coverings.path),
+    frame: coverings.raw.frame ?? null,
+  };
+}
+
+/**
+ * The real `TemplateSet`, if the asset pipeline has published one.
+ *
+ * Read as plain JSON data: this is CI tooling, not a shipped package, so
+ * reading an asset file here is not a dependency of our code on an asset
+ * licence — the same reasoning `tools/audit-real-template.mjs` records, and the
+ * boundary `tools/check-licence-separation.mjs` enforces for the packages.
+ */
+function loadTemplates(dir = join(REPO_ROOT, TEMPLATE_DIR)) {
+  const templates = {};
+  const sources = {};
+  const problems = [];
+  if (!existsSync(dir)) return { templates, sources, problems };
+  for (const file of readdirSync(dir).sort()) {
+    const slot = file.endsWith('.body.json') ? 'body' : file.endsWith('.brain-volume.json') ? 'brainVolume' : null;
+    if (slot === null) continue;
+    try {
+      const raw = JSON.parse(readFileSync(join(dir, file), 'utf8'));
+      if (templates[slot] === undefined) {
+        templates[slot] = raw;
+        sources[slot] = `${TEMPLATE_DIR}/${file}`;
+      }
+    } catch (e) {
+      problems.push(`${TEMPLATE_DIR}/${file}: not readable as a template (${e.message}).`);
+    }
+  }
+  return { templates, sources, problems };
+}
+
 const problems = [];
 const report = [];
 
@@ -303,6 +501,114 @@ function selfTest() {
     const hit = idx.unresolved.find((m) => m.unresolvedReason === 'unknown-structure');
     if (!hit) failures.push('an unknown structure id resolved anyway; check 2 cannot go red.');
     else if (hit.covering.cells.length > 0) failures.push('an unresolved mapping still carried geometry.');
+  }
+  return failures;
+}
+
+/**
+ * Proves the gate binds the real index by SHAPE, not by path order.
+ *
+ * Hermetic on purpose: every case writes its own pair of files to a temp
+ * directory, so these run — and can fail — on a branch where the asset
+ * pipeline's index is nowhere in the tree. A must-pass case that only
+ * exercises itself once the dependency lands is a case nobody has run.
+ *
+ * The first case is the one the latent bug would have failed: `coverings.json`
+ * listed FIRST, which is the order the real candidate list used to have.
+ */
+function realIndexSelfTest() {
+  const failures = [];
+  const dir = mkdtempSync(join(tmpdir(), 'research-gate-index-'));
+  const write = (name, value) => {
+    const path = join(dir, name);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`);
+    return path;
+  };
+
+  const VERSION = 'self-test-index-1';
+  const namesDoc = (version = VERSION) => ({
+    version,
+    structures: [{ id: 'FMA9968', name: 'seventh thoracic vertebra', source: 'FMA' }],
+  });
+  const coveringsDoc = (indexVersion = VERSION) => ({
+    indexVersion,
+    frame: 'BD',
+    coverings: [{ id: 'FMA9968', cells: ['BD-T07-05I-5', 'BD-T07-12I-2'] }],
+  });
+
+  try {
+    // 1. The must-pass case. Both halves present, the unreadable shape first.
+    {
+      const coverings = write('coverings.json', coveringsDoc());
+      const names = write('names.json', namesDoc());
+      const got = loadRealIndex([coverings, names]);
+      if (got.index === null) {
+        failures.push(`both halves present but no index was built: ${(got.why ?? []).join(' ')}`);
+      } else if (got.index.version !== VERSION) {
+        failures.push(`the joined index took its version from the wrong half: ${JSON.stringify(got.index.version)}.`);
+      } else if (got.index.structures.length !== 1 || got.index.structures[0].id !== 'FMA9968') {
+        failures.push('the joined index did not carry the name half\'s structures.');
+      } else if (got.index.coverings[0].cells.length === 0) {
+        failures.push(
+          'the joined index carried a structure with no cells, so the covering half was not joined in. ' +
+            'This is the false negative the shape detection exists to prevent.',
+        );
+      }
+    }
+
+    // 2. The covering half alone: reported, not thrown. buildNameIndex() would
+    //    have raised `bad_index_version` from the middle of the gate.
+    {
+      const got = loadRealIndex([write('coverings.json', coveringsDoc())]);
+      if (got.index !== null) failures.push('a covering index alone produced an index; it carries no terms.');
+      else if (!(got.why ?? []).some((l) => /no name index/.test(l))) {
+        failures.push(`the covering-half-only reason does not say a name index is missing: ${(got.why ?? [])[0]}`);
+      }
+    }
+
+    // 3. The name half alone. This is the quiet one: it builds without error and
+    //    every structure resolves empty, which reads as bad curation.
+    {
+      const got = loadRealIndex([write('names.json', namesDoc())]);
+      if (got.index !== null) failures.push('a name index alone produced an index; it carries no cells.');
+      else if (!(got.why ?? []).some((l) => /no covering index/.test(l))) {
+        failures.push(`the name-half-only reason does not say a covering index is missing: ${(got.why ?? [])[0]}`);
+      }
+    }
+
+    // 4. Two halves of different indexes must never be joined.
+    {
+      const got = loadRealIndex([
+        write('names.json', namesDoc()),
+        write('coverings.json', coveringsDoc('a-different-index-2')),
+      ]);
+      if (got.index !== null) failures.push('two halves with different versions were joined anyway.');
+    }
+
+    // 5. A term with no cells, and cells nothing can name. Both are index bugs
+    //    rather than curation bugs, and both must stop the measurement.
+    {
+      const names = namesDoc();
+      names.structures.push({ id: 'FMA7197', name: 'liver', source: 'FMA' });
+      const got = loadRealIndex([write('names.json', names), write('coverings.json', coveringsDoc())]);
+      if (got.index !== null) failures.push('a structure with no covering was indexed as if it had one.');
+    }
+    {
+      const coverings = coveringsDoc();
+      coverings.coverings.push({ id: 'FMA7197', cells: ['BD-T10-10O-1'] });
+      const got = loadRealIndex([write('names.json', namesDoc()), write('coverings.json', coverings)]);
+      if (got.index !== null) failures.push('a covering with no name was indexed as if something named it.');
+    }
+
+    // 6. Nothing present at all is the ordinary pre-landing state: no index, no
+    //    complaint about broken files.
+    {
+      const got = loadRealIndex([join(dir, 'absent.json')]);
+      if (got.index !== null) failures.push('an index was built from no files at all.');
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
   return failures;
 }
@@ -434,7 +740,7 @@ function citationSelfTest() {
   return failures;
 }
 
-const selfTestFailures = [...selfTest(), ...citationSelfTest()];
+const selfTestFailures = [...selfTest(), ...citationSelfTest(), ...realIndexSelfTest()];
 if (selfTestFailures.length > 0) {
   problems.push('the gate itself cannot detect the failures it exists for:', ...selfTestFailures.map((f) => `  ${f}`));
 } else {
@@ -443,6 +749,8 @@ if (selfTestFailures.length > 0) {
     '  and on all eight ways to defeat the citation rule — an invented identifier, a swapped one,',
     '  a dropped row, a verdict with no evidence, an undeclared source, a stale report version,',
     '  a hand-edited tally and a hand-edited summary.',
+    '  It also binds the real index by shape rather than by path order: a covering index listed',
+    '  first is joined, not mistaken for a name index, and half an index is reported, not measured.',
   );
 }
 
@@ -578,18 +886,19 @@ for (const spec of DATASETS) {
 // The stage-B criterion: reported, not asserted, until the index exists.
 // ---------------------------------------------------------------------------
 
-const realIndexPath = REAL_INDEX_CANDIDATES.map((p) => join(REPO_ROOT, p)).find((p) => existsSync(p));
+const real = loadRealIndex();
+const { templates, sources: templateSources, problems: templateProblems } = loadTemplates();
 const strictGeometry = process.argv.includes('--strict-geometry');
 
-if (!realIndexPath) {
+problems.push(...templateProblems);
+
+if (real.index === null) {
   const message = [
     'UNVERIFIED: no curated mapping has been checked against real geometry.',
-    `  The asset pipeline's coverings index is not present. Looked in:`,
+    "  The asset pipeline's index could not be built:",
+    ...real.why.map((l) => `    ${l}`),
+    '  Looked in:',
     ...REAL_INDEX_CANDIDATES.map((p) => `    ${p}`),
-    '  Every dataset above declares `authoredAgainst.status: "fixture"`, which is accurate:',
-    '  the cells come from a synthetic index and encode no measurement. Stage B is to',
-    '  re-author the mappings against the real index, which means crosswalking the',
-    '  ATLAS-LABEL placeholder namespace onto that index\'s accessions.',
     '  This is reported rather than failed on purpose: a red build for a dependency this',
     '  branch cannot satisfy would be ignored, and a real failure would then be invisible',
     '  inside it. Run with --strict-geometry once the index is expected to exist.',
@@ -600,22 +909,25 @@ if (!realIndexPath) {
     report.push(...message);
   }
 } else {
-  const raw = JSON.parse(readFileSync(realIndexPath, 'utf8'));
-  const realNames = indexFrom(raw);
+  report.push(
+    `real index: ${real.index.structures.length} structures, frame ${real.frame ?? 'unstated'},` +
+      ` version ${real.index.version}`,
+    `  joined from ${real.names} and ${real.coverings}`,
+  );
   for (const { spec, dataset } of resolved) {
-    const index = buildResearchIndex({ dataset, names: realNames });
+    const index = buildResearchIndex({ dataset, names: real.index, templates });
     const mustResolve = index.mappings.filter((m) => m.precision !== 'coordinates');
     const bad = mustResolve.filter((m) => m.resolution !== 'resolved');
     if (bad.length > 0) {
       problems.push(
         `${spec.id}: ${bad.length} of ${mustResolve.length} mappings do not resolve against the real index` +
-          ` (${realIndexPath.slice(REPO_ROOT.length + 1)}, version ${realNames.version}).`,
+          ` (${real.names} + ${real.coverings}, version ${real.index.version}).`,
       );
       for (const m of bad.slice(0, 15)) problems.push(`  ${m.mappingId}: ${m.unresolvedReason}`);
     } else {
       report.push(
         `${spec.id}: all ${mustResolve.length} non-coordinate mappings resolve against the real index` +
-          ` (version ${realNames.version}).`,
+          ` (version ${real.index.version}).`,
       );
     }
     if (dataset.authoredAgainst.status !== 'real') {
@@ -625,6 +937,14 @@ if (!realIndexPath) {
       );
     }
   }
+}
+
+if (Object.keys(templateSources).length > 0) {
+  report.push(
+    `templates: ${Object.entries(templateSources)
+      .map(([slot, path]) => `${slot} <- ${path}`)
+      .join(', ')}`,
+  );
 }
 
 if (problems.length > 0) fail('research dataset', problems);
