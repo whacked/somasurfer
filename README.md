@@ -69,6 +69,20 @@ To look at the built site:
 npm run build && node packages/atlas-web/serve.mjs
 ```
 
+### What the gates have actually caught
+
+A gate nobody has watched fail is decoration, so `npm run verify:gates` breaks
+each of the nine on purpose, requires a recognisable message back, and checks
+the tree comes back clean. Nine staged, nine caught, every run.
+
+One was not staged, and it is worth more than the nine. At `0ebd2fc` the
+committed `docs/alc-1-attack-report.md` still listed QA-5 as open after the test
+carrying it had been removed — 1 of 165 tests failed, and the ledger
+check named the file, the missing test title and the retirement protocol step.
+Nobody had pointed a gate at that tree; the authors were not watching, and it
+still went red. The next commit on the branch closed it. That is the audit-drift
+criterion being demonstrated by a real break rather than a rehearsed one.
+
 ### The adversarial suites
 
 Part of `npm run test:counted`, and runnable on their own from
