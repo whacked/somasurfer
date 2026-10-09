@@ -54,9 +54,11 @@ test('the synthetic index says it is synthetic', () => {
 // ---------------------------------------------------------------------------
 
 test('a paper without a DOI carries its full citation instead', () => {
-  // The curation policy, asserted rather than described: no identifier here is
-  // machine-checked, so a DOI appears only where the curator was confident and
-  // everything else must be resolvable by a human from the citation text.
+  // The curation policy, asserted rather than described. Every identifier here
+  // was resolved against Crossref or PubMed (DOG-50, data/citation-report.json),
+  // and a paper keeps `kind: "none"` only when no source returned a match —
+  // both remaining cases are monographs. Such a paper must still be findable by
+  // hand, which is what this asserts.
   const withoutDoi = seed.papers.filter((p) => p.identifier.kind === 'none');
   assert.ok(withoutDoi.length > 0, 'the policy is exercised');
   for (const p of withoutDoi) {
