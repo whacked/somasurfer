@@ -8,15 +8,13 @@ Every file shipped from this package appears below with its licence, its
 copyright holder and where it came from. The build renders this list into
 the site, so an asset cannot reach a user without its attribution.
 
-> **Package licence: pending.** Settled by DOG-2 D1 (mesh licence). Until then this
-> package carries first-party assets only, and the entries below say so.
-
 ## Assets
 
 | asset | files | licence | holder | share-alike |
 | --- | --- | --- | --- | --- |
 | Placeholder body shell | `geometry/placeholder-body-shell.lowres.json` | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | GStack | no |
 | ALC-1 vertebral level index | `labels/alc-1-levels.json` | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | GStack | no |
+| BD body template, BodyParts3D 4.0 adult | `templates/bp3d-4.0-adult-body-centroid.body.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); adaptation by GStack | **yes** |
 
 ## Provenance
 
@@ -36,12 +34,22 @@ the site, so an asset cannot reach a user without its attribution.
 - **source** First-party. Derived from docs/alc-1-spec.md.
 - **note** The addressable level set, as published in the ALC-1 spec.
 
+### BD body template, BodyParts3D 4.0 adult
+
+- **id** `bp3d-bd-body-template`
+- **licence** CC-BY-SA-4.0
+- **holder** The Database Center for Life Science (DBCLS); adaptation by GStack
+- **source** Derived by tools/build-bd-template.mjs from BodyParts3D/Anatomography 4.0, 99%-polygon-reduced OBJ set (IS-A tree), isa_BP3D_4.0_obj_99.zip, https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
+- **note** A spine centreline, per-level frames and per-level skin radii measured from 25 vertebra meshes and the skin mesh. An adaptation of the DBCLS meshes, so it is share-alike: D1 settled the inbound licence as CC BY-SA 2.1 Japan, which is what the OBJ payloads' own header comments state, and this derivative ships under CC BY-SA 4.0, the current version of the same licence with the same elements. The archive's web licence page now states CC BY 4.0 instead; docs/asset-licensing.md records the discrepancy and why the pipeline holds the share-alike reading. No mesh vertices are redistributed here.
+
 ## Share-alike obligations
 
-None. No asset in this package currently carries a share-alike licence.
+The following assets carry a share-alike obligation:
 
-The separation mechanism is in place regardless, because it has to exist
-before the first such asset arrives, not after:
+- BD body template, BodyParts3D 4.0 adult — CC-BY-SA-4.0
+
+That obligation is confined to this package by the following, checked on
+every push by `tools/check-licence-separation.mjs`:
 
 1. No code package declares a dependency on `@gstack/atlas-assets`.
 2. No code package imports from it.

@@ -183,6 +183,73 @@ export function areaCentroid(V, F, keep) {
   return { area, centroid: [c[0] / area, c[1] / area, c[2] / area] };
 }
 
+/**
+ * Area-weighted principal axes of a triangle subset, smallest variance last.
+ *
+ * Used to measure the plane of the S1 endplate. Fitting a plane by least
+ * variance needs no surface normals, which matters: at 99% decimation a single
+ * triangle spans tens of millimetres, and selecting faces by their normal
+ * direction picks up the sacral alae, which are superior-facing, lateral and
+ * not the endplate.
+ *
+ * Jacobi rotation on the 3x3 covariance. Thirty lines, exact to machine
+ * precision in a dozen sweeps, and no dependency.
+ */
+export function principalAxes(V, F, keep) {
+  let w = 0;
+  const m = [0, 0, 0];
+  const samples = [];
+  for (let t = 0; t < F.length; t += 3) {
+    const a = F[t] * 3; const b = F[t + 1] * 3; const d = F[t + 2] * 3;
+    const g = [(V[a] + V[b] + V[d]) / 3, (V[a + 1] + V[b + 1] + V[d + 1]) / 3, (V[a + 2] + V[b + 2] + V[d + 2]) / 3];
+    if (keep && !keep(g[0], g[1], g[2])) continue;
+    const ux = V[b] - V[a]; const uy = V[b + 1] - V[a + 1]; const uz = V[b + 2] - V[a + 2];
+    const vx = V[d] - V[a]; const vy = V[d + 1] - V[a + 1]; const vz = V[d + 2] - V[a + 2];
+    const area = Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx) / 2;
+    if (!(area > 0)) continue;
+    samples.push([g, area]);
+    w += area;
+    m[0] += area * g[0]; m[1] += area * g[1]; m[2] += area * g[2];
+  }
+  if (w === 0) return null;
+  const mean = [m[0] / w, m[1] / w, m[2] / w];
+
+  const C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (const [g, area] of samples) {
+    const d = [g[0] - mean[0], g[1] - mean[1], g[2] - mean[2]];
+    for (let i = 0; i < 3; i += 1) for (let j = 0; j < 3; j += 1) C[i][j] += (area * d[i] * d[j]) / w;
+  }
+
+  // Jacobi: rotate away the largest off-diagonal until none is left.
+  let Q = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  for (let sweep = 0; sweep < 64; sweep += 1) {
+    let p = 0; let q = 1; let best = Math.abs(C[0][1]);
+    for (const [i, j] of [[0, 2], [1, 2]]) {
+      if (Math.abs(C[i][j]) > best) { best = Math.abs(C[i][j]); p = i; q = j; }
+    }
+    if (best < 1e-14) break;
+    const theta = 0.5 * Math.atan2(2 * C[p][q], C[q][q] - C[p][p]);
+    const c = Math.cos(theta); const s = Math.sin(theta);
+    const R = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    R[p][p] = c; R[q][q] = c; R[p][q] = s; R[q][p] = -s;
+    // C <- R^T C R, Q <- Q R
+    const mul = (A, B) => A.map((row, i) => B[0].map((_, j) => A[i].reduce((t, _v, k) => t + A[i][k] * B[k][j], 0)));
+    const Rt = [0, 1, 2].map((i) => [0, 1, 2].map((j) => R[j][i]));
+    const next = mul(mul(Rt, C), R);
+    for (let i = 0; i < 3; i += 1) for (let j = 0; j < 3; j += 1) C[i][j] = next[i][j];
+    Q = mul(Q, R);
+  }
+
+  const order = [0, 1, 2].sort((a, b) => C[b][b] - C[a][a]);
+  return {
+    mean,
+    area: w,
+    triangles: samples.length,
+    axes: order.map((i) => [Q[0][i], Q[1][i], Q[2][i]]),
+    variances: order.map((i) => C[i][i]),
+  };
+}
+
 /** Total surface area, and the mean triangle edge length derived from it. */
 export function surfaceStats(V, F) {
   let area = 0;

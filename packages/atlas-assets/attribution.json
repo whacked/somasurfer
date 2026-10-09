@@ -8,15 +8,22 @@
     "",
     "tools/check-licence-separation.mjs requires that every payload file in",
     "this package is covered by exactly one entry here, and that every entry",
-    "names a licence, a holder and a source."
+    "names a licence, a holder and a source.",
+    "",
+    "`shareAlike` is per entry, not per package. First-party assets here stay",
+    "Apache-2.0; only what derives from the BodyParts3D meshes is share-alike.",
+    "See docs/asset-licensing.md for the D1 memo and for the upstream licence",
+    "discrepancy it records."
   ],
-  "packageLicenceStatus": "pending",
-  "packageLicenceDecision": "DOG-2 D1 (mesh licence)",
+  "packageLicenceStatus": "settled",
+  "packageLicenceDecision": "DOG-2 D1 (mesh licence), approved by the repository owner 2026-10-09",
   "entries": [
     {
       "id": "placeholder-body-shell",
       "title": "Placeholder body shell",
-      "files": ["geometry/placeholder-body-shell.lowres.json"],
+      "files": [
+        "geometry/placeholder-body-shell.lowres.json"
+      ],
       "licence": "Apache-2.0",
       "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
       "holder": "GStack",
@@ -27,13 +34,29 @@
     {
       "id": "alc-1-level-index",
       "title": "ALC-1 vertebral level index",
-      "files": ["labels/alc-1-levels.json"],
+      "files": [
+        "labels/alc-1-levels.json"
+      ],
       "licence": "Apache-2.0",
       "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
       "holder": "GStack",
       "source": "First-party. Derived from docs/alc-1-spec.md.",
       "shareAlike": false,
       "note": "The addressable level set, as published in the ALC-1 spec."
+    },
+    {
+      "id": "bp3d-bd-body-template",
+      "title": "BD body template, BodyParts3D 4.0 adult",
+      "files": [
+        "templates/bp3d-4.0-adult-body-centroid.body.json"
+      ],
+      "licence": "CC-BY-SA-4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "holder": "The Database Center for Life Science (DBCLS); adaptation by GStack",
+      "source": "Derived by tools/build-bd-template.mjs from BodyParts3D/Anatomography 4.0, 99%-polygon-reduced OBJ set (IS-A tree), isa_BP3D_4.0_obj_99.zip, https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
+      "shareAlike": true,
+      "attributionStatement": "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan",
+      "note": "A spine centreline, per-level frames and per-level skin radii measured from 25 vertebra meshes and the skin mesh. An adaptation of the DBCLS meshes, so it is share-alike: D1 settled the inbound licence as CC BY-SA 2.1 Japan, which is what the OBJ payloads' own header comments state, and this derivative ships under CC BY-SA 4.0, the current version of the same licence with the same elements. The archive's web licence page now states CC BY 4.0 instead; docs/asset-licensing.md records the discrepancy and why the pipeline holds the share-alike reading. No mesh vertices are redistributed here."
     }
   ]
 }
