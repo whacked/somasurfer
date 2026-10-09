@@ -2,7 +2,7 @@
   "name": "@gstack/atlas",
   "version": "0.1.0",
   "private": true,
-  "description": "Linked 3D Atlas Explorer — build and CI spine.",
+  "description": "Linked 3D Atlas Explorer \u2014 build and CI spine.",
   "type": "module",
   "license": "Apache-2.0",
   "engines": {
@@ -10,6 +10,7 @@
   },
   "workspaces": [
     "packages/alc",
+    "packages/atlas-qa",
     "packages/atlas-web"
   ],
   "scripts": {
@@ -21,6 +22,8 @@
     "check:licences": "node tools/check-licence-separation.mjs",
     "build": "node packages/atlas-web/build.mjs",
     "perf:check": "node tools/perf-budget.mjs",
-    "verify:gates": "node tools/verify-gates.mjs"
+    "verify:gates": "node tools/verify-gates.mjs",
+    "qa:journey": "node packages/atlas-qa/bin/qa-journey.mjs",
+    "qa:negative-control": "node packages/atlas-qa/bin/qa-journey.mjs --negative-control"
   }
 }
