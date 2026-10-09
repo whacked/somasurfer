@@ -114,19 +114,24 @@ export const MUTANTS: readonly Mutant[] = [
   },
   {
     id: 'selection-switches-atlas',
-    breaks: 'selecting the brain in the body atlas navigates to the brain atlas automatically',
-    caughtBy: ['explicit-brain-navigation'],
+    breaks: 'selecting a structure navigates to the brain atlas instead of just selecting',
+    // The first selection in the journey is what notices. `explicit-brain-navigation`
+    // then reports `unverified` as a blocked dependant rather than failing, so
+    // naming it here would make the mutant look escaped.
+    caughtBy: ['select-structure-without-leaving-atlas'],
     caughtAs: 'fail',
     exercises: [],
     build: mutantOf('selection-switches-atlas', (o) =>
       new (class extends ReferenceViewer {
         async clickStructure(structureId: string): Promise<ViewState> {
-          const s = await super.clickStructure(structureId);
-          if (/brain/i.test(structureId)) {
-            this.atlas = 'brain';
-            return super.state();
-          }
-          return s;
+          await super.clickStructure(structureId);
+          // Originally this only fired for a structure whose id matched
+          // /brain/, which made the mutant depend on the fixture's naming: it
+          // escaped entirely against DOG-37's curated index, where no structure
+          // is called "brain". A mutation that only bites on one fixture is not
+          // a control.
+          this.atlas = 'brain';
+          return super.state();
         }
       })(o)),
   },
@@ -263,10 +268,14 @@ export const MUTANTS: readonly Mutant[] = [
   {
     id: 'address-string-equality',
     breaks: '"same place?" is answered by comparing canonical address strings',
+    // The two matrix rows, which are fixture-independent. `compare-two-papers`
+    // also asks the question, but it can only reach it when the fixture gives
+    // two papers that share a CELL — DOG-37's curated fixture reports almost
+    // everything region-level, so that step goes `unverified` there and naming
+    // it here made the mutant look escaped.
     caughtBy: [
       'equality-guard-different-strings-same-place',
       'equality-guard-same-string-not-asserted-same',
-      'compare-two-papers',
     ],
     caughtAs: 'fail',
     exercises: ['equality-guard'],

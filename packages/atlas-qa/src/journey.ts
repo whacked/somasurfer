@@ -352,11 +352,26 @@ export const JOURNEY: readonly JourneyStep[] = [
               + 'list with fractions, never one name — a cell overlapping several structures that reports '
               + 'one of them has made a choice the data does not support.',
             );
-            const fractions = names.map((n) => n.fraction);
-            c.must(
-              new Set(fractions).size > 1 || fractions.length < 2,
-              `every displayed fraction is ${fractions[0]}, which cannot be right for nested structures`,
+            // The fractions themselves, against the index, per structure.
+            //
+            // NOT a distinctness check. An earlier version asserted that two
+            // displayed fractions could not both be 1.0, on the reasoning that
+            // nested structures must differ — and DOG-37's curated fixture has
+            // two structures occupying the IDENTICAL cell, where 1.0 and 1.0 is
+            // the right answer. Comparing against the index is both stricter
+            // and correct: it catches a wrong fraction without inventing a rule
+            // about which fractions are possible.
+            const expectedFraction = new Map(
+              expected.matches.map((m) => [m.structure.id, m.fraction] as const),
             );
+            for (const n of names) {
+              const want = expectedFraction.get(n.structureId);
+              if (want === undefined) continue;
+              c.must(
+                Math.abs(n.fraction - want) < 1e-9,
+                `containment fraction for ${n.structureId}: index says ${want}, panel showed ${n.fraction}`,
+              );
+            }
           }
         }
       }

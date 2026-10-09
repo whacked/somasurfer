@@ -37,7 +37,8 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { covering, parse, type Covering } from '../../alc/src/index.ts';
+import { covering, encodeBrainVolume, parse, type Covering } from '../../alc/src/index.ts';
+import { templateSet } from './templates.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const PACKAGE_ROOT = dirname(HERE);
@@ -162,6 +163,34 @@ function sha256(text: string): string {
   return createHash('sha256').update(text).digest('hex');
 }
 
+/**
+ * Places the fixture's provenance is thinner than DOG-1 §5 asks for.
+ *
+ * Reported, never fatal. Each one is a constraint on the UI rather than a
+ * defect in the data: a paper with no source link must say that explicitly
+ * instead of rendering a dead link, and a finding with no evidence summary must
+ * not present an empty tooltip as provenance. Carried into the report so task 7
+ * knows which gaps were present in the data it ran against — otherwise a
+ * missing hover is indistinguishable from a build that drops it.
+ */
+export function provenanceGaps(fixture: ResearchFixture): string[] {
+  const gaps: string[] = [];
+  for (const p of fixture.papers) {
+    if (!p.sourceUrl) {
+      gaps.push(
+        `paper ${p.id} has no source link, so the UI must show "no source link recorded" rather than a `
+        + 'dead link or an empty field',
+      );
+    }
+    for (const f of p.findings) {
+      if (!f.evidence || f.evidence === 'no evidence summary recorded') {
+        gaps.push(`finding ${f.id} has no evidence summary, so its hover has nothing to show`);
+      }
+    }
+  }
+  return gaps;
+}
+
 /** Problems with the fixture's own shape. These DO fail, loudly: a broken fixture is not a test result. */
 export function fixtureShapeProblems(raw: unknown, path: string): string[] {
   const problems: string[] = [];
@@ -202,7 +231,16 @@ export function fixtureShapeProblems(raw: unknown, path: string): string[] {
     // Provenance on every link is DOG-1 §5 and plan §6, not a nicety: a
     // highlight the user cannot trace is a claim with no source.
     if (typeof p.citation !== 'string' || p.citation === '') problems.push(at(`paper ${p.id} has no citation`));
-    if (typeof p.sourceUrl !== 'string' || p.sourceUrl === '') problems.push(at(`paper ${p.id} has no sourceUrl`));
+    // `sourceUrl` is deliberately NOT required.
+    //
+    // DOG-37's curated fixture carries a 1909 monograph and a 1999 paper with
+    // `identifier: { kind: 'none' }` and no URL, which is a correct curation
+    // decision rather than missing data — there is no DOI for Brodmann 1909.
+    // This check used to be fatal and refused to load their whole fixture over
+    // it, which would have made a legitimate editorial call look like a broken
+    // deliverable. The absence is reported by `provenanceGaps()` instead, and
+    // what it actually constrains is the UI: a paper with no source link has to
+    // say so, rather than rendering a dead one.
     if (!Array.isArray(p.findings) || p.findings.length === 0) problems.push(at(`paper ${p.id} has no findings`));
     for (const fi of p.findings ?? []) {
       if (typeof fi?.id !== 'string' || fi.id === '') { problems.push(at(`paper ${p.id} has a finding with no id`)); continue; }
@@ -256,20 +294,217 @@ export function loadFixtureFile(path: string): ResearchFixture {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Reading DOG-37's curated fixture
+// ---------------------------------------------------------------------------
+
 /**
- * The fixture to run against: DOG-37's if it exists, ours otherwise.
+ * DOG-37's research model, adapted to the shape the journey asserts over.
+ *
+ * Their schema is richer than this harness needs and differently organised:
+ * papers carry structured citations rather than a citation string, findings are
+ * a top-level array keyed by `paperId` rather than nested, mappings sit between
+ * a finding and a structure, and the name index is a separate file. All of that
+ * is the right shape for the product — a mapping is exactly where provenance
+ * belongs — and none of it is a reason for QA to hold a second copy of the
+ * data.
+ *
+ * So this adapts rather than duplicates, and it is deliberately strict: a shape
+ * it does not recognise throws, naming what it found. The alternative is an
+ * adapter that quietly produces an empty paper list, which the journey would
+ * then report as the build revealing no regions — a product defect raised
+ * against a fixture-reading bug.
+ *
+ * Three spatial kinds, and the third is why this is not a field rename:
+ *
+ *   region-level  no spatial detail. `spatialDetail: false`, no cells. This is
+ *                 the common case in their fixture (17 of 19 mappings) and is
+ *                 the one that must render as an explicit marker.
+ *   cells         explicit ALC cells, used as given.
+ *   coordinates   millimetres in a named frame, which have to be ENCODED to
+ *                 cells before anything can be compared. Encoding is where a
+ *                 silent downgrade would hide, so a failure here throws.
+ */
+interface CuratedSpatial {
+  kind: string;
+  cells?: string[];
+  frame?: string;
+  pointsMm?: number[][];
+  digits?: number;
+}
+
+function adaptCurated(research: Record<string, unknown>, names: Record<string, unknown>, paths: {
+  research: string;
+  names: string;
+}): Omit<ResearchFixture, 'source'> {
+  const papers = research.papers as Array<Record<string, unknown>> | undefined;
+  const findings = research.findings as Array<Record<string, unknown>> | undefined;
+  const structures = names.structures as Array<Record<string, unknown>> | undefined;
+  if (!Array.isArray(papers) || !Array.isArray(findings)) {
+    throw new Error(
+      `${paths.research}: expected a curated fixture with \`papers\` and a top-level \`findings\` array, `
+      + `found keys ${JSON.stringify(Object.keys(research))}. The adapter in packages/atlas-qa/src/fixture.ts `
+      + 'needs updating for the new shape rather than guessing at it.',
+    );
+  }
+  if (!Array.isArray(structures)) {
+    throw new Error(`${paths.names}: expected \`structures\`, found ${JSON.stringify(Object.keys(names))}`);
+  }
+
+  const byPaper = new Map<string, Array<Record<string, unknown>>>();
+  for (const f of findings) {
+    const paperId = f.paperId as string;
+    if (!byPaper.has(paperId)) byPaper.set(paperId, []);
+    byPaper.get(paperId)!.push(f);
+  }
+
+  const citationOf = (p: Record<string, unknown>): string => {
+    const authors = Array.isArray(p.authors) ? (p.authors as string[]) : [];
+    const lead = authors.length > 2 ? `${authors[0]} et al.` : authors.join(' and ');
+    const id = p.identifier as { kind?: string; value?: string } | undefined;
+    return [lead, p.year ? `(${p.year})` : '', p.title, p.venue, id?.value ? `${id.kind}:${id.value}` : '']
+      .filter(Boolean)
+      .join('. ');
+  };
+
+  const cellsOfMapping = (spatial: CuratedSpatial, where: string): { cells: string[]; detail: boolean } => {
+    if (spatial.kind === 'region-level') return { cells: [], detail: false };
+    if (spatial.kind === 'cells') {
+      const cells = spatial.cells ?? [];
+      if (cells.length === 0) throw new Error(`${where}: spatial kind "cells" with no cells`);
+      return { cells, detail: true };
+    }
+    if (spatial.kind === 'coordinates') {
+      const frame = spatial.frame;
+      const points = spatial.pointsMm ?? [];
+      const digits = spatial.digits ?? 4;
+      if (frame !== 'BV') {
+        throw new Error(
+          `${where}: coordinates in frame ${JSON.stringify(frame)}. Only BV can be encoded here; `
+          + 'extend the adapter rather than dropping the mapping.',
+        );
+      }
+      const brain = templateSet('brain').brainVolume;
+      if (!brain) throw new Error(`${where}: no brain template to encode coordinates against`);
+      const cells = points.map((p) => encodeBrainVolume(brain, p as [number, number, number], digits).address);
+      if (cells.length === 0) throw new Error(`${where}: spatial kind "coordinates" with no points`);
+      return { cells, detail: true };
+    }
+    throw new Error(
+      `${where}: unrecognised spatial kind ${JSON.stringify(spatial.kind)}. The harness must not guess `
+      + 'whether an unknown kind carries spatial detail — that is the one thing it is here to report.',
+    );
+  };
+
+  return {
+    id: `${(research.version as string) ?? 'curated'}`,
+    nameIndexVersion: (names.version as string) ?? 'unversioned',
+    structures: structures.map((s) => ({
+      id: s.id as string,
+      name: s.name as string,
+      // Their index does not label an atlas, so it is derived from the frame
+      // the cells are addressed in: BD is the body, BV and BR are the brain.
+      atlas: ((s.cells as string[]) ?? []).some((c) => c.startsWith('BD-')) ? 'body' : 'brain',
+      cells: (s.cells as string[]) ?? [],
+    })),
+    papers: papers.map((p) => {
+      const id = p.id as string;
+      return {
+        id,
+        citation: citationOf(p),
+        sourceUrl: (p.sourceUrl as string) ?? '',
+        findings: (byPaper.get(id) ?? []).map((f) => {
+          const mappings = (f.mappings as Array<Record<string, unknown>>) ?? [];
+          const where = `${paths.research}: finding ${f.id as string}`;
+          const parts = mappings.map((m) => cellsOfMapping(m.spatial as CuratedSpatial, where));
+          return {
+            id: f.id as string,
+            summary: (f.statement as string) ?? '',
+            regions: mappings.map((m) => m.structureId as string),
+            cells: [...new Set(parts.flatMap((x) => x.cells))],
+            evidence:
+              mappings
+                .map((m) => (m.evidence as { summary?: string } | undefined)?.summary)
+                .filter(Boolean)
+                .join(' ') || 'no evidence summary recorded',
+            // A finding has spatial detail only if SOME mapping does. A finding
+            // whose every mapping is region-level is the marker case.
+            spatialDetail: parts.some((x) => x.detail),
+          };
+        }),
+      };
+    }),
+  };
+}
+
+/**
+ * The fixture to run against: DOG-37's if it is there, ours otherwise.
  *
  * `preferOwn` exists for the harness's own tests, which must keep asserting
  * against a known input even after the real fixture lands — otherwise the
  * harness's self-tests start failing for reasons that belong to someone else's
- * deliverable.
+ * deliverable, and a red suite stops meaning anything.
  */
 export function resolveFixture(options: { preferOwn?: boolean } = {}): ResearchFixture {
-  if (!options.preferOwn && existsSync(RESEARCH_FIXTURE_DIR)) {
-    const candidates = readdirSync(RESEARCH_FIXTURE_DIR).filter((f) => f.endsWith('.json')).sort();
-    if (candidates.length > 0) return loadFixtureFile(join(RESEARCH_FIXTURE_DIR, candidates[0]));
+  if (!options.preferOwn) {
+    const curated = loadCuratedFixture();
+    if (curated) return curated;
   }
   return loadFixtureFile(OWN_FIXTURE_PATH);
+}
+
+/** DOG-37's fixture pair, or null when it is not there yet. */
+export function loadCuratedFixture(): ResearchFixture | null {
+  if (!existsSync(RESEARCH_FIXTURE_DIR)) return null;
+  const files = readdirSync(RESEARCH_FIXTURE_DIR).filter((f) => f.endsWith('.json'));
+  // Selected by content, not by filename order: the directory holds a names
+  // index alongside the research data, and picking the alphabetically first
+  // file loaded the name index as though it were the papers.
+  const researchPath = files
+    .map((f) => join(RESEARCH_FIXTURE_DIR, f))
+    .find((p) => {
+      try {
+        return Array.isArray((JSON.parse(readFileSync(p, 'utf8')) as { papers?: unknown }).papers);
+      } catch {
+        return false;
+      }
+    });
+  const namesPath = files
+    .map((f) => join(RESEARCH_FIXTURE_DIR, f))
+    .find((p) => {
+      try {
+        const j = JSON.parse(readFileSync(p, 'utf8')) as { structures?: unknown; papers?: unknown };
+        return Array.isArray(j.structures) && !Array.isArray(j.papers);
+      } catch {
+        return false;
+      }
+    });
+  if (!researchPath || !namesPath) return null;
+
+  const researchText = readFileSync(researchPath, 'utf8');
+  const namesText = readFileSync(namesPath, 'utf8');
+  const adapted = adaptCurated(
+    JSON.parse(researchText) as Record<string, unknown>,
+    JSON.parse(namesText) as Record<string, unknown>,
+    { research: researchPath, names: namesPath },
+  );
+  const problems = fixtureShapeProblems(adapted, researchPath);
+  if (problems.length > 0) {
+    throw new Error(`curated fixture is not usable after adaptation:\n  ${problems.join('\n  ')}`);
+  }
+  return {
+    ...adapted,
+    source: {
+      path: `${rel(researchPath)} + ${rel(namesPath)}`,
+      // Both files, so the pin covers the pair rather than half of it.
+      sha256: sha256(`${researchText} ${namesText}`),
+      kind: 'curated',
+    },
+  };
+}
+
+function rel(p: string): string {
+  return p.startsWith(REPO_ROOT) ? p.slice(REPO_ROOT.length + 1) : p;
 }
 
 /** Requirements this fixture cannot express, as `{ stepId -> reasons }`. */
