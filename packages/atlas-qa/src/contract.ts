@@ -159,8 +159,16 @@ export interface Highlight {
   readonly regionLevelOnly: boolean;
   /** Per-paper colour token. Distinctness is asserted, the value is not. */
   readonly colour: string;
-  /** True where another selected paper also covers these cells. */
-  readonly hatched: boolean;
+  /**
+   * The subset of `cells` another selected paper also covers, hatched on screen.
+   *
+   * A subset and not a boolean, which running the suite is what established: a
+   * finding covering two cells where only one is shared would otherwise have to
+   * declare itself wholly overlapping or not at all, and a build hatching the
+   * whole finding is overstating the overlap. Overlap is computed per cell by
+   * covering intersection, so it is expressible per cell, so the type says so.
+   */
+  readonly hatchedCells: readonly string[];
 }
 
 export interface SelectionState {
@@ -196,7 +204,17 @@ export interface ViewState {
   readonly selection: SelectionState;
   /** The full URL, as the address bar shows it. */
   readonly url: string;
-  /** Canonical address in the URL's `a` parameter, or null. */
+  /**
+   * The canonical address the view is currently RESTORED TO, or null.
+   *
+   * Not simply the `a` parameter. Null when the parameter is absent, empty, or
+   * was rejected — because a deep link carrying a bad address leaves that
+   * address in the URL bar (the user needs to see and fix it) while restoring
+   * nothing. Reading this straight off the query string would make every
+   * rejection row report that the address "restored" fine, which is the
+   * opposite of the behaviour under test. `url` is still the raw string, for
+   * the hygiene rows.
+   */
   readonly urlAddress: string | null;
   readonly cell: CellRender | null;
   /** Ranked names with fractions. Never a single name — see `journey.ts`. */

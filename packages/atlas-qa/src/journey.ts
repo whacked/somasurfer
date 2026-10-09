@@ -555,7 +555,7 @@ export const JOURNEY: readonly JourneyStep[] = [
       const cb: Covering = coveringOfPaper(ctx.fixture, second);
       const expectedOverlap = coveringIntersect(ca, cb);
       const hatched = [
-        ...new Set(s.research.highlights.filter((h) => h.hatched).flatMap((h) => [...h.cells])),
+        ...new Set(s.research.highlights.flatMap((h) => [...h.hatchedCells])),
       ].sort();
 
       if (expectedOverlap.cells.length === 0) {

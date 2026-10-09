@@ -429,7 +429,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     expect: {
       observable:
         'Against the folding fixture the anterior T06 cell reports a FOLD, naming every competing level '
-        + '(C07 and T06), and says the address is ambiguous. It must not be reported as the point having '
+        + '(T01 and T06), and says the address is ambiguous. It must not be reported as the point having '
         + 'left the body: this point is well inside it, and the coordinate system is what failed.',
       messages: ['folded'],
       forbiddenMessages: ['clamped_cranial', 'clamped_caudal'],
@@ -438,7 +438,14 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       urlAddress: 'BD-T06-12O-311',
       cellKind: 'extent',
       atlas: 'body',
-      textMustContain: ['C07', 'T06'],
+      // Measured, not assumed. The skin scan reports a T06 site whose
+      // claimants are C07 and T06, and authoring from that reading was wrong:
+      // the scan samples the level's own skin at r=1, whereas this address
+      // denotes a CELL, and its centre sits at mid-depth where the competing
+      // claimant is T01 rather than C07. The fold is real at both points and
+      // the claimant set differs, so the row has to name the claimants of the
+      // cell it actually asks about.
+      textMustContain: ['T01', 'T06'],
     },
     oracle: [{ kind: 'locate', address: 'BD-T06-12O-311', template: 'fold-fixture', flags: { folded: true } }],
     why:
@@ -777,17 +784,24 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     expect: {
       observable:
         'With the geometry failing to load the atlas says so plainly, and the address STILL parses and '
-        + 'still resolves to its ranked name list. A failed mesh fetch must not take the addressing layer '
-        + 'down with it, because names and addresses need no mesh at all.',
+        + 'still resolves to its ranked name list. Nothing is drawn and the camera does not move — there '
+        + 'is no mesh to look at, so flying to coordinates would present an empty viewport as a result — '
+        + 'but the address stays in the URL and the names are there. A failed mesh fetch must not take the '
+        + 'addressing layer down with it, because names and addresses need no mesh at all.',
       messages: ['assets_unavailable', 'name_index_version'],
       forbiddenMessages: ['rejected_grammar', 'no_template'],
       camera: 'unchanged',
       unchanged: ['layers'],
       urlAddress: 'BD-T07-03O-531',
+      cellKind: null,
       atlas: 'body',
       assetsAvailable: false,
       namesResolve: true,
     },
+    why:
+      'Plan §6\'s last row states the resolution half and says nothing about the camera. This row pins '
+      + 'the rest: no geometry means nothing drawn and no camera move. Challenge it here rather than '
+      + 'discovering the build chose differently during task 7.',
   },
 
   // -------------------------------------------------------------------------
@@ -875,7 +889,12 @@ export function matrixIntegrityProblems(rows: readonly MatrixRow[] = DEEP_LINK_M
     const at = `row ${row.id}`;
     if (seen.has(row.id)) problems.push(`${at}: duplicate row id`);
     seen.add(row.id);
-    if (!/^[a-z0-9-]+$/.test(row.id)) problems.push(`${at}: id must be kebab-case`);
+    // Kebab-case, but an anatomical label keeps its own capitalisation:
+    // `variant-T13` names the level it is about, and lower-casing it to
+    // `variant-t13` would stop the id matching the address in the row.
+    if (!/^[a-z][A-Za-z0-9-]*$/.test(row.id)) {
+      problems.push(`${at}: id must start lower-case and be kebab-case (anatomical labels keep their case)`);
+    }
     if (row.classes.length === 0) problems.push(`${at}: belongs to no case class`);
     for (const c of row.classes) {
       if (!(REQUIRED_CLASSES as readonly string[]).includes(c)) {

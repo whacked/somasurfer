@@ -182,6 +182,11 @@ export class ReferenceViewer implements ViewerDriver {
   protected template: TemplateChoice = 'body';
   protected assetsOk = true;
   protected url = '/';
+  /**
+   * The address the view is restored to — distinct from whatever the URL says.
+   * A rejected deep link leaves its address in `url` and leaves this null.
+   */
+  protected acceptedAddress: string | null = null;
 
   protected filter: string | null = null;
   protected selectedPapers: string[] = [];
@@ -241,9 +246,7 @@ export class ReferenceViewer implements ViewerDriver {
   }
 
   protected urlAddress(): string | null {
-    const params = new URL(this.url, 'https://qa.invalid').searchParams;
-    const a = params.get('a');
-    return a && a !== '' ? a : null;
+    return this.acceptedAddress;
   }
 
   // -- navigation ----------------------------------------------------------
@@ -255,6 +258,7 @@ export class ReferenceViewer implements ViewerDriver {
     this.views = { body: freshView('body'), brain: freshView('brain') };
     this.stashedBodyView = null;
     this.atlas = 'body';
+    this.acceptedAddress = null;
     this.filter = null;
     this.selectedPapers = [];
     this.template = (params.get(QA_URL_PARAMS.template) as TemplateChoice | null) ?? 'body';
@@ -295,12 +299,15 @@ export class ReferenceViewer implements ViewerDriver {
       return;
     }
 
-    if (parsed.frame === 'BV' || parsed.frame === 'BR') {
-      if (parsed.frame === 'BV' && options.fromUrl) this.atlas = 'brain';
-    }
-
-    const v = this.view();
+    // Resolve BEFORE switching atlas. Switching first and then discovering the
+    // address does not resolve leaves the user in the brain atlas looking at an
+    // error about an address that was never shown — and it made the
+    // `no_template` row report that the camera and layers had changed, which
+    // they had, for no reason the user asked for.
     const templates = templateSet(this.template);
+    const targetAtlas: 'body' | 'brain' =
+      parsed.frame === 'BV' && options.fromUrl ? 'brain' : this.atlas;
+
     let located;
     try {
       located = locate(parsed.canonical, templates);
@@ -308,6 +315,8 @@ export class ReferenceViewer implements ViewerDriver {
       this.reject(error as AlcError, parsed.canonical);
       return;
     }
+    this.atlas = targetAtlas;
+    const v = this.view();
 
     v.templateId = located.templateId;
     const flags = located.flags;
@@ -348,17 +357,23 @@ export class ReferenceViewer implements ViewerDriver {
       v.messages.push({ code: 'folded', severity: 'notice', text: notes });
     }
 
-    v.camera = {
-      targetMm: [...displayed.pointMm] as unknown as Vec3,
-      distanceMm: Math.max(50, Math.hypot(...displayed.extentMm) * 8),
-      orientation: [0, 0, 0, 1],
-    };
-    v.cell = {
-      kind: 'extent',
-      extentMm: [...displayed.extentMm] as unknown as Vec3,
-      addressDigits: parsed.digits.length,
-      displayedDigits: displayAddress ? parse(displayAddress).digits.length : 0,
-    };
+    // DECISION: with no geometry loaded there is nothing to draw and nothing to
+    // fly to, so neither happens. The address still resolves and the names are
+    // still shown — plan §6's last row — but presenting an empty viewport as a
+    // located result would claim more than the build can deliver.
+    if (this.assetsOk) {
+      v.camera = {
+        targetMm: [...displayed.pointMm] as unknown as Vec3,
+        distanceMm: Math.max(50, Math.hypot(...displayed.extentMm) * 8),
+        orientation: [0, 0, 0, 1],
+      };
+      v.cell = {
+        kind: 'extent',
+        extentMm: [...displayed.extentMm] as unknown as Vec3,
+        addressDigits: parsed.digits.length,
+        displayedDigits: displayAddress ? parse(displayAddress).digits.length : 0,
+      };
+    }
     v.selectionAddress = parsed.canonical;
     v.names = this.rankedNames(parsed.canonical);
     v.messages.push({
@@ -402,10 +417,12 @@ export class ReferenceViewer implements ViewerDriver {
     // A rejection changes nothing else: no camera move, no selection, no URL.
   }
 
+  /** Accepting an address is what puts it in the URL, and the two are recorded together. */
   protected setUrlAddress(address: string): void {
     const u = new URL(this.url, 'https://qa.invalid');
     u.searchParams.set('a', address);
     this.url = `${u.pathname}${u.search}`;
+    this.acceptedAddress = address;
   }
 
   protected rankedNames(address: string): RankedName[] {
@@ -558,10 +575,12 @@ export class ReferenceViewer implements ViewerDriver {
       const paper = this.fixture.papers.find((p) => p.id === paperId)!;
       const colour = PAPER_COLOURS[this.fixture.papers.findIndex((p) => p.id === paperId) % PAPER_COLOURS.length];
       for (const finding of paper.findings) {
-        const hatched = finding.cells.some((cell) =>
+        // Per cell, not per finding: a finding covering two cells where only
+        // one is shared hatches that one. Covering intersection throughout,
+        // never string equality.
+        const hatchedCells = finding.cells.filter((cell) =>
           this.selectedPapers.some((other) => {
             if (other === paperId) return false;
-            // Covering intersection, never string equality.
             return coveringIntersect(covering([cell]), coverings.get(other)!).cells.length > 0;
           }),
         );
@@ -571,7 +590,7 @@ export class ReferenceViewer implements ViewerDriver {
           cells: [...finding.cells],
           regionLevelOnly: !finding.spatialDetail,
           colour,
-          hatched,
+          hatchedCells,
         });
       }
     }
