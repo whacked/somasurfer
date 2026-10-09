@@ -57,6 +57,7 @@ npm run check:node          # the running Node matches .nvmrc
 npm run test:counted        # conformance suite + a floor on how many tests ran
 npm run audit:check         # generated docs are byte-identical to the code
 npm run audit:template      # body template admissibility (idle until one exists)
+npm run check:research      # the curated research data, its citations and its index
 npm run check:licences      # no asset licence can reach the Apache-2.0 code
 npm run build               # the static site into packages/atlas-web/dist
 npm run perf:check          # the performance budget, against the fixture
@@ -72,8 +73,16 @@ npm run build && node packages/atlas-web/serve.mjs
 ### What the gates have actually caught
 
 A gate nobody has watched fail is decoration, so `npm run verify:gates` breaks
-each of the nine on purpose, requires a recognisable message back, and checks
-the tree comes back clean. Nine staged, nine caught, every run.
+each gate on purpose, requires a recognisable message back, and checks the tree
+comes back clean. **16 staged breakages, 16 caught, every run.**
+
+Three further cases assert the opposite — `mustPass`, meaning the gate is
+required *not* to fail on a condition it is put into. A gate that goes red on
+something that is not a defect is as broken as one that passes a defect and
+costs more, because it spends the credibility that makes a red build worth
+stopping for. Two of the three stand up an asset index the branch does not have,
+so that the half of the research gate which only runs when that index exists is
+exercised here rather than the first time somebody lands it.
 
 One was not staged, and it is worth more than the nine. At `0ebd2fc` the
 committed `docs/alc-1-attack-report.md` still listed QA-5 as open after the test
