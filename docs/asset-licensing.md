@@ -1,14 +1,19 @@
 # Atlas asset licensing — the D1 memo
 
-**Status:** D1 implemented; one material decision routed to the repository owner
+**Status:** D1 implemented and settled; share-alike confirmed MANDATORY by the owner
 **Date:** 2026-10-09
 **Owner:** Anatomy Data Engineer
 **Decides:** DOG-2 D1 (mesh licence), DOG-35 licence clearance
 
 This is an engineering memo. It records what was measured about each upstream
 licence, what the pipeline does about it, and what is *not* cleared. It is not
-legal advice, and the one place where a commercial release turns on a reading
-rather than on a measurement is called out in §3 and routed to the owner.
+legal advice.
+
+Both open questions were put to the repository owner on 2026-10-09 and both are
+answered. Share-alike on the atlas geometry is **mandatory** (§3). The brain
+parcellation verdict **stands as NOT CLEARED**, and the owner's direction is to
+route around it with first-party labels rather than to negotiate for someone
+else's parcellation (§4).
 
 ---
 
@@ -25,9 +30,10 @@ are implemented rather than described:
 | code packages stay Apache-2.0 | `packages/alc`, `packages/atlas-web`, `atlas.licenceClass: "code"` | rules 1–4 |
 | no build-time dependency on an asset licence | no dependency edge, no import, asset package outside the workspace list, no asset bytes in the bundle | rules 2, 3, 4, 6, 7 |
 
-**The atlas geometry therefore cannot be made proprietary.** That is a
-consequence of D1, and §3 is about whether it is a *mandatory* consequence or an
-elective one.
+**The atlas geometry therefore cannot be made proprietary.** The owner confirmed
+on 2026-10-09 that this consequence is **mandatory** rather than elective, which
+settles the one thing §2's upstream discrepancy could otherwise have reopened.
+See §3.
 
 ### What actually ships, per file
 
@@ -92,13 +98,17 @@ rather than a preference:
   with the same elements.)
 - If upstream really is BY 4.0, shipping BY-SA 4.0 is **still permitted** — CC
   BY 4.0 §3(b) explicitly contemplates an Adapter's License on adapted material.
-  It only makes the "geometry cannot be proprietary" consequence mandatory where
-  it could have been elective.
+  It would only mean we were being stricter than obliged.
 
-Conservative now, reversible later, never retroactively wrong. The reverse
-choice — treating it as BY 4.0 and relicensing the geometry proprietary — is not
-reversible, because by the time the discrepancy is resolved the geometry has
-already shipped under terms that may not have been ours to grant.
+Never retroactively wrong, in other words, whichever way the discrepancy
+resolves. The reverse choice — treating it as BY 4.0 and relicensing the
+geometry proprietary — is the one that cannot be undone, because by the time the
+discrepancy is settled the geometry has already shipped under terms that may not
+have been ours to grant.
+
+That argument is what the decision in §3 was taken on, and the decision has now
+removed the second branch: the owner elected the strict reading, so being
+stricter than obliged is the outcome and not a provisional posture.
 
 ### ICBM152 2009c — permissive, and no image data redistributed
 
@@ -134,39 +144,40 @@ which BY-SA 4.0 satisfies, so the combined file is BY-SA 4.0 overall.
 
 ---
 
-## 3. The one material decision for the owner
+## 3. Share-alike is MANDATORY — decided by the owner, 2026-10-09
 
-**The share-alike consequence of D1 may be elective rather than mandatory, and
-that is a product call.**
+The discrepancy in §2 was put to the repository owner, with the evidence and
+with the observation that holding share-alike cannot create a violation under
+either reading. **The owner chose `mandatory`:**
 
-D1 was approved on the understanding that BodyParts3D is CC BY-SA 2.1 Japan,
-which is what its file headers say. The archive's web licence page now says CC
-BY 4.0. If the page is the operative statement, then nothing obliges the atlas
-geometry to stay share-alike — we would be choosing it.
+> **Mandatory — the atlas geometry can never be made proprietary.**
 
-The engineering posture does not change either way: §2 explains why holding
-share-alike cannot create a violation under either reading, so the pipeline is
-safe to run and the assets are safe to ship **today** regardless of how this
-resolves. What the owner may want to decide is whether to *keep* the share-alike
-commitment, because it is the difference between:
+So this is settled, and settled in the strict direction. It is not a default we
+fell into and not a posture pending DBCLS; it is a decision, and the rest of
+this section is what it forecloses.
 
-- **mandatory** — the atlas geometry can never be made proprietary, full stop; or
-- **elective** — we currently ship it share-alike by choice, and a future
-  release could be relicensed.
+**What it means.** The OBJ file headers govern. Every asset in this package that
+derives from the BodyParts3D meshes is share-alike permanently: the body
+template, `names.json`, `coverings.json`, and anything a later release derives
+from them. **No future release can relicense the atlas geometry proprietary**,
+whatever DBCLS may later say about their own page.
 
-Recommended action, in order:
+**What it closes.** There is no D1a. Asking DBCLS to reconcile their headers
+with their page is still worth doing as housekeeping, and it would still be
+useful to know, but it can no longer change our outcome — a confirmation of
+CC BY 4.0 upstream would merely mean we are being stricter than obliged, which
+is exactly what the owner elected. An engineer finding that confirmation later
+must not read it as permission to relax this.
 
-1. **Ask DBCLS to confirm which statement governs the current archive**, and to
-   update the OBJ headers or the page so they agree. One email; they are
-   responsive and the discrepancy is plainly an oversight on one side or the
-   other.
-2. Until they answer, **keep shipping BY-SA 4.0**. No change required.
-3. If DBCLS confirms BY 4.0 **and** the owner wants proprietary geometry later,
-   that is a new decision (call it D1a) and it needs a lawyer's read on the
-   adaptation question, not an engineer's.
+**What it does not touch.** First-party assets in this package stay Apache-2.0
+and the ICBM152-derived `BV` template stays under the permissive MNI BIC terms
+(§2) — the decision is about *the geometry derived from BodyParts3D*, not about
+the directory. Code packages remain Apache-2.0 with no build-time dependency on
+any asset licence, which is §1's table and is checked on every push.
 
-Nothing in v1 is blocked on this. It is recorded here so the choice is made
-deliberately rather than discovered after release.
+One consequence worth stating plainly for whoever plans a commercial release:
+share-alike does not prevent commercial use. It prevents *proprietary* use. The
+atlas geometry can be sold, hosted and built on; it cannot be closed.
 
 ---
 
@@ -206,22 +217,66 @@ did not respond. That absence of verification is not a gap in the verdict — it
 in writing, and "we could not read the terms" is a reason to ship without names,
 never a reason to ship with them.
 
-### What clearing it would take
+### The owner's direction, 2026-10-09 — the verdict stands and the route is first-party labels
 
-1. A written redistribution grant, per parcellation, covering the intended use
-   (including commercial, if that is wanted) — obtained by whoever owns
-   commercial terms, not by this pipeline.
-2. Then a `BV` name index built the same way as the `BD` one: a covering per
-   parcel from the parcellation volume, an explicit index version, and the same
-   `tools/verify-asset-templates.mjs` checks.
-3. The index version is what makes step 2 safe to do later: a name is only true
-   relative to an index, every `resolve()` result is stamped with one, and
-   `tools/verify-asset-templates.mjs` proves an address keeps its millimetres
-   and its canonical form across an index revision. **Adding `BV` names later
-   invalidates no address already issued.**
+The verdict was put to the owner. They did not ask for any of the three to be
+chased, and they drew a distinction that is the useful part of the answer:
 
-A cheaper route, if commercial terms stay unresolved: a permissively licensed
-parcellation. That is a separate evaluation and is not on the v1 path.
+> We want to get the usable models for display. Then we want to get to the
+> labels that are usable, corresponding to literature. **The labels themselves
+> that are in literature should not be copyrighted kinds. But, if they come with
+> the model and are attached as copyrighted materials such that we do not have
+> license to use them, we will not use them.** […] Either you find a different
+> model to use in the Atlas, and we apply labels ourselves based on later
+> reconstruction, or you use the available models without violating any
+> copyrights, and we can tack on the labels later ourselves.
+
+**The distinction, stated precisely, because it is what makes the route legal.**
+Two different things get called "a label":
+
+| | what it is | protectable? |
+| --- | --- | --- |
+| the **term** | "hippocampus", "Brodmann area 44" — an anatomical name used in the literature | No. A name is not a creative work, and anatomical nomenclature is the common vocabulary of the field. This is what the owner means by "should not be copyrighted kinds". |
+| the **parcellation** | the voxel-by-voxel delineation that assigns each millimetre of a template to one of those terms | **Yes, in substance.** It is the product of expert labour and the thing an atlas publisher actually licenses. This is what Harvard-Oxford, AAL and Julich-Brain are. |
+
+So "use the names, not the parcellation" is not a loophole — it is the only
+reading under which the two halves of the owner's answer are consistent. We may
+use the vocabulary freely; we may not take someone else's delineation.
+
+**Consequences, which are now decisions and not options:**
+
+1. **`NOT CLEARED` is final for these three, not pending.** The owner's "we will
+   not use them" closes it. Nobody should reopen Harvard-Oxford, AAL or
+   Julich-Brain by obtaining a grant unless the owner asks for that specifically;
+   the instruction was to route around them, not to negotiate with them.
+2. **The ICBM152 `BV` template already satisfies the owner's second path.** It is
+   a usable model for display, under permissive MNI BIC terms (§2), carrying no
+   labels and therefore no label licence. "Use the available models without
+   violating any copyrights" is what shipped. No change is required to it.
+3. **`BV` keeps shipping coordinates without names until a first-party label
+   layer exists**, and that layer is new scope rather than a gap in this task.
+   What it needs, so the next owner of it is not starting cold:
+   - a `BV` name index with the same shape as the `BD` one — a covering per
+     structure, an explicit index version, and the same
+     `tools/verify-asset-templates.mjs` checks;
+   - per structure, a delineation **we** produced, with its provenance recorded
+     the way every other number in this package is. Reconstructing one from the
+     literature is a research task, not a pipeline task, and it is the step the
+     owner called "later reconstruction";
+   - the terms themselves can come from UBERON and FMA, which this package
+     already reads and which are CC BY 3.0 and already attributed.
+4. **Deferring it costs nothing already issued.** A name is only true relative to
+   an index, every `resolve()` result is stamped with one, and
+   `tools/verify-asset-templates.mjs` proves an address keeps its millimetres and
+   its canonical form across an index revision. **Adding `BV` names later
+   invalidates no address already issued** — which is precisely why "tack on the
+   labels later" is a safe instruction to accept.
+
+One thing I did **not** do, deliberately: I did not go looking for a
+permissively licensed parcellation to substitute. That would be the third path
+and the owner named only two, both of which end at labels we make ourselves. If
+a permissive parcellation is wanted as a shortcut, it needs to be asked for —
+adopting someone else's delineation is the thing both of the owner's paths avoid.
 
 ---
 
@@ -244,6 +299,6 @@ Not a v1 blocker, and it must not be enabled to make a test pass.
 | DBCLS attribution ships with the assets | **done** — `attribution.json` → `ATTRIBUTION.md` → `dist/assets/`, enforced |
 | mesh package and derivatives under a compatible share-alike licence | **done** — CC BY-SA 4.0, per-entry `shareAlike: true` |
 | code packages still Apache-2.0, no build-time dependency on an asset licence | **done** — 7 structural rules, checked twice per CI run |
-| verdict on the brain parcellation licence | **NOT CLEARED.** `BV` ships coordinates without names; see §4 |
+| verdict on the brain parcellation licence | **NOT CLEARED**, and now final rather than pending. `BV` ships coordinates without names; the owner's route is first-party labels; see §4 |
 | `BR` stays disabled | **done** — gated, see §5 |
-| D1 discrepancy | **routed to the owner**, §3. Does not block v1. |
+| D1 discrepancy | **decided by the owner 2026-10-09: share-alike is mandatory.** §3. There is no D1a. |
