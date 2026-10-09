@@ -28,11 +28,12 @@
  */
 
 import { createHash } from 'node:crypto';
-import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { ENABLED_FRAMES, FRAMES, VERTEBRAL_LEVELS } from '../alc/src/index.ts';
+import { buildNameIndexInput, buildResearchFixture, buildTemplates } from './fixtures/fixtures.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
@@ -119,6 +120,37 @@ for (const f of ['LICENSE', 'ATTRIBUTION.md']) {
 // 2. Prebuilt indexes, from our own code and from asset metadata.
 // ---------------------------------------------------------------------------
 
+/**
+ * Stage-A fixture data: templates, the name index, the 5-paper research set.
+ *
+ * Generated from `@gstack/alc` and our own fixture module — Apache-2.0 code
+ * only, never from an asset payload — so nothing emitted here can carry a
+ * share-alike obligation. One file per template, because the viewer binds one
+ * at a time and should not pay for the others.
+ */
+const templateEntries = [];
+for (const definition of buildTemplates()) {
+  const path = `data/templates/${definition.id}.json`;
+  emit(path, JSON.stringify(definition.template) + '\n');
+  templateEntries.push({
+    id: definition.id,
+    kind: definition.kind,
+    label: definition.label,
+    provenance: definition.provenance,
+    admissible: definition.admissible,
+    caveat: definition.caveat,
+    isDefault: Boolean(definition.isDefault),
+    maxUsefulDigits: definition.template.maxUsefulDigits,
+    path: `${BASE}${path}`,
+  });
+}
+
+const nameIndexInput = buildNameIndexInput();
+emit('data/names.json', JSON.stringify(nameIndexInput) + '\n');
+
+const researchFixture = buildResearchFixture();
+emit('data/research.json', JSON.stringify(researchFixture) + '\n');
+
 const atlasIndex = {
   schema: 'atlas-index/1',
   generatedBy: 'packages/atlas-web/build.mjs',
@@ -136,6 +168,18 @@ const atlasIndex = {
     label,
     region: { C: 'cervical', T: 'thoracic', L: 'lumbar', S: 'sacral' }[label[0]],
   })),
+  /** Templates the viewer may bind. It is built against this, not one of them. */
+  templates: templateEntries,
+  nameIndex: {
+    version: nameIndexInput.version,
+    structureCount: nameIndexInput.structures.length,
+    path: `${BASE}data/names.json`,
+  },
+  research: {
+    version: researchFixture.version,
+    paperCount: researchFixture.papers.length,
+    path: `${BASE}data/research.json`,
+  },
   assets: assetFiles.map((a) => ({
     path: `${BASE}${a.path}`,
     bytes: a.bytes,
@@ -167,10 +211,62 @@ emit('data/atlas-index.json', JSON.stringify(atlasIndex) + '\n');
 // 3. Client bundle. Native ES modules, copied, not compiled.
 // ---------------------------------------------------------------------------
 
-for (const name of readdirSync(join(HERE, 'src')).sort()) {
-  if (name.endsWith('.js') || name.endsWith('.css')) {
-    emit(join('app', name), readFileSync(join(HERE, 'src', name)));
+/**
+ * `src/` is mirrored into `dist/app/`, subdirectories and all, so a module's
+ * relative specifiers resolve identically in both trees. That is what lets
+ * `src/viewer/*.js` import `'../alc.js'` and have it mean the TypeScript source
+ * under Node and the browser bundle under `dist/`.
+ *
+ * `src/alc.js` is the one file not copied verbatim. See below.
+ */
+const ALC_SHIM = 'alc.js';
+const ALC_BUNDLE = join(REPO_ROOT, 'packages', 'alc', 'dist', 'alc.js');
+
+function copyClientTree(dir, prefix) {
+  for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+    const from = join(dir, entry.name);
+    const to = join(prefix, entry.name);
+    if (entry.isDirectory()) copyClientTree(from, to);
+    else if (entry.name.endsWith('.js') || entry.name.endsWith('.css')) {
+      if (prefix === 'app' && entry.name === ALC_SHIM) continue;
+      emit(to, readFileSync(from));
+    }
   }
+}
+copyClientTree(join(HERE, 'src'), 'app');
+
+/**
+ * The library, swapped for its browser build — and checked, not assumed.
+ *
+ * `src/alc.js` re-exports `../../alc/src/index.ts`, which Node strips types
+ * from directly. A browser cannot, so `dist/app/alc.js` is the library's own
+ * single-file ESM bundle instead. The substitution is sound only if both sides
+ * export the same names; a silent drift would mean the suite exercises one
+ * module graph and users load another. `packages/alc/scripts/build.mjs` already
+ * verifies the bundle against its own source, and this re-verifies it against
+ * the source THIS build imported.
+ */
+if (!existsSync(ALC_BUNDLE)) {
+  throw new Error(
+    'packages/alc/dist/alc.js is missing. Run `node packages/alc/scripts/build.mjs` first: '
+    + 'the browser cannot load the TypeScript source that src/alc.js re-exports.',
+  );
+}
+{
+  const bundle = await import(pathToFileURL(ALC_BUNDLE).href);
+  const source = await import(pathToFileURL(join(REPO_ROOT, 'packages', 'alc', 'src', 'index.ts')).href);
+  const expected = Object.keys(source).filter((n) => n !== 'default').sort();
+  const got = Object.keys(bundle).filter((n) => n !== 'default').sort();
+  if (got.join(',') !== expected.join(',')) {
+    throw new Error(
+      'packages/alc/dist/alc.js has drifted from the TypeScript source, so dist/app/alc.js would not '
+      + 'be the library the suite ran against.\n'
+      + `  missing: ${expected.filter((n) => !got.includes(n)).join(', ') || 'none'}\n`
+      + `  extra:   ${got.filter((n) => !expected.includes(n)).join(', ') || 'none'}\n`
+      + '  Rebuild the library.',
+    );
+  }
+  emit(join('app', ALC_SHIM), readFileSync(ALC_BUNDLE));
 }
 
 // ---------------------------------------------------------------------------
