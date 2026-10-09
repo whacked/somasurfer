@@ -25,6 +25,16 @@ const TEMPLATES = join(ASSETS, 'templates');
 const GATE_TEMPLATE = join(TEMPLATES, 'gate-verify.body.json');
 const AUDIT_DOC = join(REPO_ROOT, 'docs', 'alc-1-admissibility.md');
 const COUNTS = join(REPO_ROOT, 'ci', 'expected-test-counts.json');
+const PERF_BUDGET = join(REPO_ROOT, 'ci', 'performance-budget.json');
+
+/** Rewrite one JSON file through a mutator, returning a restore function. */
+function editJson(path, mutate) {
+  const original = readFileSync(path, 'utf8');
+  const value = JSON.parse(original);
+  mutate(value);
+  writeFileSync(path, JSON.stringify(value, null, 2) + '\n');
+  return () => writeFileSync(path, original);
+}
 
 const run = (script, args = []) =>
   spawnSync(process.execPath, [join(REPO_ROOT, 'tools', script), ...args], {
@@ -250,6 +260,39 @@ const CASES = [
     },
     check: () => run('check-licence-separation.mjs'),
   },
+  {
+    // The one case here that asserts a gate must NOT fail. It exists because
+    // this gate did fail, on main, on 2026-10-09: a hosted runner came in at
+    // 4.75× the reference machine and the old code refused outright, reding a
+    // tree byte-identical to one that had passed twice. A flaky gate teaches
+    // people to re-run gates, which is worse than having none.
+    name: 'perf-gate-survives-a-fast-runner',
+    mustPass: true,
+    gate: 'performance budget',
+    criterion: 'the budget gate does not go red merely because the runner is fast',
+    expect: [/NORMALISATION WITHHELD/, /UNVERIFIED on this machine/],
+    describe: 'a runner far faster than the reference machine, comfortably inside every budget',
+    break: () =>
+      editJson(PERF_BUDGET, (b) => {
+        // Claim a reference machine 10× slower than it is, which puts the
+        // measured speed factor far outside the trusted window.
+        b.calibration.referenceMs *= 10;
+      }),
+    check: () => run('perf-budget.mjs'),
+  },
+  {
+    name: 'perf-budget-over-before-correction',
+    gate: 'performance budget',
+    criterion: 'an untrusted correction still fails a line that is over budget raw',
+    expect: [/Over budget without needing the correction/, /lowResAssetParseMsNormalised/],
+    describe: 'an asset parse budget already exceeded by the raw number on a fast runner',
+    break: () =>
+      editJson(PERF_BUDGET, (b) => {
+        b.calibration.referenceMs *= 10;
+        b.budgets.lowResAssetParseMsNormalised.limit = 1;
+      }),
+    check: () => run('perf-budget.mjs'),
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -271,6 +314,7 @@ const touched = [
   rel(join(ALC, 'test', 'gate-verify.test.ts')),
   rel(join(ALC, 'test', 'compare.test.ts')),
   rel(COUNTS),
+  rel(PERF_BUDGET),
   rel(AUDIT_DOC),
   rel(join(WEB, 'package.json')),
   rel(join(WEB, 'src', 'gate-verify.js')),
@@ -296,19 +340,29 @@ for (const c of selected) {
     const result = c.check();
     const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
     const missing = c.expect.filter((re) => !re.test(output));
-    if (result.status === 0) {
-      verdict = { ok: false, why: `the gate PASSED. It should have failed on ${c.describe}.`, output };
+    const wantPass = c.mustPass === true;
+    if ((result.status === 0) !== wantPass) {
+      verdict = {
+        ok: false,
+        why: wantPass
+          ? `the gate FAILED. It should have survived ${c.describe}.`
+          : `the gate PASSED. It should have failed on ${c.describe}.`,
+        output,
+      };
     } else if (missing.length > 0) {
       verdict = {
         ok: false,
-        why: `the gate failed, but without the expected explanation: ${missing.map(String).join(', ')}`,
+        why:
+          `the gate ${wantPass ? 'passed' : 'failed'}, but without the expected explanation:` +
+          ` ${missing.map(String).join(', ')}`,
         output,
       };
     } else {
-      const headline = output
-        .split('\n')
-        .map((l) => l.trim())
-        .find((l) => l && !l.startsWith('✗'));
+      // Prefer the line the case is actually asserting on: for a must-pass case
+      // the "✓ gate" banner says nothing about why it survived.
+      const lines = output.split('\n').map((l) => l.trim());
+      const headline =
+        lines.find((l) => c.expect[0].test(l)) ?? lines.find((l) => l && !l.startsWith('✗') && !l.startsWith('✓'));
       verdict = { ok: true, headline };
     }
   } catch (error) {
@@ -317,14 +371,15 @@ for (const c of selected) {
     restore();
   }
 
+  const verb = c.mustPass ? 'applied' : 'broke';
   if (verdict.ok) {
     console.log(`✓ ${c.name}`);
-    console.log(`    broke: ${c.describe}`);
+    console.log(`    ${verb}: ${c.describe}`);
     console.log(`    gate:  ${c.gate} → ${verdict.headline}`);
   } else {
     failures += 1;
     console.error(`✗ ${c.name}`);
-    console.error(`    broke: ${c.describe}`);
+    console.error(`    ${verb}: ${c.describe}`);
     console.error(`    ${verdict.why}`);
     if (verdict.output) {
       console.error(
@@ -361,7 +416,13 @@ if (leftover.status === 0 && leftover.stdout.trim()) {
 
 console.log('');
 if (failures > 0) {
-  console.error(`✗ verify gates: ${failures} of ${selected.length} gate(s) did not fail as designed.\n`);
+  console.error(`✗ verify gates: ${failures} of ${selected.length} gate(s) did not behave as designed.\n`);
   process.exit(1);
 }
-console.log(`✓ verify gates: ${selected.length} deliberate breakage(s), ${selected.length} caught.\n`);
+const breakages = selected.filter((c) => !c.mustPass).length;
+const perturbations = selected.length - breakages;
+console.log(
+  `✓ verify gates: ${breakages} deliberate breakage(s), ${breakages} caught` +
+    (perturbations > 0 ? `; ${perturbations} perturbation(s) survived without a false red.` : '.') +
+    '\n',
+);

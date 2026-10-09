@@ -62,19 +62,33 @@ function calibrationMs() {
 const observedCalibrationMs = Math.min(calibrationMs(), calibrationMs(), calibrationMs());
 const speedFactor = budget.calibration.referenceMs / observedCalibrationMs;
 
-if (speedFactor > budget.calibration.maxSpeedFactor || speedFactor < budget.calibration.minSpeedFactor) {
-  fail('performance budget', [
-    `Calibration workload took ${observedCalibrationMs.toFixed(0)} ms; the reference machine takes` +
-      ` ${budget.calibration.referenceMs} ms.`,
-    `Speed factor ${speedFactor.toFixed(2)} is outside` +
-      ` [${budget.calibration.minSpeedFactor}, ${budget.calibration.maxSpeedFactor}].`,
-    ``,
-    `This machine is too far from the reference for the correction to mean anything:`,
-    `the normalisation would be doing more work than the measurement. Byte budgets`,
-    `would still be valid, but reporting a normalised parse time from here would be`,
-    `a number dressed up as a measurement, so the gate refuses rather than guesses.`,
-  ]);
-}
+/**
+ * Is the scalar close enough to 1 to be worth printing as a correction?
+ *
+ * Outside that window the *magnitude* is not trustworthy — but the *direction*
+ * still is. A machine that runs the calibration in 25 ms against a 120 ms
+ * reference is certainly faster than the reference, whatever the true ratio.
+ *
+ * This gate used to refuse outright when the scalar fell outside the window,
+ * and on 2026-10-09 that turned a healthy fast runner into a red `main` on a
+ * tree byte-identical to one that had passed twice: the hosted runner came in
+ * at 4.75×, just past the 4× edge. A gate whose colour depends on which runner
+ * you draw is worse than no gate, because it teaches people to re-run it.
+ *
+ * So the verdict is now taken one-sidedly from the raw number, which needs no
+ * correction at all:
+ *
+ *   runner faster (factor > 1): normalised >= raw, so raw over budget proves OVER
+ *   runner slower (factor < 1): normalised <= raw, so raw under budget proves UNDER
+ *
+ * The other half of each case is genuinely unknowable from this machine. It is
+ * reported as UNVERIFIED and does not decide the build, rather than being
+ * guessed in either direction. Byte budgets are machine-independent and always
+ * decide.
+ */
+const normalisationTrusted =
+  speedFactor >= budget.calibration.minSpeedFactor && speedFactor <= budget.calibration.maxSpeedFactor;
+const runnerFasterThanReference = speedFactor > 1;
 
 // ---------------------------------------------------------------------------
 // Measurement.
@@ -157,58 +171,116 @@ const bundleGzip = gzipBytes(bundleFiles);
 const indexGzip = gzipBytes(indexFiles);
 const assetGzip = gzipBytes(assetFiles);
 
-const indexParseNorm = indexParseMs * speedFactor;
-const assetParseNorm = assetParseMs * speedFactor;
+/**
+ * Every budgeted line, derived with parse times scaled by `parseScale`.
+ * `derive(speedFactor)` is the corrected view; `derive(1)` is the raw,
+ * uncorrected view, which is the one the one-sided bound is taken from.
+ */
+function derive(parseScale) {
+  const indexParse = indexParseMs * parseScale;
+  const assetParse = assetParseMs * parseScale;
+  const criticalPathMs =
+    budget.transferModel.roundTrips.criticalPath * rttMs + transferMs(bundleGzip + indexGzip) + indexParse;
+  return {
+    bundleGzipBytes: bundleGzip,
+    indexGzipBytes: indexGzip,
+    lowResAssetGzipBytes: assetGzip,
+    indexParseMsNormalised: indexParse,
+    lowResAssetParseMsNormalised: assetParse,
+    derivedLowResAssetLoadMs:
+      criticalPathMs + budget.transferModel.roundTrips.assets * rttMs + transferMs(assetGzip) + assetParse,
+    derivedFirstInteractionMs: criticalPathMs + budget.renderAllowanceMs.value,
+  };
+}
 
-const criticalPathMs =
-  budget.transferModel.roundTrips.criticalPath * rttMs + transferMs(bundleGzip + indexGzip) + indexParseNorm;
-
-const derivedLowResAssetLoadMs =
-  criticalPathMs + budget.transferModel.roundTrips.assets * rttMs + transferMs(assetGzip) + assetParseNorm;
-
-const derivedFirstInteractionMs = criticalPathMs + budget.renderAllowanceMs.value;
+const normalised = derive(speedFactor);
+const uncorrected = derive(1);
 
 // ---------------------------------------------------------------------------
 // Gate.
 // ---------------------------------------------------------------------------
 
-const measurements = {
-  bundleGzipBytes: bundleGzip,
-  indexGzipBytes: indexGzip,
-  lowResAssetGzipBytes: assetGzip,
-  indexParseMsNormalised: indexParseNorm,
-  lowResAssetParseMsNormalised: assetParseNorm,
-  derivedLowResAssetLoadMs,
-  derivedFirstInteractionMs,
-};
-
 const isBytes = (key) => key.endsWith('Bytes');
+// A byte line is identical in both views; only parse-dependent lines move.
+const machineIndependent = (key) => isBytes(key) || normalised[key] === uncorrected[key];
 const fmt = (key, v) => (isBytes(key) ? `${(v / 1024).toFixed(1)} KiB` : `${v.toFixed(0)} ms`);
 
+const measurements = {};
 const rows = [];
 const over = [];
+const unverified = [];
+
 for (const [key, spec] of Object.entries(budget.budgets)) {
-  const value = measurements[key];
+  // When the correction is trusted, or the line does not depend on it, the
+  // corrected number decides. Otherwise only the raw number is admissible,
+  // and it decides in one direction only.
+  const decideOnNormalised = normalisationTrusted || machineIndependent(key);
+  const value = decideOnNormalised ? normalised[key] : uncorrected[key];
   const used = value / spec.limit;
+  const conclusive = decideOnNormalised || (runnerFasterThanReference ? used > 1 : used <= 1);
+
+  measurements[key] = decideOnNormalised ? value : null;
+
+  const verdict = !conclusive ? 'UNVERIFIED' : used > 1 ? 'OVER' : '';
+  const label = decideOnNormalised ? '' : runnerFasterThanReference ? ' (raw, lower bound)' : ' (raw, upper bound)';
   rows.push(
     `${key.padEnd(30)} ${fmt(key, value).padStart(12)} / ${fmt(key, spec.limit).padStart(12)}` +
-      `  ${(used * 100).toFixed(0).padStart(4)}% ${used > 1 ? 'OVER' : ''}`,
+      `  ${(used * 100).toFixed(0).padStart(4)}% ${verdict}${label}`,
   );
+
+  if (!conclusive) {
+    unverified.push(key);
+    continue;
+  }
   if (used > 1) {
     over.push(`${key}: ${fmt(key, value)} against a budget of ${fmt(key, spec.limit)} (${(used * 100).toFixed(0)}%).`);
+    if (!decideOnNormalised) {
+      over.push(`  measured raw on a machine ${speedFactor.toFixed(2)}× faster than the reference, so the`);
+      over.push(`  reference number can only be larger. Over budget without needing the correction.`);
+    }
     over.push(`  covers: ${spec.covers}`);
     over.push(`  why the budget is what it is: ${spec.why}`);
   }
 }
 
+const calibrationLines = normalisationTrusted
+  ? [
+      `calibration: ${observedCalibrationMs.toFixed(0)} ms here vs ${budget.calibration.referenceMs} ms reference` +
+        ` → parse times scaled by ${speedFactor.toFixed(2)}`,
+    ]
+  : [
+      `calibration: ${observedCalibrationMs.toFixed(0)} ms here vs ${budget.calibration.referenceMs} ms reference` +
+        ` → ${speedFactor.toFixed(2)}×, outside` +
+        ` [${budget.calibration.minSpeedFactor}, ${budget.calibration.maxSpeedFactor}]`,
+      `NORMALISATION WITHHELD: at this distance the correction would be doing more`,
+      `work than the measurement, so no scaled parse number is reported. The` +
+        ` direction is`,
+      `still sound — this machine is ${runnerFasterThanReference ? 'faster' : 'slower'} than the reference — so parse lines` +
+        ` are judged`,
+      `from the raw number, which is a ${runnerFasterThanReference ? 'lower' : 'upper'} bound on the reference number.`,
+      `That proves ${runnerFasterThanReference ? 'OVER budget but never under' : 'under budget but never over'}; the other half reads UNVERIFIED and does`,
+      `not decide the build. Byte lines are machine-independent and always decide.`,
+    ];
+
+const unverifiedLines =
+  unverified.length === 0
+    ? []
+    : [
+        ``,
+        `UNVERIFIED on this machine (${unverified.length}): ${unverified.join(', ')}.`,
+        `Not a pass and not a failure — run the gate on a machine within` +
+          ` [${budget.calibration.minSpeedFactor}, ${budget.calibration.maxSpeedFactor}]×`,
+        `of the reference for a verdict on those lines.`,
+      ];
+
 const detail = [
   `reference: ${budget.referenceMachine.label}, ${downlinkMbps} Mbit/s, ${rttMs} ms RTT`,
-  `calibration: ${observedCalibrationMs.toFixed(0)} ms here vs ${budget.calibration.referenceMs} ms reference` +
-    ` → parse times scaled by ${speedFactor.toFixed(2)}`,
+  ...calibrationLines,
   `raw parse: index ${indexParseMs.toFixed(1)} ms, assets ${assetParseMs.toFixed(1)} ms on this machine`,
   `files: ${bundleFiles.length} bundle, ${indexFiles.length} index, ${assetFiles.length} asset`,
   ``,
   ...rows,
+  ...unverifiedLines,
   ``,
   `NOT MEASURED: the same two derived numbers in a real browser. That needs the`,
   `viewer and a headless browser in CI. Until then the ${budget.renderAllowanceMs.value} ms render allowance`,
@@ -218,12 +290,26 @@ const detail = [
 const report = {
   schema: 'performance-measurement/1',
   referenceMachine: budget.referenceMachine,
-  calibration: { observedMs: observedCalibrationMs, referenceMs: budget.calibration.referenceMs, speedFactor },
+  calibration: {
+    observedMs: observedCalibrationMs,
+    referenceMs: budget.calibration.referenceMs,
+    speedFactor,
+    normalisationTrusted,
+    // How each line was judged, so a consumer never has to infer it from the numbers.
+    decisionBasis: normalisationTrusted ? 'normalised' : 'one-sided-bound-from-raw',
+  },
   raw: { indexParseMs, assetParseMs },
+  // null where the line could not be established from this machine. Consumers
+  // must not read a null as a zero or as a pass.
   measurements,
+  uncorrected,
+  unverified,
   budgets: Object.fromEntries(Object.entries(budget.budgets).map(([k, v]) => [k, v.limit])),
   utilisation: Object.fromEntries(
-    Object.entries(budget.budgets).map(([k, v]) => [k, Number((measurements[k] / v.limit).toFixed(3))]),
+    Object.entries(budget.budgets).map(([k, v]) => [
+      k,
+      measurements[k] === null ? null : Number((measurements[k] / v.limit).toFixed(3)),
+    ]),
   ),
   notMeasured: ['browser-observed low-resolution asset load', 'browser-observed first interaction'],
 };

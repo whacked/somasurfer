@@ -74,9 +74,39 @@ compared to a budget stated for a laptop. `tools/perf-budget.mjs` runs a fixed
 calibration workload alongside the measurement and scales by
 `referenceMs / observedMs`. It is a crude single scalar that corrects for
 clock speed and little else, so raw and normalised numbers are both always
-reported, and the gate refuses to run at all if the runner is more than 4×
-off the reference — at that distance the correction would be doing more work
-than the measurement.
+reported, and the scaled number is only printed when the factor is within
+`[0.25, 4]` of the reference — beyond that the correction would be doing more
+work than the measurement.
+
+**Outside that window the gate still returns a verdict, one-sidedly.** It used
+to refuse and exit non-zero, and that was wrong: on 2026-10-09 a hosted runner
+measured 4.75× — just past the edge — and reded `main` on a tree byte-identical
+to one that had passed twice on the same workflow. A gate whose colour depends
+on which runner you draw trains people to re-run gates, which is the same
+disease as a gate that never fails.
+
+The fix uses the one thing that stays reliable when the magnitude does not: the
+*direction*. A machine that runs the calibration in 25 ms against a 120 ms
+reference is certainly faster, whatever the exact ratio. So
+
+| runner vs reference | raw number is | it can prove | it cannot prove |
+| --- | --- | --- | --- |
+| faster (factor > 1) | a **lower** bound on the reference number | over budget | under budget |
+| slower (factor < 1) | an **upper** bound | under budget | over budget |
+
+The provable half decides the build. The other half is printed as
+`UNVERIFIED`, counted, and explicitly **not** treated as a pass — a consumer
+reading `perf-measurement.json` gets `null` for those lines and a
+`calibration.decisionBasis` of `one-sided-bound-from-raw`, so a null can never
+be mistaken for a zero. Byte budgets are machine-independent and always decide,
+on any runner.
+
+Both halves are demonstrated in CI by `tools/verify-gates.mjs`:
+`perf-gate-survives-a-fast-runner` asserts a fast runner inside budget does
+**not** go red, and `perf-budget-over-before-correction` asserts a line already
+over budget raw still fails. The first is the only case in that file that
+asserts a gate must pass, because the failure it guards against is a false red
+rather than a false green.
 
 ## What is not measured yet
 
