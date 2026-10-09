@@ -284,7 +284,19 @@ const CASES = [
     gate: 'research dataset',
     criterion: 'the gate binds the index it can read, and checks the real partition against it',
     mustPass: true,
-    expect: [/real index: \d+ structures, frame BD/, /body-bd: all \d+ non-coordinate mappings resolve/, /lie wholly inside their structure/],
+    expect: [
+      // The property the case is named for: the covering index was JOINED, not
+      // mistaken for a name index. Both halves must appear.
+      /joined from \S*names\.json and \S*coverings\.json/,
+      /real index: \d+ structures, frame BD/,
+      // And the partition was actually measured against it, rather than merely
+      // reported as present. Written to match either wording of the count, but
+      // it still fails if the sentence is absent — which is exactly what it
+      // did at 112a97b, when a pluralisation fix changed `lie ... their` to
+      // `lies ... its` and this assertion stopped matching its own message.
+      /body-bd: all \d+ non-coordinate mappings resolve/,
+      /curated sub-regions? (?:lie|lies) wholly inside/,
+    ],
     describe: 'a correctly shaped name index and covering index, both present',
     // The must-pass case for DOG-46's correction 1. The candidate list used to
     // be a priority order with coverings.json ahead of names.json, so the gate
