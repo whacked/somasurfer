@@ -361,11 +361,17 @@ export async function runSuite(driver: ViewerDriver, options: RunOptions = {}): 
   const steps = options.journey ?? JOURNEY;
   const fixture = options.fixture ?? resolveFixture();
 
+  const shapeProblems = driverShapeProblems(driver);
   const harnessProblems: string[] = [
-    ...driverShapeProblems(driver).map((p) => `driver: ${p}`),
+    ...shapeProblems.map((p) => `driver: ${p}`),
     ...matrixIntegrityProblems(rows).map((p) => `matrix: ${p}`),
     ...journeyIntegrityProblems(steps).map((p) => `journey: ${p}`),
-    ...unknownCapabilities(driver).map((c) => `driver declares unknown capability ${JSON.stringify(c)}`),
+    // Only ask a driver what it can do once we know it is a driver;
+    // `capabilities()` on a malformed one throws, and the exception escaped
+    // `runSuite` entirely instead of being reported as a shape problem.
+    ...(shapeProblems.length === 0
+      ? unknownCapabilities(driver).map((c) => `driver declares unknown capability ${JSON.stringify(c)}`)
+      : []),
   ];
 
   const results: CaseResult[] = [];
@@ -373,19 +379,48 @@ export async function runSuite(driver: ViewerDriver, options: RunOptions = {}): 
 
   // Nothing can be driven if the driver is the wrong shape; report that rather
   // than producing a page of TypeErrors attributed to individual rows.
-  const driverUsable = driverShapeProblems(driver).length === 0;
+  const driverUsable = shapeProblems.length === 0;
 
+  // The baseline load, which every `unchanged` assertion is anchored to.
+  //
+  // A build that throws here has no baseline, so no row can be evaluated
+  // against one — and the exception used to propagate straight out of
+  // `runSuite`, which meant a build that blew up on load produced no report at
+  // all rather than a failing one. It is a defect in the build, so it is
+  // recorded as a failure and the loops are skipped; `mustPassMissing` then
+  // names every case that consequently did not run.
+  let baseline: ViewState | null = null;
   if (driverUsable) {
+    try {
+      baseline = await driver.open('/');
+    } catch (error) {
+      const e = error as Error;
+      harnessProblems.push(
+        `the build threw on the initial load, so there is no baseline to compare anything against: `
+        + `${e?.constructor?.name}: ${e?.message}`,
+      );
+    }
+  }
+
+  if (driverUsable && baseline) {
     // ---- the deep-link matrix -------------------------------------------
-    const baseline = await driver.open('/');
     for (const row of rows) {
       const began = Date.now();
       let problems: string[] = [];
       let unverifiedReason: string | undefined;
       try {
-        const evaluated = row.classes.includes('equality-guard')
-          ? await evaluateEqualityGuardRow(driver, row)
-          : await evaluateRow(driver, row, baseline);
+        // The capability check belongs here, in front of BOTH evaluators.
+        // It used to live inside `evaluateRow` only, so the two
+        // `equality-guard` rows — which take the other path — reported `pass`
+        // against a build that had withheld the capability they need. A row
+        // that passes without the build being able to do the thing is the
+        // false green this file exists to prevent, in the runner itself.
+        const missing = missingCapabilities(driver, row.requires);
+        const evaluated = missing.length > 0
+          ? { problems: [], unverifiedReason: `build ${driver.buildId} lacks ${missing.join(', ')}` }
+          : row.classes.includes('equality-guard')
+            ? await evaluateEqualityGuardRow(driver, row)
+            : await evaluateRow(driver, row, baseline);
         problems = evaluated.problems;
         unverifiedReason = evaluated.unverifiedReason;
       } catch (error) {
