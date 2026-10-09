@@ -2470,7 +2470,10 @@
     "meshes": "isa_BP3D_4.0_obj_99.zip",
     "elementParts": "isa_element_parts.txt",
     "partsList": "isa_parts_list_e.txt",
-    "inclusion": "isa_inclusion_relation_list.txt"
+    "inclusion": "isa_inclusion_relation_list.txt",
+    "partofElementParts": "partof_element_parts.txt",
+    "partofPartsList": "partof_parts_list_e.txt",
+    "partofInclusion": "partof_inclusion_relation_list.txt"
    },
    "attribution": "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan"
   },
@@ -2479,6 +2482,7 @@
    "centreline": "body",
    "bodyFraction": 0.4,
    "sacralAxisRule": "endplate-normal",
+   "limbDilateKnots": 3,
    "endplatePad": 1.2,
    "endplateBandMm": 8,
    "azimuths": 72
@@ -2526,6 +2530,358 @@
     "rule": "largest d with min(level height, clock-sector arc at the skin, radial half) / 2^d >= the skin mesh mean edge length",
     "frameCap": 12
    },
+   "declarations": [
+    {
+     "id": "surface-is-limb",
+     "severity": "advisory",
+     "affects": [
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "S01"
+     ],
+     "summary": "At the listed levels and azimuths, the first skin crossing is a limb surface, not the trunk surface, so `r = 1` there is the outside of the arm or thigh.",
+     "why": "A limb lying against the trunk leaves no skin between them, so there is no trunk surface to find along those rays. The radius is the honest distance to the skin and the frame stays exactly invertible; only the anatomical reading of `r = 1` changes.",
+     "detection": "A ray is flagged when it crosses the humerus or the femur before reaching the skin, then the witnessed azimuths are dilated by 3 knot(s) either way (15 degrees).",
+     "completeness": "SOUND, NOT COMPLETE. A ray through limb soft tissue only, lateral or anterior to the bone, is not witnessed, so the published arc is a lower bound on the affected azimuths.",
+     "fix": "Needs a trunk-only surface. BodyParts3D publishes one skin concept for the whole body, so this source cannot supply it; a different surface source would remove the declaration without changing any address already issued.",
+     "perLevel": [
+      {
+       "level": "T03",
+       "azimuthTurns": [
+        0.18056,
+        0.19444,
+        0.20833,
+        0.22222,
+        0.23611,
+        0.25,
+        0.26389,
+        0.27778,
+        0.29167,
+        0.70833,
+        0.72222,
+        0.73611,
+        0.75,
+        0.76389,
+        0.77778,
+        0.79167,
+        0.80556,
+        0.81944
+       ],
+       "clock": [
+        2,
+        3,
+        4,
+        9,
+        10
+       ],
+       "bones": [
+        "humerus"
+       ],
+       "radiusRangeMm": [
+        179.1,
+        221.4
+       ]
+      },
+      {
+       "level": "T04",
+       "azimuthTurns": [
+        0.18056,
+        0.19444,
+        0.20833,
+        0.22222,
+        0.23611,
+        0.25,
+        0.26389,
+        0.27778,
+        0.72222,
+        0.73611,
+        0.75,
+        0.76389,
+        0.77778,
+        0.79167,
+        0.80556,
+        0.81944
+       ],
+       "clock": [
+        2,
+        3,
+        9,
+        10
+       ],
+       "bones": [
+        "humerus"
+       ],
+       "radiusRangeMm": [
+        187.2,
+        232.4
+       ]
+      },
+      {
+       "level": "T05",
+       "azimuthTurns": [
+        0.18056,
+        0.19444,
+        0.20833,
+        0.22222,
+        0.23611,
+        0.25,
+        0.26389,
+        0.27778,
+        0.72222,
+        0.73611,
+        0.75,
+        0.76389,
+        0.77778,
+        0.79167,
+        0.80556,
+        0.81944
+       ],
+       "clock": [
+        2,
+        3,
+        9,
+        10
+       ],
+       "bones": [
+        "humerus"
+       ],
+       "radiusRangeMm": [
+        192.6,
+        237.6
+       ]
+      },
+      {
+       "level": "T06",
+       "azimuthTurns": [
+        0.18056,
+        0.19444,
+        0.20833,
+        0.22222,
+        0.23611,
+        0.25,
+        0.26389,
+        0.27778,
+        0.72222,
+        0.73611,
+        0.75,
+        0.76389,
+        0.77778,
+        0.79167,
+        0.80556,
+        0.81944
+       ],
+       "clock": [
+        2,
+        3,
+        9,
+        10
+       ],
+       "bones": [
+        "humerus"
+       ],
+       "radiusRangeMm": [
+        187.9,
+        237.9
+       ]
+      },
+      {
+       "level": "T07",
+       "azimuthTurns": [
+        0.19444,
+        0.20833,
+        0.22222,
+        0.23611,
+        0.25,
+        0.26389,
+        0.27778,
+        0.72222,
+        0.73611,
+        0.75,
+        0.76389,
+        0.77778,
+        0.79167,
+        0.80556
+       ],
+       "clock": [
+        2,
+        3,
+        9,
+        10
+       ],
+       "bones": [
+        "humerus"
+       ],
+       "radiusRangeMm": [
+        195.9,
+        236.5
+       ]
+      },
+      {
+       "level": "T08",
+       "azimuthTurns": [
+        0.19444,
+        0.20833,
+        0.22222,
+        0.23611,
+        0.25,
+        0.26389,
+        0.27778,
+        0.72222,
+        0.73611,
+        0.75,
+        0.76389,
+        0.77778,
+        0.79167,
+        0.80556
+       ],
+       "clock": [
+        2,
+        3,
+        9,
+        10
+       ],
+       "bones": [
+        "humerus"
+       ],
+       "radiusRangeMm": [
+        173.3,
+        237.4
+       ]
+      },
+      {
+       "level": "T09",
+       "azimuthTurns": [
+        0.20833,
+        0.22222,
+        0.23611,
+        0.25,
+        0.26389,
+        0.27778,
+        0.29167,
+        0.70833,
+        0.72222,
+        0.73611,
+        0.75,
+        0.76389,
+        0.77778,
+        0.79167
+       ],
+       "clock": [
+        2,
+        3,
+        4,
+        9
+       ],
+       "bones": [
+        "humerus"
+       ],
+       "radiusRangeMm": [
+        150.1,
+        242.2
+       ]
+      },
+      {
+       "level": "T10",
+       "azimuthTurns": [
+        0.20833,
+        0.22222,
+        0.23611,
+        0.25,
+        0.26389,
+        0.27778,
+        0.29167,
+        0.70833,
+        0.72222,
+        0.73611,
+        0.75,
+        0.76389,
+        0.77778,
+        0.79167
+       ],
+       "clock": [
+        2,
+        3,
+        4,
+        9
+       ],
+       "bones": [
+        "humerus"
+       ],
+       "radiusRangeMm": [
+        143.8,
+        245.4
+       ]
+      },
+      {
+       "level": "S01",
+       "azimuthTurns": [
+        0.11111,
+        0.125,
+        0.13889,
+        0.15278,
+        0.16667,
+        0.18056,
+        0.19444,
+        0.20833,
+        0.22222,
+        0.23611,
+        0.76389,
+        0.77778,
+        0.79167,
+        0.80556,
+        0.81944,
+        0.83333,
+        0.84722,
+        0.86111,
+        0.875,
+        0.88889
+       ],
+       "clock": [
+        1,
+        2,
+        3,
+        9,
+        10,
+        11
+       ],
+       "bones": [
+        "femur"
+       ],
+       "radiusRangeMm": [
+        150.8,
+        189.8
+       ]
+      }
+     ]
+    },
+    {
+     "id": "single-sacral-level",
+     "severity": "advisory",
+     "affects": [
+      "S01"
+     ],
+     "summary": "The whole fused sacrum is one addressable level, 133.5 mm tall against a 25.9 mm median — 5.2x. Sacral addressing is correspondingly coarse in the axial direction.",
+     "why": "docs/alc-1-admissibility.md §2 measured the alternative: cutting the fused sacrum into short levels is strictly worse at every girth, because each cut both shortens the chord and tightens the turn, and the sacral concavity faces the deep pelvis where there is a lot of tissue. Five sacral levels put 1.2-3.2% of body volume inside a fold.",
+     "detection": "Structural. S02-S05 are reserved grammar and are realised by no template.",
+     "completeness": "Exact. This is a property of the level set, not an estimate.",
+     "fix": "Not a defect to fix. A finer sacral frame can be added later without a breaking change because S02-S05 are reserved, but it needs the non-tubular pelvic parameterisation rather than more slabs of the same kind.",
+     "perLevel": [
+      {
+       "level": "S01",
+       "heightMm": 133.49,
+       "medianLevelHeightMm": 25.88,
+       "ratio": 5.158,
+       "axialCellMm": 33.37
+      }
+     ]
+    }
+   ],
    "levels": [
     {
      "level": "C01",
@@ -2555,7 +2911,8 @@
       "max": 111.1
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "C02",
@@ -2585,7 +2942,8 @@
       "max": 109.2
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "C03",
@@ -2615,7 +2973,8 @@
       "max": 108.2
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "C04",
@@ -2645,7 +3004,8 @@
       "max": 104.3
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "C05",
@@ -2675,7 +3035,8 @@
       "max": 69.8
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "C06",
@@ -2705,7 +3066,8 @@
       "max": 78.6
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "C07",
@@ -2735,7 +3097,8 @@
       "max": 98.7
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "T01",
@@ -2765,7 +3128,8 @@
       "max": 131
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "T02",
@@ -2795,7 +3159,8 @@
       "max": 197.6
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "T03",
@@ -2825,7 +3190,43 @@
       "max": 221.4
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.18056,
+      0.19444,
+      0.20833,
+      0.22222,
+      0.23611,
+      0.25,
+      0.26389,
+      0.27778,
+      0.29167,
+      0.70833,
+      0.72222,
+      0.73611,
+      0.75,
+      0.76389,
+      0.77778,
+      0.79167,
+      0.80556,
+      0.81944
+     ],
+     "limbAzimuthClock": [
+      2,
+      3,
+      4,
+      9,
+      10
+     ],
+     "limbWitnessedAzimuths": 6,
+     "limbBones": [
+      "humerus"
+     ],
+     "limbRadiusRangeMm": [
+      179.1,
+      221.4
+     ]
     },
     {
      "level": "T04",
@@ -2855,7 +3256,40 @@
       "max": 232.4
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.18056,
+      0.19444,
+      0.20833,
+      0.22222,
+      0.23611,
+      0.25,
+      0.26389,
+      0.27778,
+      0.72222,
+      0.73611,
+      0.75,
+      0.76389,
+      0.77778,
+      0.79167,
+      0.80556,
+      0.81944
+     ],
+     "limbAzimuthClock": [
+      2,
+      3,
+      9,
+      10
+     ],
+     "limbWitnessedAzimuths": 4,
+     "limbBones": [
+      "humerus"
+     ],
+     "limbRadiusRangeMm": [
+      187.2,
+      232.4
+     ]
     },
     {
      "level": "T05",
@@ -2885,7 +3319,40 @@
       "max": 237.6
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.18056,
+      0.19444,
+      0.20833,
+      0.22222,
+      0.23611,
+      0.25,
+      0.26389,
+      0.27778,
+      0.72222,
+      0.73611,
+      0.75,
+      0.76389,
+      0.77778,
+      0.79167,
+      0.80556,
+      0.81944
+     ],
+     "limbAzimuthClock": [
+      2,
+      3,
+      9,
+      10
+     ],
+     "limbWitnessedAzimuths": 4,
+     "limbBones": [
+      "humerus"
+     ],
+     "limbRadiusRangeMm": [
+      192.6,
+      237.6
+     ]
     },
     {
      "level": "T06",
@@ -2915,7 +3382,40 @@
       "max": 237.9
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.18056,
+      0.19444,
+      0.20833,
+      0.22222,
+      0.23611,
+      0.25,
+      0.26389,
+      0.27778,
+      0.72222,
+      0.73611,
+      0.75,
+      0.76389,
+      0.77778,
+      0.79167,
+      0.80556,
+      0.81944
+     ],
+     "limbAzimuthClock": [
+      2,
+      3,
+      9,
+      10
+     ],
+     "limbWitnessedAzimuths": 4,
+     "limbBones": [
+      "humerus"
+     ],
+     "limbRadiusRangeMm": [
+      187.9,
+      237.9
+     ]
     },
     {
      "level": "T07",
@@ -2945,7 +3445,38 @@
       "max": 236.5
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.19444,
+      0.20833,
+      0.22222,
+      0.23611,
+      0.25,
+      0.26389,
+      0.27778,
+      0.72222,
+      0.73611,
+      0.75,
+      0.76389,
+      0.77778,
+      0.79167,
+      0.80556
+     ],
+     "limbAzimuthClock": [
+      2,
+      3,
+      9,
+      10
+     ],
+     "limbWitnessedAzimuths": 2,
+     "limbBones": [
+      "humerus"
+     ],
+     "limbRadiusRangeMm": [
+      195.9,
+      236.5
+     ]
     },
     {
      "level": "T08",
@@ -2975,7 +3506,38 @@
       "max": 237.4
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.19444,
+      0.20833,
+      0.22222,
+      0.23611,
+      0.25,
+      0.26389,
+      0.27778,
+      0.72222,
+      0.73611,
+      0.75,
+      0.76389,
+      0.77778,
+      0.79167,
+      0.80556
+     ],
+     "limbAzimuthClock": [
+      2,
+      3,
+      9,
+      10
+     ],
+     "limbWitnessedAzimuths": 2,
+     "limbBones": [
+      "humerus"
+     ],
+     "limbRadiusRangeMm": [
+      173.3,
+      237.4
+     ]
     },
     {
      "level": "T09",
@@ -3005,7 +3567,38 @@
       "max": 242.2
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.20833,
+      0.22222,
+      0.23611,
+      0.25,
+      0.26389,
+      0.27778,
+      0.29167,
+      0.70833,
+      0.72222,
+      0.73611,
+      0.75,
+      0.76389,
+      0.77778,
+      0.79167
+     ],
+     "limbAzimuthClock": [
+      2,
+      3,
+      4,
+      9
+     ],
+     "limbWitnessedAzimuths": 2,
+     "limbBones": [
+      "humerus"
+     ],
+     "limbRadiusRangeMm": [
+      150.1,
+      242.2
+     ]
     },
     {
      "level": "T10",
@@ -3035,7 +3628,38 @@
       "max": 245.4
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.20833,
+      0.22222,
+      0.23611,
+      0.25,
+      0.26389,
+      0.27778,
+      0.29167,
+      0.70833,
+      0.72222,
+      0.73611,
+      0.75,
+      0.76389,
+      0.77778,
+      0.79167
+     ],
+     "limbAzimuthClock": [
+      2,
+      3,
+      4,
+      9
+     ],
+     "limbWitnessedAzimuths": 2,
+     "limbBones": [
+      "humerus"
+     ],
+     "limbRadiusRangeMm": [
+      143.8,
+      245.4
+     ]
     },
     {
      "level": "T11",
@@ -3065,7 +3689,8 @@
       "max": 168.8
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "T12",
@@ -3095,7 +3720,8 @@
       "max": 163.4
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "L01",
@@ -3125,7 +3751,8 @@
       "max": 150.5
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "L02",
@@ -3155,7 +3782,8 @@
       "max": 142
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "L03",
@@ -3185,7 +3813,8 @@
       "max": 139.3
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "L04",
@@ -3215,7 +3844,8 @@
       "max": 148.1
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "L05",
@@ -3245,7 +3875,8 @@
       "max": 159.8
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": false
     },
     {
      "level": "S01",
@@ -3305,7 +3936,46 @@
       "max": 189.8
      },
      "azimuthsMeasured": 72,
-     "azimuthsUnverified": 0
+     "azimuthsUnverified": 0,
+     "surfaceIsLimb": true,
+     "limbAzimuthTurns": [
+      0.11111,
+      0.125,
+      0.13889,
+      0.15278,
+      0.16667,
+      0.18056,
+      0.19444,
+      0.20833,
+      0.22222,
+      0.23611,
+      0.76389,
+      0.77778,
+      0.79167,
+      0.80556,
+      0.81944,
+      0.83333,
+      0.84722,
+      0.86111,
+      0.875,
+      0.88889
+     ],
+     "limbAzimuthClock": [
+      1,
+      2,
+      3,
+      9,
+      10,
+      11
+     ],
+     "limbWitnessedAzimuths": 8,
+     "limbBones": [
+      "femur"
+     ],
+     "limbRadiusRangeMm": [
+      150.8,
+      189.8
+     ]
     }
    ],
    "unverified": []

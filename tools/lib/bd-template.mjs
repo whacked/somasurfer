@@ -97,6 +97,7 @@ function parseArgs(argv) {
     endplatePad: 1.2,
     endplateBandMm: 8,
     sacralAxisRule: 'endplate-normal',
+    limbDilateKnots: 3,
     out: null,
     measurement: null,
     id: null,
@@ -111,6 +112,7 @@ function parseArgs(argv) {
     else if (a === '--endplate-pad') opts.endplatePad = Number(next());
     else if (a === '--endplate-band') opts.endplateBandMm = Number(next());
     else if (a === '--sacral-axis') opts.sacralAxisRule = next();
+    else if (a === '--limb-dilate-knots') opts.limbDilateKnots = Number(next());
     else if (a === '--out') opts.out = next();
     else if (a === '--measurement') opts.measurement = next();
     else if (a === '--id') opts.id = next();
@@ -426,9 +428,47 @@ function build(opts) {
   const skinStats = surfaceStats(skinMesh.V, skinMesh.F);
   const unverified = [];
 
+  /**
+   * Limb bones, so an azimuth whose skin is a limb can SAY so.
+   *
+   * `surfaceRadiiMm` is the distance to the first skin crossing, which is the
+   * honest reading of "the skin" and is what keeps the frame invertible. But
+   * where a limb lies against the trunk there is no skin between them, so the
+   * first crossing laterally at `T05` is the outer deltoid at 237 mm rather
+   * than the chest wall. The template is not wrong and the fold scan is not
+   * fooled; a consumer reading `r = 1` as "the trunk surface" is.
+   *
+   * The test is the one measurable version of the question: does the ray cross
+   * a limb bone before it reaches the skin? If it does, everything beyond that
+   * bone is limb, so the skin it finally hits is the limb's. The humerus and
+   * the femur are the witnesses — the scapula and clavicle are trunk bones and
+   * would over-report.
+   *
+   * SOUND BUT NOT COMPLETE, and that is published rather than glossed. A ray
+   * passing only through limb soft tissue, lateral or anterior to the bone, is
+   * not flagged by the bone test. So the flagged set is widened to the
+   * contiguous azimuth arc its members bracket, and the declaration records
+   * that the arc is a lower bound on the affected azimuths rather than an
+   * exact boundary.
+   */
+  const limbWitnesses = [
+    ['FMA13303', 'humerus', 'upper limb'],
+    ['FMA9611', 'femur', 'lower limb'],
+  ];
+  const limbs = [];
+  for (const [fma, term, region] of limbWitnesses) {
+    const mesh = source.loadMesh(fma, 'isa');
+    if (!mesh) throw new Error(`limb witness ${term} (${fma}) is absent from the mesh set`);
+    if (source.nameOf(fma, 'isa') !== term) {
+      throw new Error(`${fma} is "${source.nameOf(fma, 'isa')}" upstream, not "${term}"`);
+    }
+    limbs.push({ fma, term, region, grid: buildGrid(mesh.V, mesh.F) });
+  }
+
   for (let i = 0; i < slabs.length; i += 1) {
     const slab = slabs[i];
     const radii = new Array(opts.azimuths).fill(NaN);
+    const limbAt = new Array(opts.azimuths).fill(null);
     for (let k = 0; k < opts.azimuths; k += 1) {
       const t = k / opts.azimuths;
       const ang = t * 2 * Math.PI;
@@ -440,7 +480,13 @@ function build(opts) {
         slab.anterior[2] * c + slab.left[2] * s,
       ]);
       const hit = firstHit(grid, slab.origin, dir);
-      if (hit > 0) radii[k] = hit;
+      if (hit > 0) {
+        radii[k] = hit;
+        for (const limb of limbs) {
+          const b = firstHit(limb.grid, slab.origin, dir, hit);
+          if (b > 0 && b < hit) { limbAt[k] = limb.term; break; }
+        }
+      }
     }
 
     const measured = radii.filter(Number.isFinite);
@@ -473,10 +519,128 @@ function build(opts) {
     };
     m.azimuthsMeasured = measured.length;
     m.azimuthsUnverified = opts.azimuths - measured.length;
+
+    // Widen the bone-witnessed azimuths by a BOUNDED dilation.
+    //
+    // The first attempt took the complement of the longest unflagged run,
+    // reasoning that a single arc can straddle the anterior midline. Measured:
+    // at `T03` the humerus is witnessed on both sides, so the longest unflagged
+    // run is the posterior arc and its complement swept 37 of 72 azimuths —
+    // through the anterior midline, declaring the sternum a limb. A bilateral
+    // flag set has two arcs and must stay two.
+    //
+    // So each witnessed azimuth is dilated by `limbDilateKnots` either way and
+    // the union taken. The dilation is for the one thing the bone test
+    // provably misses: a ray through limb soft tissue just outside the bone's
+    // own silhouette. It is a fixed, published number, not a fit — the arm's
+    // angular half-width seen from the spine at the mid-thorax is about 14
+    // degrees against the humerus's roughly 10, so three knots at 5 degrees
+    // each covers the difference without reaching the trunk's own surface.
+    const flagged = limbAt.map((v) => v !== null);
+    const n = opts.azimuths;
+    const dilated = new Array(n).fill(false);
+    for (let k = 0; k < n; k += 1) {
+      if (!flagged[k]) continue;
+      for (let d = -opts.limbDilateKnots; d <= opts.limbDilateKnots; d += 1) {
+        dilated[((k + d) % n + n) % n] = true;
+      }
+    }
+    const limbTurns = [];
+    for (let k = 0; k < n; k += 1) if (dilated[k]) limbTurns.push(k / n);
+
+    m.surfaceIsLimb = limbTurns.length > 0;
+    if (limbTurns.length > 0) {
+      m.limbAzimuthTurns = limbTurns.map((v) => round(v, 5));
+      m.limbAzimuthClock = [...new Set(limbTurns.map(clockOf))].sort((a, b) => a - b);
+      m.limbWitnessedAzimuths = flagged.filter(Boolean).length;
+      m.limbBones = [...new Set(limbAt.filter((v) => v !== null))];
+      m.limbRadiusRangeMm = [
+        round(Math.min(...limbTurns.map((t) => radii[Math.round(t * n)])), 1),
+        round(Math.max(...limbTurns.map((t) => radii[Math.round(t * n)])), 1),
+      ];
+    }
   }
 
   // --- precision ----------------------------------------------------------
   const precision = derivePrecision(slabs, skinStats, opts.azimuths);
+
+  /**
+   * Representation limits, declared rather than discovered.
+   *
+   * Every entry here is something this template is honest about and a consumer
+   * can still be misled by, because the fold gate passes and nothing in the
+   * geometry is wrong. A caveat that lives in a report comment cannot reach a
+   * downstream consumer; a field can. So each one carries the levels it
+   * affects, the measurement behind it, and whether it is sound-and-complete.
+   */
+  const declarations = [];
+
+  const limbLevels = perLevelMeasurement.filter((m) => m.surfaceIsLimb);
+  if (limbLevels.length > 0) {
+    declarations.push({
+      id: 'surface-is-limb',
+      severity: 'advisory',
+      affects: limbLevels.map((m) => m.level),
+      summary:
+        'At the listed levels and azimuths, the first skin crossing is a limb surface, '
+        + 'not the trunk surface, so `r = 1` there is the outside of the arm or thigh.',
+      why:
+        'A limb lying against the trunk leaves no skin between them, so there is no trunk surface '
+        + 'to find along those rays. The radius is the honest distance to the skin and the frame '
+        + 'stays exactly invertible; only the anatomical reading of `r = 1` changes.',
+      detection:
+        'A ray is flagged when it crosses the humerus or the femur before reaching the skin, then '
+        + `the witnessed azimuths are dilated by ${opts.limbDilateKnots} knot(s) either way `
+        + `(${round((opts.limbDilateKnots * 360) / opts.azimuths, 1)} degrees).`,
+      completeness:
+        'SOUND, NOT COMPLETE. A ray through limb soft tissue only, lateral or anterior to the bone, '
+        + 'is not witnessed, so the published arc is a lower bound on the affected azimuths.',
+      fix:
+        'Needs a trunk-only surface. BodyParts3D publishes one skin concept for the whole body, so '
+        + 'this source cannot supply it; a different surface source would remove the declaration '
+        + 'without changing any address already issued.',
+      perLevel: limbLevels.map((m) => ({
+        level: m.level,
+        azimuthTurns: m.limbAzimuthTurns,
+        clock: m.limbAzimuthClock,
+        bones: m.limbBones,
+        radiusRangeMm: m.limbRadiusRangeMm,
+      })),
+    });
+  }
+
+  const sacralLevel = perLevelMeasurement.find((m) => m.level === 'S01');
+  const heights = perLevelMeasurement.map((m) => m.heightMm).sort((a, b) => a - b);
+  const medianHeight = heights[Math.floor(heights.length / 2)];
+  if (sacralLevel) {
+    declarations.push({
+      id: 'single-sacral-level',
+      severity: 'advisory',
+      affects: ['S01'],
+      summary:
+        `The whole fused sacrum is one addressable level, ${round(sacralLevel.heightMm, 1)} mm tall against `
+        + `a ${round(medianHeight, 1)} mm median — ${round(sacralLevel.heightMm / medianHeight, 1)}x. `
+        + 'Sacral addressing is correspondingly coarse in the axial direction.',
+      why:
+        'docs/alc-1-admissibility.md §2 measured the alternative: cutting the fused sacrum into '
+        + 'short levels is strictly worse at every girth, because each cut both shortens the chord '
+        + 'and tightens the turn, and the sacral concavity faces the deep pelvis where there is a '
+        + 'lot of tissue. Five sacral levels put 1.2-3.2% of body volume inside a fold.',
+      detection: 'Structural. S02-S05 are reserved grammar and are realised by no template.',
+      completeness: 'Exact. This is a property of the level set, not an estimate.',
+      fix:
+        'Not a defect to fix. A finer sacral frame can be added later without a breaking change '
+        + 'because S02-S05 are reserved, but it needs the non-tubular pelvic parameterisation '
+        + 'rather than more slabs of the same kind.',
+      perLevel: [{
+        level: 'S01',
+        heightMm: round(sacralLevel.heightMm, 2),
+        medianLevelHeightMm: round(medianHeight, 2),
+        ratio: round(sacralLevel.heightMm / medianHeight, 3),
+        axialCellMm: round(sacralLevel.heightMm / 2 ** precision.maxUsefulDigits, 2),
+      }],
+    });
+  }
 
   const template = {
     id: opts.id,
@@ -503,6 +667,7 @@ function build(opts) {
         centreline: opts.centreline,
         bodyFraction: opts.centreline === 'body' ? opts.bodyFraction : null,
         sacralAxisRule: opts.sacralAxisRule,
+        limbDilateKnots: opts.limbDilateKnots,
         endplatePad: opts.endplatePad,
         endplateBandMm: opts.endplateBandMm,
         azimuths: opts.azimuths,
@@ -521,13 +686,14 @@ function build(opts) {
           meanEdgeMm: round(skinStats.meanEdgeMm, 3),
         },
         precision,
+        declarations,
         levels: perLevelMeasurement,
         unverified,
       },
     },
   };
 
-  return { template, unverified, skinStats, precision, laterality };
+  return { template, unverified, skinStats, precision, laterality, declarations };
 }
 
 /**
