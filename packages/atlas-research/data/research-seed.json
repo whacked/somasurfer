@@ -7,12 +7,20 @@
     "",
     "WHAT IS AND IS NOT CHECKED:",
     "",
-    "  - The citations are real publications, transcribed by the curator. NO IDENTIFIER",
-    "    HERE HAS BEEN MACHINE-VERIFIED, because nothing in this repository resolves a",
-    "    URL -- that is the trust-boundary rule, not an oversight. A DOI is recorded only",
-    "    where the curator was confident of it; elsewhere identifier.kind is `none` and",
-    "    the full volume and pages are in `venue`. A missing DOI costs a reader seconds;",
-    "    a wrong one points silently at a different paper.",
+    "  - EVERY identifier here was resolved against a named source on the date recorded",
+    "    in data/citation-report.json: 15 asserted DOIs confirmed through Crossref to",
+    "    point at the paper claimed, and 13 more DOIs returned by Crossref or PubMed for",
+    "    records matching this title, first author and year. The trust-boundary rule has",
+    "    not moved -- THIS PACKAGE still never resolves a URL. The checking happens in",
+    "    tools/verify-research-citations.mjs, out of band, and the gate verifies the",
+    "    committed report offline.",
+    "  - The two remaining `none` entries are monographs (Brodmann 1909, Bogduk 2012).",
+    "    For a book that is the CORRECT record, not a gap. The full volume and pages are",
+    "    in `venue`. A missing DOI costs a reader seconds; a wrong one points silently at",
+    "    a different paper.",
+    "  - NOT CHECKED BY ANYTHING: that these papers claim what this file attributes to",
+    "    them. Crossref confirms a paper exists; it says nothing about whether a finding",
+    "    below is what the paper actually found. That needs a person reading the sources.",
     "  - The region mappings are the curator’s reading of what each paper is about, at",
     "    the granularity its abstract or chapter supports. They are not cell-level claims.",
     "  - Page- and figure-level locators are `not-recorded` rather than invented.",
@@ -39,7 +47,7 @@
     "curatedBy": "Staff Engineer (GStack)",
     "curatedOn": "2026-10-09",
     "method": "manual curation: claims transcribed at the granularity each paper's abstract or chapter supports, then mapped onto structures by hand. Emitted by scripts/author-seed.mjs so the repeated provenance and evidence fields cannot disagree with each other",
-    "citationCheck": "curator-transcribed; no identifier was machine-verified, because this package never fetches a URL. A DOI is recorded only where the curator was confident of it; otherwise identifier.kind is none and the full citation is in venue",
+    "citationCheck": "every identifier resolved against a named source -- see data/citation-report.json for the per-paper queries, the metadata each source returned and the retrievedOn date. A DOI is recorded only where Crossref or PubMed returned it AND the returned title, first author and year matched this record; otherwise identifier.kind is none and the full citation is in venue. This package still never fetches a URL: verification is a tool, and the gate checks its committed report offline. Existence is checked; whether a paper claims what a finding attributes to it is NOT, and cannot be by any API",
     "notRecorded": [
       "page- and figure-level evidence locators: the claims are supported at abstract or chapter granularity, and an invented figure number would be worse than an absent one",
       "ontology accessions for gross anatomical structures: the ATLAS-LABEL namespace is a declared placeholder, because a wrong accession resolves to the wrong structure and looks authoritative doing it",
@@ -106,10 +114,10 @@
       "year": 1999,
       "venue": "Journal of Comparative Neurology 412(2):319-341",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1002/(sici)1096-9861(19990920)412:2<319::aid-cne10>3.0.co;2-7"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1002/(sici)1096-9861(19990920)412:2<319::aid-cne10>3.0.co;2-7",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -175,10 +183,10 @@
       "year": 2006,
       "venue": "NeuroImage 31(3):968-980",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.neuroimage.2006.01.021"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.neuroimage.2006.01.021",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -225,10 +233,10 @@
       "year": 2016,
       "venue": "Cerebral Cortex 26(8):3508-3526",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1093/cercor/bhw157"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1093/cercor/bhw157",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -275,10 +283,10 @@
       "year": 2011,
       "venue": "Neuron 72(4):665-678",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.neuron.2011.09.006"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.neuron.2011.09.006",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -325,10 +333,10 @@
       "year": 2013,
       "venue": "NeuroImage 80:62-79",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.neuroimage.2013.05.041"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.neuroimage.2013.05.041",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -375,10 +383,10 @@
       "year": 2011,
       "venue": "NeuroImage 54(1):313-327",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.neuroimage.2010.07.033"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.neuroimage.2010.07.033",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -395,10 +403,10 @@
       "year": 2012,
       "venue": "NeuroImage 62(2):774-781",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.neuroimage.2012.01.021"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.neuroimage.2012.01.021",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -420,10 +428,10 @@
       "year": 2005,
       "venue": "NeuroImage 25(4):1325-1335",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.neuroimage.2004.12.034"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.neuroimage.2004.12.034",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -487,10 +495,10 @@
       "year": 2008,
       "venue": "Annals of the New York Academy of Sciences 1124:1-38",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1196/annals.1440.011"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1196/annals.1440.011",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -507,10 +515,10 @@
       "year": 2012,
       "venue": "NeuroImage 62(2):816-847",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.neuroimage.2012.04.062"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.neuroimage.2012.04.062",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -613,10 +621,10 @@
       "year": 2008,
       "venue": "Cortex 44(8):1105-1132",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.cortex.2008.05.004"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.cortex.2008.05.004",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -659,10 +667,10 @@
       "year": 2003,
       "venue": "Journal of Biomedical Informatics 36(6):478-500",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1016/j.jbi.2003.11.007"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1016/j.jbi.2003.11.007",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",
@@ -708,10 +716,10 @@
       "year": 1991,
       "venue": "Spine 16(8):888-901",
       "identifier": {
-        "kind": "none",
-        "value": null
+        "kind": "doi",
+        "value": "10.1097/00007632-199108000-00006"
       },
-      "sourceUrl": null,
+      "sourceUrl": "https://doi.org/10.1097/00007632-199108000-00006",
       "provenance": {
         "assertedBy": "Staff Engineer (GStack)",
         "assertedOn": "2026-10-09",

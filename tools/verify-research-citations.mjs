@@ -125,9 +125,16 @@ function compareTitles(asserted, returned) {
   return 'differs';
 }
 
+/**
+ * Both sides go through `foldFamily`, not just the asserted one. PubMed returns
+ * `Buckner RL` — a family name with the initials attached — so folding only the
+ * asserted side scored a perfect PubMed hit as `contains` rather than `match`,
+ * which understated every PubMed row and, because `earnsIdentifier` accepts
+ * `contains`, hid the weakness instead of failing loudly.
+ */
 function compareFirstAuthor(assertedAuthors, returnedFamily) {
   const a = foldFamily(assertedAuthors?.[0]);
-  const b = foldTitle(returnedFamily);
+  const b = foldFamily(returnedFamily);
   if (!b) return 'absent';
   if (a === b) return 'match';
   if (a.includes(b) || b.includes(a)) return 'contains';
@@ -157,6 +164,25 @@ function earnsIdentifier(cmp) {
     (cmp.firstAuthor === 'match' || cmp.firstAuthor === 'contains') &&
     cmp.year === 'match'
   );
+}
+
+/**
+ * The four comparisons, against one returned record. `container` compares the
+ * asserted `venue` with the trailing volume/page run stripped, because the
+ * dataset packs `Nature 536:171-178` into one field while the sources return
+ * the journal name alone. It is recorded for the reader and is deliberately
+ * NOT part of `earnsIdentifier`: journal names vary legitimately between a
+ * transcription and a publisher record ("Philosophical Transactions of the
+ * Royal Society B" vs its full registered title), and gating on it would
+ * reject correct matches.
+ */
+function comparisonFor(paper, rec, container) {
+  return {
+    title: compareTitles(paper.title, rec.title),
+    firstAuthor: compareFirstAuthor(paper.authors, rec.firstAuthorFamily),
+    year: compareYears(paper.year, rec.year),
+    container: compareTitles(paper.venue.replace(/\s+\d+.*$/, ''), container),
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -223,8 +249,10 @@ function pubmedRecord(summary, pmid) {
     pmid: String(pmid),
     doi: doiId?.value ?? null,
     title: summary.title ?? null,
-    firstAuthorFamily: authors[0]?.name ? foldFamily(authors[0].name) : null,
-    firstAuthorRaw: authors[0]?.name ?? null,
+    // Recorded exactly as PubMed returned it (`Buckner RL`), not pre-folded:
+    // the report's job is to show the source's values, and folding is the
+    // comparator's business.
+    firstAuthorFamily: authors[0]?.name ?? null,
     authorCount: authors.length,
     year: yearMatch ? Number(yearMatch[1]) : null,
     pubdate: summary.pubdate ?? null,
@@ -267,12 +295,7 @@ async function checkAssertedDoi(paper) {
   }
 
   const rec = crossrefRecord(body.message);
-  const comparison = {
-    title: compareTitles(paper.title, rec.title),
-    firstAuthor: compareFirstAuthor(paper.authors, rec.firstAuthorFamily),
-    year: compareYears(paper.year, rec.year),
-    container: compareTitles(paper.venue.replace(/\s+\d+.*$/, ''), rec.containerTitle ?? rec.publisher),
-  };
+  const comparison = comparisonFor(paper, rec, rec.containerTitle ?? rec.publisher);
   const identityHolds =
     (comparison.title === 'match' || comparison.title === 'contains') &&
     (comparison.firstAuthor === 'match' || comparison.firstAuthor === 'contains');
@@ -331,17 +354,23 @@ async function searchForPaper(paper) {
   });
 
   if (cr.body) {
-    const top = crossrefRecord(crItems[0]);
-    returned.crossrefTop = top;
-    returned.crossrefCandidates = crItems.slice(0, 5).map(crossrefRecord);
-    if (top) {
-      const cmp = {
-        title: compareTitles(paper.title, top.title),
-        firstAuthor: compareFirstAuthor(paper.authors, top.firstAuthorFamily),
-        year: compareYears(paper.year, top.year),
-        container: compareTitles(paper.venue.replace(/\s+\d+.*$/, ''), top.containerTitle ?? top.publisher),
-      };
-      candidates.push({ source: 'crossref', route: 'crossref-search', record: top, comparison: cmp, doi: top.doi });
+    const recs = crItems.slice(0, 5).map(crossrefRecord).filter(Boolean);
+    returned.crossrefTop = recs[0] ?? null;
+    returned.crossrefCandidates = recs;
+    // EVERY inspected candidate is compared, not just rank 0. Crossref ranks by
+    // its own relevance score, and the correct paper is routinely not first: the
+    // Brainnetome atlas came back at rank 2 behind a conference abstract with a
+    // near-identical title, and scoring only the top hit reported the paper as
+    // `unresolved` while its DOI sat in the response.
+    for (const [rank, rec] of recs.entries()) {
+      candidates.push({
+        source: 'crossref',
+        route: 'crossref-search',
+        rank,
+        record: rec,
+        comparison: comparisonFor(paper, rec, rec.containerTitle ?? rec.publisher),
+        doi: rec.doi,
+      });
     }
   }
 
@@ -378,15 +407,15 @@ async function searchForPaper(paper) {
     const recs = idList.map((id) => pubmedRecord(result[id], id)).filter(Boolean);
     returned.pubmedTop = recs[0] ?? null;
     returned.pubmedCandidates = recs;
-    if (recs[0]) {
-      const r = recs[0];
-      const cmp = {
-        title: compareTitles(paper.title, r.title),
-        firstAuthor: compareFirstAuthor(paper.authors, r.firstAuthorRaw),
-        year: compareYears(paper.year, r.year),
-        container: compareTitles(paper.venue.replace(/\s+\d+.*$/, ''), r.containerTitle),
-      };
-      candidates.push({ source: 'pubmed', route: 'pubmed-esummary', record: r, comparison: cmp, doi: r.doi });
+    for (const [rank, rec] of recs.entries()) {
+      candidates.push({
+        source: 'pubmed',
+        route: 'pubmed-esummary',
+        rank,
+        record: rec,
+        comparison: comparisonFor(paper, rec, rec.containerTitle),
+        doi: rec.doi,
+      });
     }
   }
 
@@ -408,23 +437,77 @@ async function searchForPaper(paper) {
     };
   }
 
-  if (qualifying.length > 0) {
-    const win = qualifying[0];
+  // Distinct DOIs among the qualifying candidates. Two routes returning the
+  // SAME DOI is agreement and strengthens the row. Two routes returning
+  // DIFFERENT DOIs that both match on title, first author and year is genuine
+  // ambiguity — a journal article and a reprinted chapter, say — and picking
+  // the first would be resolving it in favour of writing data. So it is
+  // reported as `unresolved` with both candidates, and a person decides.
+  const byDoi = new Map();
+  for (const c of qualifying) {
+    const key = String(c.doi).toLowerCase();
+    if (!byDoi.has(key)) byDoi.set(key, []);
+    byDoi.get(key).push(c);
+  }
+
+  if (byDoi.size === 1) {
+    const group = [...byDoi.values()][0];
+    // Prefer an exact title equality over a containment, then the better rank,
+    // so the recorded `comparison` is the strongest evidence for the DOI rather
+    // than whichever route happened to be queried first.
+    const win = [...group].sort(
+      (x, y) =>
+        (x.comparison.title === 'match' ? 0 : 1) - (y.comparison.title === 'match' ? 0 : 1) || x.rank - y.rank,
+    )[0];
+    const agreeing = [...new Set(group.map((c) => c.source))];
     return {
       status: 'resolved',
-      identifierJustified: { kind: 'doi', value: win.doi, source: win.source, route: win.route },
+      identifierJustified: {
+        kind: 'doi',
+        value: win.doi,
+        source: win.source,
+        route: win.route,
+        candidateRank: win.rank,
+        agreedBy: agreeing,
+      },
       queries,
       returned,
       comparison: win.comparison,
       candidates,
       reason:
-        `${win.source} returned DOI ${win.doi} for a record matching the asserted title, first author ` +
-        `and year (${JSON.stringify(win.record.title)}, ${win.record.firstAuthorFamily ?? win.record.firstAuthorRaw}, ${win.record.year}).`,
+        `${agreeing.join(' and ')} returned DOI ${win.doi} for a record matching the asserted title, ` +
+        `first author and year (${JSON.stringify(win.record.title)}, ${win.record.firstAuthorFamily}, ${win.record.year})` +
+        `${win.rank > 0 ? `, at candidate rank ${win.rank} rather than the top hit` : ''}.`,
     };
   }
 
-  const near = candidates
-    .map((c) => `${c.source}: ${JSON.stringify(c.record.title)} (${c.record.year}) — title ${c.comparison.title}, firstAuthor ${c.comparison.firstAuthor}, year ${c.comparison.year}`)
+  const describe = (c) =>
+    `${c.source}#${c.rank} ${c.doi ?? 'no-doi'}: ${JSON.stringify(c.record.title)} (${c.record.year}) ` +
+    `— title ${c.comparison.title}, firstAuthor ${c.comparison.firstAuthor}, year ${c.comparison.year}`;
+
+  if (byDoi.size > 1) {
+    return {
+      status: 'unresolved',
+      queries,
+      returned,
+      comparison: null,
+      candidates,
+      reason:
+        `AMBIGUOUS: ${byDoi.size} different DOIs each matched the asserted title, first author and year ` +
+        `(${[...byDoi.keys()].join(', ')}). Left as kind "none" rather than choosing one. Candidates: ` +
+        `${qualifying.map(describe).join('; ')}.`,
+    };
+  }
+
+  // Nothing qualified. Record the closest few so the next reader can see how
+  // close it got without re-running the queries.
+  const near = [...candidates]
+    .sort(
+      (x, y) =>
+        (x.comparison.title === 'differs' ? 1 : 0) - (y.comparison.title === 'differs' ? 1 : 0) || x.rank - y.rank,
+    )
+    .slice(0, 4)
+    .map(describe)
     .join('; ');
   return {
     status: 'unresolved',

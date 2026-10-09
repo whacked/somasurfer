@@ -26,13 +26,25 @@
  *
  * ## What is and is not verified, stated once
  *
- * Citations are transcribed by the curator. **No identifier here has been
- * machine-checked**, because nothing in this repository resolves a URL — that
- * is the trust-boundary rule, not an oversight. So a DOI is recorded only
- * where the curator was confident of it, and `identifier.kind` is `none`
- * everywhere else with the full volume and pages in `venue`. The asymmetry is
- * deliberate: a missing DOI costs a reader seconds, while a wrong one points
- * silently at a different paper.
+ * Citations are transcribed by the curator, and **every identifier here has
+ * been resolved against a named source** — see `data/citation-report.json` and
+ * `tools/verify-research-citations.mjs` (DOG-50). The trust-boundary rule still
+ * holds and has not moved: *this package* never resolves a URL, and the viewer
+ * renders links without fetching them. The verification happens in a tool, out
+ * of band, and commits its findings as data that the gate then checks offline.
+ *
+ * A DOI appears here only when Crossref or PubMed returned it AND the returned
+ * title, first author and year matched this record. Where no source returned a
+ * match, `identifier.kind` stays `none` with the full volume and pages in
+ * `venue`. Two entries are `none`, and both are monographs (Brodmann 1909,
+ * Bogduk 2012) — for a book that is the correct record, not a gap. The
+ * asymmetry is still deliberate: a missing DOI costs a reader seconds, while a
+ * wrong one points silently at a different paper.
+ *
+ * What is still NOT checked, by anything: that these papers *claim what this
+ * file attributes to them*. Crossref confirms a paper exists. The findings and
+ * mappings below assert `basis: "published-text"` with `confidence: "high"`,
+ * and only a person reading the sources can confirm that.
  *
  * Region mappings are the curator's reading of what each paper is about, at
  * the granularity its abstract or chapter supports. They are not cell-level
@@ -194,7 +206,7 @@ const PAPERS = [
     'Nature 536:171-178', '10.1038/nature18933'],
   ['amunts-1999-broca', "Broca's region revisited: cytoarchitecture and intersubject variability",
     ['Amunts K', 'Schleicher A', 'Buergel U', 'Mohlberg H', 'Uylings HBM', 'Zilles K'], 1999,
-    'Journal of Comparative Neurology 412(2):319-341', null],
+    'Journal of Comparative Neurology 412(2):319-341', '10.1002/(sici)1096-9861(19990920)412:2<319::aid-cne10>3.0.co;2-7'],
   ['amunts-2020-julich-brain', "Julich-Brain: a 3D probabilistic atlas of the human brain's cytoarchitecture",
     ['Amunts K', 'Mohlberg H', 'Bludau S', 'Zilles K'], 2020, 'Science 369:988-992',
     '10.1126/science.abb4588'],
@@ -203,38 +215,38 @@ const PAPERS = [
   ['desikan-2006-gyral-parcellation',
     'An automated labeling system for subdividing the human cerebral cortex on MRI scans into gyral based regions of interest',
     ['Desikan RS', 'Segonne F', 'Fischl B', 'Quinn BT', 'Dickerson BC', 'Blacker D'], 2006,
-    'NeuroImage 31(3):968-980', null],
+    'NeuroImage 31(3):968-980', '10.1016/j.neuroimage.2006.01.021'],
   ['tzourio-mazoyer-2002-aal',
     'Automated anatomical labeling of activations in SPM using a macroscopic anatomical parcellation of the MNI MRI single-subject brain',
     ['Tzourio-Mazoyer N', 'Landeau B', 'Papathanassiou D', 'Crivello F', 'Etard O', 'Delcroix N'], 2002,
     'NeuroImage 15(1):273-289', '10.1006/nimg.2001.0978'],
   ['fan-2016-brainnetome', 'The Human Brainnetome Atlas: a new brain atlas based on connectional architecture',
     ['Fan L', 'Li H', 'Zhuo J', 'Zhang Y', 'Wang J', 'Chen L'], 2016,
-    'Cerebral Cortex 26(8):3508-3526', null],
+    'Cerebral Cortex 26(8):3508-3526', '10.1093/cercor/bhw157'],
   ['yeo-2011-intrinsic-networks',
     'The organization of the human cerebral cortex estimated by intrinsic functional connectivity',
     ['Yeo BTT', 'Krienen FM', 'Sepulcre J', 'Sabuncu MR', 'Lashkari D', 'Hollinshead M'], 2011,
     'Journal of Neurophysiology 106(3):1125-1165', '10.1152/jn.00338.2011'],
   ['power-2011-functional-areas', 'Functional network organization of the human brain',
     ['Power JD', 'Cohen AL', 'Nelson SM', 'Wig GS', 'Barnes KA', 'Church JA'], 2011,
-    'Neuron 72(4):665-678', null],
+    'Neuron 72(4):665-678', '10.1016/j.neuron.2011.09.006'],
   ['hagmann-2008-structural-core', 'Mapping the structural core of human cerebral cortex',
     ['Hagmann P', 'Cammoun L', 'Gigandet X', 'Meuli R', 'Honey CJ', 'Wedeen VJ'], 2008,
     'PLoS Biology 6(7):e159', '10.1371/journal.pbio.0060159'],
   ['van-essen-2013-hcp', 'The WU-Minn Human Connectome Project: an overview',
     ['Van Essen DC', 'Smith SM', 'Barch DM', 'Behrens TEJ', 'Yacoub E', 'Ugurbil K'], 2013,
-    'NeuroImage 80:62-79', null],
+    'NeuroImage 80:62-79', '10.1016/j.neuroimage.2013.05.041'],
   ['mazziotta-2001-icbm', 'A probabilistic atlas and reference system for the human brain',
     ['Mazziotta J', 'Toga A', 'Evans A', 'Fox P', 'Lancaster J', 'Zilles K'], 2001,
     'Philosophical Transactions of the Royal Society B 356:1293-1322', '10.1098/rstb.2001.0915'],
   ['fonov-2011-unbiased-templates', 'Unbiased average age-appropriate atlases for pediatric studies',
     ['Fonov V', 'Evans AC', 'Botteron K', 'Almli CR', 'McKinstry RC', 'Collins DL'], 2011,
-    'NeuroImage 54(1):313-327', null],
-  ['fischl-2012-freesurfer', 'FreeSurfer', ['Fischl B'], 2012, 'NeuroImage 62(2):774-781', null],
+    'NeuroImage 54(1):313-327', '10.1016/j.neuroimage.2010.07.033'],
+  ['fischl-2012-freesurfer', 'FreeSurfer', ['Fischl B'], 2012, 'NeuroImage 62(2):774-781', '10.1016/j.neuroimage.2012.01.021'],
   ['eickhoff-2005-anatomy-toolbox',
     'A new SPM toolbox for combining probabilistic cytoarchitectonic maps and functional imaging data',
     ['Eickhoff SB', 'Stephan KE', 'Mohlberg H', 'Grefkes C', 'Fink GR', 'Amunts K'], 2005,
-    'NeuroImage 25(4):1325-1335', null],
+    'NeuroImage 25(4):1325-1335', '10.1016/j.neuroimage.2004.12.034'],
   ['mesulam-1998-sensation-to-cognition', 'From sensation to cognition',
     ['Mesulam MM'], 1998, 'Brain 121(6):1013-1052', '10.1093/brain/121.6.1013'],
   ['raichle-2001-default-mode', 'A default mode of brain function',
@@ -242,10 +254,10 @@ const PAPERS = [
     'Proceedings of the National Academy of Sciences 98(2):676-682', '10.1073/pnas.98.2.676'],
   ['buckner-2008-default-network', "The brain's default network: anatomy, function, and relevance to disease",
     ['Buckner RL', 'Andrews-Hanna JR', 'Schacter DL'], 2008,
-    'Annals of the New York Academy of Sciences 1124:1-38', null],
+    'Annals of the New York Academy of Sciences 1124:1-38', '10.1196/annals.1440.011'],
   ['price-2012-language-review',
     'A review and synthesis of the first 20 years of PET and fMRI studies of heard speech, spoken language and reading',
-    ['Price CJ'], 2012, 'NeuroImage 62(2):816-847', null],
+    ['Price CJ'], 2012, 'NeuroImage 62(2):816-847', '10.1016/j.neuroimage.2012.04.062'],
   ['hickok-2007-dual-stream', 'The cortical organization of speech processing',
     ['Hickok G', 'Poeppel D'], 2007, 'Nature Reviews Neuroscience 8:393-402', '10.1038/nrn2113'],
   ['kanwisher-1997-fusiform-face-area',
@@ -258,18 +270,18 @@ const PAPERS = [
     'Somatic motor and sensory representation in the cerebral cortex of man as studied by electrical stimulation',
     ['Penfield W', 'Boldrey E'], 1937, 'Brain 60(4):389-443', '10.1093/brain/60.4.389'],
   ['catani-2008-virtual-dissection', 'A diffusion tensor imaging tractography atlas for virtual in vivo dissections',
-    ['Catani M', 'Thiebaut de Schotten M'], 2008, 'Cortex 44(8):1105-1132', null],
+    ['Catani M', 'Thiebaut de Schotten M'], 2008, 'Cortex 44(8):1105-1132', '10.1016/j.cortex.2008.05.004'],
   ['mitsuhashi-2009-bodyparts3d', 'BodyParts3D: 3D structure database for anatomical concepts',
     ['Mitsuhashi N', 'Fujieda K', 'Tamura T', 'Kawamoto S', 'Takagi T', 'Okubo K'], 2009,
     'Nucleic Acids Research 37(Database issue):D782-D785', '10.1093/nar/gkn613'],
   ['rosse-2003-fma', 'A reference ontology for biomedical informatics: the Foundational Model of Anatomy',
-    ['Rosse C', 'Mejino JLV'], 2003, 'Journal of Biomedical Informatics 36(6):478-500', null],
+    ['Rosse C', 'Mejino JLV'], 2003, 'Journal of Biomedical Informatics 36(6):478-500', '10.1016/j.jbi.2003.11.007'],
   ['mungall-2012-uberon', 'Uberon, an integrative multi-species anatomy ontology',
     ['Mungall CJ', 'Torniai C', 'Gkoutos GV', 'Lewis SE', 'Haendel MA'], 2012,
     'Genome Biology 13:R5', '10.1186/gb-2012-13-1-r5'],
   ['panjabi-1991-thoracic-morphometry', 'Thoracic human vertebrae: quantitative three-dimensional anatomy',
     ['Panjabi MM', 'Takata K', 'Goel V', 'Federico D', 'Oxland T', 'Duranceau J'], 1991,
-    'Spine 16(8):888-901', null],
+    'Spine 16(8):888-901', '10.1097/00007632-199108000-00006'],
   ['bogduk-2012-lumbar-anatomy', 'Clinical and Radiological Anatomy of the Lumbar Spine, 5th edition',
     ['Bogduk N'], 2012, 'Churchill Livingstone, Edinburgh', null],
 ];
@@ -1186,12 +1198,20 @@ const dataset = {
     '',
     'WHAT IS AND IS NOT CHECKED:',
     '',
-    '  - The citations are real publications, transcribed by the curator. NO IDENTIFIER',
-    '    HERE HAS BEEN MACHINE-VERIFIED, because nothing in this repository resolves a',
-    '    URL -- that is the trust-boundary rule, not an oversight. A DOI is recorded only',
-    '    where the curator was confident of it; elsewhere identifier.kind is `none` and',
-    '    the full volume and pages are in `venue`. A missing DOI costs a reader seconds;',
-    '    a wrong one points silently at a different paper.',
+    '  - EVERY identifier here was resolved against a named source on the date recorded',
+    '    in data/citation-report.json: 15 asserted DOIs confirmed through Crossref to',
+    '    point at the paper claimed, and 13 more DOIs returned by Crossref or PubMed for',
+    '    records matching this title, first author and year. The trust-boundary rule has',
+    '    not moved -- THIS PACKAGE still never resolves a URL. The checking happens in',
+    '    tools/verify-research-citations.mjs, out of band, and the gate verifies the',
+    '    committed report offline.',
+    '  - The two remaining `none` entries are monographs (Brodmann 1909, Bogduk 2012).',
+    '    For a book that is the CORRECT record, not a gap. The full volume and pages are',
+    '    in `venue`. A missing DOI costs a reader seconds; a wrong one points silently at',
+    '    a different paper.',
+    '  - NOT CHECKED BY ANYTHING: that these papers claim what this file attributes to',
+    '    them. Crossref confirms a paper exists; it says nothing about whether a finding',
+    '    below is what the paper actually found. That needs a person reading the sources.',
     '  - The region mappings are the curator’s reading of what each paper is about, at',
     '    the granularity its abstract or chapter supports. They are not cell-level claims.',
     '  - Page- and figure-level locators are `not-recorded` rather than invented.',
@@ -1216,9 +1236,13 @@ const dataset = {
       'supports, then mapped onto structures by hand. Emitted by scripts/author-seed.mjs so the ' +
       'repeated provenance and evidence fields cannot disagree with each other',
     citationCheck:
-      'curator-transcribed; no identifier was machine-verified, because this package never fetches ' +
-      'a URL. A DOI is recorded only where the curator was confident of it; otherwise ' +
-      'identifier.kind is none and the full citation is in venue',
+      'every identifier resolved against a named source -- see data/citation-report.json for the ' +
+      'per-paper queries, the metadata each source returned and the retrievedOn date. A DOI is ' +
+      'recorded only where Crossref or PubMed returned it AND the returned title, first author and ' +
+      'year matched this record; otherwise identifier.kind is none and the full citation is in venue. ' +
+      'This package still never fetches a URL: verification is a tool, and the gate checks its ' +
+      'committed report offline. Existence is checked; whether a paper claims what a finding ' +
+      'attributes to it is NOT, and cannot be by any API',
     notRecorded: [
       'page- and figure-level evidence locators: the claims are supported at abstract or chapter granularity, and an invented figure number would be worse than an absent one',
       'ontology accessions for gross anatomical structures: the ATLAS-LABEL namespace is a declared placeholder, because a wrong accession resolves to the wrong structure and looks authoritative doing it',
