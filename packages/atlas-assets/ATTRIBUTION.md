@@ -8,15 +8,15 @@ Every file shipped from this package appears below with its licence, its
 copyright holder and where it came from. The build renders this list into
 the site, so an asset cannot reach a user without its attribution.
 
-> **Package licence: pending.** Settled by DOG-2 D1 (mesh licence). Until then this
-> package carries first-party assets only, and the entries below say so.
-
 ## Assets
 
 | asset | files | licence | holder | share-alike |
 | --- | --- | --- | --- | --- |
 | Placeholder body shell | `geometry/placeholder-body-shell.lowres.json` | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | GStack | no |
 | ALC-1 vertebral level index | `labels/alc-1-levels.json` | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | GStack | no |
+| BD body template, BodyParts3D 4.0 adult | `templates/bp3d-4.0-adult-body-centroid.body.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); adaptation by GStack | **yes** |
+| BV brain-volume template, ICBM152 2009c | `templates/icbm152-2009c-asym.brain-volume.json` | [MNI-BIC-permissive](https://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009) | Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University; adaptation by GStack | no |
+| ALC-1 name index and structure coverings | `labels/names.json`<br>`labels/coverings.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); UBERON / OBO Foundry; adaptation by GStack | **yes** |
 
 ## Provenance
 
@@ -36,12 +36,39 @@ the site, so an asset cannot reach a user without its attribution.
 - **source** First-party. Derived from docs/alc-1-spec.md.
 - **note** The addressable level set, as published in the ALC-1 spec.
 
+### BD body template, BodyParts3D 4.0 adult
+
+- **id** `bp3d-bd-body-template`
+- **licence** CC-BY-SA-4.0
+- **holder** The Database Center for Life Science (DBCLS); adaptation by GStack
+- **source** Derived by tools/build-bd-template.mjs from BodyParts3D/Anatomography 4.0, 99%-polygon-reduced OBJ set (IS-A tree), isa_BP3D_4.0_obj_99.zip, https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
+- **note** A spine centreline, per-level frames and per-level skin radii measured from 25 vertebra meshes and the skin mesh. An adaptation of the DBCLS meshes, so it is share-alike: D1 settled the inbound licence as CC BY-SA 2.1 Japan, which is what the OBJ payloads' own header comments state, and this derivative ships under CC BY-SA 4.0, the current version of the same licence with the same elements. The archive's web licence page now states CC BY 4.0 instead; docs/asset-licensing.md records the discrepancy and why the pipeline holds the share-alike reading. No mesh vertices are redistributed here.
+
+### BV brain-volume template, ICBM152 2009c
+
+- **id** `icbm152-bv-template`
+- **licence** MNI-BIC-permissive
+- **holder** Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University; adaptation by GStack
+- **source** Derived by tools/build-bv-template.mjs from the ICBM 152 non-linear 2009c asymmetric distribution, mni_icbm152_nlin_asym_09c_nifti.zip, https://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip
+- **note** Six distances, one landmark and three unit vectors, measured from the distribution's own brain mask and NIfTI affine. NO IMAGE DATA from that archive is redistributed. The archive's COPYING text is reproduced verbatim inside the template's provenance block and requires only that the copyright notice travel with copies, which this entry and ATTRIBUTION.md do. Not share-alike, so this file carries no obligation onto anything that reads it. The AC-PC distance is recorded UNVERIFIED and unused - see the template's `provenance.landmarks.pc`.
+
+### ALC-1 name index and structure coverings
+
+- **id** `bp3d-name-index`
+- **licence** CC-BY-SA-4.0
+- **holder** The Database Center for Life Science (DBCLS); UBERON / OBO Foundry; adaptation by GStack
+- **source** Derived by tools/build-name-index.mjs from BodyParts3D/Anatomography 4.0 (IS-A and PART-OF trees, isa_BP3D_4.0_obj_99.zip) and from UBERON basic.obo, http://purl.obolibrary.org/obo/uberon/basic.obo
+- **note** names.json carries FMA concept ids and the release's own English terms, plus UBERON cross-references read from UBERON's FMA xrefs (UBERON is CC BY 3.0, which BY-SA 4.0 satisfies). coverings.json is computed from the mesh geometry, so it is an adaptation of the DBCLS meshes and share-alike follows. The brain is deliberately absent: it is a BV structure and BV ships without names until a parcellation licence is cleared - see docs/asset-licensing.md.
+
 ## Share-alike obligations
 
-None. No asset in this package currently carries a share-alike licence.
+The following assets carry a share-alike obligation:
 
-The separation mechanism is in place regardless, because it has to exist
-before the first such asset arrives, not after:
+- BD body template, BodyParts3D 4.0 adult — CC-BY-SA-4.0
+- ALC-1 name index and structure coverings — CC-BY-SA-4.0
+
+That obligation is confined to this package by the following, checked on
+every push by `tools/check-licence-separation.mjs`:
 
 1. No code package declares a dependency on `@gstack/atlas-assets`.
 2. No code package imports from it.
