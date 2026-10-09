@@ -5,8 +5,15 @@
  * the URL carries everything a view consists of. An address alone does not: two
  * people with the same `?a=` and different layer sets are not looking at the
  * same thing, and a link that silently resets the camera has not restored
- * anything. So the query string carries the atlas, the address, the camera and
- * the layer state, and this module is the only place that knows the encoding.
+ * anything. So the query string carries the atlas, the address, the camera, the
+ * layer state and whether labels are showing, and this module is the only place
+ * that knows the encoding.
+ *
+ * The test of whether something belongs here is not how big it is. Label
+ * visibility is one bit, and leaving it out of the URL still broke the promise:
+ * two people on the same link, one with the level markers up and one without,
+ * are not looking at the same view, and whichever of them is reading a level
+ * off the screen cannot tell the other where to look.
  *
  * Two properties are deliberately built in and asserted by the suite.
  *
@@ -42,11 +49,23 @@ export const DEFAULT_CAMERA = Object.freeze({
   target: Object.freeze([0, 0, 0]),
 });
 
+/**
+ * Labels start on.
+ *
+ * The level markers are how a user tells T07 from T08 on a shell that looks the
+ * same at every level, so an atlas that opens without them opens less useful
+ * than it is. Being the default also keeps the entry URL bare: the key only
+ * appears once someone has turned labels off, which is the state worth carrying
+ * in a link.
+ */
+export const DEFAULT_LABELS = true;
+
 export const DEFAULT_VIEW = Object.freeze({
   atlas: 'body',
   address: null,
   camera: DEFAULT_CAMERA,
   layers: Object.freeze({ hidden: Object.freeze([]), isolated: null, opacity: Object.freeze({}) }),
+  labels: DEFAULT_LABELS,
 });
 
 const round = (value, decimals) => {
@@ -74,6 +93,16 @@ const isLayerId = (s) => typeof s === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(s
  * real comparisons.
  */
 export const hasAddress = (value) => typeof value === 'string' && value.length > 0;
+
+/**
+ * Label visibility, normalised to a boolean.
+ *
+ * `undefined` means "the caller did not say", which is the default rather than
+ * "off" — a view object assembled before labels were a facet must not read as a
+ * request to hide them. Everything else is coerced through `!== false` so a
+ * stray truthy value cannot leave a third state in the URL.
+ */
+export const labelsVisible = (value) => (value === undefined ? DEFAULT_LABELS : value !== false);
 
 // ---------------------------------------------------------------------------
 // Encode
@@ -109,6 +138,12 @@ export function encodeView(view) {
   const hidden = (layers.hidden ?? []).filter(isLayerId);
   if (hidden.length > 0) params.set('hide', [...new Set(hidden)].sort().join(','));
   if (isLayerId(layers.isolated)) params.set('iso', layers.isolated);
+
+  // Emitted against the default rather than against `false`, so flipping
+  // DEFAULT_LABELS later moves which state is the short URL and does not
+  // silently stop encoding the other one.
+  const labels = labelsVisible(view?.labels);
+  if (labels !== DEFAULT_LABELS) params.set('labels', labels ? '1' : '0');
 
   const opacity = Object.entries(layers.opacity ?? {})
     .filter(([id, value]) => isLayerId(id) && Number.isFinite(value))
@@ -197,6 +232,22 @@ export function decodeView(search) {
     else problems.push(`ignored an unusable layer id in iso=: ${JSON.stringify(isoRaw)}`);
   }
 
+  let labels = DEFAULT_LABELS;
+  const labelsRaw = params.get('labels');
+  if (labelsRaw !== null) {
+    // An explicit allow-list, not truthiness. `labels=0` has to mean off, and
+    // under truthiness the non-empty string "0" means on — the one spelling a
+    // hand-written link is most likely to use would do the opposite of what it
+    // says.
+    if (labelsRaw === '1' || labelsRaw === 'true') labels = true;
+    else if (labelsRaw === '0' || labelsRaw === 'false') labels = false;
+    else {
+      problems.push(
+        `ignored an unusable labels= value ${JSON.stringify(labelsRaw)}; expected 0 or 1`,
+      );
+    }
+  }
+
   const opacity = {};
   const opRaw = params.get('op');
   if (opRaw !== null) {
@@ -218,6 +269,7 @@ export function decodeView(search) {
       address,
       camera,
       layers: { hidden: [...new Set(hidden)].sort(), isolated, opacity },
+      labels,
     },
     problems,
   };

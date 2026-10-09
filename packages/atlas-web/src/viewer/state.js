@@ -26,17 +26,28 @@
  * ## Camera and layers are per atlas, and the return is a snapshot
  *
  * Two mechanisms, because they answer two different questions. Per-atlas
- * `camera` and `layers` mean each atlas remembers how you were looking at it,
- * so switching back and forth does not reset anything. The `returnStack`
- * additionally snapshots the whole view — atlas, camera, layers and the
- * selected address — at the moment of an explicit switch, which is what the
- * "route back that restores the previous camera and layer state" requirement
- * actually asks for: not "the body atlas's current state" but "the state you
- * left".
+ * `camera`, `layers` and `labels` mean each atlas remembers how you were
+ * looking at it, so switching back and forth does not reset anything. The
+ * `returnStack` additionally snapshots the whole view — atlas, camera, layers,
+ * label visibility and the selected address — at the moment of an explicit
+ * switch, which is what the "route back that restores the previous camera and
+ * layer state" requirement actually asks for: not "the body atlas's current
+ * state" but "the state you left".
+ *
+ * ## Label visibility is view state, not shell state
+ *
+ * It used to live in `app.js` as one boolean on the DOM shell, which made it
+ * invisible in three ways at once: one flag shared by both atlases, so turning
+ * the markers off in the brain atlas turned them off in the body atlas you came
+ * back to; absent from `toView()`, so no link carried it and "every link
+ * restores the same view" was false by one facet; and unreachable from anything
+ * driving the viewer in Node, so the §7 label behaviour could not be measured
+ * at all — the gap DOG-71 was filed for. Whether labels are showing is part of
+ * what you are looking at, so it is here with the rest of the view.
  */
 
 import { parse } from '../alc.js';
-import { DEFAULT_CAMERA, hasAddress } from './deeplink.js';
+import { DEFAULT_CAMERA, DEFAULT_LABELS, hasAddress, labelsVisible } from './deeplink.js';
 import { selectAddress } from './select.js';
 
 /** Which atlas a frame's addresses belong to. */
@@ -104,6 +115,12 @@ export function createViewer(options = {}) {
     /** Per atlas, so each remembers its own view. */
     camera: { body: { ...cloneCamera(DEFAULT_CAMERA) }, brain: { ...cloneCamera(DEFAULT_CAMERA) } },
     layers: { body: freshLayers(), brain: freshLayers() },
+    /**
+     * Per atlas too, and for the same reason: the body atlas's level markers
+     * and the brain atlas's hemisphere markers are different enough that
+     * wanting one is not wanting the other.
+     */
+    labels: { body: DEFAULT_LABELS, brain: DEFAULT_LABELS },
     /** Per atlas, so an address selected in one is still there on return. */
     address: { body: null, brain: null },
     selection: null,
@@ -129,6 +146,10 @@ export function createViewer(options = {}) {
 
     cameraOf(atlas = state.atlas) {
       return state.camera[atlas];
+    },
+
+    labelsOf(atlas = state.atlas) {
+      return state.labels[atlas];
     },
 
     /** The layer a given vertebral level is drawn under. */
@@ -232,6 +253,29 @@ export function createViewer(options = {}) {
       return state.layers[state.atlas];
     },
 
+    // --- labels -----------------------------------------------------------
+
+    /**
+     * Show or hide the labels in the current atlas.
+     *
+     * Changes nothing else. Labels are an annotation over the view, so toggling
+     * them is not a navigation and not a selection: the camera, the layers and
+     * the selected address are all untouched, which is what the §7 row asserts
+     * and the reason this is not folded into the layer state.
+     */
+    setLabels(visible, atlas = state.atlas) {
+      if (!(atlas in state.labels)) throw new Error(`unknown atlas ${JSON.stringify(atlas)}`);
+      // `Boolean`, not the `!== false` the view normaliser uses: a setter is
+      // told what to do, so an omitted argument here means off rather than
+      // "unstated, use the default".
+      state.labels[atlas] = Boolean(visible);
+      return state.labels[atlas];
+    },
+
+    toggleLabels(atlas = state.atlas) {
+      return api.setLabels(!state.labels[atlas], atlas);
+    },
+
     // --- atlas navigation, the only thing that changes `atlas` ------------
 
     /**
@@ -248,6 +292,7 @@ export function createViewer(options = {}) {
         atlas: state.atlas,
         camera: cloneCamera(state.camera[state.atlas]),
         layers: cloneLayers(state.layers[state.atlas]),
+        labels: state.labels[state.atlas],
         address: state.address[state.atlas],
       });
       state.atlas = atlas;
@@ -270,7 +315,8 @@ export function createViewer(options = {}) {
     },
 
     /**
-     * Restore the view we left, exactly: atlas, camera, layers and address.
+     * Restore the view we left, exactly: atlas, camera, layers, labels and
+     * address.
      */
     returnToPrevious() {
       const previous = state.returnStack.pop();
@@ -278,6 +324,7 @@ export function createViewer(options = {}) {
       state.atlas = previous.atlas;
       state.camera[previous.atlas] = cloneCamera(previous.camera);
       state.layers[previous.atlas] = cloneLayers(previous.layers);
+      state.labels[previous.atlas] = labelsVisible(previous.labels);
       state.address[previous.atlas] = previous.address;
       state.selection = null;
       if (previous.address) api.select(previous.address);
@@ -293,6 +340,7 @@ export function createViewer(options = {}) {
         address: state.address[state.atlas],
         camera: state.camera[state.atlas],
         layers: state.layers[state.atlas],
+        labels: state.labels[state.atlas],
       };
     },
 
@@ -310,6 +358,10 @@ export function createViewer(options = {}) {
       if (view.atlas in state.layers) state.atlas = view.atlas;
       state.camera[state.atlas] = cloneCamera({ ...DEFAULT_CAMERA, ...view.camera });
       state.layers[state.atlas] = cloneLayers({ ...freshLayers(), ...view.layers });
+      // Normalised rather than assigned: a view that came from a URL has
+      // already been through `decodeView`, but one assembled by a caller may
+      // simply not mention labels, and that is the default, not "off".
+      state.labels[state.atlas] = labelsVisible(view.labels);
       state.selection = null;
       if (hasAddress(view.address)) {
         // Still goes through select(), so an address out of a URL is validated

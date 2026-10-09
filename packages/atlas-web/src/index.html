@@ -37,6 +37,13 @@
           <div class="stage-controls">
             <button id="reset-camera" type="button" data-testid="reset-camera">Reset view</button>
             <button id="reset-layers" type="button" data-testid="reset-layers">Reset layers</button>
+            <!--
+              `checked` mirrors DEFAULT_LABELS in viewer/deeplink.js so the
+              control is right before any script runs. It is not the source of
+              truth: renderChrome() sets it from viewer.labelsOf() on every
+              commit, which is how a `?labels=0` link and the return from the
+              brain atlas both reach it.
+            -->
             <label><input id="labels-toggle" type="checkbox" data-testid="labels-toggle" checked /> Labels</label>
             <label class="precision">
               Precision

@@ -85,9 +85,16 @@ async function loadJson(path, what) {
 /** Index paths are absolute (they carry the deploy base); fetch them as given. */
 const relative = (path) => String(path).replace(BASE, '');
 
+/**
+ * Shell-only state: the things that are not part of the view.
+ *
+ * Label visibility used to be here, as `ui.labels`. It is in the viewer now —
+ * it is one of the facets a link restores, so it has to be somewhere the state
+ * machine and the URL can both see. Anything left in here is either a loaded
+ * asset or a transient of the DOM, and nothing in here belongs in a deep link.
+ */
 const ui = {
   notices: [],
-  labels: true,
   renderer: null,
   regionColour: {},
   meshes: {},
@@ -783,7 +790,10 @@ function renderChrome() {
     $('precision-note').textContent = 'No template is bound, so no precision is justified.';
   }
   $('precision-value').textContent = precision.value;
-  $('labels-toggle').checked = ui.labels;
+  // Read off the viewer, not off the checkbox's own last value: arriving by
+  // deep link, or returning from the brain atlas, can both change this without
+  // anyone having clicked it.
+  $('labels-toggle').checked = viewer.labelsOf();
 
   // Structure search spans every indexed frame, which on the brain atlas means
   // it finds body structures and nothing local. Said plainly, because a search
@@ -888,16 +898,27 @@ function showCanvasMessage(text, code) {
  * Labels as a DOM overlay rather than in GL.
  *
  * Text in a WebGL scene means a glyph atlas and a pile of code; text in the DOM
- * is selectable, visible to a screen reader and styleable for free. The cost is
- * that labels are not occluded by geometry — which for level markers along a
- * spine is what you want anyway, since the point of the label is to find the
- * level you cannot currently see.
+ * is selectable and styleable for free. The cost is that labels are not
+ * occluded by geometry — which for level markers along a spine is what you want
+ * anyway, since the point of the label is to find the level you cannot
+ * currently see.
+ *
+ * The overlay stays `aria-hidden`, and that is not an oversight to fix later. A
+ * label here carries its meaning in where it sits on a canvas nobody reading by
+ * screen reader can see; flattened into the accessibility tree it is 29
+ * context-free level codes between the canvas and the address panel. The
+ * non-visual route to the same information is the address panel's ranked names
+ * and the structure search, which are real DOM with real text.
+ *
+ * Visibility is `viewer.labelsOf()`, per atlas and in the URL — see the header
+ * of `viewer/state.js` for why it is not a field on `ui`.
  */
 function renderLabels() {
   const box = $('labels');
   box.replaceChildren();
-  box.hidden = !ui.labels;
-  if (!ui.labels || !ui.renderer) return;
+  const showing = viewer.labelsOf();
+  box.hidden = !showing;
+  if (!showing || !ui.renderer) return;
 
   const canvas = $('canvas');
   const width = Math.max(1, canvas.clientWidth);
@@ -1093,8 +1114,11 @@ function wireControls() {
     commit({ push: true });
   });
   $('labels-toggle').addEventListener('change', (event) => {
-    ui.labels = event.target.checked;
-    renderLabels();
+    viewer.setLabels(event.target.checked);
+    // Through the one funnel, so the URL gains or loses `labels=0` with the
+    // toggle. Pushed rather than replaced: it is a deliberate change to the
+    // view, so Back should undo it, the same as hiding a layer.
+    commit({ push: true });
   });
   $('precision').addEventListener('input', () => {
     $('precision-value').textContent = $('precision').value;
@@ -1193,6 +1217,21 @@ window.__atlas = {
     if (ui.bounds[viewer.atlas]) viewer.setCamera(fitCamera(ui.bounds[viewer.atlas]));
     commit({ push: false });
   },
+  /**
+   * Labels, through the same path the checkbox takes.
+   *
+   * Deliberately not `viewer.setLabels` straight: a hook that skipped `commit`
+   * would report the new state while the overlay and the URL still showed the
+   * old one, and a QA pass on that proves nothing about the page.
+   */
+  setLabels: (visible) => {
+    viewer.setLabels(visible);
+    commit({ push: true });
+    return viewer.labelsOf();
+  },
+  labelsVisible: (atlas) => viewer.labelsOf(atlas),
+  /** How many label tags the overlay is actually showing, so "on" is checkable. */
+  labelsDrawn: () => document.getElementById('labels').childElementCount,
   view: () => viewer.toView(),
   href: () => viewHref(viewer.toView(), location.pathname),
   encodeView,
