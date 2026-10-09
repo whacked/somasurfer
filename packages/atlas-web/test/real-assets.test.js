@@ -31,6 +31,7 @@ import { fitCamera, flyToCell } from '../src/viewer/camera.js';
 import { decodeView, encodeView } from '../src/viewer/deeplink.js';
 import { NOTICE_CODES } from '../src/viewer/flags.js';
 import { NameIndexError, joinNameIndex } from '../src/viewer/nameindex.js';
+import { comparePapers, papersOverlapping, researchModel, revealPaper } from '../src/viewer/research.js';
 import { demote, selectAddress } from '../src/viewer/select.js';
 import { createViewer, isLayerVisible, layerOpacity } from '../src/viewer/state.js';
 import {
@@ -46,7 +47,7 @@ import {
   realAssets,
   realTemplates,
 } from './real-assets.js';
-import { sourceFilesOf } from './support.js';
+import { research, sourceFilesOf } from './support.js';
 
 const codesOf = (model) => model.notices.map((n) => n.code);
 
@@ -590,22 +591,53 @@ describe('the §7 journey on the real body and brain templates', () => {
     assert.equal(selected.templateId, 'bp3d-4.0-adult-body-centroid');
     v.setCamera(flyToCell(v.cameraOf(), meshBounds(selected.cell)));
 
+    // 4. Region research: which papers mapped the region now selected.
+    const corpus = researchModel(research());
+    const here = papersOverlapping(corpus, selected.displayAddress);
+    assert.ok(here.length > 0, 'the selected region has literature mapped to it');
+    assert.ok(here.length < corpus.papers.length, 'and the filter actually narrowed the list');
+
+    // 5. A paper reveals ALL its regions, including ones outside the filter
+    //    and ones in the other atlas, without moving the atlas.
+    const crossAtlas = revealPaper(corpus, 'FXP-4', selected.displayAddress);
+    assert.deepEqual(crossAtlas.atlases, ['body', 'brain']);
+    assert.equal(
+      crossAtlas.cells.length,
+      corpus.papers.find((p) => p.id === 'FXP-4').cells.length,
+      'a filter narrows the paper list, never a paper’s own mappings',
+    );
+    assert.ok(crossAtlas.outsideFilter > 0, 'and it says how many fall outside');
+    for (const cell of crossAtlas.cells) {
+      assert.ok(v.select(cell.address).ok, cell.address);
+      assert.equal(v.atlas, 'body', 'revealing a mapping never switches the atlas');
+    }
+    // Put the journey's selection back, so step 7 compares like with like.
+    v.select(selected.address);
+
+    // 6. Compare two papers, by overlap rather than by equality.
+    const comparison = comparePapers(corpus, 'FXP-1', 'FXP-2');
+    assert.ok(comparison, 'two papers in the list can be compared');
+    assert.equal(comparison.disjoint, true, 'these two report different azimuths');
+    assert.ok(comparison.onlyA.length > 0 && comparison.onlyB.length > 0);
+    const selfOverlap = comparePapers(corpus, 'FXP-1', 'FXP-1');
+    assert.ok(selfOverlap.shared.length > 0, 'and overlap is found where it exists');
+
     const bodyView = JSON.parse(JSON.stringify(v.toView()));
 
-    // 4. Explicit brain navigation.
+    // 7. Explicit brain navigation.
     assert.equal(v.canReturn, false);
     v.openAtlas('brain');
     assert.equal(v.atlas, 'brain');
     assert.equal(v.returnTarget, 'body');
 
-    // 5. Work in the brain atlas: coordinates, and no names.
+    // 8. Work in the brain atlas: coordinates, and no names.
     const brain = v.select('BV-L-471');
     assert.equal(brain.names.covered, false);
     assert.ok(brain.pointMm.every(Number.isFinite));
     v.setCamera({ yaw: -0.9, pitch: 0.4, distance: 310, target: [0, 0, 0] });
     v.setLayerHidden('right', true);
 
-    // 6. Return to the body with the previous view intact.
+    // 9. Return to the body with the previous view intact.
     assert.equal(v.returnToPrevious(), 'body');
     assert.deepEqual(v.toView(), bodyView, 'the return must restore what we left');
     assert.equal(v.canReturn, false);

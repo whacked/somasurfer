@@ -325,36 +325,60 @@ export function createRenderer(canvas) {
       }
     }
 
-    // --- the selected cell ------------------------------------------------
-    // Drawn last, blended, with culling off so it reads as a volume from both
-    // inside and outside, and with depth writes off so it never hides the
-    // anatomy it is meant to locate.
-    if (scene.cell) {
-      gl.useProgram(solid);
+    // --- research highlights, then the selected cell -----------------------
+    // Drawn last, blended, with culling off so each reads as a volume from
+    // both inside and outside, and with depth writes off so none of them hides
+    // the anatomy it is meant to locate.
+    //
+    // Highlights go FIRST so a selection inside a highlighted group still
+    // reads as the selection, and each carries its own colour: a highlight
+    // that looked like the selection would make "the address you are at" and
+    // "somewhere a paper reported" indistinguishable, which is the whole value
+    // of the research panel.
+    const volumes = [
+      ...(scene.highlights ?? []).map((h) => ({
+        cell: h.cell,
+        fill: h.colour ?? CELL_COLOUR,
+        edge: h.colour ?? CELL_EDGE_COLOUR,
+        alpha: h.alpha ?? 0.22,
+      })),
+      ...(scene.cell
+        ? [{ cell: scene.cell, fill: CELL_COLOUR, edge: CELL_EDGE_COLOUR, alpha: 0.42 }]
+        : []),
+    ];
+
+    if (volumes.length > 0) {
       gl.disable(gl.CULL_FACE);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.depthMask(false);
-      bindSolid(scene.cell);
-      gl.uniform3fv(loc.solid.colour, new Float32Array(CELL_COLOUR));
-      gl.uniform1f(loc.solid.alpha, 0.42);
-      gl.drawElements(gl.TRIANGLES, scene.cell.count, gl.UNSIGNED_INT, 0);
 
-      // The outline is what actually communicates the cell's size, so it is
-      // drawn with the depth test off: a cell inside the body must still be
-      // locatable from outside it.
-      gl.useProgram(line);
-      gl.uniformMatrix4fv(loc.line.viewProjection, false, viewProjection);
-      gl.uniform3fv(loc.line.colour, new Float32Array(CELL_EDGE_COLOUR));
-      gl.uniform1f(loc.line.alpha, 0.95);
-      gl.disable(gl.DEPTH_TEST);
-      for (const edge of scene.cell.edges) {
-        gl.bindBuffer(gl.ARRAY_BUFFER, edge.buffer);
-        gl.enableVertexAttribArray(loc.line.position);
-        gl.vertexAttribPointer(loc.line.position, 3, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.LINE_STRIP, 0, edge.count);
+      for (const volume of volumes) {
+        gl.useProgram(solid);
+        gl.uniformMatrix4fv(loc.solid.viewProjection, false, viewProjection);
+        gl.uniform3fv(loc.solid.eye, new Float32Array(eye));
+        bindSolid(volume.cell);
+        gl.uniform3fv(loc.solid.colour, new Float32Array(volume.fill));
+        gl.uniform1f(loc.solid.alpha, volume.alpha);
+        gl.drawElements(gl.TRIANGLES, volume.cell.count, gl.UNSIGNED_INT, 0);
+
+        // The outline is what actually communicates the cell's size, so it is
+        // drawn with the depth test off: a cell inside the body must still be
+        // locatable from outside it.
+        gl.useProgram(line);
+        gl.uniformMatrix4fv(loc.line.viewProjection, false, viewProjection);
+        gl.uniform3fv(loc.line.colour, new Float32Array(volume.edge));
+        gl.uniform1f(loc.line.alpha, Math.min(0.95, volume.alpha * 2.3));
+        gl.disable(gl.DEPTH_TEST);
+        for (const edge of volume.cell.edges) {
+          gl.bindBuffer(gl.ARRAY_BUFFER, edge.buffer);
+          gl.enableVertexAttribArray(loc.line.position);
+          gl.vertexAttribPointer(loc.line.position, 3, gl.FLOAT, false, 0, 0);
+          gl.drawArrays(gl.LINE_STRIP, 0, edge.count);
+        }
+        gl.enable(gl.DEPTH_TEST);
       }
-      gl.enable(gl.DEPTH_TEST);
+
       gl.depthMask(true);
       gl.disable(gl.BLEND);
       gl.enable(gl.CULL_FACE);

@@ -41,8 +41,9 @@ import { fitCamera, flyToCell, pan, rayThrough, rotate, zoom } from './viewer/ca
 import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
 import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flags.js';
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
+import { comparePapers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
+import { nameIndexFrames, selectAddress } from './viewer/select.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity } from './viewer/state.js';
-import { nameIndexFrames } from './viewer/select.js';
 import {
   TemplateError,
   bodySpinePolyline,
@@ -68,6 +69,9 @@ const el = (tag, props = {}, children = []) => {
 const fmt = (v, d = 1) => (Number.isFinite(v) ? v.toFixed(d) : 'not placed');
 const pct = (f) => `${(f * 100).toFixed(1)}%`;
 
+/** Set once the renderer module loads; highlights are not drawn before that. */
+let GROUP_COLOURS = [];
+
 const forcedFailures = (new URLSearchParams(location.search).get('fail') ?? '').split(',');
 const failing = (what) => forcedFailures.includes(what);
 
@@ -91,6 +95,11 @@ const ui = {
   bounds: {},
   catalogue: [],
   research: null,
+  researchError: null,
+  /** Paper id whose mappings are revealed, or null. */
+  revealed: null,
+  comparedTo: null,
+  comparison: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -222,8 +231,18 @@ if (nameIndex && nameIndexSource && templates.body && templates.body.id !== name
 }
 
 // --- 3. the research fixture: the highlight seam, not a stage-A criterion ---
-ui.research = await loadJson(relative(index.research?.path ?? 'data/research.json'), 'research')
-  .catch(() => null);
+// Validated at load, like every other fetched document: a malformed mapped
+// address must surface here rather than inside a render loop. A failure costs
+// the research panel and nothing else.
+try {
+  ui.research = researchModel(
+    await loadJson(relative(index.research?.path ?? 'data/research.json'), 'research'),
+  );
+} catch (error) {
+  ui.research = null;
+  ui.researchError = `The research index could not be loaded (${error.message}). `
+    + 'Addresses, names and geometry are unaffected.';
+}
 
 viewer = createViewer({ templates, nameIndex });
 if (ui.unavailableBody) viewer.markUnavailable('body', ui.unavailableBody);
@@ -476,6 +495,209 @@ function renderNames(selection) {
   return names;
 }
 
+/**
+ * The research panel: which papers mapped here, and what one paper mapped.
+ *
+ * Two lists with deliberately different rules, and the difference is the whole
+ * point (see `viewer/research.js`):
+ *
+ *   the LIST    narrowed by the current selection. A paper that mapped nothing
+ *               near here is not shown.
+ *   the REVEAL  every mapping of the selected paper, including ones outside
+ *               the current selection and ones in the other atlas. Nothing is
+ *               withheld; cells outside the filter are marked, and the count
+ *               is stated so the user can see that the filter was ignored on
+ *               purpose rather than wonder what it did.
+ */
+function renderResearch() {
+  const scope = $('research-scope');
+  const list = $('research-list');
+  const reveal = $('research-reveal');
+  list.replaceChildren();
+  reveal.replaceChildren();
+
+  if (!ui.research) {
+    scope.textContent = ui.researchError
+      ?? 'No research index is loaded, so no papers can be shown.';
+    return;
+  }
+
+  const selection = viewer.state.selection;
+  const filter = selection?.ok ? selection.displayAddress : null;
+  const found = papersOverlapping(ui.research, filter);
+
+  scope.textContent = filter
+    ? `${found.length} of ${ui.research.papers.length} papers mapped something overlapping `
+      + `${filter}. Selecting one shows all of its mappings, including any outside this region.`
+    : `${ui.research.papers.length} papers. Select an address to narrow the list.`;
+
+  for (const { paper, matching } of found) {
+    const row = el('li');
+    row.dataset.paper = paper.id;
+    const open = el('button', { type: 'button', className: 'link', textContent: paper.title });
+    open.dataset.testid = `research-paper-${paper.id}`;
+    open.addEventListener('click', () => {
+      ui.revealed = ui.revealed === paper.id ? null : paper.id;
+      uploadHighlights();
+      commit({ push: false });
+    });
+    row.append(open);
+    row.append(el('span', {
+      className: 'muted',
+      textContent: ` ${paper.year ?? '—'}${matching.length > 0 ? `, ${matching.length} here` : ''}`
+        + `${paper.atlases.length > 1 ? ', both atlases' : ''}`,
+    }));
+    if (ui.revealed === paper.id) row.classList.add('selected');
+    list.append(row);
+  }
+
+  if (ui.revealed === null) return;
+  const revealed = revealPaper(ui.research, ui.revealed, filter);
+  if (!revealed) return;
+
+  reveal.append(el('h3', { textContent: revealed.paper.title }));
+  reveal.append(el('p', {
+    className: 'muted',
+    textContent: [revealed.paper.venue, revealed.paper.year].filter(Boolean).join(', '),
+  }));
+
+  // Said before the list, because a reader scanning a list of regions needs to
+  // know up front that it is the paper's whole set and not a filtered view.
+  const summary = el('p', { className: 'reveal-summary' });
+  summary.dataset.testid = 'reveal-summary';
+  summary.textContent = `All ${revealed.cells.length} mapped region(s) of this paper are listed, `
+    + `including ${revealed.outsideFilter} outside the current selection`
+    + `${revealed.atlases.length > 1 ? ' and mappings in both atlases' : ''}. `
+    + 'A filter narrows the list of papers, never a paper’s own mappings.';
+  reveal.append(summary);
+
+  const findings = el('ul', { className: 'findings' });
+  for (const finding of revealed.findings) {
+    const item = el('li');
+    item.dataset.finding = finding.id;
+    item.append(el('span', { className: 'finding-label', textContent: finding.label }));
+
+    if (!finding.placed) {
+      // An unplaceable report is shown as one. Dropping it would let the atlas
+      // imply the literature is more spatially precise than it is.
+      const why = el('p', { className: 'region-only', textContent: finding.regionOnly });
+      why.dataset.testid = 'region-only';
+      item.append(why);
+      findings.append(item);
+      continue;
+    }
+
+    const cells = el('ul', { className: 'cells' });
+    for (const cell of finding.cells) {
+      const cellRow = el('li');
+      cellRow.dataset.cell = cell.address;
+      if (cell.withinFilter === false) cellRow.dataset.outsideFilter = 'true';
+      const go = el('button', { type: 'button', className: 'link', textContent: cell.address });
+      go.dataset.testid = `reveal-cell-${cell.address}`;
+      // Selecting a revealed cell is a selection like any other, so it never
+      // switches the atlas — a brain mapping offers the explicit move instead.
+      go.addEventListener('click', () => select(cell.address, { fly: true, push: true }));
+      cellRow.append(go);
+      if (cell.atlas !== viewer.atlas) {
+        cellRow.append(el('span', {
+          className: 'muted',
+          textContent: ` in the ${cell.atlas} atlas`,
+        }));
+      }
+      if (cell.withinFilter === false) {
+        cellRow.append(el('span', { className: 'muted', textContent: ' outside this region' }));
+      }
+      cells.append(cellRow);
+    }
+    item.append(cells);
+    findings.append(item);
+  }
+  reveal.append(findings);
+
+  // Compare against the next paper in the narrowed list, which is the cheapest
+  // honest form of "compare papers": one explicit pair, by overlap.
+  const others = found.map((f) => f.paper.id).filter((id) => id !== ui.revealed);
+  if (others.length > 0) {
+    const against = ui.comparedTo && others.includes(ui.comparedTo) ? ui.comparedTo : others[0];
+    const button = el('button', {
+      type: 'button',
+      textContent: `Compare with ${ui.research.papers.find((p) => p.id === against).title}`,
+    });
+    button.dataset.testid = 'compare-papers';
+    button.addEventListener('click', () => {
+      ui.comparedTo = against;
+      ui.comparison = comparePapers(ui.research, ui.revealed, against);
+      commit({ push: false });
+    });
+    reveal.append(button);
+  }
+
+  if (ui.comparison && ui.comparison.a.id === ui.revealed) {
+    const box = el('div', { className: 'comparison' });
+    box.dataset.testid = 'comparison';
+    box.append(el('p', {
+      textContent: ui.comparison.disjoint
+        ? `No mapping of ${ui.comparison.a.id} overlaps any mapping of ${ui.comparison.b.id}. `
+          + 'They report different places, rather than not having been compared.'
+        : `${ui.comparison.shared.length} overlapping pair(s) of regions, `
+          + `${ui.comparison.onlyA.length} only in ${ui.comparison.a.id}, `
+          + `${ui.comparison.onlyB.length} only in ${ui.comparison.b.id}.`,
+    }));
+    for (const pair of ui.comparison.shared.slice(0, 8)) {
+      box.append(el('p', { className: 'pair', textContent: `${pair.a.address} ↔ ${pair.b.address}` }));
+    }
+    reveal.append(box);
+  }
+}
+
+/**
+ * Upload the revealed paper's cells as highlight volumes.
+ *
+ * Only the cells of the CURRENT atlas are uploaded, because a `BV` cell has no
+ * geometry in the body template and there is nothing to draw. That is a
+ * rendering fact, not a filter: every mapping is still listed in the panel,
+ * and the ones belonging elsewhere say so.
+ */
+function uploadHighlights() {
+  for (const h of ui.uploaded.highlights ?? []) ui.renderer?.release(h.cell);
+  ui.uploaded.highlights = [];
+  if (ui.revealed === null || !ui.research || !ui.renderer) return;
+
+  const selection = viewer.state.selection;
+  const revealed = revealPaper(ui.research, ui.revealed, selection?.ok ? selection.displayAddress : null);
+  if (!revealed) return;
+
+  let group = 0;
+  for (const finding of revealed.findings) {
+    const colour = GROUP_COLOURS[group % GROUP_COLOURS.length];
+    group += 1;
+    for (const cell of finding.cells) {
+      if (cell.atlas !== viewer.atlas) continue;
+      let mesh = null;
+      try {
+        mesh = cellMeshForHighlight(cell.address);
+      } catch {
+        // A mapping the bound template cannot place is simply not drawn. It is
+        // still in the panel, which is where the user would look for it.
+        continue;
+      }
+      if (!mesh) continue;
+      ui.uploaded.highlights.push({
+        cell: ui.renderer.uploadCell(mesh),
+        colour,
+        // Outside the filter is drawn fainter, never hidden.
+        alpha: cell.withinFilter === false ? 0.13 : 0.26,
+      });
+    }
+  }
+}
+
+/** The drawable mesh for a highlighted address, in the bound templates. */
+function cellMeshForHighlight(address) {
+  const model = selectAddress(address, { templates });
+  return model.ok ? model.cell : null;
+}
+
 function renderLayers() {
   const box = $('layers');
   box.replaceChildren();
@@ -639,6 +861,7 @@ function scene() {
     solids,
     lines,
     cell: ui.uploaded.cell,
+    highlights: ui.uploaded.highlights ?? [],
   };
 }
 
@@ -729,6 +952,8 @@ function select(input, { fly = false, push = true } = {}) {
   const model = viewer.select(input);
   if (model.ok) {
     uploadSelectedCell();
+    // The filter moved, so the faint/bright split on the highlights moved.
+    uploadHighlights();
     if (fly && model.cell) {
       viewer.setCamera(flyToCell(viewer.cameraOf(), meshBounds(model.cell)));
     }
@@ -748,6 +973,7 @@ function afterAtlasChange() {
     viewer.setCamera(fitCamera(ui.bounds[atlas]), atlas);
   }
   uploadSelectedCell();
+  uploadHighlights();
   commit({ push: true });
 }
 
@@ -756,6 +982,7 @@ function commit({ push = false } = {}) {
   renderChrome();
   renderLayers();
   renderAddressPanel();
+  renderResearch();
   renderNotices();
   draw();
   const href = viewHref(viewer.toView(), location.pathname);
@@ -932,12 +1159,14 @@ try {
   if (failing('renderer')) throw new Error('forced by ?fail=renderer');
   const module = await import('./viewer/renderer.js');
   ui.regionColour = module.REGION_COLOURS;
+  GROUP_COLOURS = module.GROUP_COLOURS;
   ui.renderer = module.createRenderer($('canvas'));
   if (ui.meshes.body) ui.uploaded.body = ui.renderer.uploadSurface(ui.meshes.body);
   if (ui.meshes.spine) ui.uploaded.spine = ui.renderer.uploadPolyline(ui.meshes.spine);
   if (ui.meshes.left) ui.uploaded.left = ui.renderer.uploadSurface(ui.meshes.left);
   if (ui.meshes.right) ui.uploaded.right = ui.renderer.uploadSurface(ui.meshes.right);
   uploadSelectedCell();
+  uploadHighlights();
   $('canvas-message').hidden = true;
 } catch (error) {
   // The shell keeps working. This is the stage-A degradation criterion, and it
@@ -979,6 +1208,19 @@ window.__atlas = {
   rendererAvailable: () => Boolean(ui.renderer),
   atlasAvailable: (atlas) => viewer.isAvailable(atlas),
   research: () => ui.research,
+  /** Stage B: the research panel, so QA can drive the paper journey. */
+  revealPaper: (paperId) => {
+    ui.revealed = paperId;
+    uploadHighlights();
+    commit({ push: false });
+    return revealPaper(ui.research, paperId, viewer.state.selection?.displayAddress ?? null);
+  },
+  papersHere: () => papersOverlapping(
+    ui.research,
+    viewer.state.selection?.ok ? viewer.state.selection.displayAddress : null,
+  ).map((f) => f.paper.id),
+  comparePapers: (a, b) => comparePapers(ui.research, a, b),
+  highlightCount: () => (ui.uploaded.highlights ?? []).length,
   selection: viewer.state.selection,
   ready: true,
 };
