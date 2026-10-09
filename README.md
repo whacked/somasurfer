@@ -7,8 +7,13 @@ Planning baseline: DOG-1. Atlas v1 technical plan: DOG-2.
 ## Layout
 
 - `docs/alc-1-spec.md` — ALC-1, the anatomical addressing system v1 is built on.
+- `docs/alc-1-api.md` — the `@gstack/alc` library API: coverings, name
+  resolution, the translator, prefix range scans, the browser build.
 - `docs/alc-1-admissibility.md` — measured admissibility report. Generated; CI
   fails if it drifts from the code.
+- `docs/alc-1-attack-report.md` — the adversarial conformance pass: the fuzz
+  corpus, the eleven open defects with minimal reproductions, and what was
+  attacked and found clean.
 - `docs/performance-budget.md` — the performance budget, the machine it is
   stated for, and the current measurement.
 - `docs/deploy.md` — how the static site deploys, and why it is not deployed
@@ -64,6 +69,23 @@ To look at the built site:
 npm run build && node packages/atlas-web/serve.mjs
 ```
 
+### The adversarial suites
+
+Part of `npm run test:counted`, and runnable on their own from
+`packages/alc`. See `docs/alc-1-attack-report.md` for what they found.
+
+```
+npm run fuzz                # the address parser, against a seeded corpus (~9 s)
+npm run fuzz:soak           # the same, 400 000 rounds
+npm run guard:equality      # fails if any code path compares addresses with ===
+npm run accept:templates    # the body-template acceptance gate, over every preset
+```
+
+A fuzz failure replays exactly; the suite prints the seed and iteration count to
+re-run with. `test/known-defects.test.ts` holds a minimal reproduction of every
+open defect and is written to **fail when one is fixed**, with instructions — so
+a fix cannot quietly leave a stale exception behind.
+
 ### Why the test count is a gate
 
 `packages/alc`'s test script was `node --test test/`. That runs none of the
@@ -83,6 +105,15 @@ So `ci/expected-test-counts.json` states how many tests each suite must
 actually run, and `tools/check-test-count.mjs` reads the count out of the TAP
 summary and fails if it is short. Raise the floor when you add tests. Never
 lower it to make CI green.
+
+There is exactly one legitimate reason the count goes down: retiring a
+known-defect test because the defect was fixed. One real assertion can replace
+several characterisation tests, so the floor has to follow. That is the only
+sanctioned decrease, it is not self-certified, and the protocol for it — what to
+re-measure, what to replace, and the `retirements` entry that makes the drop
+reviewable — is in the `$comment` of `ci/expected-test-counts.json` and in the
+header of `packages/alc/test/known-defects.test.ts`. Any other decrease: find
+the tests.
 
 ## Licensing
 

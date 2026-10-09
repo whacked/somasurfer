@@ -23,8 +23,13 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node --test --experimental-strip-types 'test/*.test.ts'",
+    "test": "node --test 'test/*.test.ts'",
     "probe": "node test/healpix.probe.mjs",
+    "measure": "node test/measure.mjs",
+    "fuzz": "node --test test/fuzz.test.ts",
+    "fuzz:soak": "ALC_FUZZ_ITERATIONS=400000 node --test test/fuzz.test.ts",
+    "guard:equality": "node --test test/equality-guard.test.ts",
+    "accept:templates": "node --test test/template-acceptance.test.ts",
     "audit:print": "node --experimental-strip-types test/admissibility.sweep.mjs",
     "audit:report": "npm run -s audit:print > ../../docs/alc-1-admissibility.md"
   },
