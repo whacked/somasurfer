@@ -24,7 +24,7 @@ index. The synthetic templates still ship, and are bindable.
 | Brain volume template | `icbm152-2009c-asym`, `maxUsefulDigits` **6** |
 | Name index | 57 FMA structures, 3 478 cells, frame `BD` only |
 | Name index version | `bp3d-4.0+uberon-…` — read it, never hard-code it |
-| Research corpus | the 5-paper fixture (`fixture-research/0.1-5-papers`) |
+| Research corpus | the 5-paper fixture, role `fixture` — read `__atlas.researchCorpus()`, never assume it |
 
 `maxUsefulDigits` is **not** in the catalogue. It is read off the bound
 template, which is the only reading that can be right; a harness asserting a
@@ -56,6 +56,22 @@ it rather than for a timeout.
 | `rendererAvailable()` | `false` when the 3D view degraded |
 | `atlasAvailable(atlas)` | `false` when that atlas's geometry failed |
 | `research()` | the loaded research model, or `null` |
+| `researchCorpus()` | **which corpus this page served**: `{ version, role, caveat, paperCount, findingCount }`, or `null` if it failed to load |
+| `researchDeclared()` | what the build said it would serve: `atlas-index.json`'s `research` block, including `curatedCorpus` |
+
+**Name the dataset every research row measured.** This repo holds two research
+datasets: the 5-paper fixture this page serves, and DOG-37's curated 30-paper
+seed set, which `packages/atlas-qa/src/fixture.ts` prefers for the Node-side
+oracle. They are different corpora with different paper ids, so a row that
+drives the page, finds `FXP-1` and reports **pass** has measured invented
+papers. `researchCorpus().role` is `fixture` or `curated` and is the one call
+that settles it — report it per row rather than inferring it from a paper id.
+
+The curated corpus is deliberately **not** page content in v1. Against the
+cleared BodyParts3D name index the page binds, 28 of its 170 mappings resolve
+and 142 do not, because the brain parcellation that would place them did not
+clear licensing. The reasoning and the measurement are in `build.mjs` above the
+research emit, and the counts are restated in `researchDeclared().curatedCorpus`.
 
 ### Stage B additions
 
@@ -121,9 +137,14 @@ fact and not a blanket opt-out.
 `offer-open-atlas`, `layers`, `layer-toggle-<id>`, `layer-opacity-<id>`,
 `layer-isolate-<id>`, `search-input`, `search-scope`, `search-results`.
 
-Stage B adds: `research-scope`, `research-list`, `research-reveal`,
-`research-paper-<id>`, `reveal-summary`, `reveal-cell-<address>`,
-`region-only`, `compare-papers`, `comparison`.
+Stage B adds: `research-provenance`, `research-scope`, `research-list`,
+`research-reveal`, `research-paper-<id>`, `reveal-summary`,
+`reveal-cell-<address>`, `region-only`, `compare-papers`, `comparison`.
+
+`research-provenance` is the corpus line above the paper list. It carries
+`data-role` (`fixture` / `curated` / `none`) and `data-version`, and it is
+rendered on every build, not only on a fixture build — a DOM row asserting
+anything about papers can read the role off it.
 
 ## Forcing the degraded states
 
@@ -166,5 +187,8 @@ claims, so it produces none of them:
   allowance inside it is unmeasured. A real-browser pass is DOG-39's.
 - **The research corpus is the 5-paper fixture**, not DOG-37's curated set.
   The *behaviour* is corpus independent and asserted as such, but no claim is
-  made here about the real corpus's content.
+  made here about the curated corpus's content. DOG-68 settled that this is
+  the shipping state for v1 rather than a gap, and made the page, the index
+  and the document all say so; what is still not covered is any §7 row run
+  against the curated corpus, because the page does not serve it.
 - **`BR` ships disabled** and has no template, by design.

@@ -6,13 +6,17 @@
  * anatomical filter narrows the paper LIST and never a selected paper's own
  * mappings.
  *
- * Driven against the 5-paper fixture corpus, which is what v1 ships today.
- * DOG-37's curated 30-paper set is a different branch and a different issue;
- * what is asserted here is the viewer's behaviour, which is corpus
- * independent, and the fixture is deliberately shaped to reach the hard cases
- * the real corpus will also contain: FXP-4 maps findings in two atlases, and
- * FXP-5 reports a region with no level and no side and so has no mappings at
- * all.
+ * Driven against the 5-paper fixture corpus, which is what v1 ships. What is
+ * asserted here is the viewer's behaviour, which is corpus independent, and
+ * the fixture is deliberately shaped to reach the hard cases the curated
+ * corpus also contains: FXP-4 maps findings in two atlases, and FXP-5 reports
+ * a region with no level and no side and so has no mappings at all.
+ *
+ * DOG-37's curated 30-paper seed set is a real dataset and is NOT page content
+ * in v1 — see the reasoning and the measurement in `build.mjs`, above the
+ * research emit. The last block below is what makes that survivable: the
+ * document now says which of the two it is, and a corpus that will not say is
+ * not loaded.
  */
 
 import assert from 'node:assert/strict';
@@ -20,6 +24,7 @@ import { describe, it } from 'node:test';
 
 import { overlaps } from '../src/alc.js';
 import {
+  RESEARCH_ROLES,
   ResearchError,
   comparePapers,
   papersOverlapping,
@@ -31,6 +36,82 @@ import { realAssets, realTemplates } from './real-assets.js';
 import { research } from './support.js';
 
 const model = () => researchModel(research());
+
+/**
+ * DOG-68: the corpus says what it is, or it does not load.
+ *
+ * Two research datasets exist in this repo — the fixture this page serves and
+ * the curated 30-paper seed set the Node-side QA oracle reads — and before
+ * this they were distinguishable only by recognising a paper id. A §7 row that
+ * drove the page, found `FXP-1` and reported **pass** would have been
+ * measuring invented papers under a green tick.
+ *
+ * The rule is the one the name index has always been held to: a claim on
+ * screen carries the provenance of the claim. For a paper the stake is higher
+ * than for a name, because a title with a year and a venue reads as literature
+ * whether or not the work exists.
+ */
+describe('a research corpus declares whether its papers are invented', () => {
+  it('the fixture this build serves declares itself a fixture', () => {
+    const m = model();
+    assert.equal(m.role, 'fixture');
+    assert.ok(RESEARCH_ROLES.includes(m.role));
+  });
+
+  it('and carries the sentence the panel shows, naming the corpus as invented', () => {
+    // The panel has one line to stop a reader citing FXP-2. Assert it says so,
+    // rather than merely that some string is present.
+    const { caveat } = model();
+    assert.match(caveat, /invented/i);
+    assert.match(caveat, /cite nothing/i);
+  });
+
+  it('refuses a document that declares no role at all', () => {
+    const doc = research();
+    delete doc.role;
+    assert.throws(
+      () => researchModel(doc),
+      (e) => e instanceof ResearchError && /research `role`/.test(e.message),
+    );
+  });
+
+  it('refuses a role it does not recognise, rather than falling back to one', () => {
+    // Both available fallbacks are a lie: `fixture` would label the curated
+    // corpus invented, `curated` would present invented papers as literature.
+    const doc = research();
+    doc.role = 'demo';
+    assert.throws(
+      () => researchModel(doc),
+      (e) => e instanceof ResearchError && /must be one of fixture or curated/.test(e.message),
+    );
+  });
+
+  it('refuses a fixture corpus that gives no caveat', () => {
+    const doc = research();
+    delete doc.caveat;
+    assert.throws(
+      () => researchModel(doc),
+      (e) => e instanceof ResearchError && /invented corpus has to carry the sentence/.test(e.message),
+    );
+  });
+
+  it('accepts a curated corpus with no caveat, because there is nothing to warn about', () => {
+    const doc = research();
+    doc.role = 'curated';
+    delete doc.caveat;
+    const m = researchModel(doc);
+    assert.equal(m.role, 'curated');
+    assert.equal(m.caveat, null);
+  });
+
+  it('keeps the version string and the role saying the same thing', () => {
+    // `atlas-index.json` has always shown the version, and a reader who sees
+    // `fixture-research/...` next to role `curated` cannot tell which is the
+    // lie. build.mjs refuses to emit that pair; this pins the shipped one.
+    const m = model();
+    assert.equal(/fixture/i.test(m.version), m.role === 'fixture');
+  });
+});
 
 describe('the research document is validated at load, not at draw time', () => {
   it('accepts the shipped fixture and parses every mapped address', () => {

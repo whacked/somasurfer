@@ -35,6 +35,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { ENABLED_FRAMES, FRAMES, VERTEBRAL_LEVELS } from '../alc/src/index.ts';
 import { ASSET_TEMPLATES, NAME_INDEX_FILES } from './catalogue/asset-templates.mjs';
 import { buildResearchFixture, buildTemplates } from './fixtures/fixtures.mjs';
+// The one value the build shares with the client: the roles a research corpus
+// may declare. Imported from the validator that enforces it rather than
+// restated, so the build cannot emit a role the viewer will reject.
+import { RESEARCH_ROLES } from './src/viewer/research.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
@@ -211,8 +215,101 @@ for (const file of Object.values(NAME_INDEX_FILES)) {
   }
 }
 
+/**
+ * The research corpus: which one ships, and the one that does not.
+ *
+ * DOG-68 found the page serving the 5-paper fixture while the Node-side QA
+ * oracle read the curated 30-paper seed set, with nothing in the artefact
+ * saying so. Two datasets and one unlabelled slot is how a §7 row drives the
+ * page, finds `FXP-1`, and reports pass.
+ *
+ * ## Why the fixture is what v1 serves
+ *
+ * Not cost, and not scheduling. The curated corpus cannot be placed on this
+ * page honestly, and that is a measurement:
+ *
+ *   Against the name index v1 actually binds — the cleared BodyParts3D BD
+ *   index — 28 of the seed set's 170 mappings resolve. 139 are
+ *   `unknown-structure` and 3 are `no-template`. 8 of 30 papers and 21 of 120
+ *   findings have any placed geometry at all.
+ *
+ * The only thing that resolves the other 142 is `data/names-seed.json`, which
+ * declares `synthetic: true` in its own header. Using it would paint 137
+ * invented brain placements underneath 30 real citations — Brodmann 1909,
+ * Kanwisher 1997, Hickok 2007 — which is false precision attached to the names
+ * of people who did not claim it. It is also the decision this build already
+ * made once, for the same reason, a few lines above: the synthetic NAME index
+ * is not emitted either, because "some selections resolve to anatomy and
+ * others to fixtures, with nothing but a version string distinguishing them"
+ * is not a build we are willing to ship.
+ *
+ * And it could not be done here in any case. Resolving a structure id against
+ * the real index means reading the index, which is an asset payload, and rule
+ * 6 of `tools/check-licence-separation.mjs` holds `dist/data/` to deriving
+ * nothing from asset content. The curated corpus is therefore a RUNTIME join
+ * in the browser, where the client already fetches the name index — stage B
+ * architecture, not a build-time path change.
+ *
+ * ## So the slot is labelled instead, in three places that cannot disagree
+ *
+ *   the document    carries its own `role` and `caveat`, and the viewer
+ *                   refuses to load one that does not.
+ *   the index       `research.role`, plus `research.curatedCorpus`, MEASURED
+ *                   from the seed set rather than declared, so the page states
+ *                   what it is not serving and what that corpus contains.
+ *   the page        renders the role and the caveat above the paper list.
+ *
+ * `curatedCorpus` is measured and not declared for the reason `maxUsefulDigits`
+ * is absent from the catalogue: a second, hand-written copy of a count is a
+ * number that goes stale the first time the dataset grows, and a stale "30
+ * papers" beside a release note claiming thirty is precisely the failure being
+ * closed.
+ */
 const researchFixture = buildResearchFixture();
+
+if (!RESEARCH_ROLES.includes(researchFixture.role)) {
+  throw new Error(
+    `the research document declares role ${JSON.stringify(researchFixture.role)}, which the `
+    + `viewer will refuse to load (it accepts ${RESEARCH_ROLES.join(' or ')}). A corpus that does `
+    + 'not say whether its papers are invented must not be emitted.',
+  );
+}
+// Belt and braces on the one claim a reader is most likely to take on trust.
+// The version string is what `atlas-index.json` has always shown; if it ever
+// says `fixture` while the role says `curated`, or the reverse, the artefact
+// contradicts itself and the build is the place to find out.
+if (/fixture/i.test(researchFixture.version) !== (researchFixture.role === 'fixture')) {
+  throw new Error(
+    `the research document's version ${JSON.stringify(researchFixture.version)} and its role `
+    + `${JSON.stringify(researchFixture.role)} disagree about whether this corpus is invented.`,
+  );
+}
+
 emit('data/research.json', JSON.stringify(researchFixture) + '\n');
+
+/**
+ * The curated corpus, measured where it lives. Counted, never copied: this is
+ * our statement ABOUT the dataset, the same relationship `asset-templates.mjs`
+ * has to an asset, and the page serves none of it.
+ */
+const curatedSeed = JSON.parse(
+  readFileSync(join(REPO_ROOT, 'packages', 'atlas-research', 'data', 'research-seed.json'), 'utf8'),
+);
+const curatedCorpus = {
+  version: curatedSeed.version,
+  paperCount: curatedSeed.papers.length,
+  findingCount: curatedSeed.findings.length,
+  mappingCount: curatedSeed.findings.reduce((n, f) => n + f.mappings.length, 0),
+  /** Said in the artefact, so a release note cannot claim this page serves it. */
+  servedOnThisPage: false,
+  reason:
+    'The curated corpus is a dataset deliverable, not page content in v1. Against the cleared '
+    + 'BodyParts3D name index this page binds, 28 of its mappings resolve and 142 do not: the '
+    + 'brain parcellation that would place them did not clear licensing (docs/asset-licensing.md '
+    + '§4), and the only index that resolves them is declared synthetic. Painting those would be '
+    + 'invented geometry under real citations.',
+  path: 'packages/atlas-research/data/research-seed.json',
+};
 
 const atlasIndex = {
   schema: 'atlas-index/1',
@@ -248,8 +345,14 @@ const atlasIndex = {
   },
   research: {
     version: researchFixture.version,
+    /** `fixture` or `curated`. The viewer refuses a document without it. */
+    role: researchFixture.role,
+    caveat: researchFixture.caveat,
     paperCount: researchFixture.papers.length,
+    findingCount: researchFixture.papers.reduce((n, p) => n + p.findings.length, 0),
     path: `${BASE}data/research.json`,
+    /** What this page does NOT serve, and why. See the block above. */
+    curatedCorpus,
   },
   assets: assetFiles.map((a) => ({
     path: `${BASE}${a.path}`,

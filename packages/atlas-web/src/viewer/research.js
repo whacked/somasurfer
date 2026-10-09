@@ -40,6 +40,24 @@
  * cells at all. Silently omitting it would let the atlas imply the literature
  * is more spatially precise than it is. It carries `placed: false` and its own
  * `regionOnly` sentence, and it is counted in the paper's finding total.
+ *
+ * ## A corpus that does not say what it is does not load
+ *
+ * Every resolution result in this viewer carries the name-index version it came
+ * from, and the UI shows it beside every name list, because a name with no
+ * stated provenance is a claim the reader cannot check. A *paper* with no
+ * stated provenance is the same claim and a worse one: a titled, dated, venued
+ * entry reads as literature whether or not it is.
+ *
+ * So `role` is required and validated here, at load, alongside the addresses —
+ * `'fixture'` for an invented corpus, `'curated'` for one whose papers are real
+ * — and `researchModel` throws without it. Required rather than defaulted
+ * because every available default is a lie about something: defaulting to
+ * `fixture` would label the curated corpus invented, and defaulting to
+ * `curated` would present invented papers as literature. The shell turns the
+ * throw into the degraded-research notice, which costs the research panel and
+ * nothing else; that is the correct price for a document that will not say
+ * whether its papers exist.
  */
 
 import { overlaps, parse } from '../alc.js';
@@ -55,6 +73,15 @@ export class ResearchError extends Error {
 }
 
 const isObject = (v) => Boolean(v) && typeof v === 'object' && !Array.isArray(v);
+
+/**
+ * The two things a research corpus may be. There is no third.
+ *
+ * `fixture`  the papers are invented. Nothing here may be cited.
+ * `curated`  the papers are real and the mappings were asserted by a curator.
+ *            The provenance on each mapping is then the thing worth reading.
+ */
+export const RESEARCH_ROLES = Object.freeze(['fixture', 'curated']);
 
 function requireString(value, what) {
   if (typeof value !== 'string' || value.trim() === '') {
@@ -75,6 +102,23 @@ function requireString(value, what) {
 export function researchModel(doc) {
   if (!isObject(doc)) throw new ResearchError('the research document is not an object');
   const version = requireString(doc.version, 'research `version`');
+  // Before the papers, because the papers are what the role is about.
+  const role = requireString(doc.role, 'research `role`');
+  if (!RESEARCH_ROLES.includes(role)) {
+    throw new ResearchError(
+      `research \`role\` must be one of ${RESEARCH_ROLES.join(' or ')}, got ${JSON.stringify(role)}. `
+      + 'A corpus the viewer cannot label as invented or as real would be shown as literature '
+      + 'either way, so it is not shown at all.',
+    );
+  }
+  const caveat = typeof doc.caveat === 'string' && doc.caveat.trim() !== '' ? doc.caveat : null;
+  if (role === 'fixture' && caveat === null) {
+    throw new ResearchError(
+      `research document ${JSON.stringify(version)} declares role \`fixture\` and gives no `
+      + '`caveat`. An invented corpus has to carry the sentence that says so, because the panel '
+      + 'has nothing else to show a reader who is looking at five titled, dated papers.',
+    );
+  }
   if (!Array.isArray(doc.papers)) throw new ResearchError('research `papers` must be an array');
 
   const seen = new Set();
@@ -144,7 +188,7 @@ export function researchModel(doc) {
     });
   });
 
-  return Object.freeze({ version, papers: Object.freeze(papers) });
+  return Object.freeze({ version, role, caveat, papers: Object.freeze(papers) });
 }
 
 /**

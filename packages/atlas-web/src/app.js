@@ -518,16 +518,34 @@ function renderNames(selection) {
  */
 function renderResearch() {
   const scope = $('research-scope');
+  const provenance = $('research-provenance');
   const list = $('research-list');
   const reveal = $('research-reveal');
   list.replaceChildren();
   reveal.replaceChildren();
 
   if (!ui.research) {
+    provenance.textContent = '';
+    provenance.dataset.role = 'none';
     scope.textContent = ui.researchError
       ?? 'No research index is loaded, so no papers can be shown.';
     return;
   }
+
+  // The corpus, named. Written before the counts for the same reason the name
+  // index version is written beside a name list rather than under it: the
+  // reader needs to know what they are reading before they read it, and a
+  // fixture paper is indistinguishable from a real one row by row.
+  //
+  // `dataset.role` carries the machine-readable half, so the §7 harness can
+  // assert which corpus a row measured instead of inferring it from a paper
+  // id — the false green DOG-68 exists to close.
+  provenance.dataset.role = ui.research.role;
+  provenance.dataset.version = ui.research.version;
+  provenance.textContent = ui.research.role === 'fixture'
+    ? `${ui.research.version} — ${ui.research.caveat}`
+    : `${ui.research.version} — curated corpus. Every mapping carries its own provenance; `
+      + 'open a paper to read it.';
 
   const selection = viewer.state.selection;
   const filter = selection?.ok ? selection.displayAddress : null;
@@ -1247,6 +1265,29 @@ window.__atlas = {
   rendererAvailable: () => Boolean(ui.renderer),
   atlasAvailable: (atlas) => viewer.isAvailable(atlas),
   research: () => ui.research,
+  /**
+   * Which corpus the page is actually serving — one call, no inference.
+   *
+   * DOG-68: a §7 row that drove the page, found `FXP-1` and reported **pass**
+   * would be measuring the fixture while the Node-side oracle measured the
+   * curated seed set, and nothing in the surface made the two distinguishable
+   * without recognising a paper id. A row can now name its dataset, and a row
+   * that forgot to is visibly a row that did not ask.
+   *
+   * `null` rather than a guess when the document failed to load: "no corpus"
+   * and "the fixture corpus" are different results and must not print alike.
+   */
+  researchCorpus: () => (ui.research
+    ? {
+      version: ui.research.version,
+      role: ui.research.role,
+      caveat: ui.research.caveat,
+      paperCount: ui.research.papers.length,
+      findingCount: ui.research.papers.reduce((n, p) => n + p.findings.length, 0),
+    }
+    : null),
+  /** What the build said it was going to serve, for comparison with the above. */
+  researchDeclared: () => index.research ?? null,
   /** Stage B: the research panel, so QA can drive the paper journey. */
   revealPaper: (paperId) => {
     ui.revealed = paperId;
