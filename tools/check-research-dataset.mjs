@@ -44,6 +44,7 @@ import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 
 import { REPO_ROOT, fail, pass } from './lib/repo.mjs';
+import { JUSTIFYING_STATUSES, renderCitationSummary } from './lib/citation-summary.mjs';
 import { buildNameIndex } from '../packages/alc/src/index.ts';
 import { buildResearchIndex, loadDataset, validateDataset } from '../packages/atlas-research/src/index.ts';
 
@@ -80,6 +81,192 @@ const DATASETS = [
 ];
 
 const readJson = (relPath) => JSON.parse(readFileSync(join(PKG, relPath), 'utf8'));
+
+/** The citation audit's committed output. See tools/verify-research-citations.mjs. */
+const CITATION_REPORT = 'data/citation-report.json';
+const CITATION_SUMMARY = 'data/citation-report.md';
+
+/**
+ * Checks the committed dataset against the committed citation report, offline.
+ *
+ * This is the check that stops a hand-edit from quietly adding an accession,
+ * which is exactly how the twelve invented UBERON ids got in before `b0d114a`
+ * removed them. The rule it enforces is narrow and absolute: **no identifier
+ * may exist in a dataset that this report does not justify from a named
+ * source.** Not "looks plausible", not "the curator was confident" — a row, a
+ * source id, and the metadata that source returned.
+ *
+ * A pure function of its arguments so `selfTest` can hand it deliberately
+ * broken clones of the real artifacts and prove it goes red. A gate nobody has
+ * watched fail is a gate nobody should trust.
+ *
+ * `coverageOf` is the dataset whose paper ids the report must cover EXACTLY —
+ * the seed. Other datasets (the fixture) are subsets: their papers must each be
+ * justified, but they do not have to account for every row.
+ */
+function auditCitationReport({ report, summaryMarkdown, datasets, coverageOf }) {
+  const problems = [];
+  const unverified = [];
+
+  if (report?.schema !== 'citation-report/1') {
+    problems.push(`${CITATION_REPORT}: expected schema "citation-report/1", got ${JSON.stringify(report?.schema)}.`);
+    return { problems, unverified };
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(report.retrievedOn ?? ''))) {
+    problems.push(`${CITATION_REPORT}: retrievedOn must be an ISO date, got ${JSON.stringify(report.retrievedOn)}.`);
+  }
+
+  const sourceIds = new Set();
+  const endpoints = [];
+  for (const s of report.sources ?? []) {
+    if (!s?.id || !s?.endpoint) problems.push(`${CITATION_REPORT}: a declared source is missing an id or endpoint.`);
+    else {
+      sourceIds.add(s.id);
+      endpoints.push(...(Array.isArray(s.endpoints) && s.endpoints.length > 0 ? s.endpoints : [s.endpoint]));
+    }
+  }
+  if (sourceIds.size === 0) problems.push(`${CITATION_REPORT}: declares no sources, so nothing in it can be attributed.`);
+
+  const rows = Array.isArray(report.rows) ? report.rows : [];
+  const byPaper = new Map();
+  for (const r of rows) {
+    if (byPaper.has(r.paperId)) problems.push(`${CITATION_REPORT}: duplicate row for ${r.paperId}.`);
+    byPaper.set(r.paperId, r);
+  }
+  if (report.paperCount !== rows.length) {
+    problems.push(`${CITATION_REPORT}: paperCount ${report.paperCount} but ${rows.length} rows.`);
+  }
+
+  // The tally is the number a reader quotes, so it must be the rows' tally and
+  // not a stale literal left behind by an edit.
+  const recomputed = {};
+  for (const r of rows) recomputed[r.status] = (recomputed[r.status] ?? 0) + 1;
+  for (const k of new Set([...Object.keys(recomputed), ...Object.keys(report.tally ?? {})])) {
+    if ((report.tally ?? {})[k] !== recomputed[k]) {
+      problems.push(
+        `${CITATION_REPORT}: tally.${k} is ${JSON.stringify((report.tally ?? {})[k])} but ${recomputed[k] ?? 0} rows have that status.`,
+      );
+    }
+  }
+
+  // Per-row shape. A row is a point-in-time claim attributed to a named source;
+  // without a date and an endpoint it is an assertion, which is the thing this
+  // gate exists to refuse.
+  for (const r of rows) {
+    const where = `${CITATION_REPORT} row ${r.paperId}`;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(r.retrievedOn ?? ''))) {
+      problems.push(`${where}: missing or malformed retrievedOn.`);
+    }
+    const queries = Array.isArray(r.queries) ? r.queries : [];
+    if (queries.length === 0) problems.push(`${where}: records no query, so nothing supports its status.`);
+    for (const q of queries) {
+      if (!q?.endpoint) problems.push(`${where}: a query records no endpoint.`);
+      else if (!endpoints.some((e) => q.endpoint.startsWith(e.split('?')[0]))) {
+        problems.push(`${where}: query endpoint ${JSON.stringify(q.endpoint)} is not one of the declared sources.`);
+      }
+    }
+    if (r.status === 'unverified') {
+      unverified.push(`${r.paperId}: ${r.reason}`);
+      continue;
+    }
+    if (!JUSTIFYING_STATUSES.has(r.status)) continue;
+
+    // A justifying row must carry the metadata the source returned. A row that
+    // only says "verified" is a verdict with no evidence under it.
+    const returned = r.returned;
+    if (!returned || typeof returned !== 'object' || Object.values(returned).every((v) => v === null)) {
+      problems.push(`${where}: status ${r.status} but records no metadata returned by any source.`);
+    }
+    const ij = r.identifierJustified;
+    if (!ij?.value || !ij?.kind) problems.push(`${where}: status ${r.status} but justifies no identifier.`);
+    else if (!sourceIds.has(ij.source)) {
+      problems.push(`${where}: attributes its identifier to ${JSON.stringify(ij.source)}, not a declared source.`);
+    }
+  }
+
+  // Coverage: the seed's paper ids and the report's rows must be the same set.
+  const cov = datasets.find((d) => d.id === coverageOf);
+  if (!cov) problems.push(`internal: no dataset ${JSON.stringify(coverageOf)} to check coverage against.`);
+  else {
+    if (report.datasetVersion !== cov.version) {
+      problems.push(
+        `${CITATION_REPORT}: describes dataset version ${JSON.stringify(report.datasetVersion)} but ${cov.id}` +
+          ` is ${JSON.stringify(cov.version)}. The report is stale — re-run tools/verify-research-citations.mjs.`,
+      );
+    }
+    const ids = new Set(cov.papers.map((p) => p.id));
+    const missing = [...ids].filter((id) => !byPaper.has(id));
+    const extra = rows.map((r) => r.paperId).filter((id) => !ids.has(id));
+    if (missing.length > 0) {
+      problems.push(
+        `${CITATION_REPORT}: ${missing.length} of ${ids.size} ${cov.id} papers have no row:`,
+        ...missing.slice(0, 10).map((id) => `  ${id}`),
+      );
+    }
+    if (extra.length > 0) {
+      problems.push(`${CITATION_REPORT}: ${extra.length} rows name papers not in ${cov.id}: ${extra.slice(0, 10).join(', ')}.`);
+    }
+  }
+
+  // The rule. Every identifier in every dataset must be justified, and an
+  // identifier the report found must actually be in the dataset.
+  for (const d of datasets) {
+    for (const p of d.papers) {
+      const row = byPaper.get(p.id);
+      const asserted = p.identifier ?? { kind: 'none', value: null };
+      if (asserted.kind === 'none') {
+        // "The report found a DOI but the dataset says none" is a completeness
+        // question, and it is only asked of the shipping dataset. A fixture
+        // must stay free to assert the shapes it needs to test — the `kind:
+        // "none"` rendering path among them — without being coupled to a live
+        // bibliographic fact. The SAFETY direction below is not scoped: no
+        // dataset may carry an identifier no source returned.
+        if (d.id === coverageOf && row && JUSTIFYING_STATUSES.has(row.status)) {
+          problems.push(
+            `${d.id}: ${p.id} is recorded as kind "none", but the report resolved ` +
+              `${row.identifierJustified?.value} for it. Adopt it (re-run the authoring script) or re-run the ` +
+              `verifier — the dataset and the report disagree about what is known.`,
+          );
+        }
+        continue;
+      }
+      if (!row) {
+        problems.push(`${d.id}: ${p.id} carries identifier ${asserted.value} with NO row in ${CITATION_REPORT}.`);
+        continue;
+      }
+      if (!JUSTIFYING_STATUSES.has(row.status)) {
+        problems.push(
+          `${d.id}: ${p.id} carries identifier ${asserted.value} but its report row is ${JSON.stringify(row.status)},` +
+            ` which justifies nothing. ${row.reason ?? ''}`,
+        );
+        continue;
+      }
+      const justified = String(row.identifierJustified?.value ?? '').toLowerCase();
+      if (justified !== String(asserted.value).toLowerCase()) {
+        problems.push(
+          `${d.id}: ${p.id} carries identifier ${JSON.stringify(asserted.value)} but the report justifies` +
+            ` ${JSON.stringify(row.identifierJustified?.value)}. An identifier no named source returned.`,
+        );
+      }
+      if (row.identifierJustified?.kind !== asserted.kind) {
+        problems.push(
+          `${d.id}: ${p.id} identifier kind ${JSON.stringify(asserted.kind)} but the report justifies kind` +
+            ` ${JSON.stringify(row.identifierJustified?.kind)}.`,
+        );
+      }
+    }
+  }
+
+  // The markdown is a pure function of the JSON, so drift is detectable.
+  if (typeof summaryMarkdown === 'string' && summaryMarkdown !== renderCitationSummary(report)) {
+    problems.push(
+      `${CITATION_SUMMARY}: does not match what tools/lib/citation-summary.mjs renders from` +
+        ` ${CITATION_REPORT}. It was hand-edited, or the data changed without regenerating it.`,
+    );
+  }
+
+  return { problems, unverified };
+}
 
 function indexFrom(raw) {
   return buildNameIndex({ version: raw.version, structures: raw.structures });
@@ -120,11 +307,110 @@ function selfTest() {
   return failures;
 }
 
-const selfTestFailures = selfTest();
+/**
+ * Deliberate breakage for the citation gate, against clones of the REAL report
+ * and the REAL seed — not a toy pair. Each case is a way the rule could be
+ * defeated by hand, and each must be detected.
+ */
+function citationSelfTest() {
+  const failures = [];
+  const report = readJson(CITATION_REPORT);
+  const seed = readJson('data/research-seed.json');
+  const summary = readFileSync(join(PKG, CITATION_SUMMARY), 'utf8');
+  const dsOf = (raw) => [{ id: 'seed', papers: raw.papers, version: raw.version }];
+
+  const expectRed = (label, mutate) => {
+    const r = structuredClone(report);
+    const s = structuredClone(seed);
+    const md = mutate(r, s);
+    const { problems } = auditCitationReport({
+      report: r,
+      summaryMarkdown: md ?? renderCitationSummary(r),
+      datasets: dsOf(s),
+      coverageOf: 'seed',
+    });
+    if (problems.length === 0) failures.push(`${label}: the gate did not notice.`);
+  };
+
+  // The baseline must be green, or every case below proves nothing.
+  {
+    const { problems } = auditCitationReport({
+      report,
+      summaryMarkdown: summary,
+      datasets: dsOf(seed),
+      coverageOf: 'seed',
+    });
+    if (problems.length > 0) {
+      failures.push(`the committed artifacts do not pass their own audit: ${problems[0]}`);
+    }
+  }
+
+  // 1. An identifier appears on a paper the report leaves unresolved. This is
+  //    the invented-accession case, and the whole reason the gate exists.
+  expectRed('an invented identifier on an unresolved paper', (r, s) => {
+    const row = r.rows.find((x) => x.status === 'unresolved');
+    const paper = s.papers.find((p) => p.id === row.paperId);
+    paper.identifier = { kind: 'doi', value: '10.9999/invented' };
+  });
+
+  // 2. An identifier silently changed to a different DOI the report never saw.
+  expectRed('an identifier swapped for one no source returned', (r, s) => {
+    const paper = s.papers.find((p) => p.identifier.kind === 'doi');
+    paper.identifier = { kind: 'doi', value: '10.1038/not-the-one-returned' };
+  });
+
+  // 3. A row deleted, so a real identifier loses its justification.
+  expectRed('a dropped row leaving an identifier unjustified', (r) => {
+    r.rows.splice(
+      r.rows.findIndex((x) => x.status === 'verified'),
+      1,
+    );
+    // Keep the bookkeeping self-consistent, so the only thing wrong is the
+    // missing row. Otherwise this case would pass for the wrong reason — a
+    // tally mismatch — and prove nothing about coverage.
+    r.paperCount = r.rows.length;
+    r.tally = r.rows.reduce((a, x) => ({ ...a, [x.status]: (a[x.status] ?? 0) + 1 }), {});
+  });
+
+  // 4. A fabricated row: the verdict with no evidence under it.
+  expectRed('a verified row carrying no returned metadata', (r) => {
+    const row = r.rows.find((x) => x.status === 'verified');
+    row.returned = null;
+  });
+
+  // 5. A row attributed to a source the report does not declare.
+  expectRed('an identifier attributed to an undeclared source', (r) => {
+    r.rows.find((x) => x.identifierJustified).identifierJustified.source = 'vibes';
+  });
+
+  // 6. A stale report, still describing an older dataset version.
+  expectRed('a report describing a different dataset version', (r) => {
+    r.datasetVersion = 'research-seed-1999.1.1';
+  });
+
+  // 7. A hand-edited tally, which is the number a reader quotes.
+  expectRed('a tally that disagrees with the rows', (r) => {
+    r.tally = { ...r.tally, verified: (r.tally.verified ?? 0) + 7 };
+  });
+
+  // 8. A hand-edited summary, claiming something the data does not say.
+  expectRed('a summary edited away from its data', (r) => {
+    return `${renderCitationSummary(r)}\n\nAll 30 papers were independently verified by a human.\n`;
+  });
+
+  return failures;
+}
+
+const selfTestFailures = [...selfTest(), ...citationSelfTest()];
 if (selfTestFailures.length > 0) {
   problems.push('the gate itself cannot detect the failures it exists for:', ...selfTestFailures.map((f) => `  ${f}`));
 } else {
-  report.push('self-test: the gate goes red on a hostile link and on an unknown structure id.');
+  report.push(
+    'self-test: the gate goes red on a hostile link and on an unknown structure id,',
+    '  and on all eight ways to defeat the citation rule — an invented identifier, a swapped one,',
+    '  a dropped row, a verdict with no evidence, an undeclared source, a stale report version,',
+    '  a hand-edited tally and a hand-edited summary.',
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -184,7 +470,7 @@ for (const spec of DATASETS) {
       `${mappings.length} mappings ${JSON.stringify(byPrecision)} — ${spec.note}`,
     `  resolved against ${names.version}: ${mustResolve.length - unresolvedNonCoordinate.length}/${mustResolve.length} non-coordinate mappings`,
     `  coordinates awaiting a template: ${awaitingTemplate.length}/${coordinates.length}`,
-    `  identifiers recorded: ${withIdentifier}/${dataset.papers.length} — 0 machine-verified, by design (links are rendered, never fetched)`,
+    `  identifiers recorded: ${withIdentifier}/${dataset.papers.length}, each justified by a named source in ${CITATION_REPORT}`,
     `  evidence locators recorded: ${locatorRecorded}/${mappings.length}; curator inferences: ${inferred} (each with a note, enforced at load)`,
   );
 
@@ -205,6 +491,53 @@ for (const spec of DATASETS) {
     }
   } else {
     report.push('drift: data/ matches scripts/author-seed.mjs.');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. Every identifier is justified by a named source in the citation report.
+// ---------------------------------------------------------------------------
+
+{
+  const citationReport = readJson(CITATION_REPORT);
+  const summaryMarkdown = readFileSync(join(PKG, CITATION_SUMMARY), 'utf8');
+  const audited = resolved.map(({ spec, dataset }) => ({
+    id: spec.id,
+    papers: dataset.papers,
+    version: dataset.version,
+  }));
+
+  const { problems: citationProblems, unverified } = auditCitationReport({
+    report: citationReport,
+    summaryMarkdown,
+    datasets: audited,
+    coverageOf: 'seed',
+  });
+
+  if (citationProblems.length > 0) problems.push(...citationProblems);
+  else {
+    const justified = citationReport.rows.filter((r) => r.identifierJustified).length;
+    const none = citationReport.rows.length - justified;
+    report.push(
+      `citations: all ${citationReport.rows.length} seed papers have a row in ${CITATION_REPORT}` +
+        ` (retrieved ${citationReport.retrievedOn}); ${JSON.stringify(citationReport.tally)}.`,
+      `  ${justified} identifiers each justified by a named source; ${none} papers carry none.`,
+      `  no dataset carries an identifier this report does not justify — checked, not asserted.`,
+    );
+  }
+
+  // Rows that could not be checked are reported, never counted as verified and
+  // never allowed to read as a clean absence. They do not fail the build: the
+  // network is not this gate's dependency to guarantee. An identifier sitting
+  // on an unverified row is a different matter and fails above, because then
+  // nothing justifies it.
+  if (unverified.length > 0) {
+    report.push(
+      `UNVERIFIED: ${unverified.length} citation${unverified.length === 1 ? '' : 's'} could not be checked when the`,
+      '  report was generated. This is not evidence the citations are bad — it is the absence of a',
+      '  check. Re-run `node tools/verify-research-citations.mjs` with network access.',
+      ...unverified.map((u) => `    ${u}`),
+    );
   }
 }
 

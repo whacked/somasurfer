@@ -65,6 +65,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { REPO_ROOT } from './lib/repo.mjs';
+import { renderCitationSummary } from './lib/citation-summary.mjs';
 
 const PKG = join(REPO_ROOT, 'packages', 'atlas-research');
 const DATA = join(PKG, 'data');
@@ -95,6 +96,17 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  */
 function foldTitle(s) {
   return String(s ?? '')
+    // Crossref returns JATS markup inside titles — `<i>The Brain's Default
+    // Network</i>`, `<sub>`, `<scp>`. Left in, the tag's letters become words
+    // and the fold stops matching: that one pair of `<i>` tags was enough to
+    // report a correct DOI as resolving to a different paper. The raw value is
+    // still recorded in the report; only the comparison copy is stripped.
+    .replace(/<[^>]*>/g, ' ')
+    // Elsevier ships `first 20years of PET`. A missing space around a number is
+    // a typesetting artifact, not a different title, so both sides get the
+    // boundary inserted rather than one side getting the benefit of the doubt.
+    .replace(/(\d)([a-zA-Z])/g, '$1 $2')
+    .replace(/([a-zA-Z])(\d)/g, '$1 $2')
     .replace(/ß/g, 'ss')
     .replace(/[æÆ]/g, 'ae')
     .replace(/[øØ]/g, 'o')
@@ -528,12 +540,36 @@ async function searchForPaper(paper) {
 
 const dataset = JSON.parse(readFileSync(join(DATA, 'research-seed.json'), 'utf8'));
 
+/**
+ * BOTH routes run for every paper, regardless of what the dataset asserts.
+ *
+ * The obvious implementation — resolve the DOI if there is one, search if there
+ * is not — makes the report a function of the dataset's current state, and that
+ * has a nasty consequence: the moment a discovered DOI is adopted, the next run
+ * takes the DOI route and the search queries that found it vanish from the
+ * artifact. The evidence for an identifier would live only in git history,
+ * which is precisely where nobody checking a citation will look.
+ *
+ * So the report answers "what do these sources say about this paper", not "does
+ * the asserted id check out". Adopting an identifier cannot erase the evidence
+ * for it, and the search route independently corroborates the DOIs that are now
+ * asserted — a second, stronger statement than the first pass could make.
+ */
 const rows = [];
 for (const paper of dataset.papers) {
   process.stderr.write(`· ${paper.id} … `);
-  const outcome =
-    paper.identifier.kind === 'none' ? await searchForPaper(paper) : await checkAssertedDoi(paper);
-  process.stderr.write(`${outcome.status}\n`);
+  const asserted = paper.identifier.kind === 'none' ? null : await checkAssertedDoi(paper);
+  const search = await searchForPaper(paper);
+
+  // The asserted identifier decides the row's status when there is one: whether
+  // the DOI in the dataset points at the right paper is the question that
+  // matters. The search is corroboration, and for a `kind: "none"` paper it is
+  // the whole answer.
+  const outcome = asserted ?? search;
+  const searchDoi = search.identifierJustified?.value ?? null;
+  const assertedValue = paper.identifier.value;
+  process.stderr.write(`${outcome.status}${asserted && searchDoi ? ' (+search)' : ''}\n`);
+
   rows.push({
     paperId: paper.id,
     retrievedOn: RETRIEVED_ON,
@@ -549,9 +585,20 @@ for (const paper of dataset.papers) {
     identifierJustified: outcome.identifierJustified ?? null,
     reason: outcome.reason,
     comparison: outcome.comparison,
-    returned: outcome.returned,
-    candidates: outcome.candidates ?? null,
-    queries: outcome.queries,
+    returned: { ...(asserted?.returned ?? {}), ...(search.returned ?? {}) },
+    candidates: search.candidates ?? null,
+    // Did an independent title+author search find the same DOI the dataset
+    // asserts? `null` means the search found no qualifying DOI at all, which is
+    // not disagreement — Crossref search misses plenty that resolve by DOI.
+    corroboration: {
+      searchDoi,
+      agreesWithAsserted:
+        assertedValue === null || searchDoi === null
+          ? null
+          : String(searchDoi).toLowerCase() === String(assertedValue).toLowerCase(),
+      searchReason: search.reason,
+    },
+    queries: [...(asserted?.queries ?? []), ...search.queries],
   });
 }
 
@@ -577,6 +624,13 @@ const report = {
     '  unverified  the check could not run. NEVER reads as verified, and never as a clean',
     '              `unresolved` either: it means we did not get to look.',
     '',
+    'BOTH ROUTES RUN FOR EVERY PAPER, whatever the dataset asserts. Resolving a DOI when',
+    'there is one and searching only when there is not would make this file a function of',
+    'the dataset: adopting a discovered DOI would erase the search queries that found it,',
+    'leaving the evidence for an identifier only in git history. So every row carries both,',
+    'and `corroboration` records whether an independent title-and-author search -- never',
+    'given the DOI -- returned the same one.',
+    '',
     'WHAT THIS CANNOT TELL YOU: that a paper claims what this dataset attributes to it.',
     'Crossref confirms a paper exists. The 120 findings and their region mappings assert',
     'provenance.basis "published-text" with confidence "high", and nothing in this report',
@@ -596,12 +650,19 @@ const report = {
     {
       id: 'crossref',
       endpoint: `${CROSSREF}/works`,
+      // Every endpoint this source is queried through. The gate checks each
+      // row's queries against these, so a row cannot be attributed to a source
+      // it was never asked.
+      endpoints: [`${CROSSREF}/works`],
       routes: ['crossref-doi', 'crossref-search'],
       note: 'DOI registration agency metadata. Authoritative for whether a DOI is registered and what it points at.',
     },
     {
       id: 'pubmed',
       endpoint: `${EUTILS}/esearch.fcgi`,
+      // Two endpoints, because esearch returns PMIDs and esummary turns those
+      // into the metadata actually compared.
+      endpoints: [`${EUTILS}/esearch.fcgi`, `${EUTILS}/esummary.fcgi`],
       routes: ['pubmed-esearch', 'pubmed-esummary'],
       note: 'NLM bibliographic index, used as an independent second route. Covers biomedical journals; does not index monographs.',
     },
@@ -620,10 +681,18 @@ console.log(summaryLines.join('\n'));
 for (const r of rows.filter((x) => x.status === 'mismatch' || x.status === 'unverified')) {
   console.log(`\n!! ${r.paperId} [${r.status}] ${r.reason}`);
 }
+for (const r of rows.filter((x) => x.corroboration?.agreesWithAsserted === false)) {
+  console.log(
+    `\n?? ${r.paperId} search found a different DOI than the dataset asserts: ` +
+      `${r.corroboration.searchDoi} vs ${r.asserted.identifier.value}. Both matched on metadata; ` +
+      `the asserted one resolves to the right paper. Possibly a duplicate registration.`,
+  );
+}
 
 if (dryRun) {
   console.log('\n--dry-run: nothing written.');
 } else {
   writeFileSync(join(DATA, 'citation-report.json'), `${JSON.stringify(report, null, 2)}\n`);
-  console.log(`\nwrote ${join('packages', 'atlas-research', 'data', 'citation-report.json')}`);
+  writeFileSync(join(DATA, 'citation-report.md'), renderCitationSummary(report));
+  console.log(`\nwrote ${join('packages', 'atlas-research', 'data', 'citation-report.json')} and .md`);
 }
