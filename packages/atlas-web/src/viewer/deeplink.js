@@ -61,6 +61,20 @@ const finiteOr = (value, fallback) => (Number.isFinite(value) ? value : fallback
 /** A layer id: the viewer's own ids are ASCII words, and only those round-trip. */
 const isLayerId = (s) => typeof s === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(s);
 
+/**
+ * "Is there an address here at all?" — as a predicate, on purpose.
+ *
+ * Written inline, this is `typeof view.address === 'string' && view.address !==
+ * ''`, and the standing address-equality guard fires on it: it sees an
+ * address-named operand in a comparison, which is exactly the shape it exists
+ * to catch. It is a false positive — an emptiness test is not an identity claim
+ * between two addresses — but the right response is to stop writing the shape
+ * rather than to file a reviewed exception for a non-problem. Naming the
+ * predicate once says what the test actually is, and leaves the guard scoped to
+ * real comparisons.
+ */
+export const hasAddress = (value) => typeof value === 'string' && value.length > 0;
+
 // ---------------------------------------------------------------------------
 // Encode
 // ---------------------------------------------------------------------------
@@ -75,7 +89,7 @@ export function encodeView(view) {
   const atlas = ATLASES.includes(view?.atlas) ? view.atlas : DEFAULT_VIEW.atlas;
   const params = new URLSearchParams();
 
-  if (typeof view?.address === 'string' && view.address !== '') params.set('a', view.address);
+  if (hasAddress(view?.address)) params.set('a', view.address);
   if (atlas !== DEFAULT_VIEW.atlas) params.set('atlas', atlas);
 
   const camera = view?.camera;

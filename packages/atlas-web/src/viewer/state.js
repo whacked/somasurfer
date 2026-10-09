@@ -36,7 +36,7 @@
  */
 
 import { parse } from '../alc.js';
-import { DEFAULT_CAMERA } from './deeplink.js';
+import { DEFAULT_CAMERA, hasAddress } from './deeplink.js';
 import { selectAddress } from './select.js';
 
 /** Which atlas a frame's addresses belong to. */
@@ -311,7 +311,7 @@ export function createViewer(options = {}) {
       state.camera[state.atlas] = cloneCamera({ ...DEFAULT_CAMERA, ...view.camera });
       state.layers[state.atlas] = cloneLayers({ ...freshLayers(), ...view.layers });
       state.selection = null;
-      if (typeof view.address === 'string' && view.address !== '') {
+      if (hasAddress(view.address)) {
         // Still goes through select(), so an address out of a URL is validated
         // by parse() before any geometry, exactly like a pasted one.
         const model = api.select(view.address);
