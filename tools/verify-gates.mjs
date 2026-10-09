@@ -34,6 +34,9 @@ const GATE_TEMPLATE = join(TEMPLATES, 'gate-verify.body.json');
 const AUDIT_DOC = join(REPO_ROOT, 'docs', 'alc-1-admissibility.md');
 const COUNTS = join(REPO_ROOT, 'ci', 'expected-test-counts.json');
 const PERF_BUDGET = join(REPO_ROOT, 'ci', 'performance-budget.json');
+const RESEARCH_DATA = join(REPO_ROOT, 'packages', 'atlas-research', 'data');
+const RESEARCH_SEED = join(RESEARCH_DATA, 'research-seed.json');
+const CITATION_REPORT = join(RESEARCH_DATA, 'citation-report.json');
 
 /** The performance cases all need a build to measure. Say so once, clearly. */
 function requireBuild() {
@@ -169,6 +172,53 @@ const CASES = [
       return substitute(COUNTS, JSON.stringify(config, null, 2) + '\n');
     },
     check: () => run('check-test-count.mjs'),
+  },
+  {
+    name: 'invented-identifier',
+    gate: 'research dataset',
+    criterion: 'CI fails if a paper carries an identifier no named source returned',
+    expect: [/carries identifier .* but the report justifies/, /An identifier no named source returned/],
+    describe: 'a DOI hand-edited onto a paper, of the kind that is not checkable by eye',
+    // The failure mode this pins is the twelve invented UBERON accessions that
+    // b0d114a removed: a plausible-looking identifier that resolves to the
+    // wrong thing and looks authoritative doing it. A hand-edit is the way one
+    // gets in, so a hand-edit is what this does.
+    //
+    // The seed is edited rather than the report, and deliberately so: this is
+    // the direction that ships. The drift gate against author-seed.mjs will
+    // also notice, which is fine — the assertion is on the citation message.
+    break: () => {
+      const raw = JSON.parse(readFileSync(RESEARCH_SEED, 'utf8'));
+      const victim = raw.papers.find((p) => p.identifier.kind === 'doi');
+      if (!victim) throw new Error('no paper with a DOI to re-point');
+      victim.identifier = { kind: 'doi', value: '10.1038/nature99999' };
+      victim.sourceUrl = `https://doi.org/${victim.identifier.value}`;
+      return substitute(RESEARCH_SEED, `${JSON.stringify(raw, null, 2)}\n`);
+    },
+    check: () => run('check-research-dataset.mjs'),
+  },
+  {
+    name: 'citation-report-row-dropped',
+    gate: 'research dataset',
+    criterion: 'CI fails if the citation report stops covering every paper it justifies',
+    expect: [/papers have no row/, /carries identifier .* with NO row/],
+    describe: 'a row deleted from the citation report, leaving a shipped identifier unjustified',
+    // Deleting a row is the quiet way to make an awkward identifier's lack of
+    // evidence disappear. Coverage is asserted both ways — every paper has a
+    // row, and no row names a paper that is gone — so neither direction can be
+    // satisfied by editing the other.
+    break: () => {
+      const raw = JSON.parse(readFileSync(CITATION_REPORT, 'utf8'));
+      const i = raw.rows.findIndex((r) => r.identifierJustified);
+      if (i < 0) throw new Error('no justifying row to drop');
+      raw.rows.splice(i, 1);
+      // Keep the bookkeeping consistent, so the gate must notice the missing
+      // row itself rather than a tally that no longer adds up.
+      raw.paperCount = raw.rows.length;
+      raw.tally = raw.rows.reduce((a, r) => ({ ...a, [r.status]: (a[r.status] ?? 0) + 1 }), {});
+      return substitute(CITATION_REPORT, `${JSON.stringify(raw, null, 2)}\n`);
+    },
+    check: () => run('check-research-dataset.mjs'),
   },
   {
     name: 'audit-report-drift',
@@ -393,6 +443,8 @@ const touched = [
   rel(join(WEB, 'src', 'gate-verify.js')),
   rel(GATE_TEMPLATE),
   rel(PERF_BUDGET),
+  rel(RESEARCH_SEED),
+  rel(CITATION_REPORT),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {

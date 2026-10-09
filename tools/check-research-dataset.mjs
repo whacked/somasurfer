@@ -314,36 +314,69 @@ function selfTest() {
  */
 function citationSelfTest() {
   const failures = [];
-  const report = readJson(CITATION_REPORT);
-  const seed = readJson('data/research-seed.json');
-  const summary = readFileSync(join(PKG, CITATION_SUMMARY), 'utf8');
+  const onDisk = readJson(CITATION_REPORT);
   const dsOf = (raw) => [{ id: 'seed', papers: raw.papers, version: raw.version }];
 
-  const expectRed = (label, mutate) => {
-    const r = structuredClone(report);
-    const s = structuredClone(seed);
-    const md = mutate(r, s);
-    const { problems } = auditCitationReport({
-      report: r,
-      summaryMarkdown: md ?? renderCitationSummary(r),
-      datasets: dsOf(s),
-      coverageOf: 'seed',
-    });
-    if (problems.length === 0) failures.push(`${label}: the gate did not notice.`);
+  /**
+   * A report and dataset that agree with each other BY CONSTRUCTION.
+   *
+   * The shape is the real report's — same sources, same row fields, same
+   * endpoints — so the cases below exercise realistic input. But the dataset is
+   * synthesised from the rows, and the tally and summary are recomputed, so the
+   * pair is internally consistent no matter what state the working tree is in.
+   *
+   * That independence is the point. An earlier version used the committed
+   * artifacts directly and asserted they audit clean, which coupled this
+   * self-test to the tree: `tools/verify-gates.mjs` mutates these very files on
+   * purpose, and any mid-edit dataset would make the gate announce "the gate
+   * itself cannot detect the failures it exists for" — accusing the gate of
+   * being inert when the data was simply half-written, and sending the reader
+   * to the wrong file. Whether the COMMITTED artifacts are consistent is the
+   * main check's job, and it reports that in its own words.
+   */
+  const consistentPair = () => {
+    const report = structuredClone(onDisk);
+    report.paperCount = report.rows.length;
+    report.tally = report.rows.reduce((a, r) => ({ ...a, [r.status]: (a[r.status] ?? 0) + 1 }), {});
+    const seed = {
+      version: report.datasetVersion,
+      papers: report.rows.map((r) => ({
+        id: r.paperId,
+        identifier:
+          JUSTIFYING_STATUSES.has(r.status) && r.identifierJustified
+            ? { kind: r.identifierJustified.kind, value: r.identifierJustified.value }
+            : { kind: 'none', value: null },
+      })),
+    };
+    return { report, seed };
   };
 
-  // The baseline must be green, or every case below proves nothing.
+  // The baseline is green by construction. If it is not, the audit function
+  // itself is wrong, and that is worth saying before any case below is trusted.
   {
+    const { report, seed } = consistentPair();
     const { problems } = auditCitationReport({
       report,
-      summaryMarkdown: summary,
+      summaryMarkdown: renderCitationSummary(report),
       datasets: dsOf(seed),
       coverageOf: 'seed',
     });
     if (problems.length > 0) {
-      failures.push(`the committed artifacts do not pass their own audit: ${problems[0]}`);
+      failures.push(`a report and dataset that agree by construction did not audit clean: ${problems[0]}`);
     }
   }
+
+  const expectRed = (label, mutate) => {
+    const { report, seed } = consistentPair();
+    const md = mutate(report, seed);
+    const { problems } = auditCitationReport({
+      report,
+      summaryMarkdown: md ?? renderCitationSummary(report),
+      datasets: dsOf(seed),
+      coverageOf: 'seed',
+    });
+    if (problems.length === 0) failures.push(`${label}: the gate did not notice.`);
+  };
 
   // 1. An identifier appears on a paper the report leaves unresolved. This is
   //    the invented-accession case, and the whole reason the gate exists.
