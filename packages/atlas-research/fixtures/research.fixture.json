@@ -24,7 +24,7 @@
   ],
   "schema": "research/1",
   "version": "research-fixture-2026.10.1",
-  "structureIdSources": ["UBERON", "HCP-MMP1"],
+  "structureIdSources": ["HCP-MMP1", "ATLAS-LABEL"],
   "authoredAgainst": {
     "nameIndexVersion": "fixture-names-2026.10.1",
     "status": "fixture"
@@ -463,9 +463,9 @@
       "topics": ["cytoarchitecture", "variability"],
       "mappings": [
         {
-          "id": "map:amunts-1999-broca/gyrus-level/uberon-0002420",
-          "structureId": "UBERON:0002420",
-          "structureIdSource": "UBERON",
+          "id": "map:amunts-1999-broca/gyrus-level/atlas-label-inferior-frontal-gyrus",
+          "structureId": "ATLAS-LABEL:inferior-frontal-gyrus",
+          "structureIdSource": "ATLAS-LABEL",
           "structureLabel": "inferior frontal gyrus",
           "spatial": {
             "kind": "region-level",
@@ -499,9 +499,9 @@
       "topics": ["asset-source", "whole-body"],
       "mappings": [
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/uberon-0002048",
-          "structureId": "UBERON:0002048",
-          "structureIdSource": "UBERON",
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/atlas-label-left-lung",
+          "structureId": "ATLAS-LABEL:left-lung",
+          "structureIdSource": "ATLAS-LABEL",
           "structureLabel": "left lung",
           "spatial": {
             "kind": "region-level",
@@ -521,9 +521,9 @@
           }
         },
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/uberon-0000948",
-          "structureId": "UBERON:0000948",
-          "structureIdSource": "UBERON",
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/atlas-label-heart",
+          "structureId": "ATLAS-LABEL:heart",
+          "structureIdSource": "ATLAS-LABEL",
           "structureLabel": "heart",
           "spatial": {
             "kind": "region-level",
@@ -543,9 +543,9 @@
           }
         },
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/uberon-0002107",
-          "structureId": "UBERON:0002107",
-          "structureIdSource": "UBERON",
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/atlas-label-liver",
+          "structureId": "ATLAS-LABEL:liver",
+          "structureIdSource": "ATLAS-LABEL",
           "structureLabel": "liver",
           "spatial": {
             "kind": "region-level",
@@ -579,9 +579,9 @@
       "topics": ["asset-source", "skeleton"],
       "mappings": [
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/skeletal-parts/uberon-0002228",
-          "structureId": "UBERON:0002228",
-          "structureIdSource": "UBERON",
+          "id": "map:mitsuhashi-2009-bodyparts3d/skeletal-parts/atlas-label-rib-7",
+          "structureId": "ATLAS-LABEL:rib-7",
+          "structureIdSource": "ATLAS-LABEL",
           "structureLabel": "7th rib",
           "spatial": {
             "kind": "region-level",
@@ -615,9 +615,9 @@
       "topics": ["template", "registration"],
       "mappings": [
         {
-          "id": "map:mazziotta-2001-icbm/reference-system/uberon-0002298",
-          "structureId": "UBERON:0002298",
-          "structureIdSource": "UBERON",
+          "id": "map:mazziotta-2001-icbm/reference-system/atlas-label-brainstem",
+          "structureId": "ATLAS-LABEL:brainstem",
+          "structureIdSource": "ATLAS-LABEL",
           "structureLabel": "brainstem",
           "spatial": {
             "kind": "region-level",
@@ -713,9 +713,9 @@
       "topics": ["template", "scope"],
       "mappings": [
         {
-          "id": "map:mazziotta-2001-icbm/spinal-extent/uberon-0002240",
-          "structureId": "UBERON:0002240",
-          "structureIdSource": "UBERON",
+          "id": "map:mazziotta-2001-icbm/spinal-extent/atlas-label-spinal-cord",
+          "structureId": "ATLAS-LABEL:spinal-cord",
+          "structureIdSource": "ATLAS-LABEL",
           "structureLabel": "spinal cord",
           "spatial": {
             "kind": "region-level",

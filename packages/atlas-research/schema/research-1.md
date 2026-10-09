@@ -33,7 +33,7 @@ Three rules drive every shape below. They are the reason this schema is not just
 {
   "schema": "research/1",
   "version": "research-seed-2026.10.1",   // pinned into every query result
-  "structureIdSources": ["UBERON", "FMA", "HCP-MMP1"],
+  "structureIdSources": ["HCP-MMP1", "ATLAS-LABEL"],
   "authoredAgainst": {                    // which index the mappings were authored against
     "nameIndexVersion": "fixture-names-2026.10.1",
     "status": "fixture" | "real"
@@ -134,6 +134,26 @@ highlight traces back to.
   "provenance": Provenance
 }
 ```
+
+### Structure id namespaces
+
+`structureIdSource` names the namespace `structureId` is drawn from. Two are in
+use, and the difference is a provenance decision rather than a detail:
+
+- **`HCP-MMP1:<area>`** — that parcellation identifies its parcels by label, so
+  `HCP-MMP1:44` is the real id and carries no risk of pointing somewhere else.
+- **`ATLAS-LABEL:<kebab-name>`** — a declared **placeholder**. Gross anatomical
+  structures have UBERON and FMA accessions, and the curator of the seed set did
+  not have verified accession numbers available (nothing in this repository
+  resolves one, by the trust-boundary rule below). A plausible-looking but wrong
+  accession does not fail — it resolves to a *different structure* and looks
+  authoritative doing it, which is the worst available outcome for a provenance
+  trail. So the id is the label, the namespace says so, and crosswalking onto
+  real accessions is a named part of stage B, done against the same
+  `coverings.json` that supplies the geometry.
+
+A dataset must list every namespace it uses in `structureIdSources`, so a
+reviewer can see at a glance whether any part of it is still on placeholders.
 
 `structureLabel` is a convenience for a list before the index has loaded, and
 for diagnosing a mapping whose `structureId` is not in the index. The viewer

@@ -57,7 +57,7 @@ test('browse-by-anatomy: a fine query finds a finding filed on a coarser cell', 
   const r = browseByAnatomy(index, 'BV-L-0410');
   const ids = r.papers.map((p) => p.paper.id);
   assert.ok(ids.includes(AMUNTS));
-  const gyrus = r.mappings.find((m) => m.structureId === 'UBERON:0002420');
+  const gyrus = r.mappings.find((m) => m.structureId === 'ATLAS-LABEL:inferior-frontal-gyrus');
   assert.ok(gyrus, 'the gyrus-level mapping is reachable from a cell inside it');
 });
 
@@ -114,7 +114,7 @@ test('browse-by-research: selecting a paper reveals ALL of its mapped regions', 
   const structures = selected.findings
     .flatMap((f) => f.mappings.map((m) => m.structureId))
     .sort();
-  assert.deepEqual(structures, ['HCP-MMP1:A1', 'HCP-MMP1:V1', 'UBERON:0002240', 'UBERON:0002298']);
+  assert.deepEqual(structures, ['ATLAS-LABEL:brainstem', 'ATLAS-LABEL:spinal-cord', 'HCP-MMP1:A1', 'HCP-MMP1:V1']);
 
   // Including the body-frame one, which the brain filter would have removed.
   assert.ok(selected.covering.frames.includes('BD'), 'the BD mapping survived a BV-only filter');
