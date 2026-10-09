@@ -85,9 +85,14 @@ ALC_FUZZ_ITERATIONS=400000 ALC_FUZZ_SEED=12345 \
 | `mutatedCorpus()` | 8 000 | 1–3 random edits to ten seed addresses, from ASCII and 32 confusables |
 | `wellFormedCorpus()` | 2 666 | Addresses legal by construction, to exercise the deep grammar |
 
-11 657 inputs per CI run, 8 304 of them distinct, **4 363 accepted** by `parse()` —
+11 657 inputs per CI run, 8 304 of them distinct, **4 262 accepted** by `parse()` —
 the accepted fraction is what matters, since every invariant is conditional on acceptance.
 The 160 470 figure is the exploratory sweep this corpus was distilled from.
+
+Re-measured at `0ebd2fc`. This paragraph read **4 363 accepted** when the report was
+written, which no run of the committed corpus reproduces; the figure on the committed base
+`4f75f7f` was 4 321, and QA-7's fix took it to 4 262 by rejecting exactly the 59 non-ASCII
+inputs that used to be accepted.
 
 Curated coverage: case and whitespace forms; leading-zero loose forms; all four vertebral
 prefixes `00`–`14` in one- and two-digit forms; all clock sectors `0`–`13` × `{I,O,X}`;
@@ -96,9 +101,11 @@ per frame; 30 malformed anchor and separator shapes; lengths 60–1 024 against 
 cap; all 32 Crockford characters as check symbols on canonical **and** loose bodies;
 32 Unicode confusables in six positions each, including NFD pairs and lone surrogates.
 
-The confusable list is derived from the actual attack surface: `splitAddress` calls
-`toUpperCase()` *before* validating the alphabet, so the surface is "every code point
+The confusable list is derived from the attack surface as it was: `splitAddress` called
+`toUpperCase()` *before* validating the alphabet, so the surface was "every code point
 whose uppercase form is a legal ALC character", plus invisibles and hyphen lookalikes.
+Since `0ebd2fc` the whole class is refused before the case mapping runs (QA-7), and the
+list is kept as the standing proof of that rather than as a live attack surface.
 
 ### Invariants
 
@@ -120,9 +127,9 @@ through. That is the `BD-T07-02O-9` shape.
 | `INV-LOCATE-EXTENT-NAN/NEGATIVE` extents finite and non-negative | clean |
 | `INV-LOCATE-UNDOCUMENTED-THROW` only spec §9 error codes escape | clean |
 | `INV-SELF-SAMEPLACE` an address is the same place as itself | clean |
-| `INV-ASCII` an accepted input was ASCII | **QA-7** |
-| `INV-CHECK-CANONICAL` an accepted check symbol is the canonical one | **QA-5** |
-| `INV-CHECK-ACCEPTS-LOOSE-CANONICAL` loose body + canonical check is accepted | **QA-5** |
+| `INV-ASCII` an accepted input was ASCII | clean since `0ebd2fc`; was **QA-7** |
+| `INV-CHECK-CANONICAL` an accepted check symbol is the canonical one | clean since `0ebd2fc`; was **QA-5** |
+| `INV-CHECK-ACCEPTS-LOOSE-CANONICAL` loose body + canonical check is accepted | clean since `0ebd2fc`; was **QA-5** |
 | `INV-GRAMMAR-LEVEL` the `BD` anchor is in the spec's level set | clean since `1924a2f`; was **QA-6** |
 | `INV-RECOMMENDED-NOT-OVERPRECISE` the display recommendation is honest | **QA-3** |
 
@@ -250,8 +257,10 @@ committed fixture:
   exactly that pair of facts, so neither stage can later be pruned as redundant.
 - **Counting claimants alone is not enough either.** Past its own fold radius a level's
   planes stop bracketing its own points, so a point can be claimed *solely by a
-  neighbour*: one claimant, nothing ambiguous at runtime, and the original address gone.
-  That is QA-13, and it is the scan's `lost` kind.
+  neighbour*: one claimant, nothing for a claim count to report, and the original
+  address gone. That is QA-13 — the scan's `lost` kind, and since `0ebd2fc` also
+  `folded` at runtime, because the decoder asks which levels have an address for the
+  point rather than how many claim it.
 
 Ambiguity is the defect; a wrong answer was only ever its symptom. The consistency stage
 also keeps the one check nothing else makes — a level the audit *flags* that the scan
@@ -276,21 +285,21 @@ evidence" below.
 | QA-2 | High | **fixed** in `1924a2f` — `bodyMmToLocal` now detects multiple bracketing levels, raises `flags.folded`, names the competing levels and states the point is not outside the body. `admissible` was renamed `locallyAdmissible` with the sufficiency caveat, and `scanBodyTemplateFolds()` is the gate. The per-level criterion is still incomplete *by design*, which is now documented and measured: 162 of 3 228 templates in the physiological box (5.0%) satisfy it and fold anyway. |
 | QA-3 | High | **open** — `recommendedDigits()` still returns 8 for a template justifying 5. |
 | QA-4 | High | **open** — `encodeBrainVolume(t, [NaN,NaN,NaN], 6)` still returns `BV-R-000000` with `flags: {}`. |
-| QA-5 | Medium-High | **open** |
+| QA-5 | Medium-High | **fixed** in `0ebd2fc` — `splitAddress` now validates the check symbol's shape and hands it back without verifying it; `parse()` verifies it against the canonical body it resolved to. Both directions come out right: a loose body carrying its canonical symbol is accepted, and a symbol computed over the loose body is refused with `check_failed`. Pinned as a positive guarantee by `check symbol: verified against the canonical body, in both directions`, which asserts exhaustively that exactly one of the 32 Crockford symbols is accepted on a loose body and that it is the canonical one. |
 | QA-6 | Medium-High | **fixed** in `1924a2f` — `canonicalLevel` now holds a per-level set. `ANOMALOUS_LEVELS = ['T13','L06','S06']` are addressable and report the new `homology: 'variant'`; everything else is rejected with the correction named (`BD-C08` explains the C8 *nerve root*). The fix went further than the finding: `variant` vs `absent` distinguishes "real anatomy this template lacks" from "not a level", which is the distinction a UI needs. |
-| QA-7 | Medium | **open** |
+| QA-7 | Medium | **fixed** in `0ebd2fc` — `splitAddress` rejects any code point outside printable ASCII on the *raw* input, before `trim()` and before `toUpperCase()`, with a new `non_ascii` code. Deciding it on the raw input also closes the sub-case below, where `trim()` stripped U+00A0 and U+2007. It narrows the accepted language: `\tBD-T07-03O\n` used to parse and no longer does, which is what INV-ASCII asks for and the same defect as the U+00A0 padding. Pinned as a positive guarantee by `fuzz: a non-ASCII code point is rejected before case mapping can make it legal`, over 27 code points, each required to be refused with `non_ascii` rather than by the grammar downstream. |
 | QA-8 | Medium | **open** — a NaN body coordinate still produces an inadmissibility note against a template the audit certifies. |
 | QA-9 | Medium | **fixed** in `1924a2f` — falls out of QA-2, and went further: the counter now keys off `flags.folded` rather than the unreachable no-claimant note. Re-measured on the committed tree at `samplesPerLevel: 200` — 31 notes on `anat-adult-p50-split-sacrum`, 5 on `ADULT_HYPERKYPHOTIC_SHORT_WIDE`, 0 on `anat-adult-p50` — so it is asserted non-zero on a folder and zero on every preset, and is no longer vacuous. |
 | QA-10 | Low | **fixed** in `9d7d6ff` — the gate grew a `STRUCTURE` stage, which is the only one of the four that can see a duplicate label: the audit and the probe both still pass the template, and that pair of facts is asserted so neither stage can later be pruned as redundant. |
 | QA-11 | Low | **open** |
 | QA-12 | High | **fixed** in `1924a2f` — `cellRadiusMm`'s 3-D diagonal replaced by `cellReachMm`, the box's directional support function, plus a structural short-circuit: disjoint cells of one template are a definitive no at `toleranceMm: 0`, scoped to zero so a stated tolerance is still a geometric question. All 3 424 disjoint pairs now report `same: false`; the characterisation test is now the invariant itself. |
-| QA-13 | Medium | **open** — filed on the resumed run. The displacement half of a fold carries no flag; only reachable on a template the gate rejects. |
+| QA-13 | Medium | **fixed** in `0ebd2fc` — `bodyMmToLocal` stopped counting claimants and now asks the round-trip question instead: does any *other* level have an in-body address for this point. `levelsAddressing()` is that question, and it answers for both halves of the non-partition with one condition, because both are the same fact. The finding's own repro now returns `folded: true` with a note naming S02. It also degrades to free where it must: the screen is one sign test per level, and 0 of 9 000 knot points across the five presets are flagged. Pinned as a positive guarantee by four tests in `template-acceptance.test.ts` — the reported case is declared, no `FOLD_REGRESSIONS` fixture answers with the wrong level unflagged over 81 000 points, no preset is falsely flagged, and every `lost` fold site is visible at runtime. |
 
-**Six of the thirteen are closed** — QA-1, QA-2, QA-6, QA-9, QA-10, QA-12. The
-two High ones still open, QA-3 and QA-4, are the same shape — a confident answer
-with the flag missing — and neither needs more than a few lines. Every open
-defect has an owner and a bounded task: QA-3, QA-4, QA-8 and QA-11 on DOG-16;
-QA-5 and QA-7 on DOG-17; QA-13 on DOG-18.
+**Nine of the thirteen are closed** — QA-1, QA-2, QA-5, QA-6, QA-7, QA-9,
+QA-10, QA-12, QA-13. The two High ones still open, QA-3 and QA-4, are the same
+shape — a confident answer with the flag missing — and neither needs more than a
+few lines. Every open defect has an owner and a bounded task: QA-3, QA-4, QA-8
+and QA-11 on DOG-16.
 
 **This table is machine-checked, because it drifted once already.** The old
 `known defects: the index matches the report` only verified that an id
@@ -310,8 +319,9 @@ drift.
 ### Retirement evidence
 
 `packages/alc/scripts/verify-retirements.mjs` re-runs the *finding* measurement
-for every retired defect against the committed library and prints a verdict per
-defect. On `9d7d6ff` (library at `1924a2f`), all six pass:
+for each retired defect it covers, against the committed library, and prints a
+verdict per defect. Every verdict in it passes; the rows below are the run on
+`0ebd2fc`:
 
 | defect | the measurement that found it, re-run | now |
 | --- | --- | --- |
@@ -321,6 +331,7 @@ defect. On `9d7d6ff` (library at `1924a2f`), all six pass:
 | QA-6 | `canonicalLevel` over `C08`/`L09`/`S12` and `T13`/`L06`/`S06` | the first three rejected with the correction named, the three real anomalies still addressable |
 | QA-9 | `measureRoundTrip(..., { samplesPerLevel: 200 }).inadmissibleNotes` | **31** on the split sacrum, **5** on `ADULT_HYPERKYPHOTIC_SHORT_WIDE`, **0** on `anat-adult-p50` (was 0 everywhere, i.e. vacuous) |
 | QA-12 | every distinct cell pair of one template at `toleranceMm: 0` | **0** reported as the same place (was 1 329 of 3 424, 38.8 %) |
+| QA-13 | S02 of `anat-adult-p50-split-sacrum` at t = 0.9917, r = 0.76 — the point a single *other* level claims | still resolves to S01, now with `folded: true` and a note naming S02 as the level whose address was taken over (was `flags: {}`). `levelsClaiming` still returns `['S01']`, which is why the claim count could not see it; `levelsAddressing` returns S01 and S02, S02 with its planes crossed and `r = 0.760` recovered exactly. **0** of 9 000 preset knot points falsely flagged |
 
 Two numbers moved against the original write-ups, both explained and neither a
 regression. `measureRoundTrip().failures` on a folding template goes *down* as
@@ -472,11 +483,11 @@ a unit conversion that divided by zero — exactly when a consumer most needs te
 **Fix:** reject non-finite input at the `encodeBody`/`encodeBrainVolume` boundary, or set
 `clamped` with a note naming the axis. **Pinned:** `precision-honesty.test.ts` "QA-4".
 
-### QA-5 — the check symbol is validated against the wrong body — Medium-High
+### QA-5 — the check symbol is validated against the wrong body — Medium-High — FIXED
 
 Spec §7: *"Position-weighted sum mod 32 over the canonical body."* `splitAddress`
-computes it over the uppercased **input**, and `parse` accepts loose forms such as
-`BD-T7-3O`. Both directions are wrong:
+computed it over the uppercased **input**, and `parse` accepts loose forms such as
+`BD-T7-3O`. Both directions were wrong:
 
 ```js
 checkSymbol('BD-T07-03O');                 // 'X'
@@ -486,10 +497,21 @@ parse('BD-T7-3O~9').withCheck;             // 'BD-T07-03O~X'  (not the '9' suppl
 ```
 
 Dropping a leading zero is exactly what a human does with a code read aloud, which is the
-only thing this symbol is for. 1 072 corpus cases where a loose body plus its canonical
-check symbol is rejected. **Fix:** canonicalise first, then verify against the canonical
-body — a reordering in `parse()`. **Pinned:** `known-defects.test.ts` "QA-5", plus two
-invariants.
+only thing this symbol is for.
+
+**Re-measured on the committed base (`4f75f7f`, seed 20261008, 8 000 iterations):** 135
+corpus inputs where a loose body plus its canonical check symbol was rejected
+(`INV-CHECK-ACCEPTS-LOOSE-CANONICAL`), and 1 where a symbol over the wrong body was
+accepted (`INV-CHECK-CANONICAL`). This write-up previously claimed 1 072 for the first
+figure, which no run of the committed corpus reproduces; the number has been corrected
+rather than re-argued, in the same spirit as DOG-15.
+
+**Fixed in `0ebd2fc`:** `splitAddress` validates the symbol's shape and returns it without
+verifying it — it cannot verify it, because padding `T7` to `T07` is frame-specific and
+that function does not interpret frames — and `parse()` verifies it against the canonical
+body it resolved to. Both figures above are now 0, with no new invariant breaches.
+**Pinned:** `conformance.test.ts` "check symbol: verified against the canonical body, in
+both directions". Both ledger entries are deleted and the two invariants stand unqualified.
 
 ### QA-6 — the `BD` vertebral range is over-permissive and inconsistent — Medium-High — FIXED
 
@@ -512,25 +534,47 @@ out-of-grammar address. 5 405 corpus hits. **Fix:** per-prefix maxima in
 `canonicalLevel`. **Pinned:** `precision-honesty.test.ts` "QA-6", and
 `INV-GRAMMAR-LEVEL`.
 
-### QA-7 — Unicode confusables survive case mapping into a valid address — Medium
+### QA-7 — Unicode confusables survive case mapping into a valid address — Medium — FIXED
 
 ```js
 format('bd-t07-03ı');   // 'BD-T07-03I'   U+0131 DOTLESS I  -> depth half I
 format('bd-ſ01-03o');   // 'BD-S01-03O'   U+017F LONG S     -> sacral prefix
 ```
 
-`splitAddress` calls `toUpperCase()` before validating the alphabet, so the effective
-alphabet is every code point whose uppercase form is legal. Spec §3 says ASCII; §10 says
+`splitAddress` called `toUpperCase()` before validating the alphabet, so the effective
+alphabet was every code point whose uppercase form is legal. Spec §3 says ASCII; §10 says
 the alphabet is validated first. Two distinct byte sequences become one address, so any
 consumer that compares a raw URL parameter against a stored canonical form — or does the
 prefix range scan §10 describes on the unnormalised string — disagrees with the library
-about whether two addresses are the same. The gap is narrow: confusables whose uppercase
-form is not a legal character (`U+212A`, `U+2170`, fullwidth, Cherokee) are all caught.
-**Fix:** reject any non-ASCII code point before uppercasing. **Pinned:**
-`known-defects.test.ts` "QA-7", and `INV-ASCII`.
+about whether two addresses are the same. The gap was narrow: confusables whose uppercase
+form is not a legal character (`U+212A`, `U+2170`, fullwidth, Cherokee) were all caught,
+so the blast radius was two code points, not twenty.
 
 Mild sub-case, same root: `trim()` strips Unicode whitespace, so `U+00A0` and `U+2007`
-padding is silently accepted. Harmless, and the same one-line fix covers it.
+padding was silently accepted.
+
+**Fixed in `0ebd2fc`:** `splitAddress` rejects any code point outside printable ASCII on
+the *raw* input, before `trim()` and before `toUpperCase()`, with a new `non_ascii` error
+code. Deciding it on the raw input is what covers the sub-case too. 59 corpus inputs were
+accepted in breach of `INV-ASCII` on the committed base (`4f75f7f`, seed 20261008); all 59
+are now rejections, the corpus acceptance count falls from 4 321 to 4 262 — exactly those
+59 — and nothing else moves.
+
+**One narrowing, stated rather than buried:** tab- and newline-padded input such as
+`\tBD-T07-03O\n` used to parse and no longer does. `INV-ASCII` is written as
+`/[^\x20-\x7e]/` over the raw input, so the invariant demands it, and the reasoning is the
+same as for `U+00A0`: a control code is one more way to spell one address with two
+different byte sequences. The padding the grammar tolerates stays the space. The fix was
+not narrowed to "non-ASCII only" to preserve the old behaviour, because that would have
+left `INV-ASCII` firing on 59 inputs with no ledger entry to excuse them.
+
+**Pinned:** `fuzz.test.ts` "fuzz: a non-ASCII code point is rejected before case mapping
+can make it legal", over 27 code points, each required to be refused with `non_ascii`
+specifically rather than by the grammar downstream — half of them were always rejected by
+`TOKEN` or the azimuth parser, and a fix that caught only the two that collided would
+leave "an ALC address is ASCII" unstated and one `toUpperCase()` table change from
+breaking again. The `INV-ASCII` ledger entry is deleted and the invariant stands
+unqualified.
 
 ### QA-8 — a NaN body coordinate accuses an admissible template — Medium
 
@@ -642,7 +686,7 @@ defect can neither widen nor be silently retired.
 
 ---
 
-### QA-13 — a fold that *displaces* rather than duplicates is still silent — Medium
+### QA-13 — a fold that *displaces* rather than duplicates is still silent — Medium — FIXED
 
 The gap half of the non-partition, and the half QA-2's fix does not cover.
 
@@ -680,9 +724,9 @@ Two consequences:
    fails at 0.68, round-trips again at 0.72, and fails from 0.75. Any assertion
    of the form "safe inside the predicted radius, folded outside it" is
    therefore ill-posed — which is why `admissibility.test.ts`'s *"the exact
-   criterion is sharp in both directions"* is the one test still red in the
-   tree. Measured: S03's first failure is at r = 0.675 against a predicted
-   0.721, 6.4% tighter and just outside that test's 5% band.
+   criterion is sharp in both directions"* was the one test red in the tree when
+   this was filed. Measured: S03's first failure is at r = 0.675 against a
+   predicted 0.721, 6.4% tighter and just outside that test's 5% band.
 
 **Severity is Medium, not High, and the reason is worth stating:** it needs a
 template that folds, and the acceptance gate rejects those on three separate
@@ -706,8 +750,68 @@ the `foldRatio * 0.95` direction is not a loss of rigour; it is removing a claim
 the geometry does not support, and `docs/alc-1-admissibility.md` §4's "not
 merely a safe bound" should lose the same claim with it.
 
-**Pinned:** `template-acceptance.test.ts` "QA-13", with the four regimes and the
-non-monotonicity asserted individually.
+**Resolution** (`0ebd2fc`): the fix takes the suggestion's second form but states
+the question the other way round, because "does the level I was asked for claim
+this point" is not a question `bodyMmToLocal` can ask — it is handed
+millimetres, and the level it was asked for is exactly what the millimetres do
+not carry. The answerable form is **does any other level have an in-body address
+for this point**, which is the same question seen from the decoder's side, and
+`levelsAddressing()` is it.
+
+Why one condition covers both halves. Level *i*'s forward map puts the point at
+`u = sigma_i / (sigma_i - sigma_(i+1))`, and that ratio lands in [0, 1] in two
+cases, not one:
+
+| | | |
+| --- | --- | --- |
+| `sigma_i >= 0`, `sigma_(i+1) < 0` | the planes bracket the point in order | the level claims it — all a claim count can see |
+| `sigma_i < 0`, `sigma_(i+1) >= 0` | the planes crossed before the point | the level still has an address for it, and that address is the one that gets lost |
+
+The second row is the whole of this defect, and `r <= 1` is a load-bearing part
+of the test rather than a tidy-up: every curved column's bisector planes cross
+*somewhere*, so without it the check would fire far outside the body on
+templates that do not fold at all.
+
+Re-measured on the committed tree with the repro above:
+
+```js
+bodyMmToLocal(t, mm).flags;
+// -> { folded: true, notes: ['...2 vertebral levels (S01, S02) reach this point.
+//      Resolved to S01 ... S02 reaches this point past its own fold radius, so
+//      that address decodes here as S01 instead.'] }
+levelsClaiming(t, mm);    // -> ['S01']            <- why the claim count was quiet
+levelsAddressing(t, mm);  // -> S01 r=0.698, S02 r=0.760 (planes crossed)
+```
+
+The four regimes in the table above are now flagged in all four bands, and the
+flag arrives at r = 0.636 — *before* the first wrong answer at 0.666, not after
+it. The non-monotonicity is unchanged, because it is a fact about the geometry
+rather than about the detector: correctness along that ray is still right,
+wrong, right, wrong. What changed is that none of it is silent.
+
+It also costs nothing where it should. The screen is "has any level's plane pair
+crossed before this point", one sign test per level inside the loop that already
+computes the plane distances, and on an admissible template it is false
+everywhere inside the body — so no geometry beyond the ordinary decode is
+computed there. Measured: **0 of 9 000** knot points across the five shipping
+presets are flagged, which is also the assertion that keeps the flag meaningful.
+
+The documentation half of this finding landed with it. `docs/alc-1-admissibility.md`
+§4 grew a generated subsection, "The per-level fold radius is a one-sided bound,
+not a threshold", which walks each flagged level's worst azimuth and publishes
+the predicted radius, the first wrong answer, the intervals that answer
+correctly and the first flagged radius. On the split sacrum the first failure is
+up to 10.9% of the radius inside the prediction, and S02's correct radii are two
+intervals rather than one — so no utilisation figure means "ambiguous beyond
+here". The `admissibility.test.ts` recalibration the paragraph above asks for
+landed on DOG-9, one-sided as described.
+
+**Pinned,** as four positive guarantees in `template-acceptance.test.ts`
+(titles no longer carry the id, per the retirement protocol): the reported case
+is declared and names the displaced level; no `FOLD_REGRESSIONS` fixture answers
+with the wrong level unflagged over 81 000 knot points; no shipping preset is
+falsely flagged; and every site the fold scan calls `lost` is flagged at
+runtime, which is the asymmetry this defect was.
 
 
 ## Running it
@@ -747,5 +851,11 @@ not true of the S05 row, and the row's "false alarms: S01,S05" cell had the erro
 backwards — those are levels the per-level verdict wrongly cleared, not levels the
 worst-case verdict needlessly condemned. Re-measured at 200 samples per level: `S05`
 margin +34.1 mm and one round-trip failure; `scanBodyTemplateFolds` loses 202 of `S05`'s
-skin points, 16 of `S01`'s and 2 of `L05`'s. How much of a one-sided *bound* the
-per-level radius still is, is QA-13 and belongs to DOG-18.
+skin points, 16 of `S01`'s and 2 of `L05`'s.
+
+How much of a one-sided *bound* the per-level radius still is was the open half of
+that correction, and it closed with QA-13 on `0ebd2fc`: §4 now carries a generated
+walk of each flagged level's worst azimuth. It is a bound and not a threshold — on
+the split sacrum the first wrong answer comes up to **10.9%** of the radius inside
+the prediction, and `S02`'s correct radii are two intervals rather than one, so
+there is no utilisation figure that means "ambiguous beyond here".
