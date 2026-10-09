@@ -40,7 +40,8 @@ library added to the page shell.
 
 | line | budget | covers |
 | --- | --- | --- |
-| `bundleGzipBytes` | 150 KiB | `index.html` + `app/*.js` + `app/*.css`, gzipped |
+| `bundleGzipBytes` | 150 KiB | `index.html` + everything under `app/` that is not the renderer, gzipped |
+| `rendererGzipBytes` | 140 KiB | the deferred 3D renderer under `app/`, gzipped |
 | `indexGzipBytes` | 256 KiB | `data/*.json`, gzipped |
 | `lowResAssetGzipBytes` | 2.5 MiB | `dist/assets/**`, gzipped, less LICENSE and ATTRIBUTION.md |
 | `indexParseMsNormalised` | 40 ms | parse the indexes and build the lookup maps |
@@ -51,6 +52,73 @@ with room for parse. It is also roughly where a 20k-triangle body shell plus
 label sets lands, so it constrains the asset pipeline without being
 unachievable.
 
+## Why the renderer has its own line
+
+`bundleGzipBytes` was published before there was a 3D renderer in the tree,
+and its justification above — the point where a 25 Mbit/s link spends more time
+on our own code than on a round trip — is an argument about **application code
+on the critical path**. three.js is not that. Tree-shaken to exactly the
+surface the stage-A viewer uses it is **126,469 bytes gzipped**, which spends
+82% of a 150 KiB line before the viewer does anything at all. Measured in
+DOG-36, where the full reasoning and the React Three Fiber comparison live:
+`docs/viewer-bundle-budget.md`.
+
+On one line the gate reds at **102%** with 10 KiB of viewer code — less than an
+address bar costs — while every felt number it exists to protect is still green
+at 21%. A line that fails without naming anything you can fix is not a budget,
+it is an obstacle, and the fix nobody should reach for is a bigger number.
+
+So the bytes under `dist/app/` are charged to two lines:
+
+```
+rendererGzipBytes   the paths listed in componentAttribution.rendererPaths
+bundleGzipBytes     index.html, and everything else under app/
+```
+
+The default is the application line. A renderer that lands anywhere but a
+declared path is charged to the stricter gate and reds it — wrong, but wrong in
+the safe direction. `tools/perf-budget.mjs` prints the attribution it used on
+every run, so a declared path matching nothing is visible rather than silent.
+
+**The split re-attributes a byte; it does not discount one.** Both lines feed
+`transferMs()` into the critical path exactly as the single line did, so the
+felt numbers are computed over the same total as before and nothing got easier
+to pass. A regression anywhere still shows up there — and now the component
+line that fails also names *which thing* got heavier, which is the property
+that made component budgets worth having in the first place.
+
+### What holds the split up, and what does not
+
+The 140 KiB line is defensible only because those bytes are **deferred**: the
+shell paints, then `import()` fetches the renderer. Loaded eagerly they are
+application code, and two green lines would be certifying 270 KiB on the
+critical path — which the felt numbers would *not* catch, because a renderer is
+only 45 ms of transfer. So the gate checks that claim instead of trusting it:
+nothing charged to `bundleGzipBytes` may **statically** import a renderer path.
+A dynamic `import()` is the allowed form. The viewer defers the renderer anyway,
+for a reason that has nothing to do with this budget — addresses must still
+parse and resolve to names when the atlas is unavailable, so the address bar
+cannot sit behind 126 KiB that might fail to load.
+
+The gate also refuses a `rendererPaths` entry that is not strictly inside
+`app/`. Declaring `app` itself would charge the whole client bundle to the
+renderer's line and leave `bundleGzipBytes` measuring `index.html` alone:
+permanently green, measuring nothing, from a one-line diff that reads like a
+tidy-up.
+
+What is **not** measured, and cannot be: whether the files on the renderer line
+are in fact third-party renderer code. Moving application code under a declared
+path would buy it the renderer's headroom. `componentAttribution.rendererPaths`
+is an assertion reviewed by people, not a fact checked by a tool, which is why
+adding an entry is a budget change under *Changing a budget* below. Every
+report says so in as many words rather than leaving it to be discovered.
+
+Four more cases in `tools/verify-gates.mjs` pin these: three deliberate
+breakages that must be caught, and one `mustPass` — a realistic stage-A viewer
+that must stay green. That last one is the case the reshape exists for. If it
+ever reds, the fix is in the tool or in the viewer, and it is not a larger
+number.
+
 ## How the two felt numbers are derived
 
 CI does not have a mid-range laptop or a 25 Mbit/s link, so the felt numbers
@@ -58,10 +126,15 @@ are **derived** from the measured ones through a model stated in the budget
 file, not observed:
 
 ```
-critical path     = 2 × RTT + (bundle + index) / downlink + index parse
+critical path      = 2 × RTT + (bundle + renderer + index) / downlink + index parse
 low-res asset load = critical path + 1 × RTT + assets / downlink + asset parse
 first interaction  = critical path + render allowance
 ```
+
+The renderer's bytes are charged here in full even though they are deferred.
+That is pessimistic on purpose: it is the direction a budget should err in, and
+it keeps these two numbers identical to what they were before the renderer had
+a line of its own.
 
 Two round trips for the critical path and one for the assets: HTTP/2 over a
 static host serves each round of requests together. The model is pessimistic
@@ -166,6 +239,11 @@ Chrome step that drives the deployed page and reports
 `performance.mark()`; `packages/atlas-web/src/app.js` already emits both
 marks, and the page reports them in its own "This session" panel.
 
+Also not measured, and not measurable: whether the files charged to
+`rendererGzipBytes` are really a third-party renderer. See *What holds the
+split up, and what does not* above — that one is held by review, and the
+report says so on every run rather than letting it pass for a checked fact.
+
 ## Current measurement
 
 Measured on 2026-10-08, build at base `/`, against the committed fixture
@@ -180,12 +258,18 @@ node tools/perf-budget.mjs --json perf-measurement.json
 | line | measured | budget | used |
 | --- | --- | --- | --- |
 | `bundleGzipBytes` | 4.1 KiB | 150.0 KiB | 3% |
+| `rendererGzipBytes` | 0.0 KiB | 140.0 KiB | 0% |
 | `indexGzipBytes` | 0.8 KiB | 256.0 KiB | 0% |
 | `lowResAssetGzipBytes` | 96.2 KiB | 2560.0 KiB | 4% |
 | `indexParseMsNormalised` | 0.2 ms | 40 ms | 0% |
 | `lowResAssetParseMsNormalised` | 5–29 ms | 400 ms | 1–7% |
 | `derivedLowResAssetLoadMs` | **158–183 ms** | 2500 ms | 6–7% |
 | `derivedFirstInteractionMs` | **682 ms** | 3500 ms | 19% |
+
+`rendererGzipBytes` is 0 because no renderer has landed yet; `app/vendor/three`
+is declared and matches nothing, which the gate says on every run. Every other
+line is unchanged from the single-line measurement of 2026-10-08, which is the
+check that the split moved no number.
 
 Byte lines are exact and reproduce identically on every run. Parse lines are
 given as the range over three consecutive runs on a contended machine, where
@@ -207,9 +291,55 @@ most of the remaining room, which is the point of writing the budget down
 before either arrives: when the number moves, it will be obvious which line
 moved it.
 
+### Where the stage-A viewer lands
+
+Not a measurement of anything committed — the viewer does not exist yet. This
+is the gate's own output against a synthetic tree built to DOG-36's two measured
+figures: a renderer gzipping to 126,509 bytes under `app/vendor/three/`, and
+24 KiB gzipped of viewer code that defers it. It is the
+`realistic-viewer-stays-green` case in `tools/verify-gates.mjs`, so it is
+re-run in CI rather than quoted from here.
+
+| line | projected | budget | used |
+| --- | --- | --- | --- |
+| `bundleGzipBytes` | 28.1 KiB | 150.0 KiB | 19% |
+| `rendererGzipBytes` | 123.5 KiB | 140.0 KiB | 88% |
+| `derivedFirstInteractionMs` | **730 ms** | 3500 ms | 21% |
+
+Those three reproduce anywhere. The case pins the calibration to the reference
+120 ms, so the speed factor is exactly 1 and the derived lines are normalised
+rather than bounds; the two byte lines never depend on the runner, and
+`derivedFirstInteractionMs` carries only the index parse, which is well under a
+millisecond. The asset-load line is deliberately not quoted here — it carries
+the asset parse, so it moves with the machine, and this change does not touch
+the asset budget anyway.
+
+Running that case *without* pinning the calibration is how it was first written,
+and it was wrong: a GitHub runner reads ~25 ms, lands outside `[0.25, 4]`, and
+the gate then correctly reports `derivedFirstInteractionMs` as a `≥` bound — so
+the assertion failed against a gate that had behaved perfectly. The same trap
+as DOG-29, one level up, in a case written to prevent exactly that class of
+false red.
+
+The same tree measured **112% and red** on the single line. DOG-36 projected
+740 ms for first interaction from its own component measurements; the gate
+derives 730 ms, which is two derivations agreeing to within 1.4% by separate
+routes. 88% on the renderer line is the number to watch: it is tight on
+purpose, because the thing it is there to catch is three.js growing, and
+16.5 KiB is what the stage-A surface has to widen into before that is a
+conversation rather than a surprise.
+
 ## Changing a budget
 
 Edit `ci/performance-budget.json` and this document in the same commit, and
 say in the commit message what changed about the product that justified it.
 Raising a budget to make CI green is the failure this file exists to make
 visible.
+
+Adding a path to `componentAttribution.rendererPaths` is a budget change under
+the same rule, even though no number moves. It decides which line bytes are
+charged to, so it can move 140 KiB of headroom under something that was
+competing for 150 KiB — a widening written as a path instead of an integer.
+The gate cannot tell a renderer from application code, so this one is held up
+by review and by the commit message, which means it has to be legible as a
+budget change rather than as a build tweak.

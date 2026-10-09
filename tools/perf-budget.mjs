@@ -41,11 +41,18 @@
  *
  * So the gate still only ever fails on certainty, and byte budgets — which
  * never touch the calibration — stay exact and hard in every case.
+ *
+ * The bytes under dist/app/ are charged to two of those byte lines, not one —
+ * the deferred 3D renderer to `rendererGzipBytes` and everything else to
+ * `bundleGzipBytes`, per `componentAttribution.rendererPaths` in the budget
+ * file, which says why (DOG-41). The split changes which line a byte is charged
+ * to and nothing else: the derived lines are computed over the same total as
+ * before, so nothing here got easier to pass.
  */
 
 import { gzipSync } from 'node:zlib';
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { REPO_ROOT, fail, pass, rel } from './lib/repo.mjs';
 
 const DIST = join(REPO_ROOT, 'packages', 'atlas-web', 'dist');
@@ -122,15 +129,127 @@ function filesUnder(dir, predicate) {
 
 const gzipBytes = (paths) => paths.reduce((n, p) => n + gzipSync(readFileSync(p), { level: 9 }).length, 0);
 
+// ---------------------------------------------------------------------------
+// Component attribution. Which of the two app-side byte lines a shipped file is
+// charged to. The declaration and its justification live in the budget file;
+// the two rules that keep it from being a loophole are enforced here, because a
+// declaration nobody checks is a comment.
+// ---------------------------------------------------------------------------
+
+const rendererPaths = budget.componentAttribution?.rendererPaths ?? [];
+
+const badDeclaration = [];
+for (const entry of rendererPaths) {
+  const show = JSON.stringify(entry);
+  if (typeof entry !== 'string') {
+    badDeclaration.push(`rendererPaths entry ${show} is not a string.`);
+    continue;
+  }
+  const segments = entry.split('/').filter((s) => s !== '');
+  if (/[*?[\]]/.test(entry) || segments.includes('.') || segments.includes('..')) {
+    badDeclaration.push(`rendererPaths entry ${show} must be a literal path: no globs, no \`.\` or \`..\` segments.`);
+  } else if (segments[0] !== 'app' || segments.length < 2) {
+    badDeclaration.push(`rendererPaths entry ${show} must name something strictly inside app/, e.g. "app/vendor/three".`);
+    if (segments.length === 1 && segments[0] === 'app') {
+      badDeclaration.push(
+        `  \`app\` itself would charge the entire client bundle to the renderer's 140 KiB line and`,
+        `  leave bundleGzipBytes measuring index.html alone. The application line would still be`,
+        `  green forever and would be measuring nothing. That is the one thing this list cannot say.`,
+      );
+    }
+  }
+}
+if (badDeclaration.length > 0) {
+  fail('performance budget', [
+    `componentAttribution.rendererPaths in ${rel(join(REPO_ROOT, 'ci', 'performance-budget.json'))} is not usable:`,
+    ``,
+    ...badDeclaration,
+    ``,
+    `Every shipped byte is charged to exactly one line, and which one is a budget decision.`,
+    `The gate refuses rather than guess at an attribution it cannot read.`,
+  ]);
+}
+
+/**
+ * Segment-aware prefix match, so `app/vendor/three` covers that path and
+ * anything under it and never `app/vendor/threezilla.js`.
+ */
+const toPosix = (p) => p.split('\\').join('/');
+const isRendererPath = (distRelative) => {
+  const r = toPosix(distRelative);
+  return rendererPaths.some((p) => r === p || r.startsWith(`${p}/`));
+};
+
+const appFiles = filesUnder(join(DIST, 'app'), () => true);
+const rendererFiles = appFiles.filter((p) => isRendererPath(relative(DIST, p)));
 const bundleFiles = [
   join(DIST, 'index.html'),
-  ...filesUnder(join(DIST, 'app'), () => true),
+  ...appFiles.filter((p) => !isRendererPath(relative(DIST, p))),
 ].filter((p) => existsSync(p));
 const indexFiles = filesUnder(join(DIST, 'data'), () => true);
 const assetFiles = filesUnder(
   join(DIST, 'assets'),
   (r) => !r.endsWith('LICENSE') && !r.endsWith('ATTRIBUTION.md'),
 );
+
+// ---------------------------------------------------------------------------
+// The premise of the renderer line: the renderer is DEFERRED.
+//
+// A separate 140 KiB line is defensible because those bytes are not on the
+// critical path — the shell paints, then dynamic import() fetches the renderer.
+// Static-import it from anything on the application line and that stops being
+// true: 270 KiB of eager code would pass two green lines, and the derived lines
+// would not catch it either, because a renderer is only 45 ms of transfer. So
+// the one claim the split rests on is checked rather than trusted.
+//
+// A dynamic `import('…')` is the allowed form and is deliberately not matched.
+// ---------------------------------------------------------------------------
+
+/** Static import specifiers: `import … from 'x'`, `import 'x'`, `export … from 'x'`. */
+function staticImportSpecifiers(source) {
+  const out = [];
+  for (const m of source.matchAll(/(?:^|[^\w$.])(?:import|export)\s*(?:[^;'"]*?\sfrom\s*)?['"]([^'"]+)['"]/g)) {
+    out.push(m[1]);
+  }
+  return out;
+}
+
+/** Does a specifier written in `fromDistRelative` point into a renderer path? */
+function specifierHitsRenderer(fromDistRelative, specifier) {
+  if (specifier.startsWith('./') || specifier.startsWith('../')) {
+    return isRendererPath(join(dirname(toPosix(fromDistRelative)), specifier));
+  }
+  // Root-relative or base-prefixed ("/app/…", "/atlas/app/…"). The deployment
+  // base is configuration, not identity, so a run of matching segments anywhere
+  // in the specifier is the honest comparison.
+  const segments = toPosix(specifier).split('/').filter((s) => s !== '');
+  return rendererPaths.some((p) => {
+    const want = p.split('/').filter((s) => s !== '');
+    for (let i = 0; i + want.length <= segments.length; i += 1) {
+      if (want.every((w, j) => segments[i + j] === w)) return true;
+    }
+    return false;
+  });
+}
+
+// Only meaningful once a renderer actually ships: with nothing on the renderer
+// line there is nothing being excused from the application line.
+const eagerRenderer = [];
+if (rendererFiles.length > 0) {
+  for (const p of bundleFiles) {
+    const r = toPosix(relative(DIST, p));
+    const source = readFileSync(p, 'utf8');
+    if (r === 'index.html') {
+      for (const m of source.matchAll(/\b(?:src|href)\s*=\s*["']([^"']+)["']/g)) {
+        if (specifierHitsRenderer(r, m[1])) eagerRenderer.push({ file: r, spec: m[1], how: 'loaded by the page shell' });
+      }
+    } else if (r.endsWith('.js') || r.endsWith('.mjs')) {
+      for (const spec of staticImportSpecifiers(source)) {
+        if (specifierHitsRenderer(r, spec)) eagerRenderer.push({ file: r, spec, how: 'statically imported' });
+      }
+    }
+  }
+}
 
 /**
  * Parse cost, measured the way the client pays it: parse the JSON, then build
@@ -181,6 +300,7 @@ const bytesPerMs = (downlinkMbps * 1e6) / 8 / 1000;
 const transferMs = (bytes) => bytes / bytesPerMs;
 
 const bundleGzip = gzipBytes(bundleFiles);
+const rendererGzip = gzipBytes(rendererFiles);
 const indexGzip = gzipBytes(indexFiles);
 const assetGzip = gzipBytes(assetFiles);
 
@@ -193,11 +313,18 @@ function linesScaledBy(parseFactor) {
   const indexParseNorm = indexParseMs * parseFactor;
   const assetParseNorm = assetParseMs * parseFactor;
 
+  // The renderer's bytes are charged here in full, exactly as they were before
+  // they had their own line. Splitting the component lines re-attributes a
+  // byte; it does not discount one. Pessimistic, because the renderer is in
+  // fact deferred — and pessimistic is the direction a budget should err in.
   const criticalPathMs =
-    budget.transferModel.roundTrips.criticalPath * rttMs + transferMs(bundleGzip + indexGzip) + indexParseNorm;
+    budget.transferModel.roundTrips.criticalPath * rttMs +
+    transferMs(bundleGzip + rendererGzip + indexGzip) +
+    indexParseNorm;
 
   return {
     bundleGzipBytes: bundleGzip,
+    rendererGzipBytes: rendererGzip,
     indexGzipBytes: indexGzip,
     lowResAssetGzipBytes: assetGzip,
     indexParseMsNormalised: indexParseNorm,
@@ -224,7 +351,7 @@ const measurements = linesScaledBy(band === 'in' ? speedFactor : 1);
  * line fails the gate rather than defaulting to one or the other, so adding a
  * line forces whoever adds it to say which kind it is.
  */
-const EXACT_LINES = new Set(['bundleGzipBytes', 'indexGzipBytes', 'lowResAssetGzipBytes']);
+const EXACT_LINES = new Set(['bundleGzipBytes', 'rendererGzipBytes', 'indexGzipBytes', 'lowResAssetGzipBytes']);
 const CALIBRATED_LINES = new Set([
   'indexParseMsNormalised',
   'lowResAssetParseMsNormalised',
@@ -342,11 +469,32 @@ const calibrationNote =
         `  is reported as not evaluated rather than as a pass or a failure.`,
       ];
 
+// Stated on every run, pass or fail. A declared renderer path that matches
+// nothing is the likely typo, and it is otherwise invisible: the renderer's
+// bytes would fall through to the application line, which is the safe direction
+// but not the one anybody intended.
+const attributionNote =
+  rendererPaths.length === 0
+    ? [`attribution: no renderer paths declared; every app byte is charged to bundleGzipBytes.`]
+    : [
+        `attribution: ${rendererPaths.join(', ')} → rendererGzipBytes` +
+          ` (${rendererFiles.length} file${rendererFiles.length === 1 ? '' : 's'}),` +
+          ` everything else under app/ → bundleGzipBytes`,
+        ...(rendererFiles.length === 0
+          ? [
+              `  NOTE: the declared renderer path matches nothing in dist/. Either the renderer has`,
+              `  not landed yet, or it landed elsewhere and is being charged to bundleGzipBytes.`,
+            ]
+          : []),
+      ];
+
 const detail = [
   `reference: ${budget.referenceMachine.label}, ${downlinkMbps} Mbit/s, ${rttMs} ms RTT`,
   ...calibrationNote,
   `raw parse: index ${indexParseMs.toFixed(1)} ms, assets ${assetParseMs.toFixed(1)} ms on this machine`,
-  `files: ${bundleFiles.length} bundle, ${indexFiles.length} index, ${assetFiles.length} asset`,
+  `files: ${bundleFiles.length} bundle, ${rendererFiles.length} renderer, ${indexFiles.length} index,` +
+    ` ${assetFiles.length} asset`,
+  ...attributionNote,
   ...(calibrationOverrideMs !== null
     ? [
         ``,
@@ -369,6 +517,12 @@ const detail = [
   `NOT MEASURED: the same two derived numbers in a real browser. That needs the`,
   `viewer and a headless browser in CI. Until then the ${budget.renderAllowanceMs.value} ms render allowance`,
   `in derivedFirstInteractionMs is a stated placeholder, not an observation.`,
+  ``,
+  `ALSO NOT MEASURED: whether the files on the renderer line are in fact a third-party`,
+  `renderer. That is what componentAttribution.rendererPaths asserts, and no tool can`,
+  `check it — moving application code under a declared path would buy it the renderer's`,
+  `headroom. What IS checked: the path is strictly inside app/, and nothing on the`,
+  `application line statically imports it. The declaration itself is reviewed, not gated.`,
 ];
 
 const report = {
@@ -407,7 +561,19 @@ const report = {
   // reading a bound as if it were a measurement.
   verdicts,
   notEvaluated,
-  notMeasured: ['browser-observed low-resolution asset load', 'browser-observed first interaction'],
+  // Which app bytes went to which line, and anything that broke the deferral
+  // the renderer line depends on. A consumer comparing bundleGzipBytes across
+  // commits needs this to know whether the line's meaning moved under it.
+  attribution: {
+    rendererPaths,
+    rendererFiles: rendererFiles.map((p) => toPosix(relative(DIST, p))).sort(),
+    eagerRendererImports: eagerRenderer,
+  },
+  notMeasured: [
+    'browser-observed low-resolution asset load',
+    'browser-observed first interaction',
+    'that the files on the renderer line are third-party renderer code',
+  ],
 };
 
 const jsonArg = process.argv.indexOf('--json');
@@ -415,5 +581,25 @@ if (jsonArg >= 0) {
   writeFileSync(process.argv[jsonArg + 1], JSON.stringify(report, null, 2) + '\n');
 }
 
-if (over.length > 0) fail('performance budget', [...over, ``, ...detail]);
+const deferral =
+  eagerRenderer.length === 0
+    ? []
+    : [
+        `the renderer is on the critical path, so it cannot have its own budget line:`,
+        ...eagerRenderer.map((e) => `  ${e.file}: ${e.how} ${JSON.stringify(e.spec)}`),
+        ``,
+        `  rendererGzipBytes exists because those ${(rendererGzip / 1024).toFixed(1)} KiB are fetched by dynamic`,
+        `  import() after the shell paints, and so are not application code competing for`,
+        `  the shell's ${(budget.budgets.bundleGzipBytes.limit / 1024).toFixed(0)} KiB. Loaded eagerly they are exactly that, and the two green`,
+        `  lines would be adding up to ${((bundleGzip + rendererGzip) / 1024).toFixed(1)} KiB of code before first paint.`,
+        ``,
+        `  Fix the load, not the budget: \`await import()\` the renderer from the viewer's`,
+        `  entry point. If it genuinely must be eager, then it belongs on bundleGzipBytes`,
+        `  and the renderer path should be withdrawn from componentAttribution.`,
+      ];
+
+if (over.length > 0 || deferral.length > 0) {
+  const spacer = over.length > 0 && deferral.length > 0 ? [``] : [];
+  fail('performance budget', [...deferral, ...spacer, ...over, ``, ...detail]);
+}
 pass('performance budget', detail);

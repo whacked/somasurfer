@@ -23,7 +23,8 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
 
 const ALC = join(REPO_ROOT, 'packages', 'alc');
@@ -34,6 +35,12 @@ const GATE_TEMPLATE = join(TEMPLATES, 'gate-verify.body.json');
 const AUDIT_DOC = join(REPO_ROOT, 'docs', 'alc-1-admissibility.md');
 const COUNTS = join(REPO_ROOT, 'ci', 'expected-test-counts.json');
 const PERF_BUDGET = join(REPO_ROOT, 'ci', 'performance-budget.json');
+const DIST = join(WEB, 'dist');
+const VENDOR_THREE = join(DIST, 'app', 'vendor', 'three', 'three.module.js');
+const GATE_VIEWER = join(DIST, 'app', 'gate-verify-viewer.js');
+
+/** Gzipped size of three.js tree-shaken to exactly the stage-A viewer surface, measured in DOG-36. */
+const THREE_GZIP_BYTES = 126469;
 
 /** The performance cases all need a build to measure. Say so once, clearly. */
 function requireBuild() {
@@ -47,6 +54,68 @@ function withBudgetLimit(line, limit) {
   const budget = JSON.parse(readFileSync(PERF_BUDGET, 'utf8'));
   budget.budgets[line] = { ...budget.budgets[line], limit };
   return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
+}
+
+/** `ci/performance-budget.json` with the renderer attribution replaced. */
+function withRendererPaths(paths) {
+  const budget = JSON.parse(readFileSync(PERF_BUDGET, 'utf8'));
+  budget.componentAttribution = { ...budget.componentAttribution, rendererPaths: paths };
+  return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
+}
+
+/**
+ * Write a file into directories that may not exist, returning a restore that
+ * removes the file and every directory it had to create — so a case that
+ * invents `dist/app/vendor/three/` cannot leave the next run measuring it.
+ */
+function place(path, contents) {
+  const made = [];
+  for (let d = dirname(path); !existsSync(d); d = dirname(d)) made.push(d);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, contents);
+  return () => {
+    rmSync(path, { force: true });
+    for (const d of made) rmSync(d, { recursive: true, force: true });
+  };
+}
+
+/**
+ * Pseudo-minified JavaScript that gzips to just over `targetGzipBytes`.
+ *
+ * The shape is load-bearing. A random-byte blob would not compress like a
+ * renderer and a repeated line would compress far better than one, so either
+ * would need a byte count nothing like the real thing to reach the same gzipped
+ * size — and the gate measures gzipped size. Deterministic from `seed`, so a
+ * case either reproduces or it does not.
+ */
+function syntheticModule(targetGzipBytes, seed) {
+  const words = 'tenirosalcudmpghfbvwxyzkjq'.split('');
+  let state = seed >>> 0;
+  const next = () => ((state = (state * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const pick = () => words[Math.floor(next() * words.length)];
+  const id = () => pick() + pick() + Math.floor(next() * 9999).toString(36);
+  const gz = (text) => gzipSync(Buffer.from(text), { level: 9 }).length;
+
+  // Overshoot, then binary-search a prefix: gzipped size is monotonic in the
+  // number of statements, so the search lands within one statement of target.
+  const parts = [];
+  do {
+    for (let i = 0; i < 256; i += 1) {
+      parts.push(
+        `function ${id()}(${id()},${id()}){const ${id()}=${id()}*${(next() * 100).toFixed(4)}+${Math.floor(next() * 1e6)};` +
+          `return ${id()}?${id()}(${id()}):[${id()},${id()}].map(${id()}=>${id()}.${id()});}`,
+      );
+    }
+  } while (gz(parts.join('\n')) < targetGzipBytes * 1.2);
+
+  let lo = 0;
+  let hi = parts.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (gz(parts.slice(0, mid).join('\n')) < targetGzipBytes) lo = mid + 1;
+    else hi = mid;
+  }
+  return parts.slice(0, lo).join('\n') + '\n';
 }
 
 const run = (script, args = []) =>
@@ -367,6 +436,123 @@ const CASES = [
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
   },
+
+  // -------------------------------------------------------------------------
+  // The budget's two app-side byte lines (DOG-41).
+  //
+  // Splitting the renderer onto `rendererGzipBytes` gave the budget a second
+  // line and therefore two new ways to be wrong: the new line might not fire,
+  // and the attribution deciding which line a byte lands on might be abusable.
+  // The last case is the one the split exists for, and it is a `mustPass`: a
+  // realistic viewer has to be green, or the split did not work and the next
+  // person's instinct will be to widen 150 KiB instead.
+  // -------------------------------------------------------------------------
+  {
+    name: 'renderer-over-its-own-budget',
+    gate: 'performance budget',
+    criterion: 'the renderer line fires when the renderer grows',
+    expect: [
+      /rendererGzipBytes: 15\d\.\d KiB against a budget of 140\.0 KiB/,
+      /tree-shaken to the stage-A viewer surface/,
+    ],
+    describe: 'a renderer 10 KiB past its line, in a declared renderer path',
+    // The point of a second line is that it is a real ceiling, not a parking
+    // space. 150 KiB of renderer reds rendererGzipBytes and nothing else: the
+    // derived lines have the headroom to absorb it, which is exactly why the
+    // byte line has to be the thing that catches it.
+    break: () => {
+      requireBuild();
+      return place(VENDOR_THREE, syntheticModule(154 * 1024, 41001));
+    },
+    check: () => run('perf-budget.mjs'),
+  },
+  {
+    name: 'renderer-line-swallows-the-application',
+    gate: 'performance budget',
+    criterion: 'the attribution cannot make the application line vacuous',
+    expect: [/must name something strictly inside app\//, /measuring index\.html alone/],
+    describe: 'componentAttribution declaring all of `app` to be the renderer',
+    // The abuse the split invites. One word in the budget file charges the
+    // entire client bundle to the renderer's 140 KiB and leaves
+    // bundleGzipBytes measuring the page shell alone — permanently green,
+    // permanently meaningless, and a one-line diff that reads like a tidy-up.
+    break: () => withRendererPaths(['app']),
+    check: () => run('perf-budget.mjs'),
+  },
+  {
+    name: 'renderer-loaded-eagerly',
+    gate: 'performance budget',
+    criterion: 'the renderer line is void if the renderer is on the critical path',
+    expect: [
+      /the renderer is on the critical path, so it cannot have its own budget line/,
+      /app\.js: statically imported "\.\/vendor\/three\/three\.module\.js"/,
+    ],
+    describe: 'the renderer static-imported by the page shell instead of deferred',
+    // The hole that would make the whole split a lie. rendererGzipBytes is
+    // defensible only because those bytes arrive after first paint; eagerly
+    // imported they are application code, and two green lines would be
+    // certifying 270 KiB on the critical path. The derived lines do not catch
+    // this — a renderer is only 45 ms of transfer — so this check is the only
+    // thing standing behind the claim the second line rests on.
+    break: () => {
+      requireBuild();
+      const removeVendor = place(VENDOR_THREE, syntheticModule(THREE_GZIP_BYTES, 41002));
+      const app = join(DIST, 'app', 'app.js');
+      const restoreApp = substitute(
+        app,
+        `import * as THREE from './vendor/three/three.module.js';\n${readFileSync(app, 'utf8')}`,
+      );
+      return () => {
+        restoreApp();
+        removeVendor();
+      };
+    },
+    check: () => run('perf-budget.mjs'),
+  },
+  {
+    name: 'realistic-viewer-stays-green',
+    gate: 'performance budget',
+    criterion: 'the case the split exists for: a real stage-A viewer passes',
+    mustPass: true,
+    expect: [
+      /rendererGzipBytes\s+12\d\.\d KiB \/\s+140\.0 KiB\s+8\d%/,
+      /bundleGzipBytes\s+2\d\.\d KiB \/\s+150\.0 KiB\s+1\d%/,
+      /derivedFirstInteractionMs\s+7\d\d ms \/\s+3500 ms/,
+      /attribution: app\/vendor\/three → rendererGzipBytes \(1 file\)/,
+    ],
+    describe: "the measured viewer: 126.5 KiB of deferred three.js and 24 KiB of the viewer's own code",
+    // Both figures are from DOG-36: the renderer is three.js tree-shaken to the
+    // stage-A surface, and 24 KiB gzipped is the viewer code that surface was
+    // chosen for — address bar, flag messages, layer panel, structure search,
+    // deep links, cross-atlas restore. Under the old single line this exact
+    // tree measured 112% and red. If this case ever goes red again, the fix is
+    // in tools/perf-budget.mjs or in the viewer, and is not a larger number.
+    //
+    // The calibration is pinned to the reference value so the speed factor is
+    // exactly 1 and the derived lines are quoted as normalised numbers. Without
+    // it this case asserts something the runner decides: a GitHub runner reads
+    // ~25 ms, lands outside [0.25, 4], and DOG-29 correctly reports
+    // derivedFirstInteractionMs as a `≥` bound instead — at which point the
+    // assertion below fails on a gate that behaved perfectly. That is DOG-29's
+    // own lesson pointed at a new case, and it cost a red PR to notice. What
+    // this case is for is byte attribution and the derived total, neither of
+    // which is a claim about how fast the machine running it is.
+    break: () => {
+      requireBuild();
+      const removeVendor = place(VENDOR_THREE, syntheticModule(THREE_GZIP_BYTES, 41003));
+      const removeViewer = place(
+        GATE_VIEWER,
+        `// Deferred, which is the premise rendererGzipBytes rests on.\n` +
+          `export const load = () => import('./vendor/three/three.module.js');\n` +
+          syntheticModule(24 * 1024, 41004),
+      );
+      return () => {
+        removeViewer();
+        removeVendor();
+      };
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120']),
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -470,10 +656,19 @@ for (const c of selected) {
 }
 
 // A failed restore is worse than a failed case: leave nothing behind.
-for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', 'gate-verify.js'), GATE_TEMPLATE]) {
+for (const path of [
+  join(ALC, 'test', 'gate-verify.test.ts'),
+  join(WEB, 'src', 'gate-verify.js'),
+  GATE_TEMPLATE,
+  GATE_VIEWER,
+]) {
   rmSync(path, { force: true });
   rmSync(`${path}.gate-verify-stash`, { force: true });
 }
+// A synthetic renderer left in dist/ would be charged to rendererGzipBytes on
+// the next run, which would measure this script rather than the build. dist/
+// being gitignored does not make it harmless: the perf gate reads dist/.
+rmSync(join(DIST, 'app', 'vendor'), { recursive: true, force: true });
 // A stray template here would make the next CI run audit a deliberately broken
 // one, so remove the directory too if we were the only reason it existed.
 if (existsSync(TEMPLATES)) {

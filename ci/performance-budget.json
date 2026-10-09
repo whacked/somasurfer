@@ -25,11 +25,50 @@
     ],
     "roundTrips": { "criticalPath": 2, "assets": 1 }
   },
+  "componentAttribution": {
+    "comment": [
+      "Which component budget a shipped byte under dist/app/ is charged to.",
+      "",
+      "bundleGzipBytes was published before a 3D renderer existed in the tree,",
+      "and its stated rationale — how much of our own code belongs on the",
+      "critical path before the network stops being the thing to fix — is an",
+      "argument about APPLICATION code. A tree-shaken WebGL renderer is 126 KiB",
+      "gzipped and spends 82% of that line before the viewer does anything, so",
+      "measuring it on the same line reports only that a renderer is large,",
+      "which is not news and is not actionable. Two lines keep the property that",
+      "makes the budget worth having: a line that fails names the thing that got",
+      "heavier. DOG-41, from the measurement in docs/viewer-bundle-budget.md.",
+      "",
+      "rendererPaths lists dist-relative prefixes charged to rendererGzipBytes.",
+      "Everything else under dist/app/, plus dist/index.html, is charged to",
+      "bundleGzipBytes. The default is the application line, so a renderer that",
+      "lands anywhere but a declared path is charged to the shell and reds the",
+      "stricter gate — wrong in the safe direction.",
+      "",
+      "Adding a prefix here widens what may be 140 KiB instead of competing for",
+      "150 KiB, so it is a budget change under the protocol in",
+      "docs/performance-budget.md: justify it in the commit message and move",
+      "that document in the same commit. tools/perf-budget.mjs enforces two",
+      "things about this list mechanically, so it cannot be quietly abused:",
+      "a prefix must name something strictly inside app/ (declaring `app`",
+      "itself would make the application line vacuous), and nothing charged to",
+      "the application line may STATICALLY import a renderer path. The second",
+      "is the premise of the split: the renderer is deferred, so it is not",
+      "application code competing for the shell's line. Static-import it and",
+      "it is on the critical path, and the separate line stops being true."
+    ],
+    "rendererPaths": ["app/vendor/three"]
+  },
   "budgets": {
     "bundleGzipBytes": {
       "limit": 153600,
-      "covers": "index.html + app/*.js + app/*.css, gzipped",
-      "why": "150 KiB is the point at which a 25 Mbit/s link spends more time on our own code than on a round trip. Past that the page shell, not the network, is the thing to fix."
+      "covers": "index.html + everything under app/ that is not charged to rendererGzipBytes, gzipped",
+      "why": "150 KiB is the point at which a 25 Mbit/s link spends more time on our own code than on a round trip. Past that the page shell, not the network, is the thing to fix. Unchanged by the DOG-41 split: the renderer moved off this line, the line itself did not move."
+    },
+    "rendererGzipBytes": {
+      "limit": 143360,
+      "covers": "the deferred 3D renderer under app/, per componentAttribution.rendererPaths, gzipped",
+      "why": "140 KiB holds the measured 126,469 bytes of three.js tree-shaken to the stage-A viewer surface — OrbitControls included — and leaves 16.5 KiB for that surface to widen, and no more. It is a ceiling on a third-party renderer, not a share of the shell: at 25 Mbit/s those bytes are 45 ms, they are fetched by dynamic import() after the shell paints, and they are still charged to the derived felt numbers in full. Exceeding it means the renderer grew, which is a different fix from the shell growing — the whole reason it is a different line."
     },
     "indexGzipBytes": {
       "limit": 262144,
