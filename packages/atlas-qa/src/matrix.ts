@@ -41,18 +41,82 @@
  * a pinned expectation and a stale one.
  */
 
+import { withCheck } from '../../alc/src/index.ts';
 import type { Capability, Facet, MessageCode, Vec3 } from './contract.ts';
+import {
+  bodyAddressWithDigits,
+  digitCounts,
+  encodedBodyAddress,
+  type TemplateChoice,
+} from './templates.ts';
+
+export type { TemplateChoice };
 
 /**
- * Which template the row is resolved against.
+ * The digit counts and the addresses built from them, derived from the bound
+ * body template at module load.
  *
- * `fold-fixture` is the DOG-9 finding-1 counterexample — a template the
- * per-level audit clears and which folds anyway. A pipeline must never produce
- * it, which is exactly why the viewer has to be shown behaving correctly when
- * handed one: `folded` is a runtime fact about an address in a template, and a
- * build with no folding template available has never displayed the message.
+ * Not literals, and the difference is load-bearing. `overPrecise` is raised
+ * relative to the bound template's own `maxUsefulDigits`, so a row that writes
+ * the boundary down as a number asserts a property of one template against
+ * whichever one is loaded. The synthetic stage-A template justifies 5 digits;
+ * the real decimated BodyParts3D template declares 2. Pinning 5 inverts three
+ * families of row the moment the real asset is bound — and silently, because
+ * an over-precise address takes the truncating display path and then no longer
+ * matches the address that was put in the URL.
+ *
+ * What stays pinned is every *behaviour*: which message appears, what the
+ * camera does, what does not change. What is derived is only the arithmetic the
+ * template owns. See `templates.ts` for the full argument.
  */
-export type TemplateChoice = 'body' | 'fold-fixture' | 'brain' | 'no-brain';
+const D = digitCounts('body');
+const ADDRESS = {
+  /** A few digits, never more than the template justifies. */
+  ordinary: bodyAddressWithDigits(D.ordinary),
+  /** Exactly the limit. Must NOT be over-precise. */
+  atLimit: bodyAddressWithDigits(D.atLimit),
+  /** One past the limit. Must be over-precise. */
+  overLimit: bodyAddressWithDigits(D.overLimit),
+  ordinaryT06: bodyAddressWithDigits(D.ordinary, 'T06-12O'),
+  ordinaryS01: bodyAddressWithDigits(D.ordinary, 'S01-03O'),
+} as const;
+
+/** Lower-case form of the ordinary address, for the loose-form row. */
+const LOOSE_ORDINARY = ADDRESS.ordinary.toLowerCase().replace('-t0', '-t').replace('-03o-', '-3o-');
+
+/** Points beyond each end of the column, and the addresses they encode to. */
+const CRANIAL_POINT: Vec3 = [0, 0, 400];
+const CAUDAL_POINT: Vec3 = [0, 0, -1107.4];
+const CRANIAL_ADDRESS = encodedBodyAddress('body', CRANIAL_POINT, D.ordinary);
+const CAUDAL_ADDRESS = encodedBodyAddress('body', CAUDAL_POINT, D.ordinary);
+
+/** The same address with its correct check symbol, and with a damaged one. */
+const withCheckSymbol = (address: string): string => withCheck(address);
+const damagedCheckSymbol = (address: string): string => {
+  const correct = withCheck(address);
+  const symbol = correct.slice(-1);
+  // Any other symbol from the alphabet will do; the row asserts the refusal
+  // names the one the address implies, not which wrong one was supplied.
+  const wrong = symbol === 'T' ? 'S' : 'T';
+  return `${correct.slice(0, -1)}${wrong}`;
+};
+
+/**
+ * The folding address, kept literal on purpose.
+ *
+ * Unlike the precision rows, this one is not arithmetic the template owns: it
+ * has to be an address whose CELL CENTRE lands in the fold, which depends on
+ * the fixture's particular geometry and was found by running
+ * `scanBodyTemplateFolds()` and walking the reported sites. Deriving it would
+ * mean reimplementing that search here.
+ *
+ * So it is pinned, and `test/oracle.test.ts` guards the pin in both directions:
+ * it must still fold in the fixture, must still name T01 as the competing
+ * level, and must still NOT fold in the sound template. If the fixture's
+ * geometry moves, that test fails and names this constant, rather than the row
+ * passing vacuously against any build.
+ */
+const FOLD_ADDRESS = 'BD-T06-12O-311';
 
 /**
  * QA seams the build must honour, as URL parameters.
@@ -136,7 +200,22 @@ export type OracleClaim =
       flags: { homology?: string; overPrecise?: boolean; folded?: boolean; clamped?: boolean };
       pointIsNaN?: boolean;
     }
-  | { kind: 'reject'; input: string; code: string; messageContains?: readonly string[] }
+  | {
+      kind: 'reject';
+      input: string;
+      code: string;
+      messageContains?: readonly string[];
+      /**
+       * Which template the refusal is relative to. Defaults to `body`.
+       *
+       * Required for `no_template`, and the reason is the whole distinction that row
+       * draws: `BV-L-4721` is a perfectly good address that resolves against a build
+       * WITH a brain template and is refused by one without. Omitting this made the
+       * oracle test check the claim against the full template set, where nothing is
+       * missing and nothing is refused.
+       */
+      template?: TemplateChoice;
+    }
   | { kind: 'encode'; template: TemplateChoice; pointMm: Vec3; digits: number; address: string; clamped: boolean }
   | { kind: 'canonicalises'; input: string; canonical: string };
 
@@ -228,30 +307,31 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     id: 'canonical-body',
     classes: ['canonical'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-T07-03O-531') },
+    input: { kind: 'url', url: BODY_URL(ADDRESS.ordinary) },
     requires: ['body-atlas', 'deep-link', 'ranked-names'],
     expect: {
       observable:
         'The camera flies to the centre of the T07 two-o\'clock outer cell, the cell is outlined at its '
-        + 'true extent of roughly 3.4 x 9.5 x 9.4 mm, a ranked name list with containment fractions and '
-        + 'the name-index version is shown, and the URL keeps the canonical address.',
+        + 'TRUE EXTENT rather than as a point, a ranked name list with containment fractions and the '
+        + 'name-index version is shown, and the URL keeps the canonical address unchanged — this address '
+        + 'is within the template\'s precision, so nothing is truncated.',
       messages: ['name_index_version'],
       forbiddenMessages: ['over_precise', 'clamped_cranial', 'clamped_caudal', 'folded', 'homology_variant', 'homology_absent'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-T07-03O-531',
+      urlAddress: ADDRESS.ordinary,
       cellKind: 'extent',
-      displayedDigits: 3,
+      displayedDigits: D.ordinary,
       atlas: 'body',
-      selectionAddress: 'BD-T07-03O-531',
+      selectionAddress: ADDRESS.ordinary,
     },
-    oracle: [{ kind: 'locate', address: 'BD-T07-03O-531', template: 'body', flags: { homology: 'exact' } }],
+    oracle: [{ kind: 'locate', address: ADDRESS.ordinary, template: 'body', flags: { homology: 'exact', overPrecise: false } }],
   },
   {
     id: 'loose-body-same-view',
     classes: ['loose', 'canonical'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('bd-t7-3o-531') },
+    input: { kind: 'url', url: BODY_URL(LOOSE_ORDINARY) },
     requires: ['body-atlas', 'deep-link'],
     expect: {
       observable:
@@ -261,19 +341,19 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       messages: ['name_index_version'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-T07-03O-531',
+      urlAddress: ADDRESS.ordinary,
       cellKind: 'extent',
       atlas: 'body',
-      selectionAddress: 'BD-T07-03O-531',
+      selectionAddress: ADDRESS.ordinary,
     },
-    oracle: [{ kind: 'canonicalises', input: 'bd-t7-3o-531', canonical: 'BD-T07-03O-531' }],
+    oracle: [{ kind: 'canonicalises', input: LOOSE_ORDINARY, canonical: ADDRESS.ordinary }],
     why: 'Transcription from print or speech produces the loose form; it is the common case, not the edge one.',
   },
   {
     id: 'check-symbol-accepted',
     classes: ['check-symbol', 'canonical'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-T07-03O-531~S') },
+    input: { kind: 'url', url: BODY_URL(withCheckSymbol(ADDRESS.ordinary)) },
     requires: ['body-atlas', 'deep-link'],
     expect: {
       observable:
@@ -282,17 +362,17 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       messages: ['name_index_version'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-T07-03O-531',
+      urlAddress: ADDRESS.ordinary,
       cellKind: 'extent',
       atlas: 'body',
     },
-    oracle: [{ kind: 'canonicalises', input: 'BD-T07-03O-531~S', canonical: 'BD-T07-03O-531' }],
+    oracle: [{ kind: 'canonicalises', input: withCheckSymbol(ADDRESS.ordinary), canonical: ADDRESS.ordinary }],
   },
   {
     id: 'check-symbol-mismatch-rejected',
     classes: ['check-symbol', 'malformed'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-T07-03O-531~T') },
+    input: { kind: 'url', url: BODY_URL(damagedCheckSymbol(ADDRESS.ordinary)) },
     requires: ['deep-link'],
     expect: {
       observable:
@@ -307,7 +387,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       cellKind: null,
       selectionAddress: null,
     },
-    oracle: [{ kind: 'reject', input: 'BD-T07-03O-531~T', code: 'check_failed', messageContains: ['implies'] }],
+    oracle: [{ kind: 'reject', input: damagedCheckSymbol(ADDRESS.ordinary), code: 'check_failed', messageContains: ['implies'] }],
     why: 'The check symbol exists to catch transcription damage; resolving anyway would waste it.',
   },
 
@@ -319,7 +399,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     id: 'over-precise',
     classes: ['over-precise'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-T07-03O-531246') },
+    input: { kind: 'url', url: BODY_URL(ADDRESS.overLimit) },
     requires: ['body-atlas', 'deep-link'],
     expect: {
       observable:
@@ -331,15 +411,15 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       forbiddenMessages: ['folded', 'clamped_cranial', 'clamped_caudal'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-T07-03O-531246',
+      urlAddress: ADDRESS.overLimit,
       cellKind: 'extent',
-      displayedDigits: 5,
+      displayedDigits: D.atLimit,
       atlas: 'body',
-      textMustContain: ['6', '5'],
+      textMustContain: [String(D.overLimit), String(D.atLimit)],
     },
     oracle: [
-      { kind: 'locate', address: 'BD-T07-03O-531246', template: 'body', flags: { overPrecise: true, homology: 'exact' } },
-      { kind: 'locate', address: 'BD-T07-03O-53124', template: 'body', flags: { overPrecise: false, homology: 'exact' } },
+      { kind: 'locate', address: ADDRESS.overLimit, template: 'body', flags: { overPrecise: true, homology: 'exact' } },
+      { kind: 'locate', address: ADDRESS.atLimit, template: 'body', flags: { overPrecise: false, homology: 'exact' } },
     ],
     why: 'Plan §4: rendering the cell at its true extent rather than as a point is the whole honesty argument.',
   },
@@ -352,7 +432,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     id: 'clamped-cranial',
     classes: ['clamped-cranial'],
     mustPass: true,
-    input: { kind: 'click-point', pointMm: [0, 0, 400], digits: 3, template: 'body' },
+    input: { kind: 'click-point', pointMm: CRANIAL_POINT, digits: D.ordinary, template: 'body' },
     requires: ['body-atlas', 'click-select'],
     expect: {
       observable:
@@ -362,19 +442,19 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       forbiddenMessages: ['clamped_caudal', 'folded'],
       camera: 'flies-to-cell',
       unchanged: ['atlas', 'layers'],
-      urlAddress: 'BD-C01-12O-300',
+      urlAddress: CRANIAL_ADDRESS,
       cellKind: 'extent',
       atlas: 'body',
       textMustContain: ['above'],
     },
-    oracle: [{ kind: 'encode', template: 'body', pointMm: [0, 0, 400], digits: 3, address: 'BD-C01-12O-300', clamped: true }],
+    oracle: [{ kind: 'encode', template: 'body', pointMm: CRANIAL_POINT, digits: D.ordinary, address: CRANIAL_ADDRESS, clamped: true }],
     why: 'Plan §6 requires the clamp to name which end. One message for both ends is the defect.',
   },
   {
     id: 'clamped-caudal',
     classes: ['clamped-caudal'],
     mustPass: true,
-    input: { kind: 'click-point', pointMm: [0, 0, -1107.4], digits: 3, template: 'body' },
+    input: { kind: 'click-point', pointMm: CAUDAL_POINT, digits: D.ordinary, template: 'body' },
     requires: ['body-atlas', 'click-select'],
     expect: {
       observable:
@@ -384,18 +464,18 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       forbiddenMessages: ['clamped_cranial', 'folded'],
       camera: 'flies-to-cell',
       unchanged: ['atlas', 'layers'],
-      urlAddress: 'BD-S01-12O-645',
+      urlAddress: CAUDAL_ADDRESS,
       cellKind: 'extent',
       atlas: 'body',
       textMustContain: ['below'],
     },
-    oracle: [{ kind: 'encode', template: 'body', pointMm: [0, 0, -1107.4], digits: 3, address: 'BD-S01-12O-645', clamped: true }],
+    oracle: [{ kind: 'encode', template: 'body', pointMm: CAUDAL_POINT, digits: D.ordinary, address: CAUDAL_ADDRESS, clamped: true }],
   },
   {
     id: 'clamped-address-replayed-is-not-a-clamp',
     classes: ['clamped-cranial', 'canonical'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-C01-12O-300') },
+    input: { kind: 'url', url: BODY_URL(CRANIAL_ADDRESS) },
     requires: ['body-atlas', 'deep-link'],
     expect: {
       observable:
@@ -406,11 +486,11 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       forbiddenMessages: ['clamped_cranial', 'clamped_caudal'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-C01-12O-300',
+      urlAddress: CRANIAL_ADDRESS,
       cellKind: 'extent',
       atlas: 'body',
     },
-    oracle: [{ kind: 'locate', address: 'BD-C01-12O-300', template: 'body', flags: { homology: 'exact', clamped: false } }],
+    oracle: [{ kind: 'locate', address: CRANIAL_ADDRESS, template: 'body', flags: { homology: 'exact', clamped: false } }],
     why:
       'This row pins a decision rather than reporting one: the plan does not say whether a replayed '
       + 'clamped address re-announces the clamp. QA\'s reading is that it must not, because the address '
@@ -424,7 +504,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     id: 'folded-reports-fold-not-clamp',
     classes: ['folded'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-T06-12O-311', `&${QA_URL_PARAMS.template}=fold-fixture`) },
+    input: { kind: 'url', url: BODY_URL(FOLD_ADDRESS, `&${QA_URL_PARAMS.template}=fold-fixture`) },
     requires: ['body-atlas', 'deep-link', 'qa-template-override'],
     expect: {
       observable:
@@ -435,7 +515,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       forbiddenMessages: ['clamped_cranial', 'clamped_caudal'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-T06-12O-311',
+      urlAddress: FOLD_ADDRESS,
       cellKind: 'extent',
       atlas: 'body',
       // Measured, not assumed. The skin scan reports a T06 site whose
@@ -447,7 +527,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       // cell it actually asks about.
       textMustContain: ['T01', 'T06'],
     },
-    oracle: [{ kind: 'locate', address: 'BD-T06-12O-311', template: 'fold-fixture', flags: { folded: true } }],
+    oracle: [{ kind: 'locate', address: FOLD_ADDRESS, template: 'fold-fixture', flags: { folded: true } }],
     why:
       'Before DOG-9 a fold surfaced as "outside the modelled body surface" for a point 200 mm inside it. '
       + 'The library distinguishes them now; this row is what stops the UI re-merging them.',
@@ -456,7 +536,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     id: 'same-address-unfolded-in-a-sound-template',
     classes: ['folded'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-T06-12O-311') },
+    input: { kind: 'url', url: BODY_URL(FOLD_ADDRESS) },
     requires: ['body-atlas', 'deep-link'],
     expect: {
       observable:
@@ -467,11 +547,11 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       forbiddenMessages: ['folded', 'clamped_cranial', 'clamped_caudal'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-T06-12O-311',
+      urlAddress: FOLD_ADDRESS,
       cellKind: 'extent',
       atlas: 'body',
     },
-    oracle: [{ kind: 'locate', address: 'BD-T06-12O-311', template: 'body', flags: { folded: false, homology: 'exact' } }],
+    oracle: [{ kind: 'locate', address: FOLD_ADDRESS, template: 'body', flags: { folded: false, homology: 'exact' } }],
     why: 'The negative half of the fold pair. Without it, "always warn" passes the row above.',
   },
 
@@ -550,7 +630,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     id: 'sacrum-S01-is-not-absent',
     classes: ['absent'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-S01-03O') },
+    input: { kind: 'url', url: BODY_URL(ADDRESS.ordinaryS01) },
     requires: ['body-atlas', 'deep-link'],
     expect: {
       observable:
@@ -560,11 +640,11 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       forbiddenMessages: ['homology_absent', 'homology_variant'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-S01-03O',
+      urlAddress: ADDRESS.ordinaryS01,
       cellKind: 'extent',
       atlas: 'body',
     },
-    oracle: [{ kind: 'locate', address: 'BD-S01-03O', template: 'body', flags: { homology: 'exact' } }],
+    oracle: [{ kind: 'locate', address: ADDRESS.ordinaryS01, template: 'body', flags: { homology: 'exact' } }],
   },
 
   // -------------------------------------------------------------------------
@@ -747,7 +827,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       unchanged: ['camera', 'layers', 'selection'],
       cellKind: null,
     },
-    oracle: [{ kind: 'reject', input: 'BV-L-4721', code: 'no_template' }],
+    oracle: [{ kind: 'reject', input: 'BV-L-4721', code: 'no_template', template: 'no-brain' }],
   },
   {
     id: 'brain-deep-link-resolves',
@@ -779,7 +859,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     id: 'assets-unavailable-addresses-still-resolve',
     classes: ['assets-unavailable'],
     mustPass: true,
-    input: { kind: 'url', url: BODY_URL('BD-T07-03O-531', `&${QA_URL_PARAMS.assets}=fail`) },
+    input: { kind: 'url', url: BODY_URL(ADDRESS.ordinary, `&${QA_URL_PARAMS.assets}=fail`) },
     requires: ['deep-link', 'asset-failure-reporting', 'ranked-names'],
     expect: {
       observable:
@@ -792,7 +872,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       forbiddenMessages: ['rejected_grammar', 'no_template'],
       camera: 'unchanged',
       unchanged: ['layers'],
-      urlAddress: 'BD-T07-03O-531',
+      urlAddress: ADDRESS.ordinary,
       cellKind: null,
       atlas: 'body',
       assetsAvailable: false,
@@ -851,7 +931,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     id: 'url-unknown-params',
     classes: ['url-hygiene'],
     mustPass: false,
-    input: { kind: 'url', url: BODY_URL('BD-T07-03O-531', '&utm_source=paper&zoom=9') },
+    input: { kind: 'url', url: BODY_URL(ADDRESS.ordinary, '&utm_source=paper&zoom=9') },
     requires: ['deep-link'],
     expect: {
       observable:
@@ -860,7 +940,7 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
       messages: ['name_index_version'],
       camera: 'flies-to-cell',
       unchanged: ['atlas'],
-      urlAddress: 'BD-T07-03O-531',
+      urlAddress: ADDRESS.ordinary,
       cellKind: 'extent',
       atlas: 'body',
     },
