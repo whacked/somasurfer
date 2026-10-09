@@ -1,0 +1,196 @@
+{
+ "id": "icbm152-2009c-asym",
+ "acMm": [
+  0,
+  0,
+  0
+ ],
+ "left": [
+  -1,
+  0,
+  0
+ ],
+ "anterior": [
+  0,
+  1,
+  0
+ ],
+ "superior": [
+  0,
+  0,
+  1
+ ],
+ "extents": {
+  "left": 72.5,
+  "right": 72.5,
+  "anterior": 73.5,
+  "posterior": 108.5,
+  "superior": 82.5,
+  "inferior": 72.5
+ },
+ "maxUsefulDigits": 6,
+ "provenance": {
+  "comment": [
+   "Derived from the ICBM152 2009c asymmetric distribution by",
+   "tools/build-bv-template.mjs. No image data from that archive is",
+   "redistributed here: this file is six distances, one landmark and three",
+   "unit vectors. See docs/asset-licensing.md."
+  ],
+  "source": {
+   "dataset": "ICBM 152 non-linear atlas, 2009c, asymmetric",
+   "release": "mni_icbm152_nlin_asym_09c",
+   "archive": "mni_icbm152_nlin_asym_09c_nifti.zip",
+   "url": "https://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip",
+   "holder": "Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University",
+   "copyrightYears": "1993-2004",
+   "licence": "MNI BIC permissive licence (COPYING in the archive)",
+   "citation": "VS Fonov, AC Evans, K Botteron, CR Almli, RC McKinstry, DL Collins and BDCG, Unbiased average age-appropriate atlases for pediatric studies, NeuroImage 54:1 (2011). VS Fonov, AC Evans, RC McKinstry, CR Almli and DL Collins, Unbiased nonlinear average age-appropriate brain templates from birth to adulthood, NeuroImage 47:S102 (2009).",
+   "maskEntry": "mni_icbm152_nlin_asym_09c/mni_icbm152_t1_tal_nlin_asym_09c_mask.nii",
+   "licenceEntry": "COPYING"
+  },
+  "generator": "tools/build-bv-template.mjs",
+  "archiveSha256": "804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4",
+  "licenceText": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain\nImaging Centre, Montreal Neurological Institute, McGill University.\nPermission to use, copy, modify, and distribute this software and\nits documentation for any purpose and without fee is hereby granted,\nprovided that the above copyright notice appear in all copies.  The\nauthors and McGill University make no representations about the\nsuitability of this software for any purpose.  It is provided \"as\nis\" without express or implied warranty.  The authors are not\nresponsible for any data loss, equipment damage, property loss, or\ninjury to subjects or patients resulting from the use or misuse of\nthis software package.",
+  "header": {
+   "entry": "mni_icbm152_nlin_asym_09c/mni_icbm152_t1_tal_nlin_asym_09c_mask.nii",
+   "dim": [
+    193,
+    229,
+    193
+   ],
+   "pixdimMm": [
+    1,
+    1,
+    1
+   ],
+   "datatype": "int16",
+   "sformCode": 4,
+   "declaredSpace": "mni_152",
+   "srow": [
+    [
+     1,
+     0,
+     0,
+     -96
+    ],
+    [
+     0,
+     1,
+     0,
+     -132
+    ],
+    [
+     0,
+     0,
+     1,
+     -78
+    ]
+   ]
+  },
+  "frame": {
+   "left": [
+    -1,
+    0,
+    0
+   ],
+   "anterior": [
+    0,
+    1,
+    0
+   ],
+   "superior": [
+    0,
+    0,
+    1
+   ],
+   "note": "NIfTI world coordinates are RAS, so the subject's left is -x. Verified axis-aligned above."
+  },
+  "landmarks": {
+   "ac": {
+    "mm": [
+     0,
+     0,
+     0
+    ],
+    "voxelIndex": [
+     96,
+     132,
+     78
+    ],
+    "status": "MEASURED",
+    "basis": "The world origin of the affine, which falls on an exact integer voxel index. The header declares sform_code 4 (NIFTI_XFORM_MNI_152), and MNI152 places the anterior commissure at the origin of its world coordinates."
+   },
+   "acpcLine": {
+    "directionMm": [
+     0,
+     1,
+     0
+    ],
+    "status": "MEASURED",
+    "basis": "The +y world axis, read from the affine and verified axis-aligned. This is the direction `BrainVolumeTemplate.anterior` consumes, and it is the AC-PC line of MNI152 space."
+   },
+   "pc": {
+    "mm": null,
+    "distanceFromAcMm": null,
+    "status": "UNVERIFIED",
+    "basis": "The PC lies on the AC-PC line posterior of the AC, so its direction is measured, but the distribution ships images and masks rather than landmark coordinates and locating the posterior commissure in an image is a segmentation problem. No field of this template is a function of that distance: the frame uses the AC as its origin and the AC-PC line as its anterior axis, both measured above. A plausible value is therefore not supplied."
+   }
+  },
+  "measurement": {
+   "brainMaskVoxels": 1886574,
+   "brainMaskVoxelBounds": {
+    "lo": [
+     24,
+     24,
+     6
+    ],
+    "hi": [
+     168,
+     205,
+     160
+    ]
+   },
+   "brainBoxMm": {
+    "x": [
+     -72.5,
+     72.5
+    ],
+    "y": [
+     -108.5,
+     73.5
+    ],
+    "z": [
+     -72.5,
+     82.5
+    ]
+   },
+   "imageBoxMm": {
+    "x": [
+     -96.5,
+     96.5
+    ],
+    "y": [
+     -132.5,
+     96.5
+    ],
+    "z": [
+     -78.5,
+     114.5
+    ]
+   },
+   "boxNote": "brainBoxMm is the extent of the brain mask and is what the frame normalises against. imageBoxMm is the field of view, which includes skull, scalp and neck, and is published only so the difference is visible.",
+   "precision": {
+    "maxUsefulDigits": 6,
+    "hemisphereCellMm": [
+     72.5,
+     182,
+     155
+    ],
+    "smallestCellSideMm": 72.5,
+    "voxelMm": 1,
+    "rule": "largest d with min(hemisphere cell side) / 2^d >= one voxel",
+    "frameCap": 12
+   }
+  }
+ }
+}

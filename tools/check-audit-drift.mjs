@@ -28,6 +28,17 @@ const TARGETS = [
     script: 'attribution:print',
     regenerate: 'cd packages/atlas-assets && npm run attribution:report',
   },
+  {
+    // The real template's audit. Computed from the committed templates, the
+    // naming layer and ci/bd-centreline-trials.json - no mesh data - so CI can
+    // regenerate it. A report about a template that has fallen behind the
+    // template is worse than no report, and this is the only thing that can
+    // tell the difference.
+    doc: 'docs/alc-1-body-template-audit.md',
+    packageDir: 'packages/atlas-assets',
+    script: 'templates:audit:print',
+    regenerate: 'cd packages/atlas-assets && npm run templates:audit',
+  },
 ];
 
 /** First differing byte, and the line it falls on, for a useful error. */
