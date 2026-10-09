@@ -123,10 +123,32 @@ did not move the ratio. It would also invalidate `referenceMs`, which is stated
 for the workload as it is and cannot be re-measured without the reference
 machine. The 4.8× reading is mostly real hardware difference, not timer noise.
 
-Three cases in `tools/verify-gates.mjs` pin all of this: that a fast runner
-alone does not fail the build, that an off-band parse line still fails when the
-unnormalised time alone busts it, and that byte budgets survive a useless
-calibration.
+### What `--json` promises
+
+The console output is for a human reading a failed build. `perf-measurement.json`
+is for whatever reads it later, and it has to survive being read carelessly:
+
+- `measurements[line]` is **`null`** for a line this run could not establish.
+  Never a zero, never a pass, and deliberately *not* the bound — these keys are
+  named for a normalised figure, so publishing an unnormalised number under
+  `indexParseMsNormalised` would make the key a false claim about its own
+  contents. `utilisation[line]` is `null` alongside it rather than a ratio
+  derived from a number that is not there.
+- `verdicts[line]` carries `{ kind, verdict, reported }`. `reported` is the
+  figure the verdict was taken from, and `kind` (`exact`, `normalised`,
+  `at-least`, `at-most`) says what it is. This is where the bound lives, with
+  its direction attached.
+- `calibration.decisionBasis` is `normalised` or `one-sided-bound-from-raw`.
+  Anything branching on the report should branch on that.
+
+Byte lines are exact on every runner and are never nulled; nulling them would
+be the fallback swallowing what it is supposed to gate.
+
+Four cases in `tools/verify-gates.mjs` pin all of this: that a fast runner alone
+does not fail the build, that its JSON report nulls what it did not establish
+while keeping the bound and the byte lines, that an off-band parse line still
+fails when the unnormalised time alone busts it, and that byte budgets survive a
+useless calibration.
 
 [dog29]: https://github.com/whacked/somasurfer/actions/runs/37890971145
 

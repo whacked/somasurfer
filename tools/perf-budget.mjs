@@ -291,7 +291,11 @@ for (const [key, spec] of Object.entries(budget.budgets)) {
         : exceeds
           ? 'not evaluated'
           : 'within';
-  verdicts[key] = { kind, verdict, value };
+  // `reported` is the figure the verdict was taken from, whatever kind it is.
+  // The JSON report nulls `measurements[key]` for a line that was not
+  // evaluated, so this is where the bound survives without being mistaken for
+  // a measurement of the line the key is named after.
+  verdicts[key] = { kind, verdict, reported: value };
 
   rows.push(
     `${key.padEnd(30)} ${(SIGIL[kind] + fmt(key, value)).padStart(13)} / ${fmt(key, spec.limit).padStart(12)}` +
@@ -375,13 +379,28 @@ const report = {
     referenceMs: budget.calibration.referenceMs,
     speedFactor,
     band,
+    // What every number below rests on, in one field: either the correction was
+    // inside the band and the parse lines are normalised onto the reference
+    // machine, or it was not and they are one-sided bounds taken from the raw
+    // time. A consumer that branches on anything here should branch on this.
+    decisionBasis: band === 'in' ? 'normalised' : 'one-sided-bound-from-raw',
     substituted: calibrationOverrideMs !== null,
   },
   raw: { indexParseMs, assetParseMs },
-  measurements,
+  // `null` for a line this run could not establish. Never a zero, never a pass,
+  // and deliberately not the bound: off-band these keys are named for a
+  // normalised figure that was not computed, so publishing the unnormalised
+  // number here would make the key a false claim about its own contents. The
+  // bound is in `verdicts[key].reported`, where its kind travels with it.
+  measurements: Object.fromEntries(
+    Object.keys(budget.budgets).map((k) => [k, verdicts[k].verdict === 'not evaluated' ? null : measurements[k]]),
+  ),
   budgets: Object.fromEntries(Object.entries(budget.budgets).map(([k, v]) => [k, v.limit])),
   utilisation: Object.fromEntries(
-    Object.entries(budget.budgets).map(([k, v]) => [k, Number((measurements[k] / v.limit).toFixed(3))]),
+    Object.entries(budget.budgets).map(([k, v]) => [
+      k,
+      verdicts[k].verdict === 'not evaluated' ? null : Number((measurements[k] / v.limit).toFixed(3)),
+    ]),
   ),
   // Which lines the numbers above can carry a verdict for, and in which
   // direction. A consumer that reads `measurements` without reading this is

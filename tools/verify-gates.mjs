@@ -21,7 +21,8 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
 
@@ -284,6 +285,43 @@ const CASES = [
       /A green result here is not a statement about those lines/,
     ],
     describe: 'a runner 4.8× faster than the reference, the DOG-29 case, with nothing else wrong',
+    // The report contract, checked on the same run. The console output is for a
+    // human; this is for whatever reads the JSON, and it is the half that can
+    // regress without anyone noticing.
+    audit: () => {
+      const dir = mkdtempSync(join(tmpdir(), 'perf-report-'));
+      const path = join(dir, 'perf.json');
+      try {
+        run('perf-budget.mjs', ['--calibration-ms', '25', '--json', path]);
+        const report = JSON.parse(readFileSync(path, 'utf8'));
+        const problems = [];
+        const expectNull = (key) => {
+          if (report.measurements[key] !== null) {
+            problems.push(`measurements.${key} is ${JSON.stringify(report.measurements[key])}, expected null:`);
+            problems.push(`  off-band this key is named for a normalised figure that was not computed.`);
+          }
+          if (report.utilisation[key] !== null) {
+            problems.push(`utilisation.${key} is ${JSON.stringify(report.utilisation[key])}, expected null.`);
+          }
+          if (typeof report.verdicts[key]?.reported !== 'number') {
+            problems.push(`verdicts.${key}.reported is not a number; the bound was lost, not relocated.`);
+          }
+        };
+        expectNull('indexParseMsNormalised');
+        expectNull('lowResAssetParseMsNormalised');
+        if (report.calibration.decisionBasis !== 'one-sided-bound-from-raw') {
+          problems.push(`calibration.decisionBasis is ${JSON.stringify(report.calibration.decisionBasis)}.`);
+        }
+        // Byte lines are exact on any runner, so nulling them would be a
+        // different bug: the fallback silently swallowing what it should gate.
+        if (typeof report.measurements.bundleGzipBytes !== 'number') {
+          problems.push(`measurements.bundleGzipBytes is not a number; byte lines must survive a bad calibration.`);
+        }
+        return problems;
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    },
     // 25 ms against the 120 ms reference is the reading GitHub's runner
     // actually produced on run 37890971145, which failed `gate` on a merge
     // commit that changed no file contents. The build is clean here; the only
@@ -376,6 +414,9 @@ for (const c of selected) {
     const result = c.check();
     const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
     const missing = c.expect.filter((re) => !re.test(output));
+    // A case may also assert on something the console output cannot carry — the
+    // shape of the JSON report, say. Problems come back as lines.
+    const audited = c.audit ? await c.audit() : [];
     if (c.mustPass && result.status !== 0) {
       verdict = { ok: false, why: `the gate FAILED. It should have passed on ${c.describe}.`, output };
     } else if (!c.mustPass && result.status === 0) {
@@ -387,6 +428,11 @@ for (const c of selected) {
           `the gate ${c.mustPass ? 'passed' : 'failed'}, but without the expected explanation: ` +
           missing.map(String).join(', '),
         output,
+      };
+    } else if (audited.length > 0) {
+      verdict = {
+        ok: false,
+        why: `the gate behaved, but its report did not:\n      ${audited.join('\n      ')}`,
       };
     } else {
       const headline = output
