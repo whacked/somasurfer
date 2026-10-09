@@ -6,7 +6,7 @@
  * design. `locate.ts` is where templates enter.
  */
 
-import { AlcError, MAX_DIGITS, splitAddress, withCheck } from './codec.ts';
+import { AlcError, MAX_DIGITS, checkSymbol, splitAddress, withCheck } from './codec.ts';
 import { BD, canonicalLevel, parseBodyAnchors } from './frames/bodySpine.ts';
 import { BR, brChildDigits, brParentDigits, brPixel, parseHemisphere } from './frames/brainSurface.ts';
 import { BV, bvCellBox, parseHemisphere as parseBvHemisphere } from './frames/brainVolume.ts';
@@ -49,7 +49,33 @@ function build(frame: string, anchors: string[], digits: string, level: number):
 }
 
 export function parse(input: string): Address {
-  const { segments } = splitAddress(input);
+  const { segments, check } = splitAddress(input);
+  const address = fromSegments(segments);
+
+  // Spec section 7: the symbol is a position-weighted sum over the *canonical*
+  // body, so it can only be verified once the canonical body exists — after
+  // `T7` has become `T07` and `3O` has become `03O`. Verifying it earlier, over
+  // the uppercased input, got both directions wrong: a human who drops a
+  // leading zero in a code read aloud and then transcribes the symbol
+  // correctly was told the code was damaged, while a symbol computed over the
+  // loose body was accepted for an address that re-emits a different one. A
+  // guard that validates something other than what the parser resolves to is
+  // not a guard. (QA-5 in docs/alc-1-attack-report.md.)
+  if (check !== undefined) {
+    const expected = checkSymbol(address.canonical);
+    if (check !== expected) {
+      throw new AlcError(
+        `check symbol does not match address: ${address.canonical} implies `
+          + `${expected}, got ${check}`,
+        'check_failed',
+      );
+    }
+  }
+  return address;
+}
+
+/** Everything in `parse()` that does not depend on the check symbol. */
+function fromSegments(segments: readonly string[]): Address {
   const frame = segments[0];
   const descriptor = FRAMES[frame];
   if (!descriptor) {

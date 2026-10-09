@@ -104,7 +104,8 @@ BD-T07-03O-531
 │  │   │   └── octree refinement, octal digits, optional
 │  │   └────── azimuth clock sector 01-12 + depth half I or O
 │  └────────── vertebral level: C01-C07, T01-T12, L01-L05, S01
-│              (S02-S05 reserved, not realised by any template)
+│              (S02-S05 reserved, not realised by any template;
+│               T13, L06, S06 are count anomalies — see Level set)
 └───────────── frame
 ```
 
@@ -151,6 +152,56 @@ reserved in the grammar — so a finer sacral frame can be added later without a
 breaking change — but no template realises them, and `locate()` reports them as
 `homology: 'absent'` rather than guessing. This is a measured requirement, not
 a convenience: see **template admissibility** below.
+
+Those 29 labels are the *canonical* set. Three more are addressable, and they
+are the recognised **vertebral count anomalies**:
+
+| label | anatomy |
+| --- | --- |
+| `T13` | a supernumerary thoracic level with a thirteenth rib |
+| `L06` | six lumbar vertebrae (lumbarisation of S1) |
+| `S06` | an extra sacral segment (sacralisation of L5) |
+
+The level set is validated as a **set**, not as a numeric range, and anything
+outside it is rejected by `parse()` with `bad_level`. That is the whole point
+of enumerating it. A single `1..12` bound used to be applied to every prefix,
+which failed in both directions at once: `C08`-`C12`, `L06`-`L12` and
+`S06`-`S12` all parsed, earned a valid check symbol and were URL-linkable
+while existing in no human, and `T13` — which does exist, about as often as the
+six lumbar vertebrae the same bound happened to admit — could not be written
+down at all.
+
+So there are four outcomes, and they are deliberately four:
+
+| case | result |
+| --- | --- |
+| canonical level the template realises | `homology: 'exact'` |
+| canonical level the template lacks | `homology: 'absent'` |
+| count anomaly the template lacks | `homology: 'variant'` |
+| anything else | rejected, `bad_level` |
+
+`'variant'` exists because the previous behaviour conflated the last two. Every
+out-of-grammar label resolved to `'absent'` with the note "a
+registration-supplied level mapping is required" — the signal reserved for a
+genuine count anomaly — so a typo and a patient needing a level mapping
+produced the same flag and the same sentence. A consumer could not tell them
+apart, which devalues the flag the design leans on hardest for anatomical
+honesty. `'variant'` means real anatomy this template does not realise, and a
+registration can map it; `'absent'` means a canonical level this template does
+not realise, and no registration will conjure one. Both return `NaN`
+millimetres and neither is ever guessed.
+
+`C08` is deliberately **not** in the anomaly set. There is no eighth cervical
+vertebra; the C8 *nerve root* is universal and exits below `C07`, which is what
+`BD-C08` almost always means. Admitting it as a variant would silently accept
+a category error, so it is rejected with that correction named in the message.
+The asymmetry is safe in one direction only: adding a label to the anomaly set
+later is additive, while removing one breaks addresses already issued.
+
+This is grammar, so it had to be settled before the asset pipeline issues a
+first address — the same argument §1.1 makes for the sacral level count.
+`ADDRESSABLE_LEVELS` is the set, exported, and `canonicalLevel()` validates
+against it.
 
 **Template admissibility.** The frame is a tubular neighbourhood of a curve, so
 it folds where the body is thicker than the distance at which a level's two
@@ -347,9 +398,14 @@ one hard to reach:
 | Question | Call | Notes |
 | --- | --- | --- |
 | Do these two cells share volume? | `overlaps(a, b)` | Exact and cheap. Hierarchy cells are nested or disjoint, never partial. Valid **within one template** |
-| Do these two structures/findings touch? | `coveringsIntersect(A, B)`, `coveringIntersection(A, B)` | Operates on coverings; the finer cell of each overlapping pair is the intersection |
-| Are these the same place, across subjects or templates? | `samePlace(a, b, templates, { toleranceMm })` | **No default tolerance.** The caller must state what "same" means. Widens by each cell's own radius so a coarse address is not penalised for being coarse. Refuses to compare across frames, because their millimetres are not interchangeable. Reports `homology: 'absent'` instead of answering |
-| How many digits should I display? | `recommendedDigits(address, templates, residualMm)` | One cell should be no smaller than the uncertainty it stands in for |
+| Do these two structures/findings touch? | `coveringsOverlap(A, B)`, `coveringIntersect(A, B)` | Operates on coverings; the finer cell of each overlapping pair is the intersection |
+| Are these the same place, across subjects or templates? | `samePlace(a, b, templates, { toleranceMm })`, `coveringsSamePlace(A, B, regime)` | **No default tolerance.** The caller must state what "same" means. `coveringsSamePlace` takes a regime — `{ within: 'template' }` or `{ across: 'subjects', toleranceMm, … }` — so the choice is explicit. Widens by each cell's own radius so a coarse address is not penalised for being coarse. Refuses to compare across frames, because their millimetres are not interchangeable. Reports `homology: 'absent'` instead of answering |
+| How many digits should I display? | `recommendedPrecision(address, templates, residualMm)`, or `recommendedDigits(...)` for the number alone | One cell should be no smaller than the uncertainty it stands in for. Bounded by the lowest of three ceilings — the residual, the template's `maxUsefulDigits` (§9), and the frame's own digit range — and `limitedBy` says which one bound it, because "collect better data" and "this template will never justify more" call for opposite things from the user |
+
+No exported function answers an equality question, and
+`packages/alc/test/surface.test.ts` enumerates the public surface and asserts
+it — so `a === b` across subjects is not reachable through the API rather than
+merely discouraged by this section.
 
 Measured on the brain template at 5 digits with a 5 mm residual: string
 equality recognises under 10% of matching pairs, `samePlace` with a 5 mm
@@ -393,6 +449,12 @@ and an address must not change when a parcellation does.
 
 The UI must display both: the code for precision and linking, the names for
 comprehension. Neither alone is adequate.
+
+All of this is implemented and documented in
+[`docs/alc-1-api.md`](./alc-1-api.md): `toReadable`/`toSpoken`/`fromReadable`
+for the text forms, `resolve()` for the ranked names, the `Covering` type for
+the reverse direction, and the prefix range scans the coverings are queried
+with.
 
 ## 9. Failure modes and what the library does
 

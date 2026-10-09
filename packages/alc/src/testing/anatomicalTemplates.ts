@@ -188,6 +188,66 @@ export const PRESETS: readonly AnatomicalBodyParams[] = [
   CHILD_7Y,
 ];
 
+/**
+ * The DOG-9 finding-1 counterexample: a template the PER-LEVEL audit clears
+ * with +7.8 mm to spare, and which folds anyway.
+ *
+ * A short, round, hyperkyphotic torso — an elderly obese patient, not an
+ * exotic shape, and inside the parameter box this file's own knobs describe.
+ * With a tight kyphosis the bisector planes fan out enormously on the convex
+ * (anterior) side, so an upper-thoracic level's region sweeps down and
+ * swallows the anterior skin several levels below it: anterior skin at `T06`
+ * is claimed by `T01`. `T06`'s own margin is +7.8 mm and entirely irrelevant,
+ * because the fold is not between a level and its own two planes.
+ *
+ * It is a fixture rather than a preset because a pipeline must NOT produce it.
+ * It exists so the soundness of the fold scan is asserted against a template
+ * that actually defeats the cheap criterion — a gate is only as good as the
+ * worst thing it has been shown to reject.
+ */
+export const ADULT_HYPERKYPHOTIC_SHORT_WIDE: AnatomicalBodyParams = {
+  ...BASE,
+  id: 'anat-hyperkyphotic-short-wide',
+  cervicalLordosisDeg: 0,
+  thoracicKyphosisDeg: 60, // "hyperkyphosis of ageing reaches 60+", above
+  lumbarLordosisDeg: 30,
+  sacralCurveDeg: 55,
+  axialScale: 0.8, // short
+  radialScale: 1.6, // large girth
+  sacralLevels: 1,
+  sacralTangentFraction: 0,
+};
+
+/**
+ * Templates that MUST be rejected, each paired with how it is caught. Kept
+ * together so a change to the gate has to confront all of them at once.
+ *
+ * `auditCatchesIt` is the interesting column: where it is false, the per-level
+ * criterion clears the template and only the sound scan or the round-trip
+ * probe sees the fold. Those are the rows that justify the scan existing.
+ */
+export const FOLD_REGRESSIONS: ReadonlyArray<{
+  params: AnatomicalBodyParams;
+  auditCatchesIt: boolean;
+  why: string;
+}> = [
+  {
+    params: ADULT_P50_SPLIT_SACRUM,
+    auditCatchesIt: true,
+    why: 'the fused sacrum cut into five short levels, concavity facing the deep pelvis',
+  },
+  {
+    params: { ...ADULT_P50, id: 'anat-chord-axis-large', sacralTangentFraction: 0.5, radialScale: 1.45 },
+    auditCatchesIt: true,
+    why: 'a collapsed sacral level taking its axis from the sacrum chord, leaving a ~30 deg L5/S1 kink',
+  },
+  {
+    params: ADULT_HYPERKYPHOTIC_SHORT_WIDE,
+    auditCatchesIt: false,
+    why: 'a NON-LOCAL fold: upper-thoracic planes fan out anteriorly and claim skin several levels below',
+  },
+];
+
 const AZIMUTH_SAMPLES = 24;
 const DEG = Math.PI / 180;
 

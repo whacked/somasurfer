@@ -22,7 +22,7 @@
  * that is expected and handled by the covering algorithm, not by a special case.
  */
 
-import { AlcError, OCTAL, digitsToValues } from '../codec.ts';
+import { AlcError, OCTAL, digitsToValues, rejectNaNCoordinates } from '../codec.ts';
 import type { FrameDescriptor, Hemisphere, Located, LocateFlags, Vec3 } from '../types.ts';
 
 export const BV: FrameDescriptor = {
@@ -30,6 +30,7 @@ export const BV: FrameDescriptor = {
   anchorSegments: 1,
   digitAlphabet: OCTAL,
   maxDigits: 12,
+  minDigits: 0,
   summary: 'Brain volume in AC-PC proportional coordinates, covering cortex and deep structures alike.',
 };
 
@@ -145,6 +146,10 @@ export function bvMmToLocal(
   template: BrainVolumeTemplate,
   p: Vec3,
 ): { hemisphere: Hemisphere; local: { a: number; b: number; c: number }; flags: LocateFlags } {
+  // Before any arithmetic: a NaN coordinate would pass `clampUnit`'s range test
+  // unflagged and then take the zero branch of every octree comparison, which
+  // fabricates a specific hemisphere and a specific cell out of nothing.
+  rejectNaNCoordinates(p, `BV encode in template ${template.id}`);
   const rel: Vec3 = [p[0] - template.acMm[0], p[1] - template.acMm[1], p[2] - template.acMm[2]];
   const dot = (v: Vec3) => rel[0] * v[0] + rel[1] * v[1] + rel[2] * v[2];
   const lateralSigned = dot(template.left);
@@ -202,6 +207,12 @@ export function bvLocate(
   return {
     pointMm: bvLocalToMm(template, box.hemisphere, mid),
     extentMm: [(box.a[1] - box.a[0]) * lateralExtent, bSpan, cSpan],
+    // The three extents are measured along the template's own orthonormal
+    // triad, in this order, so a BV cell is a true axis-aligned box in
+    // millimetres — including across the midline, where only the sign of the
+    // lateral offset changes.
+    axesMm: [template.left, template.anterior, template.superior],
+    templateId: template.id,
     flags,
   };
 }

@@ -29,7 +29,17 @@ export interface RoundTripResult {
   failures: number;
   /** Levels where at least one sample failed, with counts, worst first. */
   failuresByLevel: Array<{ level: string; failures: number }>;
-  /** Samples whose level assignment came back flagged as inadmissible. */
+  /**
+   * Samples whose level assignment came back flagged as a fold.
+   *
+   * This counter used to be unable to increment (DOG-9, finding 2): it watched
+   * a note that only fired when NO level claimed a point, and folding produces
+   * doubly-claimed points rather than unclaimed ones. It read 0 on a template
+   * with 60 observed round-trip failures, so `assert.equal(inadmissibleNotes,
+   * 0)` held everywhere and meant nothing. It now keys off `flags.folded`,
+   * which `bodyMmToLocal` sets on both halves of a fold, so it is a real
+   * signal and is asserted NON-zero on a known-folding template.
+   */
   inadmissibleNotes: number;
   /** Largest positional error among samples that round-tripped, mm. */
   worstGoodErrorMm: number;
@@ -57,7 +67,7 @@ export function measureRoundTrip(template: BodyTemplate, opts: RoundTripOptions 
       try {
         const mm = bodyLocalToMm(template, { level: slab.label, u, t, r });
         const back = bodyMmToLocal(template, mm);
-        if (back.flags.notes?.some((n) => n.includes('inadmissible'))) inadmissibleNotes += 1;
+        if (back.flags.folded) inadmissibleNotes += 1;
         let dt = Math.abs(back.local.t - t);
         dt = Math.min(dt, 1 - dt); // azimuth is circular
         bad =

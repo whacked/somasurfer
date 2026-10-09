@@ -1,0 +1,65 @@
+name: Deploy
+
+# The static skeleton goes to GitHub Pages: no backend, prebuilt JSON indexes
+# and a client bundle, which is exactly what Pages serves well and for free.
+#
+# Deploys run only after CI has passed on main. A green deploy with a red gate
+# would defeat the gate.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      # Pages serves a project site from /<repo>/, so the base path has to come
+      # from the Pages config rather than being assumed to be /. Every URL the
+      # build emits is relative to it.
+      - name: Build
+        run: node packages/atlas-web/build.mjs --base "${{ steps.pages.outputs.base_path }}"
+
+      # The deployed artefact must satisfy the same licence rules as the one CI
+      # checked. This is the copy users actually receive.
+      - name: Licence separation in the deployed artefact
+        run: node tools/check-licence-separation.mjs
+
+      - name: Performance budget on the deployed artefact
+        run: node tools/perf-budget.mjs
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/atlas-web/dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Where it landed
+        run: echo "Deployed to ${{ steps.deployment.outputs.page_url }}"

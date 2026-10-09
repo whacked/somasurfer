@@ -32,13 +32,18 @@ import {
   auditBodyTemplateWorstCase,
   bodyLocalToMm,
   bodyMmToLocal,
+  formatFoldScan,
+  levelsClaiming,
+  scanBodyTemplateFolds,
   spineGeometry,
   type BodyTemplate,
 } from '../src/index.ts';
 import {
+  ADULT_HYPERKYPHOTIC_SHORT_WIDE,
   ADULT_LARGE_GIRTH,
   ADULT_P50,
   ADULT_P50_SPLIT_SACRUM,
+  FOLD_REGRESSIONS,
   PRESETS,
   buildAnatomicalBodyTemplate,
 } from '../src/testing/anatomicalTemplates.ts';
@@ -46,22 +51,37 @@ import { measureRoundTrip } from '../src/testing/admissibilityProbe.ts';
 
 const TOL = 1e-6;
 
-/** Does a single dimensionless point survive mm and back? */
-function roundTrips(template: BodyTemplate, level: string, u: number, az: number, r: number): boolean {
+/** Does a single dimensionless point survive mm and back, and what did it say? */
+function probeRoundTrip(
+  template: BodyTemplate,
+  level: string,
+  u: number,
+  az: number,
+  r: number,
+): { ok: boolean; declared: boolean; became: string } {
   try {
     const mm = bodyLocalToMm(template, { level, u, t: az, r });
     const back = bodyMmToLocal(template, mm);
     let dt = Math.abs(back.local.t - az);
     dt = Math.min(dt, 1 - dt);
-    return (
+    const ok =
       back.local.level === level &&
       Math.abs(back.local.u - u) < TOL &&
       dt < TOL &&
-      Math.abs(back.local.r - r) < TOL
-    );
-  } catch {
-    return false;
+      Math.abs(back.local.r - r) < TOL;
+    return {
+      ok,
+      declared: back.flags.folded === true,
+      became: `level ${back.local.level} (u=${back.local.u.toFixed(5)}, r=${back.local.r.toFixed(5)})`,
+    };
+  } catch (e) {
+    return { ok: false, declared: false, became: `throw ${(e as { code?: string }).code ?? 'unknown'}` };
   }
+}
+
+/** Does a single dimensionless point survive mm and back? */
+function roundTrips(template: BodyTemplate, level: string, u: number, az: number, r: number): boolean {
+  return probeRoundTrip(template, level, u, az, r).ok;
 }
 
 /**
@@ -95,7 +115,7 @@ test('admissibility: every anatomical preset is admissible and round-trips exact
     const template = buildAnatomicalBodyTemplate(params);
     const audit = auditBodyTemplate(template);
     assert.equal(
-      audit.admissible,
+      audit.locallyAdmissible,
       true,
       `${params.id} should be admissible, violations: ${JSON.stringify(audit.violations)}`,
     );
@@ -166,7 +186,7 @@ test('admissibility: a collapsed sacral level must follow the upper endplate', (
     radialScale: 1.45,
   });
   const chordAudit = auditBodyTemplate(chordLarge);
-  assert.equal(chordAudit.admissible, false);
+  assert.equal(chordAudit.locallyAdmissible, false);
   assert.deepEqual(chordAudit.violations.map((v) => v.level), ['L05']);
   assert.ok(measureRoundTrip(chordLarge, { samplesPerLevel: 200 }).failures > 0);
 });
@@ -174,7 +194,7 @@ test('admissibility: a collapsed sacral level must follow the upper endplate', (
 test('admissibility: cutting the fused sacrum into five levels folds the pelvis', () => {
   const split = buildAnatomicalBodyTemplate(ADULT_P50_SPLIT_SACRUM);
   const audit = auditBodyTemplate(split);
-  assert.equal(audit.admissible, false);
+  assert.equal(audit.locallyAdmissible, false);
   assert.ok(audit.violations.length >= 3, `violations: ${audit.violations.length}`);
   assert.ok(
     audit.violations.every((v) => v.level.startsWith('S')),
@@ -198,7 +218,7 @@ test('admissibility: cutting the fused sacrum into five levels folds the pelvis'
   assert.equal(ambiguousVolumeFraction(fused), 0);
 });
 
-test('admissibility: the exact criterion is sharp in both directions', () => {
+test('admissibility: the exact criterion is a safe bound, and binds where it says', () => {
   // What the gate promises is a whole-template property: if the audit passes,
   // nothing folds anywhere. Per-level margins do not compose on a template
   // that already fails, because points displaced by one level's fold land in
@@ -207,7 +227,7 @@ test('admissibility: the exact criterion is sharp in both directions', () => {
   for (const params of PRESETS) {
     const template = buildAnatomicalBodyTemplate(params);
     const audit = auditBodyTemplate(template);
-    assert.equal(audit.admissible, true, params.id);
+    assert.equal(audit.locallyAdmissible, true, params.id);
     // Probe the skin itself, all the way round, at three axial positions.
     for (const level of audit.levels) {
       for (let a = 0; a < 36; a += 1) {
@@ -221,22 +241,230 @@ test('admissibility: the exact criterion is sharp in both directions', () => {
     }
   }
 
-  // And where the audit does report a fold, the fold is really there, within
-  // 5% of the predicted radius — so the criterion is not merely a safe bound.
+  // And where the audit reports a fold, the fold is really there — at or
+  // before the predicted radius.
+  //
+  // This is a SAFE-BOUND claim, and deliberately only that. An earlier version
+  // asserted sharpness from both sides: that the point still round-trips just
+  // inside the predicted radius and fails just outside. The outer direction is
+  // a theorem — past its own fold radius a level's two bounding planes have
+  // crossed, so it cannot bracket its own point and the loss is certain. The
+  // inner direction is not, for two independent reasons:
+  //
+  //   1. DOG-9 finding 1: a level can lose a point well inside its own fold
+  //      radius to a DISTANT level that also claims it. `S03` just inside its
+  //      own radius is claimed by `S05`, five levels away.
+  //   2. QA-13: failure is not monotonic in radius. There are several regimes
+  //      between the axis and the skin, so there is no single threshold for a
+  //      two-sided claim to be sharp about in the first place.
+  //
+  // So the honest assertion is that the prediction is never optimistic:
+  // failure begins at or before it. Replacing "within 5% from both sides" with
+  // this is a weaker claim, and the weaker claim is the true one. The regimes
+  // are published, measured, in docs/alc-1-admissibility.md §4 under "The
+  // per-level fold radius is a one-sided bound, not a threshold".
   for (const params of [ADULT_P50_SPLIT_SACRUM, { ...ADULT_P50, id: 'chord', sacralTangentFraction: 0.5, radialScale: 1.45 }]) {
     const template = buildAnatomicalBodyTemplate(params);
     for (const level of auditBodyTemplate(template).violations) {
       const foldRatio = 1 / level.utilisation;
       assert.ok(foldRatio < 1);
+
+      // Walk outward and find where this level actually starts losing points.
+      let firstFailure = Infinity;
+      for (let k = 1; k <= 400; k += 1) {
+        const r = (k / 400) * 0.9999;
+        if (!roundTrips(template, level.level, 0.5, level.worstAzimuthTurns, r)) {
+          firstFailure = r;
+          break;
+        }
+      }
+
       assert.ok(
-        roundTrips(template, level.level, 0.5, level.worstAzimuthTurns, foldRatio * 0.95),
-        `${params.id} ${level.level}: just inside the predicted fold should still be fine`,
+        Number.isFinite(firstFailure),
+        `${params.id} ${level.level}: the audit reports a fold but no radius on this azimuth fails, `
+        + 'so the prediction is not merely conservative — it is wrong',
       );
       assert.ok(
-        !roundTrips(template, level.level, 0.5, level.worstAzimuthTurns, Math.min(0.9999, foldRatio * 1.05)),
-        `${params.id} ${level.level}: predicted fold at r=${foldRatio.toFixed(3)} did not occur`,
+        firstFailure <= foldRatio * 1.05,
+        `${params.id} ${level.level}: predicted fold at r=${foldRatio.toFixed(3)} but the level held `
+        + `to r=${firstFailure.toFixed(3)}, so the prediction is optimistic rather than safe`,
       );
     }
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Sound fold detection (DOG-9 findings 1 and 2)
+// ---------------------------------------------------------------------------
+
+test('fold scan: no skin point of a shipped preset is claimed by anything but its own level', () => {
+  // The SOUND criterion, and the one the per-level audit cannot express:
+  // `levelsClaiming(bodyLocalToMm(L, ...)) === [L]` at every skin point. This
+  // is what "the levels tile space" has to mean in practice, and it is the
+  // property the whole frame rests on — if it fails, two addresses denote one
+  // millimetre point and `encode(locate(a)) === a` is no longer a guarantee.
+  for (const params of PRESETS) {
+    const template = buildAnatomicalBodyTemplate(params);
+    const scan = scanBodyTemplateFolds(template);
+    assert.equal(scan.sound, true, `${params.id}:\n${formatFoldScan(scan)}`);
+    assert.equal(scan.foldedPoints, 0, params.id);
+    // The scan must have done real work, not passed vacuously on an empty grid.
+    assert.ok(scan.probed > 10000, `${params.id}: only ${scan.probed} points probed`);
+    assert.ok(formatFoldScan(scan).includes('SOUND'));
+  }
+});
+
+test('fold scan: it catches the non-local fold the per-level audit clears', () => {
+  // DOG-9 finding 1, as a regression fixture. This is the template that proves
+  // the per-level criterion is not a gate: it clears with margin to spare and
+  // folds anyway, because the fold is between a level and one SEVERAL levels
+  // away, which no per-level condition can see.
+  const template = buildAnatomicalBodyTemplate(ADULT_HYPERKYPHOTIC_SHORT_WIDE);
+
+  const audit = auditBodyTemplate(template);
+  assert.equal(audit.locallyAdmissible, true, 'precondition: the cheap criterion clears it');
+  assert.ok(audit.worstMarginMm > 0, `precondition: positive margin, got ${audit.worstMarginMm}`);
+
+  // And yet.
+  const scan = scanBodyTemplateFolds(template);
+  assert.equal(scan.sound, false, 'the scan must catch what the audit missed');
+  assert.ok(scan.foldedPoints > 100, `expected a material fold, got ${scan.foldedPoints}`);
+
+  // The fold is genuinely non-local: some site names two levels that are not
+  // neighbours, which is precisely the case the audit cannot model.
+  const labels = template.slabs.map((s) => s.label);
+  const nonLocal = scan.sites.filter(
+    (s) => s.claimedBy.length > 1
+      && Math.max(...s.claimedBy.map((l) => Math.abs(labels.indexOf(l) - labels.indexOf(s.level)))) > 1,
+  );
+  assert.ok(
+    nonLocal.length > 0,
+    `expected a non-adjacent claimant:\n${formatFoldScan(scan)}`,
+  );
+
+  // The thoracic levels are where it bites, per the review's measurement.
+  assert.ok(
+    scan.foldsByLevel.some((f) => f.level.startsWith('T')),
+    `expected thoracic folds, got ${scan.foldsByLevel.map((f) => f.level).join(',')}`,
+  );
+});
+
+test('fold scan: every fold regression fixture is caught, and the audit alone is not enough', () => {
+  // The whole rejection set in one place. The `auditCatchesIt: false` row is
+  // the reason this suite cannot gate on `locallyAdmissible`.
+  let auditMissed = 0;
+  for (const { params, auditCatchesIt, why } of FOLD_REGRESSIONS) {
+    const template = buildAnatomicalBodyTemplate(params);
+    const audit = auditBodyTemplate(template);
+    const scan = scanBodyTemplateFolds(template);
+
+    assert.equal(scan.sound, false, `${params.id} (${why}) must be caught by the scan`);
+    assert.equal(
+      audit.locallyAdmissible,
+      !auditCatchesIt,
+      `${params.id}: the per-level audit's verdict changed; update FOLD_REGRESSIONS`,
+    );
+    if (!auditCatchesIt) auditMissed += 1;
+  }
+  assert.ok(auditMissed > 0, 'at least one fixture must defeat the per-level audit, or the scan is redundant');
+});
+
+test('fold reporting: a fold is declared, names every claimant, and picks the nearest', () => {
+  // DOG-9 finding 2. The note used to be unreachable: it lived in the branch
+  // where NO level claims a point, and folding produces DOUBLY claimed points.
+  //
+  // The "nearest" half needs a site where nearest and most-cranial actually
+  // differ, or it would pass under the old first-match rule too. Both folding
+  // fixtures are searched for one, and the test fails if neither has any —
+  // that would mean the distinction had become untestable.
+  const distanceTo = (template: BodyTemplate, label: string, mm: readonly number[]): number => {
+    const g = spineGeometry(template);
+    const i = template.slabs.findIndex((s) => s.label === label);
+    const rel = [mm[0] - g.nodes[i][0], mm[1] - g.nodes[i][1], mm[2] - g.nodes[i][2]] as const;
+    const along = Math.min(
+      g.lens[i],
+      Math.max(0, rel[0] * g.dirs[i][0] + rel[1] * g.dirs[i][1] + rel[2] * g.dirs[i][2]),
+    );
+    return Math.hypot(
+      rel[0] - g.dirs[i][0] * along,
+      rel[1] - g.dirs[i][1] * along,
+      rel[2] - g.dirs[i][2] * along,
+    );
+  };
+
+  let discriminating = 0;
+  let checked = 0;
+
+  for (const params of [ADULT_P50_SPLIT_SACRUM, ADULT_HYPERKYPHOTIC_SHORT_WIDE]) {
+    const template = buildAnatomicalBodyTemplate(params);
+    const scan = scanBodyTemplateFolds(template);
+    const ambiguous = scan.sites.filter((s) => s.kind === 'ambiguous');
+    assert.ok(ambiguous.length > 0, `${params.id}: expected an ambiguous site\n${formatFoldScan(scan)}`);
+
+    for (const site of ambiguous) {
+      const mm = bodyLocalToMm(template, {
+        level: site.level,
+        u: site.at.u,
+        t: site.at.t,
+        r: site.at.r,
+      });
+      const claimants = levelsClaiming(template, mm);
+      if (claimants.length < 2) continue;
+      checked += 1;
+
+      const back = bodyMmToLocal(template, mm);
+      assert.equal(back.flags.folded, true, `${params.id} ${site.level}: the fold must be declared`);
+
+      const note = (back.flags.notes ?? []).join(' ');
+      // Every competing level is named, not just the one that won.
+      for (const level of claimants) {
+        assert.ok(note.includes(level), `the note must name ${level}: ${note}`);
+      }
+      // And it must not blame the body for a failure of the coordinate system.
+      assert.ok(
+        !/outside the modelled body surface/.test(note),
+        `a fold must not be reported as leaving the body: ${note}`,
+      );
+
+      // The nearest claimant wins, not the most cranial.
+      const nearest = claimants.reduce((a, b) =>
+        (distanceTo(template, b, mm) < distanceTo(template, a, mm) ? b : a));
+      assert.equal(
+        back.local.level,
+        nearest,
+        `${params.id} ${site.level}: claimed by [${claimants.join(',')}], nearest is ${nearest}`,
+      );
+      if (nearest !== claimants[0]) discriminating += 1;
+    }
+  }
+
+  assert.ok(checked > 0, 'no ambiguous site was exercised');
+  assert.ok(
+    discriminating > 0,
+    'every ambiguous site had its nearest claimant also be its most cranial, so this test '
+    + 'cannot tell the new rule from the first-match scan it replaced',
+  );
+});
+
+test('fold reporting: inadmissibleNotes is a real counter, non-zero on a folding template', () => {
+  // The counter used to watch a note that could not be emitted, so
+  // `assert.equal(probe.inadmissibleNotes, 0)` held on every template —
+  // including one with 60 observed round-trip failures. It read as "no
+  // inadmissibility detected" and meant nothing.
+  const folding = buildAnatomicalBodyTemplate(ADULT_P50_SPLIT_SACRUM);
+  const probe = measureRoundTrip(folding, { samplesPerLevel: 200 });
+  assert.ok(probe.failures > 0, 'precondition: this template folds');
+  assert.ok(
+    probe.inadmissibleNotes > 0,
+    'the fold note must be reachable, or the counter is decoration again',
+  );
+
+  // And it stays silent where there is nothing to report, so it is a signal
+  // rather than noise. This is the assertion that was previously vacuous.
+  for (const params of PRESETS) {
+    const clean = measureRoundTrip(buildAnatomicalBodyTemplate(params), { samplesPerLevel: 120 });
+    assert.equal(clean.inadmissibleNotes, 0, params.id);
+    assert.equal(clean.failures, 0, params.id);
   }
 });
 
@@ -246,8 +474,8 @@ test('admissibility: the superseded worst-case criterion condemns usable bodies'
   const worstCase = auditBodyTemplateWorstCase(template);
   const directional = auditBodyTemplate(template);
 
-  assert.equal(worstCase.admissible, false);
-  assert.equal(directional.admissible, true);
+  assert.equal(worstCase.locallyAdmissible, false);
+  assert.equal(directional.locallyAdmissible, true);
 
   const falseAlarms = worstCase.violations.filter(
     (v) => !directional.violations.some((d) => d.level === v.level),

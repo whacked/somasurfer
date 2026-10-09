@@ -1,0 +1,18 @@
+{
+  "name": "@gstack/atlas-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static build skeleton for the atlas: prebuilt JSON indexes plus a client bundle. No backend.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "atlas": {
+    "licenceClass": "code"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "serve": "node --run build && node serve.mjs"
+  },
+  "dependencies": {
+    "@gstack/alc": "*"
+  }
+}

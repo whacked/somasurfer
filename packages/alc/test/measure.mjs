@@ -41,7 +41,7 @@ for (const [name, t] of Object.entries(templates)) {
   const v = audit.violations
     .map((x) => `${x.level} (r=${x.maxRadiusMm.toFixed(0)}mm > R=${x.curvatureRadiusMm.toFixed(0)}mm)`)
     .join(', ');
-  line(`| ${name} (${t.id}) | ${audit.admissible ? 'yes' : 'NO'} | ${v || '-'} |`);
+  line(`| ${name} (${t.id}) | ${audit.locallyAdmissible ? 'yes' : 'NO'} | ${v || '-'} |`);
 }
 
 line('\n## BD cell size by refinement digits, adult template at T07 and L03\n');
