@@ -266,15 +266,37 @@ test("known defects: the report's closed count matches its own rows", () => {
   );
 
   // And the list of still-open High defects, which is the part a reader acts on.
-  const listed = /The (\w+) High ones? still open[,:]? ([^.]*?),? are\b/.exec(report);
-  assert.ok(listed, "the report must name the still-open High defects as 'The <N> High ones still open, <ids>, are ...'");
-  assert.equal(listed[1].toLowerCase(), word(openHigh.length),
-    `the report says ${listed[1]} High defects are open; the table says ${openHigh.length}`);
-  for (const id of openHigh) {
-    assert.ok(listed[2].includes(id), `${id} is High and open but is not in the report's list: "${listed[2]}"`);
-  }
-  for (const m of listed[2].matchAll(/\bQA-\d+\b/g)) {
-    assert.ok(openHigh.includes(m[0]),
-      `the report lists ${m[0]} as a still-open High defect, but the table does not`);
+  //
+  // Zero of them gets its own required sentence rather than the list form. "The
+  // zero High ones still open, <ids>, are ..." cannot be written with an empty
+  // list without reading as a drafting mistake, and this check has to keep
+  // working in both directions once the last High row flips — a reader must not
+  // have to infer "none" from the absence of a sentence, which is also how a
+  // deleted sentence would look.
+  if (openHigh.length === 0) {
+    assert.match(
+      report,
+      /\*\*No High defect remains open\.\*\*/,
+      'with no High defect open the report must say so in those words, under the status table, '
+        + 'rather than leaving the reader to infer it from a missing sentence',
+    );
+    assert.equal(
+      /The (\w+) High ones? still open/.test(report),
+      false,
+      'the report still carries the "The <N> High ones still open" sentence, which now claims '
+        + 'something the table contradicts',
+    );
+  } else {
+    const listed = /The (\w+) High ones? still open[,:]? ([^.]*?),? are\b/.exec(report);
+    assert.ok(listed, "the report must name the still-open High defects as 'The <N> High ones still open, <ids>, are ...'");
+    assert.equal(listed[1].toLowerCase(), word(openHigh.length),
+      `the report says ${listed[1]} High defects are open; the table says ${openHigh.length}`);
+    for (const id of openHigh) {
+      assert.ok(listed[2].includes(id), `${id} is High and open but is not in the report's list: "${listed[2]}"`);
+    }
+    for (const m of listed[2].matchAll(/\bQA-\d+\b/g)) {
+      assert.ok(openHigh.includes(m[0]),
+        `the report lists ${m[0]} as a still-open High defect, but the table does not`);
+    }
   }
 });

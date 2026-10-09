@@ -34,7 +34,8 @@ The four that matter most are not parser bugs:
 3. **QA-3** — `recommendedDigits()`, whose documented job is "how many digits should I
    display?", recommends **8** digits for a template that justifies **5**, a precision
    `locate()` itself flags `overPrecise`. The honesty flag exists; the function a UI will
-   actually call routes around it.
+   actually call routes around it. Since fixed: the recommendation is clamped to the
+   lowest of three ceilings and reports which one bound it.
 4. **QA-12** — `samePlace()`, the function the spec mandates *instead of* `a === b`,
    reports **1 329 of 3 424 disjoint cell pairs (38.8 %)** as the same place at
    `toleranceMm: 0`, including the two cerebral hemispheres (68 mm apart) and two whole
@@ -283,23 +284,30 @@ evidence" below.
 | --- | --- | --- |
 | QA-1 | High | **fixed** in `1924a2f` — `bodyLocate` now runs the claim check against the level the *caller asked for*, which is the one thing a bare millimetre point cannot reveal, so the §9 note is reachable through `locate()` and not only through `encodeBody`. `locate()` raises `flags.folded` and carries a note naming both the level the address asked for and the level its millimetres land in. Pinned as a positive guarantee by `precision: locate() says so when a template is inadmissible at this cell`. |
 | QA-2 | High | **fixed** in `1924a2f` — `bodyMmToLocal` now detects multiple bracketing levels, raises `flags.folded`, names the competing levels and states the point is not outside the body. `admissible` was renamed `locallyAdmissible` with the sufficiency caveat, and `scanBodyTemplateFolds()` is the gate. The per-level criterion is still incomplete *by design*, which is now documented and measured: 162 of 3 228 templates in the physiological box (5.0%) satisfy it and fold anyway. |
-| QA-3 | High | **open** — `recommendedDigits()` still returns 8 for a template justifying 5. |
-| QA-4 | High | **open** — `encodeBrainVolume(t, [NaN,NaN,NaN], 6)` still returns `BV-R-000000` with `flags: {}`. |
+| QA-3 | High | **fixed** in `d1c1b9a` — the recommendation is now the lowest of three ceilings, not one: the residual, the template's `maxUsefulDigits`, and the frame descriptor's own digit range. The template ceiling is read from the `overPrecise` flag `locate()` itself raises, so the two cannot drift. `recommendedPrecision()` returns `limitedBy` — 'residual', 'template' or 'frame' — because a bare number cannot distinguish "collect better data and you may print more" from "this template will never justify more, whatever you measure". Corpus sweep, same seed and size the suite runs: **2 620 hits -> 0**. Pinned as a guarantee by `precision: recommendedDigits never recommends a precision locate() calls over-precise` and `precision: the recommendation says which of the three ceilings bound it`. |
+| QA-4 | High | **fixed** in `d1c1b9a` — `rejectNaNCoordinates()` refuses a `NaN` millimetre coordinate at the top of both frames' mm -> local converters, naming the axis, with the new `nan_coordinate` code. An infinity still clamps, and that asymmetry is the point: a clamp is a claim about *which way* a coordinate left the modelled extent, and `NaN` is unordered, so there is no edge it is past and nothing `flags.clamped` could honestly report. Pinned by `precision: a NaN coordinate is refused, by axis, instead of yielding a confident cell`. |
 | QA-5 | Medium-High | **fixed** in `0ebd2fc` — `splitAddress` now validates the check symbol's shape and hands it back without verifying it; `parse()` verifies it against the canonical body it resolved to. Both directions come out right: a loose body carrying its canonical symbol is accepted, and a symbol computed over the loose body is refused with `check_failed`. Pinned as a positive guarantee by `check symbol: verified against the canonical body, in both directions`, which asserts exhaustively that exactly one of the 32 Crockford symbols is accepted on a loose body and that it is the canonical one. |
 | QA-6 | Medium-High | **fixed** in `1924a2f` — `canonicalLevel` now holds a per-level set. `ANOMALOUS_LEVELS = ['T13','L06','S06']` are addressable and report the new `homology: 'variant'`; everything else is rejected with the correction named (`BD-C08` explains the C8 *nerve root*). The fix went further than the finding: `variant` vs `absent` distinguishes "real anatomy this template lacks" from "not a level", which is the distinction a UI needs. |
 | QA-7 | Medium | **fixed** in `0ebd2fc` — `splitAddress` rejects any code point outside printable ASCII on the *raw* input, before `trim()` and before `toUpperCase()`, with a new `non_ascii` code. Deciding it on the raw input also closes the sub-case below, where `trim()` stripped U+00A0 and U+2007. It narrows the accepted language: `\tBD-T07-03O\n` used to parse and no longer does, which is what INV-ASCII asks for and the same defect as the U+00A0 padding. Pinned as a positive guarantee by `fuzz: a non-ASCII code point is rejected before case mapping can make it legal`, over 27 code points, each required to be refused with `non_ascii` rather than by the grammar downstream. |
-| QA-8 | Medium | **open** — a NaN body coordinate still produces an inadmissibility note against a template the audit certifies. |
+| QA-8 | Medium | **fixed** in `d1c1b9a` — same guard, same commit: the `BD` converter refuses the input before any `sigma` comparison can fall through to the fold branch, so the note that blamed `anat-adult-p50` for the caller's `NaN` is gone and `encodeBody` no longer reports `bad_azimuth` about an anchor spelled `NANI`. The template is still certified admissible at 123.1 mm of margin, which is asserted alongside the refusal. Pinned by `precision: a NaN body coordinate is charged to the input, never to the template`. |
 | QA-9 | Medium | **fixed** in `1924a2f` — falls out of QA-2, and went further: the counter now keys off `flags.folded` rather than the unreachable no-claimant note. Re-measured on the committed tree at `samplesPerLevel: 200` — 31 notes on `anat-adult-p50-split-sacrum`, 5 on `ADULT_HYPERKYPHOTIC_SHORT_WIDE`, 0 on `anat-adult-p50` — so it is asserted non-zero on a folder and zero on every preset, and is no longer vacuous. |
 | QA-10 | Low | **fixed** in `9d7d6ff` — the gate grew a `STRUCTURE` stage, which is the only one of the four that can see a duplicate label: the audit and the probe both still pass the template, and that pair of facts is asserted so neither stage can later be pruned as redundant. |
-| QA-11 | Low | **open** |
+| QA-11 | Low | **fixed** in `d1c1b9a` — both digit bounds now come from the frame descriptor, which gained `minDigits`, so the function can no longer recommend `BR-L` (not an address: `BR` needs a base-face digit) and can no longer disagree with `BR.maxDigits`. A frame or template that cannot be located at its minimum precision raises `locate()`'s own `frame_disabled`/`no_template` instead of returning a number that was being read as advice. Pinned by `precision: every recommendation is a precision its frame can express`. |
 | QA-12 | High | **fixed** in `1924a2f` — `cellRadiusMm`'s 3-D diagonal replaced by `cellReachMm`, the box's directional support function, plus a structural short-circuit: disjoint cells of one template are a definitive no at `toleranceMm: 0`, scoped to zero so a stated tolerance is still a geometric question. All 3 424 disjoint pairs now report `same: false`; the characterisation test is now the invariant itself. |
 | QA-13 | Medium | **fixed** in `0ebd2fc` — `bodyMmToLocal` stopped counting claimants and now asks the round-trip question instead: does any *other* level have an in-body address for this point. `levelsAddressing()` is that question, and it answers for both halves of the non-partition with one condition, because both are the same fact. The finding's own repro now returns `folded: true` with a note naming S02. It also degrades to free where it must: the screen is one sign test per level, and 0 of 9 000 knot points across the five presets are flagged. Pinned as a positive guarantee by four tests in `template-acceptance.test.ts` — the reported case is declared, no `FOLD_REGRESSIONS` fixture answers with the wrong level unflagged over 81 000 points, no preset is falsely flagged, and every `lost` fold site is visible at runtime. |
 
-**Nine of the thirteen are closed** — QA-1, QA-2, QA-5, QA-6, QA-7, QA-9,
-QA-10, QA-12, QA-13. The two High ones still open, QA-3 and QA-4, are the same
-shape — a confident answer with the flag missing — and neither needs more than a
-few lines. Every open defect has an owner and a bounded task: QA-3, QA-4, QA-8
-and QA-11 on DOG-16.
+**Thirteen of the thirteen are closed** — QA-1, QA-2, QA-3, QA-4, QA-5, QA-6,
+QA-7, QA-8, QA-9, QA-10, QA-11, QA-12, QA-13. **No High defect remains open.**
+The last four to go — QA-3, QA-4, QA-8 and QA-11, all on DOG-16 — were one
+shape in two functions: a confident answer with the flag that would make it
+honest left off. Two of them were the same `NaN` falling through an ordered
+comparison, in opposite directions: one fabricated a cell and said nothing, the
+other blamed the template for the caller's input.
+
+Closed is not the same as finished. What the thirteen rows do not cover is
+stated where it belongs rather than here: the per-level admissibility criterion
+is still incomplete by design (QA-2), `BR` still has no locatable template, and
+the viewer journeys this pass put out of scope have no artefacts to attack yet.
 
 **This table is machine-checked, because it drifted once already.** The old
 `known defects: the index matches the report` only verified that an id
@@ -321,7 +329,7 @@ drift.
 `packages/alc/scripts/verify-retirements.mjs` re-runs the *finding* measurement
 for each retired defect it covers, against the committed library, and prints a
 verdict per defect. Every verdict in it passes; the rows below are the run on
-`0ebd2fc`:
+`d1c1b9a`, which covers all thirteen:
 
 | defect | the measurement that found it, re-run | now |
 | --- | --- | --- |
@@ -332,6 +340,19 @@ verdict per defect. Every verdict in it passes; the rows below are the run on
 | QA-9 | `measureRoundTrip(..., { samplesPerLevel: 200 }).inadmissibleNotes` | **31** on the split sacrum, **5** on `ADULT_HYPERKYPHOTIC_SHORT_WIDE`, **0** on `anat-adult-p50` (was 0 everywhere, i.e. vacuous) |
 | QA-12 | every distinct cell pair of one template at `toleranceMm: 0` | **0** reported as the same place (was 1 329 of 3 424, 38.8 %) |
 | QA-13 | S02 of `anat-adult-p50-split-sacrum` at t = 0.9917, r = 0.76 — the point a single *other* level claims | still resolves to S01, now with `folded: true` and a note naming S02 as the level whose address was taken over (was `flags: {}`). `levelsClaiming` still returns `['S01']`, which is why the claim count could not see it; `levelsAddressing` returns S01 and S02, S02 with its planes crossed and `r = 0.760` recovered exactly. **0** of 9 000 preset knot points falsely flagged |
+
+| QA-3 | `recommendedDigits('BD-T07-03O-531650', 0.05 mm)` against `maxUsefulDigits`, and `INV-RECOMMENDED-NOT-OVERPRECISE` over the fuzz corpus | **5** digits, `limitedBy: 'template'`, against a ceiling of 5 (was 8); `BV-L-471025` at 0.5 mm gives **6** against a ceiling of 6 (was 7); the same address at a 10 mm residual gives 1, `limitedBy: 'residual'`, so the two reasons are distinguishable. Corpus: **2 620 hits -> 0** over 11 657 inputs at seed 20261008 |
+| QA-11 | `recommendedDigits('BR-L-7A3F', templates, 1)` | refused with `frame_disabled` (was 0, which is not a `BR` address); `BR.minDigits` is 1 and `BR.maxDigits` 7, both read from the descriptor |
+| QA-4 | `encodeBrainVolume(brain, [NaN,NaN,NaN], 6)`, and one NaN per axis | all four refused with `nan_coordinate`, each naming the axis (was `{ address: 'BV-R-000000', flags: {} }`). `[Infinity,0,0]` still answers `BV-L-444444` with `clamped: true` |
+| QA-8 | `bodyMmToLocal(anat-adult-p50, [NaN,NaN,NaN])`, the template the note accused | refused with `nan_coordinate`; no note names a fold or inadmissibility, `encodeBody` refuses the same way instead of saying `bad_azimuth`, and the audit still certifies the template (`locallyAdmissible`, worst margin **123.1 mm**) |
+
+One number is corrected rather than reproduced. The QA-3 write-up reports
+**32 552** corpus hits; re-measured on the pre-fix base at the two sizes the
+suite and the soak actually run, the invariant fires **2 620** times over 11 657
+inputs (seed 20261008, 8 000 iterations) and **122 815** over 534 324 (400 000
+iterations). Neither is 32 552, so that figure came from a corpus size or seed
+the report does not state. The differential is what the retirement rests on,
+and it is the same at both sizes: every one of those hits is gone.
 
 Two numbers moved against the original write-ups, both explained and neither a
 regression. `measureRoundTrip().failures` on a folding template goes *down* as
@@ -451,7 +472,7 @@ delivers QA-1. The second is cheaper and honest: it converts a silent wrong answ
 a declared one. **Pinned:** `template-acceptance.test.ts`, two "QA-2" tests, plus the
 `ADMISSIBILITY-CONSISTENCY` stage as a standing gate.
 
-### QA-3 — `recommendedDigits()` recommends a precision the library calls dishonest — High
+### QA-3 — `recommendedDigits()` recommends a precision the library calls dishonest — High — FIXED
 
 ```js
 recommendedDigits('BD-T07-03O-531650', { body: adult }, 0.05);   // 8
@@ -463,11 +484,21 @@ recommendedDigits('BV-L-471025', { brainVolume: brain }, 0.5);    // 7  (justifi
 The function compares cell extent against the residual and never consults
 `maxUsefulDigits`. Spec §9 requires "UI must not render false precision"; the one API a
 UI would ask is the one that routes around the flag. 32 552 corpus hits.
-**Fix:** clamp to `template.maxUsefulDigits` and return the binding reason, so a caller
-can tell "the residual limits you" from "the template does". **Pinned:**
-`precision-honesty.test.ts` "QA-3", and `INV-RECOMMENDED-NOT-OVERPRECISE`.
+**Fixed** as suggested, with the ceiling read from the flag rather than restated. There
+are three ceilings and the recommendation is the lowest: the residual, the template's
+`maxUsefulDigits`, and the frame's own digit range. The template one is taken from the
+`overPrecise` flag `locate()` raises, so whatever `locate()` calls over-precise is not
+something this function can recommend — the rule has one copy, not two.
+`recommendedPrecision()` returns `limitedBy`, `maxUsefulDigits` and a note naming the
+binding constraint; `recommendedDigits()` is that result's `.digits`. A non-finite
+`residualMm` is refused with `bad_residual`: left alone, every "is this cell smaller than
+the residual?" test is false for NaN, so the answer was the deepest precision the
+template allows — maximum confidence, from the absence of information.
+**Now pinned as a guarantee by** `precision-honesty.test.ts` "recommendedDigits never
+recommends a precision locate() calls over-precise" and "the recommendation says which of
+the three ceilings bound it"; `INV-RECOMMENDED-NOT-OVERPRECISE` stands unqualified.
 
-### QA-4 — a NaN coordinate yields a confident address with no flag — High
+### QA-4 — a NaN coordinate yields a confident address with no flag — High — FIXED
 
 ```js
 encodeBrainVolume(brain, [NaN, NaN, NaN], 6);  // { address: 'BV-R-000000', flags: {} }
@@ -480,8 +511,20 @@ and `bvEncodeLocal`'s `NaN >= mid` comparisons all take the zero branch. The res
 specific hemisphere and a specific 1 mm cell, from nothing. Spec §9 promises a flag and a
 note for a point merely *outside* the surface. A NaN arrives from a failed registration or
 a unit conversion that divided by zero — exactly when a consumer most needs telling.
-**Fix:** reject non-finite input at the `encodeBody`/`encodeBrainVolume` boundary, or set
-`clamped` with a note naming the axis. **Pinned:** `precision-honesty.test.ts` "QA-4".
+**Fixed** by refusing it, not by flagging it. `rejectNaNCoordinates()` (codec.ts) runs
+first thing in both frames' mm -> local converters — the one place that covers the
+`encodeBody`/`encodeBrainVolume` boundary *and* the lower-level converters a probe or an
+asset pipeline calls directly — and raises `nan_coordinate` naming the axis, because the
+axis is what tells a caller which upstream conversion produced the NaN.
+
+Refusing rather than clamping is the deliberate half. A clamp is a claim about which way
+a coordinate left the modelled extent, and `Infinity` has one: it is past the far edge,
+`flags.clamped` plus a note says so, and that behaviour is unchanged. `NaN` is unordered,
+so there is no edge it is past and nothing a clamp could honestly report; a `NaN` here
+means a failed registration or a divide-by-zero unit conversion upstream, and no address
+is a faithful answer to that.
+**Now pinned as a guarantee by** `precision-honesty.test.ts` "a NaN coordinate is
+refused, by axis, instead of yielding a confident cell".
 
 ### QA-5 — the check symbol is validated against the wrong body — Medium-High — FIXED
 
@@ -576,7 +619,7 @@ leave "an ALC address is ASCII" unstated and one `toUpperCase()` table change fr
 breaking again. The `INV-ASCII` ledger entry is deleted and the invariant stands
 unqualified.
 
-### QA-8 — a NaN body coordinate accuses an admissible template — Medium
+### QA-8 — a NaN body coordinate accuses an admissible template — Medium — FIXED
 
 ```js
 bodyMmToLocal(buildAnatomicalBodyTemplate(ADULT_P50), [NaN, NaN, NaN]).flags;
@@ -590,8 +633,16 @@ inadmissibility branch and blames a template `auditBodyTemplate()` certifies as
 admissible with 123 mm of margin. An asset pipeline reading that note would go hunting a
 geometry bug that does not exist — and the message is the one piece of diagnostic output
 the pipeline is told to trust. `encodeBody` then throws `bad_azimuth` about an anchor
-literally spelled `NANI`. **Fix:** guard non-finite input at the top of `bodyMmToLocal`.
-**Pinned:** `precision-honesty.test.ts` "QA-8".
+literally spelled `NANI`. **Fixed** by the same guard as QA-4, at the top of
+`bodyMmToLocal` as suggested, so neither direction reaches the fold branch at all. One
+consequence worth naming: `scanBodyTemplateFolds` generates its own probe points, and a
+template with a non-finite slab origin makes them `NaN`, so it now skips those instead of
+letting the refusal escape the acceptance gate — a pipeline must get a reason, not a
+stack trace, and STRUCTURE already reports "origin is not finite". It also stops counting
+them as `unclaimed` folds, which they never were.
+**Now pinned as a guarantee by** `precision-honesty.test.ts` "a NaN body coordinate is
+charged to the input, never to the template", which asserts both that the refusal names
+neither a fold nor inadmissibility and that the accused template is still certified.
 
 ### QA-9 — `measureRoundTrip().inadmissibleNotes` never fires — Medium — FIXED
 
@@ -626,7 +677,7 @@ A mesh-derived template with a transitional vertebra is a realistic way to produ
 **Fix:** reject duplicate labels in the audit, or key slabs by label. **Pinned:**
 `template-acceptance.test.ts` "QA-10".
 
-### QA-11 — `recommendedDigits()` returns an illegal `BR` precision — Low
+### QA-11 — `recommendedDigits()` returns an illegal `BR` precision — Low — FIXED
 
 ```js
 recommendedDigits('BR-L-7A3F', templates, 1);   // 0
@@ -635,9 +686,16 @@ isValid('BR-L');                                 // false — BR needs >= 1 digi
 
 Also `src/compare.ts` hardcodes `maxDigits = a.frame === 'BR' ? 6 : 12` while
 `BR.maxDigits === 7`. Harmless today because `BR` has no template; a trap the moment it
-gets one. **Fix:** read `FRAMES[frame].maxDigits`, and return `null` for a frame that
-cannot be located rather than an out-of-range count. **Pinned:**
-`known-defects.test.ts` "QA-11".
+gets one. **Fixed** as suggested, with one change of mind: both bounds now come from
+`FRAMES[frame]` — `FrameDescriptor` gained `minDigits`, which is 1 for `BR` and 0 for the
+two frames whose anchors are an address on their own — and a frame that cannot be located
+raises `locate()`'s own `frame_disabled` (or `no_template`) rather than returning `null`.
+A null return would have been one more value a caller can forget to check, and there is
+already an established way to say "this frame has no millimetres": the error `locate()`
+raises for the same reason.
+**Now pinned as a guarantee by** `precision-honesty.test.ts` "every recommendation is a
+precision its frame can express", which also asserts that truncating to the
+recommendation yields an address `parse()` accepts, in every frame that can answer.
 
 ### QA-12 — `samePlace()` calls two disjoint cells the same place — High — FIXED
 
