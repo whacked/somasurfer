@@ -9,6 +9,10 @@
  * happens to emit as a typed array.
  */
 
+import { readdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { buildNameIndex } from '../src/alc.js';
 import {
   buildNameIndexInput,
@@ -55,3 +59,27 @@ export function nameIndex() {
 export const research = () => asJson(buildResearchFixture());
 
 export { DEFINITIONS };
+
+const PACKAGE_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+/**
+ * Every `.js` file under a directory of this package, recursively.
+ *
+ * For suites that assert a property of the source itself rather than of its
+ * behaviour — "no module under `src/` names an asset path" is one, and the
+ * address-equality guard is another. Walking the tree rather than listing
+ * files is the point: a rule that only covers the files someone remembered to
+ * list stops covering the next one added.
+ */
+export function sourceFilesOf(dir) {
+  const out = [];
+  const walk = (d) => {
+    for (const entry of readdirSync(d, { withFileTypes: true })) {
+      const p = join(d, entry.name);
+      if (entry.isDirectory()) walk(p);
+      else if (entry.name.endsWith('.js')) out.push(p);
+    }
+  };
+  walk(join(PACKAGE_ROOT, dir));
+  return out;
+}

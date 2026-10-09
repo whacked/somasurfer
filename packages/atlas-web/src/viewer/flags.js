@@ -235,6 +235,35 @@ export function unnamedFrameNotice(frame) {
   );
 }
 
+/**
+ * The notice for a name index derived from a template other than the bound one.
+ *
+ * Not a library flag and not an error. Name resolution is frame measure, so
+ * the fractions stay exact under any template in the frame — what changes is
+ * *whose* anatomy the structure boundaries describe. The index's cells were
+ * chosen by testing the interior of one body's meshes; resolved against a
+ * different body they are still arithmetically correct and still about the
+ * first body.
+ *
+ * Silence here would be the subtle version of the over-precision lie: a name
+ * list that looks exactly as authoritative as a matched one while describing
+ * geometry that is not on screen. Nothing is wrong with either artefact, so
+ * this is `info`, and it names both ids rather than saying "mismatch" so a
+ * reader can see which is which.
+ */
+export function nameIndexProvenanceNotice(indexTemplateId, boundTemplateId) {
+  return notice(
+    'names-other-template',
+    'info',
+    'These names were measured on a different body',
+    `The name index was built by sampling template ${indexTemplateId}, but ${boundTemplateId} is `
+    + 'bound. Fractions are dimensionless frame measure, so they remain exact — but the structure '
+    + 'boundaries they are measured against come from the other body, and the two are not the '
+    + 'same shape. Read the names as approximate here, and the addresses and millimetres as exact.',
+    { indexTemplateId, boundTemplateId },
+  );
+}
+
 /** The notice shown when a template or index failed to load at all. */
 export function atlasUnavailableNotice(detail) {
   return notice(
@@ -261,6 +290,7 @@ export const NOTICE_CODES = Object.freeze([
   'no-template',
   'frame-disabled',
   'frame-unnamed',
+  'names-other-template',
   'rejected',
   'atlas-unavailable',
 ]);

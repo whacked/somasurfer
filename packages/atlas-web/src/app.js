@@ -39,7 +39,8 @@ import {
 } from './alc.js';
 import { fitCamera, flyToCell, pan, rayThrough, rotate, zoom } from './viewer/camera.js';
 import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
-import { atlasUnavailableNotice } from './viewer/flags.js';
+import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flags.js';
+import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity } from './viewer/state.js';
 import { nameIndexFrames } from './viewer/select.js';
 import {
@@ -111,15 +112,51 @@ let viewer = createViewer();
 const templates = {};
 
 // --- 1. names, which need no geometry --------------------------------------
+//
+// Two documents with two different shapes, joined by id. Neither is a name
+// index on its own, so the join is explicit and validated — see
+// `viewer/nameindex.js`, which also explains why a version mismatch between
+// them is refused rather than reconciled.
 let nameIndex = null;
+let nameIndexSource = null;
 try {
-  nameIndex = buildNameIndex(await loadJson(relative(index.nameIndex.path), 'names'));
+  const descriptor = index.nameIndex ?? {};
+  if (descriptor.source !== 'asset') {
+    throw new Error(
+      `the atlas index declares an unknown name index source ${JSON.stringify(descriptor.source ?? null)}`,
+    );
+  }
+  const [namesDoc, coveringsDoc] = await Promise.all([
+    loadJson(relative(descriptor.namesPath), 'names'),
+    loadJson(relative(descriptor.coveringsPath), 'names'),
+  ]);
+  nameIndex = buildNameIndex(joinNameIndex(namesDoc, coveringsDoc));
+  nameIndexSource = nameIndexSourceTemplate(coveringsDoc);
 } catch (error) {
   ui.notices.push(atlasUnavailableNotice(`The name index could not be loaded (${error.message}).`));
 }
 
 // --- 2. templates ----------------------------------------------------------
 ui.catalogue = index.templates ?? [];
+
+/**
+ * Which template to bind, by id, from `?template=`.
+ *
+ * The catalogue ships the synthetic templates alongside the real ones because
+ * three of `locate()`'s five findings need a template that produces them and
+ * the real body template produces none of the three — it is admissible, it
+ * does not fold, and it realises every level it claims. Without a way to bind
+ * `anat-hyperkyphotic-short-wide`, the `folded` message is reachable only in
+ * the suite, and QA cannot see it in a running build.
+ *
+ * Read straight off the query string rather than through `deeplink.js`, and
+ * deliberately NOT part of the encoded view. Which template is bound is a
+ * property of the build you loaded, not of the view you are looking at; if it
+ * round-tripped through `encodeView` then every link anyone copied would pin a
+ * template id, and the deep-link matrix would have to prove that a link made
+ * against a retired template still restores the same view. It cannot.
+ */
+const requestedTemplate = new URLSearchParams(location.search).get('template');
 
 async function bindBody(entry) {
   if (!entry) return;
@@ -153,10 +190,36 @@ async function bindBrain(entry) {
 
 const bodyEntries = ui.catalogue.filter((t) => t.kind === 'body');
 const brainEntries = ui.catalogue.filter((t) => t.kind === 'brainVolume');
-await Promise.all([
-  bindBody(bodyEntries.find((t) => t.isDefault) ?? bodyEntries[0]),
-  bindBrain(brainEntries.find((t) => t.isDefault) ?? brainEntries[0]),
-]);
+
+/** The requested entry of a kind, else that kind's default. */
+const entryFor = (entries) =>
+  (requestedTemplate ? entries.find((t) => t.id === requestedTemplate) : undefined)
+  ?? entries.find((t) => t.isDefault)
+  ?? entries[0];
+
+if (requestedTemplate && !ui.catalogue.some((t) => t.id === requestedTemplate)) {
+  // Named but unknown. Said out loud rather than silently falling back, or the
+  // reader concludes the template they asked for is what they are looking at.
+  ui.notices.push({
+    code: 'template-unknown',
+    severity: 'warning',
+    title: 'That template is not in this build',
+    detail: `No template with id ${JSON.stringify(requestedTemplate)} is in the catalogue, so the `
+      + 'default is bound instead. The template actually in use is named in the atlas panel.',
+  });
+}
+
+await Promise.all([bindBody(entryFor(bodyEntries)), bindBrain(entryFor(brainEntries))]);
+
+// The name index's cells were sampled against one body's meshes. Binding a
+// different body still resolves — fractions are frame measure, so they stay
+// exact — but the structure boundaries then describe anatomy that is not on
+// screen, and that has to be said. Unreachable in the default build, where the
+// bound body IS the template the index was derived from; reachable the moment
+// `?template=` binds another.
+if (nameIndex && nameIndexSource && templates.body && templates.body.id !== nameIndexSource) {
+  ui.notices.push(nameIndexProvenanceNotice(nameIndexSource, templates.body.id));
+}
 
 // --- 3. the research fixture: the highlight seam, not a stage-A criterion ---
 ui.research = await loadJson(relative(index.research?.path ?? 'data/research.json'), 'research')
@@ -909,6 +972,10 @@ window.__atlas = {
   boundTemplateId: (atlas) => boundTemplate(atlas)?.id ?? null,
   maxUsefulDigits: (atlas) => boundTemplate(atlas)?.maxUsefulDigits ?? null,
   nameIndexVersion: nameIndex?.version ?? null,
+  /** The template the name index was sampled against, per `coverings.json`. */
+  nameIndexSourceTemplate: nameIndexSource,
+  /** What `?template=` asked for, so QA can prove the request was honoured. */
+  requestedTemplate,
   rendererAvailable: () => Boolean(ui.renderer),
   atlasAvailable: (atlas) => viewer.isAvailable(atlas),
   research: () => ui.research,

@@ -33,7 +33,8 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { ENABLED_FRAMES, FRAMES, VERTEBRAL_LEVELS } from '../alc/src/index.ts';
-import { buildNameIndexInput, buildResearchFixture, buildTemplates } from './fixtures/fixtures.mjs';
+import { ASSET_TEMPLATES, NAME_INDEX_FILES } from './catalogue/asset-templates.mjs';
+import { buildResearchFixture, buildTemplates } from './fixtures/fixtures.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
@@ -129,6 +130,48 @@ for (const f of ['LICENSE', 'ATTRIBUTION.md']) {
  * at a time and should not pay for the others.
  */
 const templateEntries = [];
+
+// The real templates, bound by default. The declaration — and the reason
+// `maxUsefulDigits` is absent from it — is in catalogue/asset-templates.mjs.
+for (const declaration of ASSET_TEMPLATES) {
+  // Matched against what was actually copied, so a renamed or dropped asset
+  // fails the build here instead of becoming a 404 in the browser.
+  const copied = assetFiles.find((a) => a.path === `assets/${declaration.file}`);
+  if (!copied) {
+    throw new Error(
+      `the catalogue declares asset template ${declaration.file}, but no such payload was copied `
+      + 'from packages/atlas-assets. Either the asset was renamed or payloadDirs no longer covers '
+      + 'it; the catalogue must not advertise a template the build did not ship.',
+    );
+  }
+  templateEntries.push({
+    id: declaration.id,
+    kind: declaration.kind,
+    label: declaration.label,
+    provenance: declaration.provenance,
+    admissible: declaration.admissible,
+    caveat: declaration.caveat,
+    isDefault: declaration.isDefault,
+    // See above: the bound template declares its own limit.
+    maxUsefulDigits: null,
+    path: `${BASE}${copied.path}`,
+    sha256: copied.sha256,
+    attribution: copied.attribution,
+  });
+}
+
+/**
+ * The synthetic templates stay in the catalogue, and stay bindable.
+ *
+ * They are not decoration and not dead weight. Three of `locate()`'s five
+ * findings need a template that actually produces them, and the real body
+ * template produces none of the three: it is admissible, it does not fold, and
+ * it realises every level it claims. `anat-hyperkyphotic-short-wide` is the
+ * only template in the repo that folds, so it is the only way the `folded`
+ * message is reachable in a running build rather than only in the suite.
+ *
+ * `?template=<id>` is what binds one. See `app.js`.
+ */
 for (const definition of buildTemplates()) {
   const path = `data/templates/${definition.id}.json`;
   emit(path, JSON.stringify(definition.template) + '\n');
@@ -139,14 +182,34 @@ for (const definition of buildTemplates()) {
     provenance: definition.provenance,
     admissible: definition.admissible,
     caveat: definition.caveat,
-    isDefault: Boolean(definition.isDefault),
+    // The real templates are the defaults now, so a fixture is never bound
+    // unless a reader asks for it by id.
+    isDefault: false,
     maxUsefulDigits: definition.template.maxUsefulDigits,
     path: `${BASE}${path}`,
   });
 }
 
-const nameIndexInput = buildNameIndexInput();
-emit('data/names.json', JSON.stringify(nameIndexInput) + '\n');
+/**
+ * The naming layer, as the two asset documents it actually is.
+ *
+ * `version` and `structureCount` are absent for the same reason
+ * `maxUsefulDigits` is: both are asset content. The version in particular must
+ * come from the documents themselves, since its whole job is to say which
+ * build produced the names being shown — a copy of it in the catalogue could
+ * be stale, and a stale version beside a name list is worse than no version.
+ *
+ * The synthetic name index is no longer emitted. With the real index bound,
+ * shipping a second index of invented names would mean a build in which some
+ * selections resolve to anatomy and others to fixtures, with nothing but a
+ * version string distinguishing them. The fixture index still exists for the
+ * suite, in `fixtures/fixtures.mjs`, where it cannot reach a user.
+ */
+for (const file of Object.values(NAME_INDEX_FILES)) {
+  if (!assetFiles.some((a) => a.path === `assets/${file}`)) {
+    throw new Error(`the catalogue declares name index document ${file}, but it was not copied.`);
+  }
+}
 
 const researchFixture = buildResearchFixture();
 emit('data/research.json', JSON.stringify(researchFixture) + '\n');
@@ -170,10 +233,18 @@ const atlasIndex = {
   })),
   /** Templates the viewer may bind. It is built against this, not one of them. */
   templates: templateEntries,
+  /**
+   * Two paths, joined at runtime by `viewer/nameindex.js`. `source: 'asset'`
+   * is the discriminator the loader branches on, so a future first-party index
+   * can be added without the loader guessing from which fields are present.
+   */
   nameIndex: {
-    version: nameIndexInput.version,
-    structureCount: nameIndexInput.structures.length,
-    path: `${BASE}data/names.json`,
+    source: 'asset',
+    namesPath: `${BASE}assets/${NAME_INDEX_FILES.names}`,
+    coveringsPath: `${BASE}assets/${NAME_INDEX_FILES.coverings}`,
+    // Both live in the documents. See the comment above NAME_INDEX_FILES.
+    version: null,
+    structureCount: null,
   },
   research: {
     version: researchFixture.version,
