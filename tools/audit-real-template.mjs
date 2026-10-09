@@ -19,14 +19,37 @@
  * planes fan out, so a distant level can reach across several others. The
  * pre-landing structural review of ALC-1 found this; measured over a 320-template
  * clinical sweep (kyphosis 35-70, lordosis 38-85, girth 1.0-1.7x, stature
- * 0.88-1.08x):
+ * 0.88-1.08x). Re-measured on the merged base in DOG-15, which is where the
+ * numbers below come from — the frame changed under them in DOG-9, so the
+ * pre-DOG-9 reading (304 cleared, 22 folding, 7 caught by the probe, 22 by the
+ * local scan) no longer describes this tree:
  *
- *   304 templates cleared by auditBodyTemplate()
- *    22 of those fold anyway
- *     7 of the 22 caught by measureRoundTrip({ samplesPerLevel: 200 })
- *    22 of the 22 caught by the dense skin scan below
+ *   320 templates swept
+ *    36 fold, per `scanBodyTemplateFolds()`
+ *    14 condemned by auditBodyTemplate() — and all 14 of those do fold, so the
+ *       audit raises no false alarm anywhere on this grid
+ *   306 cleared by auditBodyTemplate()
+ *    22 of those 306 fold anyway, which is the whole argument for check 3
+ *     4 of the 22 caught by measureRoundTrip({ samplesPerLevel: 200 })
+ *    11 of the 22 caught by the local fallback scan below
  *
- * The probe misses two thirds of them because it samples the volume uniformly
+ * Note what moved. The audit is unsound in the clearing direction by about the
+ * same margin as before, so the case for keeping three checks is unchanged. But
+ * the probe now catches 4 of the 22 rather than 7, and the local fallback
+ * catches 11 rather than all 22 — the fallback is no longer the equal of the
+ * library's scan on this base, which is the measured form of the argument in
+ * the next paragraph. The fallback is also not selected on this tree at all,
+ * since `scanBodyTemplateFolds()` is present; it is kept for the reason stated
+ * below and not because it is sufficient.
+ *
+ * "Folds" is the library scan's verdict by definition — it asks directly
+ * whether a point is claimed by exactly one level — so the 36 is a definition
+ * and not a score. What is not circular is the direction of the disagreement:
+ * over all 320, the fallback found nothing the library missed (0 templates),
+ * while the library found 11 the fallback missed. The library's detections are
+ * a strict superset here.
+ *
+ * The probe misses most of them because it samples the volume uniformly
  * in r, so only ~0.5% of its samples land in the outermost 0.5% of tissue —
  * and the fold lives at the skin, in a narrow band of azimuth, usually hard
  * against a level boundary. Uniform random sampling is the wrong instrument for
