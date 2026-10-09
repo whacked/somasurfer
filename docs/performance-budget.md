@@ -101,6 +101,26 @@ reading `perf-measurement.json` gets `null` for those lines and a
 be mistaken for a zero. Byte budgets are machine-independent and always decide,
 on any runner.
 
+**What this costs, stated rather than implied.** GitHub's hosted runners
+measure 4.75–5.55× the reference machine on this calibration — both numbers
+observed on 2026-10-09, in the run that reded `main` and in the run that fixed
+it. So in practice **every CI run reports the four parse-dependent lines as
+`UNVERIFIED`**, and the only lines CI actually decides are the three byte
+budgets. That is a real loss of coverage and it is not papered over: the
+one-sided bound on a 5.5× machine only catches a parse regression large enough
+to breach the budget *before* correction, i.e. about 5.5× worse than the
+budget, so it is a gross-regression tripwire rather than a budget check.
+
+The honest options from here, in preference order: measure the two felt numbers
+in a headless browser on the deployed page, which replaces the derived lines
+with observations and makes the scalar irrelevant (this is the viewer task's
+step, and `app.js` already emits the marks); or re-base
+`calibration.referenceMs` on hardware someone has actually measured, so a
+hosted runner falls inside the window honestly. Widening `maxSpeedFactor`
+until the runner fits is the one thing not to do — it would restore a number
+whose correction is doing more work than the measurement, which is how the
+gate got here.
+
 Both halves are demonstrated in CI by `tools/verify-gates.mjs`:
 `perf-gate-survives-a-fast-runner` asserts a fast runner inside budget does
 **not** go red, and `perf-budget-over-before-correction` asserts a line already
