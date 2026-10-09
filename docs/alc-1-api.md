@@ -377,7 +377,7 @@ tolerance throws `bad_tolerance`.
 | Do these two cells share volume, in one template? | `overlaps(a, b)` |
 | Do these two structures touch, in one template? | `coveringsOverlap(A, B)`, `coveringIntersect(A, B)` |
 | Are these the same place, across subjects or templates? | `samePlace`, `coveringsSamePlace` with `across: 'subjects'` |
-| How many digits should I display? | `recommendedDigits(addr, templates, residualMm)` |
+| How many digits should I display? | `recommendedPrecision(addr, templates, residualMm)` -> `{ digits, limitedBy, maxUsefulDigits, … }`; `recommendedDigits(…)` for the number alone |
 
 `samePlace` widens by each cell's own radius, so a coarse address is not
 penalised for being coarse; refuses to compare across frames, because their
@@ -433,7 +433,8 @@ hoisting everything into one scope, which is why.
 | `bad_covering`, `covering_too_large`, `bad_radius`, `bad_frame` | Coverings |
 | `bad_column`, `bad_dialect`, `bad_range` | Query construction |
 | `bad_name_index`, `bad_index_version`, `bad_structure`, `bad_structure_covering`, `duplicate_structure`, `unknown_structure` | Name index |
-| `bad_tolerance`, `bad_regime`, `frame_mismatch`, `bad_fraction` | Comparison |
+| `bad_tolerance`, `bad_regime`, `frame_mismatch`, `bad_fraction`, `bad_residual` | Comparison. `bad_residual` is a `recommendedPrecision` residual that is negative or not a finite number |
+| `nan_coordinate` | A millimetre point handed to `encodeBody`/`encodeBrainVolume` (or a frame's mm -> local converter) has a `NaN` coordinate. Named by axis. Unlike an out-of-range or infinite coordinate, `NaN` is unordered, so there is no edge it is past and nothing `flags.clamped` could honestly report |
 
 `test/surface.test.ts` checks this table against the codes the source actually
 throws, in both directions, so it cannot drift. Note that `bad_index` and

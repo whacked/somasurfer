@@ -400,7 +400,7 @@ one hard to reach:
 | Do these two cells share volume? | `overlaps(a, b)` | Exact and cheap. Hierarchy cells are nested or disjoint, never partial. Valid **within one template** |
 | Do these two structures/findings touch? | `coveringsOverlap(A, B)`, `coveringIntersect(A, B)` | Operates on coverings; the finer cell of each overlapping pair is the intersection |
 | Are these the same place, across subjects or templates? | `samePlace(a, b, templates, { toleranceMm })`, `coveringsSamePlace(A, B, regime)` | **No default tolerance.** The caller must state what "same" means. `coveringsSamePlace` takes a regime — `{ within: 'template' }` or `{ across: 'subjects', toleranceMm, … }` — so the choice is explicit. Widens by each cell's own radius so a coarse address is not penalised for being coarse. Refuses to compare across frames, because their millimetres are not interchangeable. Reports `homology: 'absent'` instead of answering |
-| How many digits should I display? | `recommendedDigits(address, templates, residualMm)` | One cell should be no smaller than the uncertainty it stands in for |
+| How many digits should I display? | `recommendedPrecision(address, templates, residualMm)`, or `recommendedDigits(...)` for the number alone | One cell should be no smaller than the uncertainty it stands in for. Bounded by the lowest of three ceilings — the residual, the template's `maxUsefulDigits` (§9), and the frame's own digit range — and `limitedBy` says which one bound it, because "collect better data" and "this template will never justify more" call for opposite things from the user |
 
 No exported function answers an equality question, and
 `packages/alc/test/surface.test.ts` enumerates the public surface and asserts

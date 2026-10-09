@@ -20,6 +20,8 @@ import { strict as assert } from 'node:assert';
 import test from 'node:test';
 
 import {
+  FRAMES,
+  auditBodyTemplate,
   bodyLocalToMm,
   bodyMmToLocal,
   encodeBody,
@@ -28,10 +30,11 @@ import {
   locate,
   parse,
   recommendedDigits,
+  recommendedPrecision,
   samePlace,
 } from '../src/index.ts';
 import { ADDRESSABLE_LEVELS, ANOMALOUS_LEVELS } from '../src/frames/bodySpine.ts';
-import { bvLocalToMm } from '../src/frames/brainVolume.ts';
+import { bvLocalToMm, bvMmToLocal } from '../src/frames/brainVolume.ts';
 import {
   ADULT_MALE,
   BRAIN_ADULT,
@@ -102,23 +105,156 @@ test('precision: an over-precise flag survives the comparison layer', () => {
   assert.ok(result.notes.length >= 2, `expected a note from each side, got ${result.notes.length}`);
 });
 
-test('precision: QA-3 — recommendedDigits can exceed what the template justifies', () => {
-  // The defect. The function documented as "how many digits should I display?"
-  // answers with a precision that locate() flags as over-precise one call
-  // later, so a UI that trusts it renders false precision while the library
-  // was willing to say so.
+test('precision: recommendedDigits never recommends a precision locate() calls over-precise', () => {
+  // Was the QA-3 characterisation test, which asserted the opposite: the
+  // function documented as "how many digits should I display?" answered with a
+  // precision locate() flagged as over-precise one call later, so a UI that
+  // trusted it rendered false precision while the library was willing to say
+  // so. 32 552 corpus hits. This is `INV-RECOMMENDED-NOT-OVERPRECISE`, which
+  // now stands unqualified in fuzz/invariants.ts; here are the two vectors the
+  // report gives, plus the general sweep.
   const d = recommendedDigits('BD-T07-03O-531650', { body: adult }, 0.05);
-  assert.ok(
-    d > adult.maxUsefulDigits,
-    `QA-3 appears fixed: recommendedDigits returned ${d} for a template justifying `
-      + `${adult.maxUsefulDigits}. Delete this test and assert the bound instead.`,
+  assert.equal(d, adult.maxUsefulDigits, `recommended ${d}, template justifies ${adult.maxUsefulDigits}`);
+  assert.equal(
+    locate(`BD-T07-03O-${'531650'.slice(0, d)}`, { body: adult }).flags.overPrecise,
+    undefined,
   );
-  const padded = `BD-T07-03O-${'531650'.padEnd(d, '0').slice(0, d)}`;
-  assert.equal(locate(padded, { body: adult }).flags.overPrecise, true);
 
-  // Same in the brain frame, so it is the function and not one template.
+  // And in the brain frame, so this is the function and not one template.
   const dv = recommendedDigits('BV-L-471025', { brainVolume: brain }, 0.5);
-  assert.ok(dv > brain.maxUsefulDigits, `BV: recommended ${dv}, template justifies ${brain.maxUsefulDigits}`);
+  assert.equal(dv, brain.maxUsefulDigits, `BV: recommended ${dv}, template justifies ${brain.maxUsefulDigits}`);
+
+  // The general statement, over both frames, three templates and a range of
+  // residuals down to zero — a zero residual asks for the finest precision
+  // there is, which is where a missing ceiling shows up first.
+  for (const [address, templates, template] of [
+    ['BD-T07-03O-531650', { body: adult }, adult],
+    ['BD-T07-03O-531650', { body: child }, child],
+    ['BD-L03-07I-04213', { body: sixLumbar }, sixLumbar],
+    ['BV-L-471025', { brainVolume: brain }, brain],
+    ['BV-R-0', { brainVolume: brain }, brain],
+  ] as const) {
+    const a = parse(address);
+    for (const residualMm of [0, 0.01, 0.05, 0.5, 1, 2, 5, 10, 50, 500]) {
+      const n = recommendedDigits(address, templates, residualMm);
+      assert.ok(
+        n <= template.maxUsefulDigits,
+        `${address} at ${residualMm} mm: recommended ${n} over a ceiling of ${template.maxUsefulDigits}`,
+      );
+      const padded = n === 0
+        ? `${a.frame}-${a.anchors.join('-')}`
+        : `${a.frame}-${a.anchors.join('-')}-${(a.digits + '0'.repeat(16)).slice(0, n)}`;
+      assert.equal(
+        locate(padded, templates).flags.overPrecise,
+        undefined,
+        `${padded}, recommended for ${address} at ${residualMm} mm, is flagged over-precise`,
+      );
+    }
+  }
+});
+
+test('precision: the recommendation says which of the three ceilings bound it', () => {
+  // The other half of QA-3's fix, and the half a UI acts on: a bare number
+  // cannot distinguish "collect better data and you may print more" from "this
+  // template will never justify more, whatever you measure".
+  //
+  // Template-bound — the reported vector. A 0.05 mm residual would allow more
+  // digits; `maxUsefulDigits` is what stops it.
+  const tight = recommendedPrecision('BD-T07-03O-531650', { body: adult }, 0.05);
+  assert.equal(tight.limitedBy, 'template');
+  assert.equal(tight.digits, adult.maxUsefulDigits);
+  assert.equal(tight.maxUsefulDigits, adult.maxUsefulDigits);
+  assert.equal(tight.templateId, adult.id);
+  assert.ok(
+    tight.notes.some((n) => n.includes(adult.id) && n.includes('over-precise')),
+    `the note must name the template and the flag it would have earned: ${JSON.stringify(tight.notes)}`,
+  );
+
+  // Residual-bound — the same address at a residual coarser than the finest
+  // cell the template justifies. Both the number and the reason must change.
+  const loose = recommendedPrecision('BD-T07-03O-531650', { body: adult }, 10);
+  assert.equal(loose.limitedBy, 'residual');
+  assert.ok(loose.digits < tight.digits, `${loose.digits} should be coarser than ${tight.digits}`);
+  assert.ok(
+    loose.notes.some((n) => n.includes('10 mm')),
+    `the note must name the residual that bound it: ${JSON.stringify(loose.notes)}`,
+  );
+  // It still reports the template's ceiling, so a UI can say "2 of the 5 this
+  // template could justify" rather than just "2".
+  assert.equal(loose.maxUsefulDigits, adult.maxUsefulDigits);
+
+  // Frame-bound — a `BD` level with no azimuth segment cannot carry refinement
+  // digits at all, whatever the residual or the template would allow.
+  const rootward = recommendedPrecision('BD-T07', { body: adult }, 0);
+  assert.equal(rootward.limitedBy, 'frame');
+  assert.equal(rootward.digits, 0);
+
+  // A level the template does not realise has no millimetre extent, so no
+  // precision is justified — and the template, not the residual, is what binds.
+  const variant = recommendedPrecision('BD-L06-12O', { body: adult }, 0.05);
+  assert.equal(variant.limitedBy, 'template');
+  assert.equal(variant.digits, 0);
+  assert.ok(
+    variant.notes.some((n) => n.includes('level mapping')),
+    `the note must say what would change it: ${JSON.stringify(variant.notes)}`,
+  );
+
+  // A non-finite residual is refused rather than absorbed. Left alone, every
+  // "is this cell smaller than the residual?" test is false for NaN, so the
+  // answer would be the deepest precision the template allows: maximum
+  // confidence, from the absence of information.
+  for (const bad of [NaN, Infinity, -1, 'big' as unknown as number]) {
+    assert.throws(
+      () => recommendedPrecision('BD-T07-03O-531650', { body: adult }, bad),
+      (e: unknown) => (e as { code?: string }).code === 'bad_residual',
+      `residualMm ${String(bad)} should be refused`,
+    );
+  }
+});
+
+test('precision: every recommendation is a precision its frame can express', () => {
+  // Was the QA-11 characterisation test in known-defects.test.ts, which pinned
+  // `recommendedDigits('BR-L-7A3F', templates, 1) === 0` — and `BR-L` is not an
+  // address, because a `BR` address needs at least one digit for the HEALPix
+  // base face. The function also hardcoded `maxDigits = frame === 'BR' ? 6 : 12`
+  // while `BR.maxDigits` is 7, so the two would have disagreed the moment `BR`
+  // got a template. Both bounds now come from the frame descriptor.
+  assert.equal(FRAMES.BR.minDigits, 1, 'BR needs a base-face digit');
+  assert.equal(FRAMES.BD.minDigits, 0, 'BD-T07 is an address on its own');
+  assert.equal(FRAMES.BV.minDigits, 0);
+
+  // A frame the library cannot locate gets locate()'s own refusal rather than a
+  // number: there is no honest recommendation about a frame with no template,
+  // and 0 was being read as one.
+  assert.throws(
+    () => recommendedDigits('BR-L-7A3F', { brainVolume: brain }, 1),
+    (e: unknown) => (e as { code?: string }).code === 'frame_disabled',
+  );
+  // Same refusal when the frame is locatable but its template was not supplied.
+  assert.throws(
+    () => recommendedDigits('BD-T07-03O-531', {}, 1),
+    (e: unknown) => (e as { code?: string }).code === 'no_template',
+  );
+
+  // Wherever a recommendation is given, truncating to it yields an address that
+  // parses — which is what a caller displaying it depends on.
+  for (const [address, templates] of [
+    ['BD-T07-03O-531650', { body: adult }],
+    ['BD-T07', { body: adult }],
+    ['BV-L-471025', { brainVolume: brain }],
+  ] as const) {
+    const a = parse(address);
+    for (const residualMm of [0, 0.05, 1, 5, 50]) {
+      const r = recommendedPrecision(address, templates, residualMm);
+      assert.ok(r.digits >= FRAMES[a.frame].minDigits, `${address}: ${r.digits} is below the frame floor`);
+      assert.ok(r.digits <= r.frameMaxDigits, `${address}: ${r.digits} exceeds ${r.frameMaxDigits}`);
+      assert.equal(r.frameMaxDigits, FRAMES[a.frame].maxDigits, 'the ceiling must come from the descriptor');
+      const truncated = r.digits === 0
+        ? `${a.frame}-${a.anchors.join('-')}`
+        : `${a.frame}-${a.anchors.join('-')}-${(a.digits + '0'.repeat(16)).slice(0, r.digits)}`;
+      assert.equal(isValid(truncated), true, `${truncated} is not an address`);
+    }
+  }
 });
 
 test('precision: recommendedDigits still shrinks as the residual grows', () => {
@@ -160,51 +296,97 @@ test('precision: past either end of the column, the note says which end', () => 
   assert.ok(below.flags.notes?.some((n) => n.includes('caudal')), JSON.stringify(below.flags.notes));
 });
 
-test('precision: QA-4 — a NaN coordinate produces a confident address with no flag', () => {
-  // Spec section 9 promises a flag and a note for a point merely outside the
-  // surface. A NaN coordinate is worse than outside and gets nothing: the
-  // library returns a specific hemisphere and a specific cell, silently.
-  // A NaN arrives from a failed registration or a unit conversion that divided
-  // by zero, which is exactly when a consumer most needs to be told.
-  for (const point of [
-    [NaN, 0, 0],
-    [0, NaN, 0],
-    [0, 0, NaN],
-    [NaN, NaN, NaN],
-  ] as Array<[number, number, number]>) {
-    const result = encodeBrainVolume(brain, point, 6);
-    assert.deepEqual(
-      result.flags,
-      {},
-      `QA-4 appears fixed for ${JSON.stringify(point)}: flags are now ${JSON.stringify(result.flags)}. `
-        + 'Delete this test and assert that the flag is raised.',
+test('precision: a NaN coordinate is refused, by axis, instead of yielding a confident cell', () => {
+  // Was the QA-4 characterisation test. `encodeBrainVolume(brain, [NaN,NaN,NaN], 6)`
+  // returned `{ address: 'BV-R-000000', flags: {} }` — a specific hemisphere and
+  // a specific 1 mm cell, from nothing. `clampUnit` tests `v < 0 || v >= 1`, and
+  // both are false for NaN, so it passed the range test unflagged and the
+  // octree's `NaN >= mid` comparisons then took the zero branch at every level.
+  //
+  // Spec section 9 promises a flag and a note for a point merely *outside* the
+  // surface. NaN is worse than outside: it is unordered, so there is no edge it
+  // is past and nothing a clamp could honestly report. It is refused.
+  for (const [point, axis] of [
+    [[NaN, 0, 0], 'x'],
+    [[0, NaN, 0], 'y'],
+    [[0, 0, NaN], 'z'],
+    [[NaN, NaN, NaN], 'x'],
+  ] as Array<[[number, number, number], string]>) {
+    assert.throws(
+      () => encodeBrainVolume(brain, point, 6),
+      (e: unknown) => {
+        const err = e as { code?: string; message?: string };
+        assert.equal(err.code, 'nan_coordinate', `${JSON.stringify(point)}`);
+        // The axis is the diagnostic: it is what tells a caller which of three
+        // upstream conversions produced the NaN.
+        assert.match(String(err.message), new RegExp(`the ${axis} coordinate`));
+        assert.match(String(err.message), new RegExp(brain.id));
+        return true;
+      },
+      `${JSON.stringify(point)} must be refused, not encoded`,
     );
-    assert.match(result.address, /^BV-[LR]-0{6}$/, 'the fabricated address is a real, specific cell');
+    // Through the lower-level converter too, since a probe or an asset pipeline
+    // calls that directly and must not be the one unguarded route in.
+    assert.throws(
+      () => bvMmToLocal(brain, point),
+      (e: unknown) => (e as { code?: string }).code === 'nan_coordinate',
+    );
   }
 
-  // Infinity, by contrast, is handled correctly — so the gap is NaN alone.
-  const inf = encodeBrainVolume(brain, [Infinity, 0, 0], 6);
-  assert.equal(inf.flags.clamped, true);
-  assert.ok(inf.flags.notes?.some((n) => n.includes('outside the template bounding box')));
+  // An infinity is a different statement and keeps its different answer: it IS
+  // past an edge, in a known direction, so `clamped` plus a note is the truth
+  // about it. This is the behaviour the report pointed to as the intent.
+  for (const point of [[Infinity, 0, 0], [0, -Infinity, 0]] as Array<[number, number, number]>) {
+    const inf = encodeBrainVolume(brain, point, 6);
+    assert.equal(inf.flags.clamped, true, JSON.stringify(point));
+    assert.ok(inf.flags.notes?.some((n) => n.includes('outside the template bounding box')));
+  }
+
+  // And a finite point in the same template still answers cleanly, so the guard
+  // is a boundary check and not an always-on refusal.
+  const inside = bvLocalToMm(brain, 'L', { a: 0.4, b: 0.6, c: 0.55 });
+  assert.match(encodeBrainVolume(brain, inside, 6).address, /^BV-L-\d{6}$/);
+  assert.deepEqual(encodeBrainVolume(brain, inside, 6).flags, {});
 });
 
-test('precision: QA-8 — a NaN body coordinate blames the template instead of the input', () => {
-  // `bodyMmToLocal` falls through to its inadmissibility branch for NaN, and
-  // emits a note accusing a template that `auditBodyTemplate()` certifies as
-  // admissible. An asset pipeline reading that note would go looking for a
-  // geometry bug that is not there.
+test('precision: a NaN body coordinate is charged to the input, never to the template', () => {
+  // Was the QA-8 characterisation test: every `sigma` comparison in
+  // `bodyMmToLocal` is false for NaN, so the function fell through to its fold
+  // branch and filed an inadmissibility note against a template
+  // `auditBodyTemplate()` certifies with 123 mm of margin. An asset pipeline
+  // reading that note would go hunting a geometry bug that does not exist — and
+  // that note is the one piece of diagnostic output it is told to trust.
   const template = buildAnatomicalBodyTemplate(ADULT_P50);
-  const { flags } = bodyMmToLocal(template, [NaN, NaN, NaN]);
-  const blames = flags.notes?.some((n) => n.includes('inadmissible')) ?? false;
-  assert.ok(
-    blames,
-    'QA-8 appears fixed: a NaN coordinate no longer produces an inadmissibility note. '
-      + 'Delete this test and assert the input is rejected instead.',
-  );
-  assert.ok(
-    flags.notes?.some((n) => n.includes(template.id)),
-    'the note names the template, which is what makes it misleading',
-  );
+  for (const point of [
+    [NaN, NaN, NaN],
+    [NaN, 0, 0],
+    [0, 0, NaN],
+  ] as Array<[number, number, number]>) {
+    for (const [what, call] of [
+      ['bodyMmToLocal', () => bodyMmToLocal(template, point)],
+      ['encodeBody', () => encodeBody(template, point, 3)],
+    ] as const) {
+      assert.throws(
+        call,
+        (e: unknown) => {
+          const err = e as { code?: string; message?: string };
+          assert.equal(err.code, 'nan_coordinate', `${what} ${JSON.stringify(point)}`);
+          // The whole point of the fix: whatever is said about this input, the
+          // template's geometry is not what is being accused.
+          assert.doesNotMatch(String(err.message), /inadmissible/);
+          assert.doesNotMatch(String(err.message), /fold/);
+          return true;
+        },
+        `${what}${JSON.stringify(point)} must refuse the input`,
+      );
+    }
+  }
+
+  // The template is still admissible and still answers for a real point, so
+  // nothing here was bought by making the template look worse.
+  assert.equal(auditBodyTemplate(template).locallyAdmissible, true);
+  const real = bodyLocalToMm(template, { level: 'T07', u: 0.5, t: 0.25, r: 0.5 });
+  assert.deepEqual(bodyMmToLocal(template, real).flags, {});
 });
 
 // ---------------------------------------------------------------------------

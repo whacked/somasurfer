@@ -20,6 +20,9 @@ export {
   coveringIntersection,
   samePlace,
   recommendedDigits,
+  recommendedPrecision,
+  type PrecisionLimit,
+  type RecommendedPrecision,
   type SamePlaceResult,
   type SamePlaceOptions,
 } from './compare.ts';

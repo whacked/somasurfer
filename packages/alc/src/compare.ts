@@ -19,8 +19,8 @@
  * without having typed a tolerance.
  */
 
-import { contains, parse } from './address.ts';
-import { AlcError } from './codec.ts';
+import { FRAMES, contains, parse } from './address.ts';
+import { AlcError, MAX_DIGITS } from './codec.ts';
 import { locate, type TemplateSet } from './locate.ts';
 import type { Located, Vec3 } from './types.ts';
 
@@ -300,33 +300,198 @@ export function samePlace(
   };
 }
 
+/** Which of the three ceilings on a recommended precision is the binding one. */
+export type PrecisionLimit = 'residual' | 'template' | 'frame';
+
+/**
+ * The answer to "how many digits should I display?", with the reason attached.
+ *
+ * The reason is not decoration. A UI that is told 4 digits and nothing else
+ * cannot tell "collect better data and you may print more" from "this template
+ * will never justify more, whatever you measure" — and those call for opposite
+ * things from the user.
+ */
+export interface RecommendedPrecision {
+  /**
+   * Refinement digits to display. Always a precision this frame can express and
+   * this template can justify, so `locate()` on the truncated address never
+   * raises `flags.overPrecise`.
+   */
+  readonly digits: number;
+  /** Which ceiling bound `digits`: the caller's residual, the template, or the frame. */
+  readonly limitedBy: PrecisionLimit;
+  /** The template that answered. */
+  readonly templateId: string;
+  /** That template's own ceiling, for display next to the recommendation. */
+  readonly maxUsefulDigits: number;
+  /** The frame's hard ceiling, from its descriptor rather than a local constant. */
+  readonly frameMaxDigits: number;
+  /** One sentence naming the binding constraint, safe to show a user. */
+  readonly notes: readonly string[];
+}
+
+/** The template that answers for a frame, or undefined for a frame with none. */
+function templateFor(frame: string, templates: TemplateSet): { maxUsefulDigits: number } | undefined {
+  if (frame === 'BD') return templates.body;
+  if (frame === 'BV') return templates.brainVolume;
+  return undefined;
+}
+
 /**
  * The deepest precision at which an address is worth displaying, given a
- * residual. One cell should be at least as large as the uncertainty it is
- * standing in for; printing finer digits than that advertises precision the
- * data does not have.
+ * residual, and what stops it going deeper.
+ *
+ * Three ceilings apply, and the recommendation is the lowest of them:
+ *
+ *   residual  one cell should be at least as large as the uncertainty it stands
+ *             in for; finer digits advertise precision the data does not have
+ *   template  `maxUsefulDigits` — past it `locate()` raises `flags.overPrecise`,
+ *             so recommending it would be recommending a flag
+ *   frame     the frame descriptor's own digit range, floor as well as ceiling
+ *
+ * Only the first was applied before (QA-3). The function compared cell extent
+ * against the residual and never consulted the template, so it answered 8 for a
+ * template justifying 5 — the one API a UI would ask was the one that routed
+ * around spec §9's honesty flag, 32 552 times over the fuzz corpus. The frame
+ * floor was missing too (QA-11): `BR` needs at least one digit, and a `BR`
+ * address got the recommendation 0, which is not an address.
+ *
+ * A frame or template that cannot be located at the frame's *minimum* precision
+ * raises rather than returning a number: `locate()`'s own `no_template` or
+ * `frame_disabled`. There is no honest recommendation to make about a frame the
+ * library cannot place in millimetres, and 0 was being read as one.
+ */
+export function recommendedPrecision(
+  address: string,
+  templates: TemplateSet,
+  residualMm: number,
+): RecommendedPrecision {
+  const a = parse(address);
+  const descriptor = FRAMES[a.frame];
+  // A NaN residual would make every "is the cell smaller than the residual?"
+  // test false and so recommend the deepest precision the template allows —
+  // the maximum confidence, from the absence of information.
+  if (typeof residualMm !== 'number' || !(residualMm >= 0) || residualMm === Infinity) {
+    throw new AlcError(
+      `residualMm must be a finite, non-negative number of millimetres, got ${residualMm}`,
+      'bad_residual',
+    );
+  }
+
+  const frameMaxDigits = Math.min(MAX_DIGITS, descriptor.maxDigits);
+  const floor = descriptor.minDigits;
+  const stem = `${a.frame}-${a.anchors.join('-')}`;
+  const at = (d: number): string =>
+    (d === 0 ? stem : `${stem}-${(a.digits + '0'.repeat(frameMaxDigits)).slice(0, d)}`);
+
+  // Deliberately unguarded: if the frame's minimum precision cannot be located,
+  // the caller gets locate()'s error rather than a number they cannot use.
+  const atFloor = locate(at(floor), templates);
+  const maxUsefulDigits = templateFor(a.frame, templates)?.maxUsefulDigits ?? frameMaxDigits;
+
+  const notes: string[] = [];
+  let digits = floor;
+  let limitedBy: PrecisionLimit = 'frame';
+  let bound = false;
+
+  for (let d = floor; d <= frameMaxDigits && !bound; d += 1) {
+    let l: Located;
+    try {
+      l = d === floor ? atFloor : locate(at(d), templates);
+    } catch (e) {
+      // The grammar will not carry digits at this depth — a `BD` address with
+      // no azimuth segment, for instance, has to gain one before it can refine.
+      limitedBy = 'frame';
+      notes.push(
+        `frame ${a.frame} cannot express ${d} refinement digits on ${a.canonical}: ${(e as Error).message}`,
+      );
+      bound = true;
+      break;
+    }
+
+    // The template's ceiling, read from the flag the library itself raises, so
+    // the two cannot drift: whatever `locate()` calls over-precise is not
+    // something this function may recommend.
+    if (l.flags.overPrecise) {
+      limitedBy = 'template';
+      notes.push(
+        `template ${l.templateId} justifies at most ${maxUsefulDigits} refinement digits, and `
+        + `locate() flags anything finer as over-precise, so the recommendation is clamped there `
+        + `and not to what a ${residualMm} mm residual alone would allow`,
+      );
+      bound = true;
+      break;
+    }
+
+    const smallestMm = Math.min(l.extentMm[0], l.extentMm[1], l.extentMm[2]);
+    if (!Number.isFinite(smallestMm)) {
+      // An anchor this template does not realise has no millimetre extent, so
+      // no precision is justified in it at all. The template binds, and the
+      // note says what would change that.
+      limitedBy = 'template';
+      notes.push(
+        `template ${l.templateId} does not realise ${a.anchors.join('-')} (homology `
+        + `'${l.flags.homology ?? 'unknown'}'), so this cell has no millimetre extent and no `
+        + 'refinement is justified; a registration-supplied level mapping is what would change that',
+      );
+      bound = true;
+      break;
+    }
+
+    if (smallestMm < residualMm) {
+      if (d === floor) {
+        // Both ceilings bind at once, and the frame's is the one the caller
+        // cannot do anything about, so it is the one reported.
+        limitedBy = 'frame';
+        notes.push(
+          `${floor} digit${floor === 1 ? '' : 's'} is the coarsest precision frame ${a.frame} can `
+          + `express, and that cell is already ${smallestMm.toFixed(2)} mm across its smallest axis `
+          + `— finer than the ${residualMm} mm residual, which no legal address here can respect`,
+        );
+      } else {
+        limitedBy = 'residual';
+        notes.push(
+          `a ${residualMm} mm residual is larger than a cell at ${d} digits `
+          + `(${smallestMm.toFixed(2)} mm across its smallest axis), so ${digits} digits is the `
+          + `deepest precision the data supports; template ${l.templateId} would justify `
+          + `${maxUsefulDigits}`,
+        );
+      }
+      bound = true;
+      break;
+    }
+    digits = d;
+  }
+
+  if (!bound) {
+    limitedBy = 'frame';
+    notes.push(
+      `frame ${a.frame}'s ceiling of ${frameMaxDigits} refinement digits binds before the `
+      + `${residualMm} mm residual or template ${atFloor.templateId} does`,
+    );
+  }
+
+  return Object.freeze({
+    digits,
+    limitedBy,
+    templateId: atFloor.templateId,
+    maxUsefulDigits,
+    frameMaxDigits,
+    notes: Object.freeze(notes),
+  });
+}
+
+/**
+ * The deepest precision at which an address is worth displaying, given a
+ * residual, as a bare number.
+ *
+ * Identical to `recommendedPrecision(...).digits`. Use that one where the
+ * reason matters — which is most places a UI makes this call.
  */
 export function recommendedDigits(
   address: string,
   templates: TemplateSet,
   residualMm: number,
 ): number {
-  const a = parse(address);
-  const maxDigits = a.frame === 'BR' ? 6 : 12;
-  let best = 0;
-  for (let d = 0; d <= maxDigits; d += 1) {
-    const candidate = d === 0
-      ? `${a.frame}-${a.anchors.join('-')}`
-      : `${a.frame}-${a.anchors.join('-')}-${(a.digits + '0'.repeat(maxDigits)).slice(0, d)}`;
-    let extent: Vec3;
-    try {
-      extent = locate(candidate, templates).extentMm;
-    } catch {
-      break;
-    }
-    const smallest = Math.min(extent[0], extent[1], extent[2]);
-    if (!Number.isFinite(smallest) || smallest < residualMm) break;
-    best = d;
-  }
-  return best;
+  return recommendedPrecision(address, templates, residualMm).digits;
 }

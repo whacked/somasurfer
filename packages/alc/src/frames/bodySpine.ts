@@ -24,7 +24,7 @@
  * middle of a cell instead of straddling a boundary.
  */
 
-import { AlcError, OCTAL, digitsToValues } from '../codec.ts';
+import { AlcError, OCTAL, digitsToValues, rejectNaNCoordinates } from '../codec.ts';
 import type { FrameDescriptor, Located, LocateFlags, Vec3 } from '../types.ts';
 
 export const BD: FrameDescriptor = {
@@ -32,6 +32,7 @@ export const BD: FrameDescriptor = {
   anchorSegments: 2,
   digitAlphabet: OCTAL,
   maxDigits: 12,
+  minDigits: 0,
   summary: 'Body, anchored to the vertebral column: level, clock azimuth, normalised depth.',
 };
 
@@ -717,6 +718,12 @@ export function bodyMmToLocal(
   template: BodyTemplate,
   p: Vec3,
 ): { local: LocalBodyCoords; flags: LocateFlags } {
+  // Before any arithmetic, and before any note can be written. Every `sigma`
+  // comparison below is false for a NaN coordinate, so the function used to
+  // fall through to its fold branch and file an inadmissibility note against a
+  // template the audit certifies — blaming the geometry for the caller's input
+  // (QA-8). The template is not the thing that is wrong here.
+  rejectNaNCoordinates(p, `BD encode in template ${template.id}`);
   const g = spineGeometry(template);
   const n = g.dirs.length;
   const flags: LocateFlags = {};
@@ -1069,6 +1076,12 @@ export function scanBodyTemplateFolds(template: BodyTemplate, options: FoldScanO
             } catch {
               continue; // degenerate geometry; STRUCTURE-class problem, not a fold
             }
+            // Same class of problem, reached without throwing: a non-finite slab
+            // origin yields a sample point that is not a point. STRUCTURE
+            // reports that ("origin is not finite"); a fold scan has nothing to
+            // say about it, and must neither count it as a fold nor throw out of
+            // the acceptance gate when the mm -> local direction refuses it.
+            if (!mm.every(Number.isFinite)) continue;
             probed += 1;
             const claimedBy = levelsClaiming(template, mm);
             if (claimedBy.length === 1 && claimedBy[0] === slab.label) continue;

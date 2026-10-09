@@ -6,14 +6,18 @@
  * Reads only. Run: node scripts/verify-retirements.mjs
  */
 import {
+  BR,
   auditBodyTemplate,
   bodyLocalToMm,
   bodyMmToLocal,
   canonicalLevel,
   encodeBody,
+  encodeBrainVolume,
   levelsAddressing,
   levelsClaiming,
   locate,
+  recommendedDigits,
+  recommendedPrecision,
   samePlace,
   scanBodyTemplateFolds,
 } from '../src/index.ts';
@@ -24,7 +28,15 @@ import {
   PRESETS,
   buildAnatomicalBodyTemplate,
 } from '../src/testing/anatomicalTemplates.ts';
+import {
+  ADULT_MALE,
+  BRAIN_ADULT,
+  buildBodyTemplate,
+  buildBrainTemplate,
+} from '../src/testing/syntheticTemplates.ts';
 import { measureRoundTrip } from '../src/testing/admissibilityProbe.ts';
+import { FUZZ_SEED, fullCorpus } from '../test/fuzz/corpus.ts';
+import { sweep } from '../test/fuzz/invariants.ts';
 
 const say = (s) => console.log(s);
 const verdicts = [];
@@ -255,6 +267,122 @@ say('\n--- QA-13: the displacement half of a fold on anat-adult-p50-split-sacrum
     Boolean(reported.flags.folded) && /S02/.test(notes) && falsePositives === 0,
     `displaced point folded=${Boolean(reported.flags.folded)}, note names S02=${/S02/.test(notes)}, `
     + `preset false positives=${falsePositives}`,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// QA-3 — recommendedDigits() recommended a precision locate() calls dishonest.
+// Original measurement (report §QA-3): 8 digits for a template justifying 5, 7
+// for a brain template justifying 6, and 32 552 hits of
+// INV-RECOMMENDED-NOT-OVERPRECISE over the fuzz corpus.
+say('\n--- QA-3: recommendedDigits against maxUsefulDigits, and the corpus sweep');
+const synthAdult = buildBodyTemplate(ADULT_MALE);
+const synthBrain = buildBrainTemplate(BRAIN_ADULT);
+{
+  const bd = recommendedPrecision('BD-T07-03O-531650', { body: synthAdult }, 0.05);
+  const bv = recommendedPrecision('BV-L-471025', { brainVolume: synthBrain }, 0.5);
+  say(`recommendedPrecision('BD-T07-03O-531650', 0.05 mm) = ${bd.digits} digits, ` +
+    `limitedBy '${bd.limitedBy}' (template justifies ${synthAdult.maxUsefulDigits}) [was 8]`);
+  say(`recommendedPrecision('BV-L-471025', 0.5 mm)       = ${bv.digits} digits, ` +
+    `limitedBy '${bv.limitedBy}' (template justifies ${synthBrain.maxUsefulDigits}) [was 7]`);
+  const loose = recommendedPrecision('BD-T07-03O-531650', { body: synthAdult }, 10);
+  say(`  and at a 10 mm residual: ${loose.digits} digits, limitedBy '${loose.limitedBy}' ` +
+    '— so the two reasons are distinguishable, which is the other half of the finding');
+  // The same corpus, the same seed, the same invariant the original 32 552 came
+  // from. The ledger entry is gone, so any hit now lands in `unexpected` too.
+  const corpus = fullCorpus(FUZZ_SEED, 8000);
+  const swept = sweep(corpus, { body: synthAdult, brainVolume: synthBrain });
+  const hits = swept.hits.get('INV-RECOMMENDED-NOT-OVERPRECISE')?.count ?? 0;
+  say(`INV-RECOMMENDED-NOT-OVERPRECISE over ${swept.inputs} corpus inputs ` +
+    `(${swept.accepted} accepted, seed ${FUZZ_SEED}): ${hits} hits [was 32 552]`);
+  const overPrecise = bd.digits > synthAdult.maxUsefulDigits || bv.digits > synthBrain.maxUsefulDigits;
+  verdict(
+    'QA-3',
+    !overPrecise && hits === 0 && bd.limitedBy === 'template' && loose.limitedBy === 'residual',
+    `${bd.digits}/${bv.digits} digits against ceilings of ${synthAdult.maxUsefulDigits}/` +
+      `${synthBrain.maxUsefulDigits}, ${hits} corpus hits, binding reason reported`,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// QA-11 — recommendedDigits() returned 0 for a BR address, and `BR-L` is not an
+// address; it also hardcoded a 6-digit BR ceiling against BR.maxDigits === 7.
+say('\n--- QA-11: the BR frame recommendation');
+{
+  let refusal = null;
+  try {
+    const d = recommendedDigits('BR-L-7A3F', { brainVolume: synthBrain }, 1);
+    say(`recommendedDigits('BR-L-7A3F', 1 mm) = ${d}  (still a number)`);
+  } catch (e) {
+    refusal = e;
+    say(`recommendedDigits('BR-L-7A3F', 1 mm) throws ${e.code}: ${String(e.message).slice(0, 64)} [was 0]`);
+  }
+  say(`BR.maxDigits = ${BR.maxDigits}, BR.minDigits = ${BR.minDigits} ` +
+    '(both now read from the descriptor rather than hardcoded)');
+  verdict('QA-11', refusal?.code === 'frame_disabled' && BR.minDigits === 1,
+    `refused with ${refusal?.code ?? 'nothing'}, frame floor ${BR.minDigits}`);
+}
+
+// ---------------------------------------------------------------------------
+// QA-4 — a NaN coordinate produced a confident address with no flag.
+// Original measurement (report §QA-4): encodeBrainVolume(brain, [NaN,NaN,NaN], 6)
+// returned { address: 'BV-R-000000', flags: {} }.
+say('\n--- QA-4: a NaN coordinate into encodeBrainVolume');
+{
+  const results = [[NaN, NaN, NaN], [NaN, 0, 0], [0, NaN, 0], [0, 0, NaN]].map((point) => {
+    try {
+      const r = encodeBrainVolume(synthBrain, point, 6);
+      say(`  ${JSON.stringify(point)} -> ${JSON.stringify(r)}`);
+      return { refused: false };
+    } catch (e) {
+      say(`  ${JSON.stringify(point)} -> refused, ${e.code}: ${String(e.message).slice(0, 72)}...`);
+      return { refused: true, code: e.code, namesAxis: /the [xyz] coordinate/.test(e.message) };
+    }
+  });
+  const inf = encodeBrainVolume(synthBrain, [Infinity, 0, 0], 6);
+  say(`  [Infinity,0,0] -> ${JSON.stringify(inf)}  (an infinity is past a known edge, so it still clamps)`);
+  verdict(
+    'QA-4',
+    results.every((r) => r.refused && r.code === 'nan_coordinate' && r.namesAxis) && inf.flags.clamped === true,
+    `all four refused with nan_coordinate naming the axis; Infinity still clamps=${inf.flags.clamped === true}`,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// QA-8 — a NaN body coordinate produced an inadmissibility note against a
+// template the audit certifies. Original measurement (report §QA-8):
+// bodyMmToLocal(anat-adult-p50, [NaN,NaN,NaN]) returned a note naming the
+// template as inadmissible, with 123 mm of audit margin.
+say('\n--- QA-8: a NaN body coordinate, and who gets blamed for it');
+{
+  const clean = buildAnatomicalBodyTemplate(ADULT_P50);
+  const cAudit = auditBodyTemplate(clean);
+  say(`auditBodyTemplate(${clean.id}): locallyAdmissible=${cAudit.locallyAdmissible}, ` +
+    `worstMarginMm=${cAudit.worstMarginMm.toFixed(1)}`);
+  let blamed = null;
+  let refused = null;
+  try {
+    const r = bodyMmToLocal(clean, [NaN, NaN, NaN]);
+    blamed = [r.flags?.note, ...(r.flags?.notes ?? [])].filter(Boolean).join(' | ');
+    say(`bodyMmToLocal([NaN,NaN,NaN]) -> level ${r.local.level}, notes: ${blamed}`);
+  } catch (e) {
+    refused = e;
+    say(`bodyMmToLocal([NaN,NaN,NaN]) -> refused, ${e.code}: ${String(e.message).slice(0, 72)}...`);
+  }
+  let encodeRefused = null;
+  try {
+    say(`encodeBody([NaN,NaN,NaN], 3) -> ${JSON.stringify(encodeBody(clean, [NaN, NaN, NaN], 3))}`);
+  } catch (e) {
+    encodeRefused = e;
+    say(`encodeBody([NaN,NaN,NaN], 3) -> refused, ${e.code} [was 'bad_azimuth' about an anchor spelled NANI]`);
+  }
+  const blamesTemplate = /inadmissible/.test(refused?.message ?? blamed ?? '');
+  verdict(
+    'QA-8',
+    refused?.code === 'nan_coordinate' && encodeRefused?.code === 'nan_coordinate'
+      && !blamesTemplate && cAudit.locallyAdmissible,
+    `both directions refuse the input with nan_coordinate, blames-template=${blamesTemplate}, ` +
+      `and ${clean.id} is still certified admissible`,
   );
 }
 

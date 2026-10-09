@@ -40,6 +40,8 @@ export const BR: FrameDescriptor = {
   anchorSegments: 1,
   digitAlphabet: HEX,
   maxDigits: 7,
+  // The first hex digit is the HEALPix base face, so `BR-L` is not an address.
+  minDigits: 1,
   summary: 'Cortical surface, indexed on the hemisphere registration sphere. Experimental in v1.',
 };
 

@@ -109,12 +109,10 @@ export const KNOWN_DEFECTS: ReadonlyArray<{
   // holds a per-level set, admitting the three real count anomalies and
   // rejecting everything else with the correction named. The invariant stands
   // unqualified above.
-  {
-    invariant: 'INV-RECOMMENDED-NOT-OVERPRECISE',
-    defectId: 'QA-3',
-    summary: 'recommendedDigits() recommends a precision locate() flags as overPrecise.',
-    expectHits: 1,
-  },
+  // QA-3 (INV-RECOMMENDED-NOT-OVERPRECISE) was retired on 2026-10-09:
+  // `recommendedPrecision()` now takes the lowest of the three ceilings — the
+  // residual, `maxUsefulDigits` and the frame descriptor's own digit range — and
+  // returns which one bound it. The invariant stands unqualified below.
 ];
 
 const ledgerFor = (invariant: string) => KNOWN_DEFECTS.find((d) => d.invariant === invariant);

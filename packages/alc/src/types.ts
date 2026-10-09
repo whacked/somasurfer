@@ -90,6 +90,17 @@ export interface FrameDescriptor {
   readonly anchorSegments: number;
   readonly digitAlphabet: string;
   readonly maxDigits: number;
+  /**
+   * Fewest refinement digits a legal address of this frame can carry.
+   *
+   * 0 where the anchors alone are an address (`BD-T07`, `BV-L`), 1 for `BR`,
+   * whose first digit is the HEALPix base face and without which there is no
+   * address at all. Stated here so that code recommending a precision reads the
+   * frame's own floor instead of assuming zero is always expressible — which is
+   * how `recommendedDigits` came to recommend `BR-L`, a string `parse()`
+   * rejects (QA-11).
+   */
+  readonly minDigits: number;
   /** Human sentence describing the frame, used by the translator UI. */
   readonly summary: string;
 }

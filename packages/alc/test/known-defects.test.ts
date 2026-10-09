@@ -48,16 +48,11 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { BR, isValid, recommendedDigits } from '../src/index.ts';
-import { BRAIN_ADULT, buildBrainTemplate } from '../src/testing/syntheticTemplates.ts';
-
 /** Every defect id, so the index above cannot drift from the report. */
 export const INDEX = [
   'QA-1', 'QA-2', 'QA-3', 'QA-4', 'QA-5', 'QA-6', 'QA-7', 'QA-8', 'QA-9', 'QA-10', 'QA-11',
   'QA-12', 'QA-13',
 ] as const;
-
-const brain = buildBrainTemplate(BRAIN_ADULT);
 
 // QA-5 and QA-7 were retired on 2026-10-09. Both were the same mistake in the
 // same function — `splitAddress` doing work on the raw input that spec §7 and
@@ -71,30 +66,17 @@ const brain = buildBrainTemplate(BRAIN_ADULT);
 //         -> fuzz.test.ts, 'fuzz: a non-ASCII code point is rejected before
 //            case mapping can make it legal'
 //
-// ---------------------------------------------------------------------------
-test('QA-11: recommendedDigits returns a precision the BR frame cannot express', () => {
-  // `BR` requires at least one refinement digit, so zero is not a legal BR
-  // precision — but recommendedDigits returns 0 for a BR address, and a caller
-  // that truncates to the recommendation builds an invalid address.
-  const d = recommendedDigits('BR-L-7A3F', { brainVolume: brain }, 1);
-  assert.equal(
-    d,
-    0,
-    `QA-11 appears fixed: recommendedDigits returned ${d} for BR. Delete this test.`,
-  );
-  assert.equal(isValid('BR-L'), false, 'and zero digits is indeed not a BR address');
-
-  // Separately, the function hardcodes its own digit ceiling instead of reading
-  // the frame descriptor, so the two disagree. Harmless today because BR has no
-  // template, and a trap the moment it gets one.
-  assert.equal(BR.maxDigits, 7);
-  // src/compare.ts: `const maxDigits = a.frame === 'BR' ? 6 : 12;`
-  const hardcoded = 6;
-  assert.notEqual(hardcoded, BR.maxDigits, 'the hardcoded ceiling still disagrees with BR.maxDigits');
-
-  // Suggested fix: read FRAMES[frame].maxDigits, and return null (or throw) for
-  // a frame that cannot be located, rather than a count that is out of range.
-});
+// QA-11 was retired on 2026-10-09 with QA-3, QA-4 and QA-8 (DOG-16):
+// `recommendedPrecision` reads the frame descriptor for both bounds —
+// `minDigits` as well as `maxDigits` — so it can no longer recommend `BR-L`, a
+// string `parse()` rejects, and no longer disagrees with `BR.maxDigits`. All
+// four guarantees live with the rest of the precision contract, in
+// precision-honesty.test.ts; QA-11's is 'precision: every recommendation is a
+// precision its frame can express'.
+//
+// Nothing in this file is a characterisation test any more. The three tests
+// below are the status-table consistency checks, which is why it still imports
+// no library code.
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPORT_PATH = join(HERE, '..', '..', '..', 'docs', 'alc-1-attack-report.md');
