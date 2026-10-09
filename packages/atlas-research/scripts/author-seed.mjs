@@ -150,29 +150,74 @@ const BRAIN = [
   ['ATLAS-LABEL:pons', 'pons', 'hindbrain', 'B'],
 ];
 
-/** [id, name, cells] — anchors assigned by hand. */
-const BODY = [
-  ['ATLAS-LABEL:left-lung', 'left lung', ['BD-T06-03O', 'BD-T07-03O', 'BD-T07-04O']],
-  ['ATLAS-LABEL:right-lung', 'right lung', ['BD-T06-09O', 'BD-T07-09O', 'BD-T07-10O']],
+/**
+ * The crosswalk. Stage B's deliverable, and the only namespace in this dataset
+ * that resolves against a published index.
+ *
+ * `[FMA concept id, the index's own term, the ATLAS-LABEL slug it replaces]`.
+ *
+ * Read from `packages/atlas-assets/labels/names.json` at
+ * `bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da`,
+ * which keys 57 gross body structures on **bare FMA concept ids** — `FMA9968`,
+ * not `FMA:9968` and not a UBERON accession. UBERON is present in that index
+ * only as a cross-reference and is never the identifier.
+ *
+ * The third column is kept because it is what a reviewer checks: this table,
+ * not the 26 numbers scattered through the findings below, is where a wrong
+ * accession would be caught by eye. `tools/check-research-dataset.mjs` then
+ * checks every one of them against the index itself.
+ *
+ * **No cells here.** The term and the id are anatomical nomenclature and carry
+ * no licence (`docs/asset-licensing.md` §4, and the owner's direction in it:
+ * names are usable, parcellations are not). The *cells* are derived from the
+ * BodyParts3D meshes under CC-BY-SA, so they stay in the asset package and are
+ * joined in at resolution. Copying them into this Apache-2.0 package is
+ * exactly the boundary `tools/check-licence-separation.mjs` exists to keep.
+ */
+const BODY_FMA = [
+  ['FMA7088', 'heart', 'heart'],
+  ['FMA7310', 'left lung', 'left-lung'],
+  ['FMA7309', 'right lung', 'right-lung'],
+  ['FMA7197', 'liver', 'liver'],
+  ['FMA7148', 'stomach', 'stomach'],
+  ['FMA7198', 'pancreas', 'pancreas'],
+  ['FMA7204', 'right kidney', 'right-kidney'],
+  ['FMA7205', 'left kidney', 'left-kidney'],
+  ['FMA15900', 'urinary bladder', 'urinary-bladder'],
+  ['FMA7647', 'spinal cord', 'spinal-cord'],
+  ['FMA9968', 'seventh thoracic vertebra', 'thoracic-vertebra-7'],
+  ['FMA13075', 'fourth lumbar vertebra', 'lumbar-vertebra-4'],
+  ['FMA16202', 'sacrum', 'sacrum'],
+  ['FMA13295', 'diaphragm', 'diaphragm'],
+];
+
+/**
+ * Body structures the cleared index cannot name, with synthetic anchors.
+ *
+ * [id, name, cells]. These are NOT a licence problem and not a brain problem —
+ * they are a coverage problem, and a different one in each case:
+ *
+ *   - `rib-7` — the index carries a generic `rib` (FMA7574) and no individual
+ *     rib. Filing a 7th-rib finding under it would paint all twenty-four.
+ *   - `coronary-artery`, `quadratus-lumborum` — not among the 57 structures the
+ *     release subset carries at all.
+ *
+ * The others are unreferenced by any finding and exist so the synthetic index
+ * has neighbours; they never reach the dataset.
+ */
+const BODY_PLACEHOLDER = [
   ['ATLAS-LABEL:lower-lobe-of-left-lung', 'lower lobe of left lung', ['BD-T07-03O-4', 'BD-T07-03O-5']],
-  ['ATLAS-LABEL:heart', 'heart', ['BD-T06-01I', 'BD-T07-01I', 'BD-T07-02I']],
   ['ATLAS-LABEL:coronary-artery', 'coronary artery', ['BD-T07-01I-2']],
   ['ATLAS-LABEL:aortic-arch', 'aortic arch', ['BD-T04-12I', 'BD-T04-01I']],
-  ['ATLAS-LABEL:liver', 'liver', ['BD-T10-10O', 'BD-T10-11O', 'BD-T11-10O']],
-  ['ATLAS-LABEL:stomach', 'stomach', ['BD-T11-02O', 'BD-T11-03O']],
-  ['ATLAS-LABEL:pancreas', 'pancreas', ['BD-L01-01I', 'BD-L01-02I']],
-  ['ATLAS-LABEL:right-kidney', 'right kidney', ['BD-L01-10O', 'BD-L02-10O']],
-  ['ATLAS-LABEL:left-kidney', 'left kidney', ['BD-L01-08O', 'BD-L02-08O']],
-  ['ATLAS-LABEL:urinary-bladder', 'urinary bladder', ['BD-S01-12O', 'BD-S01-01O']],
-  ['ATLAS-LABEL:spinal-cord', 'spinal cord', ['BD-C05-12I', 'BD-C06-12I', 'BD-T03-12I']],
   ['ATLAS-LABEL:rib-7', '7th rib', ['BD-T07-03O-52', 'BD-T07-03O-53']],
   ['ATLAS-LABEL:intercostal-muscle', 'intercostal muscle', ['BD-T07-03O-51']],
-  ['ATLAS-LABEL:thoracic-vertebra-7', 'thoracic vertebra 7', ['BD-T07-12I-1']],
-  ['ATLAS-LABEL:lumbar-vertebra-4', 'lumbar vertebra 4', ['BD-L04-12I-1']],
-  ['ATLAS-LABEL:sacrum', 'sacrum', ['BD-S01-12I']],
   ['ATLAS-LABEL:quadratus-lumborum', 'quadratus lumborum', ['BD-L02-03O', 'BD-L02-09O']],
-  ['ATLAS-LABEL:diaphragm', 'diaphragm', ['BD-T10-06O', 'BD-T10-12O']],
 ];
+
+/** Which partition a structure belongs to. See `PARTITIONS`. */
+const BODY_BD = 'body-bd';
+const BRAIN_PARCELLATION = 'brain-parcellation';
+const BODY_NOT_IN_INDEX = 'body-not-in-index';
 
 const STRUCTURES = new Map();
 {
@@ -183,9 +228,24 @@ const STRUCTURES = new Map();
     if (i >= 64) throw new Error(`group ${group} overflowed its 64 cells`);
     const digits = `${GROUPS[group]}${Math.floor(i / 8)}${i % 8}`;
     const hemis = lat === 'B' ? ['L', 'R'] : [lat];
-    STRUCTURES.set(id, { name, cells: hemis.map((h) => `BV-${h}-${digits}`) });
+    STRUCTURES.set(id, {
+      name,
+      cells: hemis.map((h) => `BV-${h}-${digits}`),
+      source: id.split(':')[0],
+      partition: BRAIN_PARCELLATION,
+    });
   }
-  for (const [id, name, cells] of BODY) STRUCTURES.set(id, { name, cells });
+  for (const [id, name, cells] of BODY_PLACEHOLDER) {
+    STRUCTURES.set(id, { name, cells, source: id.split(':')[0], partition: BODY_NOT_IN_INDEX });
+  }
+  // Cells deliberately empty: the real covering is joined in from the asset
+  // package. An id in the index with no cells resolves `empty-covering` — named
+  // but not painted — which is the true state of a body structure here and is
+  // distinguishable from `unknown-structure`, so a typo in an accession is
+  // still caught on a branch where the asset index is absent.
+  for (const [id, name] of BODY_FMA) {
+    STRUCTURES.set(id, { name, cells: [], source: 'FMA', partition: BODY_BD });
+  }
 }
 
 const labelOf = (id) => {
@@ -304,15 +364,29 @@ const TRACT =
   'endpoint of the tract, which is the curator’s reading of where it terminates.';
 const NEAREST_PARCEL =
   'the source describes a region rather than a parcel; the parcel named here is the curator’s ' +
-  'nearest match and will be re-checked against the real index.';
+  'nearest match, and no cleared index can confirm it — see the brain-parcellation partition.';
 const SYNTHETIC_SUBREGION =
   'the sub-region is the curator’s placement of a described extent onto a synthetic index, not a ' +
-  'published covering. It will be re-authored against coverings.json.';
+  'published covering. It cannot be re-authored against a real one for v1: the cleared index is BD ' +
+  'only and there is no BV name index, so this cell is checkable for shape and for nothing else.';
+const REAL_SUBREGION =
+  'the sub-region is a cell of the structure’s own covering in the real BD index, refined by one ' +
+  'octree digit. The refinement is the curator’s declaration of where in the level the described ' +
+  'part sits and not a measurement of it — but it is a sub-region of measured geometry rather than ' +
+  'of a synthetic anchor, and the gate fails if it does not lie wholly inside.';
 
 /** No location finer than the region. Resolves to the whole structure, flagged. */
 const R = (reason = 'the source names the region and reports no finer location') => ({ k: 'R', reason });
 /** A sub-region: the structure's own first cell, refined by `suffix`. */
 const C = (suffix, method) => ({ k: 'C', suffix, method });
+/**
+ * A sub-region named outright, for a structure whose cells this package does
+ * not hold — the crosswalked body structures, whose coverings live in the asset
+ * package. The cell must be a descendant of the structure's real covering, and
+ * `tools/check-research-dataset.mjs` fails if it is not, once that index is
+ * present to check against.
+ */
+const E = (cells, method) => ({ k: 'E', cells, method });
 /** Published coordinates in a named space. Unresolvable until a template loads. */
 const X = (space, frame, pointsMm, digits, note) => ({ k: 'X', space, frame, pointsMm, digits, note });
 
@@ -649,7 +723,7 @@ const FINDINGS = [
   ['mazziotta-2001-icbm', 'spinal-extent',
     'The reference system is defined for the brain; the spinal cord lies outside it and can be named only at region level.',
     ['template', 'scope'],
-    [M('ATLAS-LABEL:spinal-cord', R("outside the reference system's extent, so no coordinate claim exists at all"),
+    [M('FMA7647', R("outside the reference system's extent, so no coordinate claim exists at all"),
       'The scope statement is about what the system does not cover.', INFER, 'low',
       'a deliberately cross-frame mapping: a body-frame region on a paper whose other mappings are brain-frame, so a brain-only filter can be shown not to hide it.')]],
   ['mazziotta-2001-icbm', 'probabilistic-not-single-subject',
@@ -976,30 +1050,30 @@ const FINDINGS = [
   ['mitsuhashi-2009-bodyparts3d', 'per-part-meshes',
     'A whole-body 3D structure database supplies per-part surface meshes keyed to anatomical concept ids.',
     ['asset-source', 'whole-body'],
-    [M('ATLAS-LABEL:left-lung', R('a database record for a whole part'),
+    [M('FMA7310', R('a database record for a whole part'),
       'The lungs are supplied as individual meshes.', TEXT, 'high'),
-    M('ATLAS-LABEL:heart', R('a database record for a whole part'),
+    M('FMA7088', R('a database record for a whole part'),
       'The heart is supplied as an individual mesh.', TEXT, 'high'),
-    M('ATLAS-LABEL:liver', R('a database record for a whole part'),
+    M('FMA7197', R('a database record for a whole part'),
       'The liver is supplied as an individual mesh.', TEXT, 'high')]],
   ['mitsuhashi-2009-bodyparts3d', 'skeletal-parts',
     'Skeletal elements are addressable individually, including each rib and each vertebra.',
     ['asset-source', 'skeleton'],
     [M('ATLAS-LABEL:rib-7', R('a database record for a whole part'),
       'Ribs appear as separately named parts rather than one cage mesh.', TEXT, 'medium'),
-    M('ATLAS-LABEL:thoracic-vertebra-7', R('a database record for a whole part'),
+    M('FMA9968', R('a database record for a whole part'),
       'Vertebrae appear as separately named parts.', TEXT, 'medium')]],
   ['mitsuhashi-2009-bodyparts3d', 'concept-ids',
     'Each part carries an anatomical concept id, which is what makes a geometry set usable as a naming layer.',
     ['asset-source', 'ontology'],
-    [M('ATLAS-LABEL:right-kidney', R('a database record for a whole part'),
+    [M('FMA7204', R('a database record for a whole part'),
       'Parts are keyed to anatomical concepts.', TEXT, 'high'),
-    M('ATLAS-LABEL:left-kidney', R('a database record for a whole part'),
+    M('FMA7205', R('a database record for a whole part'),
       'Parts are keyed to anatomical concepts.', TEXT, 'high')]],
   ['mitsuhashi-2009-bodyparts3d', 'whole-body-coverage',
     'Coverage extends to muscles and other soft tissue rather than organs alone.',
     ['asset-source', 'whole-body'],
-    [M('ATLAS-LABEL:diaphragm', R('a database record for a whole part'),
+    [M('FMA13295', R('a database record for a whole part'),
       'Muscular structures are included.', TEXT, 'medium'),
     M('ATLAS-LABEL:quadratus-lumborum', R('a database record for a whole part'),
       'Muscular structures are included.', TEXT, 'medium')]],
@@ -1008,9 +1082,9 @@ const FINDINGS = [
   ['rosse-2003-fma', 'reference-ontology',
     'A reference ontology of anatomy represents canonical structure independently of any application.',
     ['ontology'],
-    [M('ATLAS-LABEL:heart', R('an ontology class, not a located instance'),
+    [M('FMA7088', R('an ontology class, not a located instance'),
       'Represented as a class in the ontology.', TEXT, 'high'),
-    M('ATLAS-LABEL:liver', R('an ontology class, not a located instance'),
+    M('FMA7197', R('an ontology class, not a located instance'),
       'Represented as a class in the ontology.', TEXT, 'high')]],
   ['rosse-2003-fma', 'part-of-relations',
     "Part-of relations are explicit, so a structure's containment hierarchy is queryable rather than implied by naming.",
@@ -1020,64 +1094,68 @@ const FINDINGS = [
   ['rosse-2003-fma', 'canonical-anatomy',
     'The ontology represents canonical anatomy, so variation and pathology are outside what it asserts.',
     ['ontology', 'scope'],
-    [M('ATLAS-LABEL:stomach', R('an ontology class, not a located instance'),
+    [M('FMA7148', R('an ontology class, not a located instance'),
       'Canonical rather than instance anatomy.', TEXT, 'high'),
-    M('ATLAS-LABEL:pancreas', R('an ontology class, not a located instance'),
+    M('FMA7198', R('an ontology class, not a located instance'),
       'Canonical rather than instance anatomy.', TEXT, 'high')]],
   ['rosse-2003-fma', 'not-instance-anatomy',
     'A class in the ontology is not a region of any particular body, so it carries no coordinates.',
     ['ontology', 'scope'],
-    [M('ATLAS-LABEL:urinary-bladder', R('an ontology class, which has no geometry at all'),
+    [M('FMA15900', R('an ontology class, which has no geometry at all'),
       'Classes carry no spatial extent.', TEXT, 'high')]],
 
   // --- Mungall 2012 --------------------------------------------------------
   ['mungall-2012-uberon', 'multi-species-integration',
     'An integrative anatomy ontology bridges species-specific ontologies so data can be compared across them.',
     ['ontology'],
-    [M('ATLAS-LABEL:liver', R('an ontology class'),
+    [M('FMA7197', R('an ontology class'),
       'Integrated across species-specific ontologies.', TEXT, 'high'),
-    M('ATLAS-LABEL:stomach', R('an ontology class'),
+    M('FMA7148', R('an ontology class'),
       'Integrated across species-specific ontologies.', TEXT, 'high')]],
   ['mungall-2012-uberon', 'cross-ontology-bridges',
     'Bridging axioms link classes across ontologies, which makes the alignment inspectable rather than implicit.',
     ['ontology', 'method'],
-    [M('ATLAS-LABEL:spinal-cord', R('an ontology class'),
+    [M('FMA7647', R('an ontology class'),
       'Linked by bridging axioms to species-specific classes.', TEXT, 'high')]],
   ['mungall-2012-uberon', 'taxon-constraints',
     'Taxon constraints record which species a class applies to, so a cross-species claim is explicit.',
     ['ontology', 'method'],
-    [M('ATLAS-LABEL:right-lung', R('an ontology class'), 'Carries taxon constraints.', TEXT, 'medium')]],
+    [M('FMA7309', R('an ontology class'), 'Carries taxon constraints.', TEXT, 'medium')]],
   ['mungall-2012-uberon', 'structure-classes-not-geometry',
     'The ontology asserts classes and relations, not geometry, so a mesh is never licensed by an ontology id alone.',
     ['ontology', 'scope'],
-    [M('ATLAS-LABEL:sacrum', R('an ontology class, which has no geometry'),
+    [M('FMA16202', R('an ontology class, which has no geometry'),
       'Classes carry no spatial extent.', TEXT, 'high')]],
 
   // --- Panjabi 1991 --------------------------------------------------------
   ['panjabi-1991-thoracic-morphometry', 'vertebral-dimensions',
     'Thoracic vertebrae are measured in three dimensions, giving per-level body and canal dimensions.',
     ['spine', 'morphometry'],
-    [M('ATLAS-LABEL:thoracic-vertebra-7',
-      C('2', 'the curator placed the measured vertebral body onto a sub-cell of the level; a sub-region claim, not a measurement'),
-      'Per-level dimensions are reported for the vertebral body specifically.', INFER, 'low', SYNTHETIC_SUBREGION)]],
+    [M('FMA9968',
+      // BD-T07-12I-2 is in FMA9968's covering in the real index: 12 o'clock is
+      // the anterior midline, which is the vertebral body's side of the level,
+      // and `I` is the inner half, where the body sits against the axis. The
+      // appended `0` is the cranial-anterior-inner octant of that cell.
+      E(['BD-T07-12I-20'], 'the anterior-midline inner cell of the structure’s real covering, refined one octree digit'),
+      'Per-level dimensions are reported for the vertebral body specifically.', INFER, 'low', REAL_SUBREGION)]],
   ['panjabi-1991-thoracic-morphometry', 'pedicle-geometry',
     'Pedicle width and angle vary systematically down the thoracic spine rather than being constant.',
     ['spine', 'morphometry'],
-    [M('ATLAS-LABEL:thoracic-vertebra-7', R('reported per level'),
+    [M('FMA9968', R('reported per level'),
       'Pedicle dimensions are reported per thoracic level.', TEXT, 'medium')]],
   ['panjabi-1991-thoracic-morphometry', 'level-to-level-variation',
     "Dimensions change monotonically across much of the thoracic spine, so one level's geometry does not stand for another's.",
     ['spine', 'morphometry'],
-    [M('ATLAS-LABEL:lumbar-vertebra-4', R("reported per level; cited here as the adjacent region's contrast"),
+    [M('FMA13075', R("reported per level; cited here as the adjacent region's contrast"),
       'Thoracic dimensions are reported as distinct from lumbar ones.', INFER, 'low',
       'the paper measures thoracic vertebrae; the lumbar level is named by the curator as the contrast case, not measured here.'),
-    M('ATLAS-LABEL:sacrum', R('named as the caudal limit of the measured series'),
+    M('FMA16202', R('named as the caudal limit of the measured series'),
       'The measured series ends above the sacrum.', INFER, 'low',
       'named by the curator to record where the measured range stops.')]],
   ['panjabi-1991-thoracic-morphometry', 'canal-dimensions',
     'Spinal canal dimensions are reported per level, which bounds what the cord occupies at that level.',
     ['spine', 'morphometry'],
-    [M('ATLAS-LABEL:spinal-cord', R('the canal is measured; the cord within it is reported at region level'),
+    [M('FMA7647', R('the canal is measured; the cord within it is reported at region level'),
       'Canal dimensions are reported per level.', INFER, 'medium',
       'the paper measures the canal; treating that as a claim about the cord is the curator’s reading.')]],
 
@@ -1085,12 +1163,12 @@ const FINDINGS = [
   ['bogduk-2012-lumbar-anatomy', 'lumbar-vertebra-structure',
     'The lumbar vertebra is described as a weight-bearing body with posterior elements serving movement and protection.',
     ['spine', 'anatomy'],
-    [M('ATLAS-LABEL:lumbar-vertebra-4', R('a descriptive account of the whole bone'),
+    [M('FMA13075', R('a descriptive account of the whole bone'),
       'Described as body plus posterior elements.', TEXT, 'high')]],
   ['bogduk-2012-lumbar-anatomy', 'lumbosacral-junction',
     'The lumbosacral junction is described as the transition where lumbar mobility meets sacral fixity.',
     ['spine', 'anatomy'],
-    [M('ATLAS-LABEL:sacrum', R('a descriptive account at structure level'),
+    [M('FMA16202', R('a descriptive account at structure level'),
       'Described as the fixed base of the lumbar column.', TEXT, 'high')]],
   ['bogduk-2012-lumbar-anatomy', 'posterior-muscles',
     'The posterior and lateral muscles of the lumbar region are described with their attachments and actions.',
@@ -1100,7 +1178,7 @@ const FINDINGS = [
   ['bogduk-2012-lumbar-anatomy', 'nerve-supply',
     'The nerve supply of the lumbar structures is described segmentally, which is what makes referred pain patterns predictable.',
     ['spine', 'anatomy', 'clinical'],
-    [M('ATLAS-LABEL:spinal-cord', R('described segmentally rather than at a locus'),
+    [M('FMA7647', R('described segmentally rather than at a locus'),
       'Segmental innervation is described per level.', TEXT, 'medium')]],
 ];
 
@@ -1133,8 +1211,17 @@ const prov = (basis, confidence, note) => ({
 function buildSpatial(sid, spatial) {
   if (spatial.k === 'R') return { kind: 'region-level', reason: spatial.reason };
   if (spatial.k === 'C') {
-    const cell = childOf(STRUCTURES.get(sid).cells[0], spatial.suffix);
+    const anchors = STRUCTURES.get(sid).cells;
+    if (anchors.length === 0) {
+      throw new Error(`${sid} has no cells in this package: name its sub-region cells outright with E([...])`);
+    }
+    const cell = childOf(anchors[0], spatial.suffix);
     return { kind: 'cells', cells: [cell], method: spatial.method, digits: digitsOf(cell) };
+  }
+  if (spatial.k === 'E') {
+    const digits = new Set(spatial.cells.map(digitsOf));
+    if (digits.size !== 1) throw new Error(`${sid}: named cells disagree on refinement depth`);
+    return { kind: 'cells', cells: spatial.cells, method: spatial.method, digits: [...digits][0] };
   }
   return {
     kind: 'coordinates',
@@ -1173,7 +1260,9 @@ const findings = FINDINGS.map(([key, slug, statement, topics, maps]) => {
       return {
         id: `map:${key}/${slug}/${m.sid.toLowerCase().replace(/:/g, '-')}`,
         structureId: m.sid,
-        structureIdSource: m.sid.split(':')[0],
+        // Declared per structure rather than split off the id: a bare `FMA9968`
+        // has no prefix to split, which is the form the BodyParts3D index uses.
+        structureIdSource: STRUCTURES.get(m.sid).source,
         structureLabel: labelOf(m.sid),
         spatial: buildSpatial(m.sid, m.spatial),
         evidence: {
@@ -1188,6 +1277,69 @@ const findings = FINDINGS.map(([key, slug, statement, topics, maps]) => {
     provenance: prov('published-text', 'high', null),
   };
 });
+
+/**
+ * The index each partition was authored against.
+ *
+ * `REAL_INDEX_VERSION` is a declaration, not a reading: this script does not
+ * open the asset package, so the dataset stays regenerable on a branch where
+ * the assets are absent, and `tools/check-research-dataset.mjs` is what
+ * verifies the declaration against the index when the index is there. Declare,
+ * then check — the same split the citation report uses.
+ */
+const REAL_INDEX_VERSION = 'bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da';
+const PLACEHOLDER_INDEX_VERSION = 'seed-names-2026.10.2';
+
+const LICENCE_BLOCKED =
+  'docs/asset-licensing.md §4 returns VERDICT: NOT CLEARED for brain parcellation, and the verdict ' +
+  'is final for v1: Harvard-Oxford is distributed under FSL\'s non-commercial terms, AAL requires ' +
+  'registration and restricts redistribution, and Julich-Brain is CC BY-NC-SA 4.0, whose NC term ' +
+  'forecloses commercial use outright. Two further facts make this permanent rather than pending: ' +
+  'the cleared index declares "frame": "BD" and has NO BV name index, and the brain is absent from ' +
+  'the BD index by measurement (0.2% of its interior samples fall inside the BD frame, because the ' +
+  'brain sits almost entirely above C01). So BV addresses locate and round-trip but do not resolve ' +
+  'to a name. These ids stay on declared placeholders: the anatomical TERMS are usable and are not ' +
+  'what is licensed; the parcellation that would delineate them is.';
+
+const NOT_IN_BD_INDEX =
+  'these are gross body structures that the cleared BD index does not carry at the specificity the ' +
+  'finding claims. It names 57 structures from the BodyParts3D release: there is a generic rib ' +
+  '(FMA7574) but no individual rib, so filing a 7th-rib finding under it would paint all of them, ' +
+  'and neither the coronary artery nor the quadratus lumborum is in the subset at all. This is a ' +
+  'coverage gap in the index rather than a licence refusal, and it is recorded separately for that ' +
+  'reason: if the release subset grows, these move to FMA ids and the licence-blocked partition ' +
+  'does not.';
+
+/** Partition membership, derived from the structure tables rather than listed twice. */
+const partitionsOf = (referencedIds) => {
+  const members = (partition) => referencedIds.filter((id) => STRUCTURES.get(id).partition === partition).sort();
+  const parts = [
+    {
+      id: BODY_BD,
+      status: 'real',
+      nameIndexVersion: REAL_INDEX_VERSION,
+      structureIds: members(BODY_BD),
+    },
+    {
+      id: BRAIN_PARCELLATION,
+      status: 'placeholder',
+      nameIndexVersion: PLACEHOLDER_INDEX_VERSION,
+      structureIds: members(BRAIN_PARCELLATION),
+      reason: LICENCE_BLOCKED,
+    },
+    {
+      id: BODY_NOT_IN_INDEX,
+      status: 'placeholder',
+      nameIndexVersion: PLACEHOLDER_INDEX_VERSION,
+      structureIds: members(BODY_NOT_IN_INDEX),
+      reason: NOT_IN_BD_INDEX,
+    },
+  ];
+  for (const p of parts) {
+    if (p.structureIds.length === 0) throw new Error(`partition ${p.id} has no referenced structures`);
+  }
+  return parts;
+};
 
 const dataset = {
   $comment: [
@@ -1215,19 +1367,45 @@ const dataset = {
     '  - The region mappings are the curator’s reading of what each paper is about, at',
     '    the granularity its abstract or chapter supports. They are not cell-level claims.',
     '  - Page- and figure-level locators are `not-recorded` rather than invented.',
-    '  - Gross anatomy uses the ATLAS-LABEL placeholder namespace. See',
-    '    schema/research-1.md, section "Structure id namespaces".',
     '',
-    'STAGE B, still outstanding: re-author these mappings against the real coverings.json',
-    'from plan task 4 -- crosswalk ATLAS-LABEL onto that index’s accessions and re-check',
-    'every `cells` sub-region. Until then authoredAgainst.status is `fixture` and',
-    'tools/check-research-dataset.mjs reports resolution as UNVERIFIED against real',
-    'geometry rather than passing silently.',
+    'STAGE B, and what it could and could not finish:',
+    '',
+    '  - 14 gross body structures are CROSSWALKED onto bare FMA concept ids and are',
+    '    authored against the real BD index. They must resolve against it; the gate',
+    '    fails if one does not. That is the `body-bd` partition, status `real`.',
+    '  - Everything else stays on a declared placeholder, and that is a PASS rather',
+    '    than a deferral, with the reason recorded per partition:',
+    '      brain-parcellation  no cleared index can name these, and none will for v1.',
+    '                          docs/asset-licensing.md section 4 is NOT CLEARED, the',
+    '                          cleared index is BD only with no BV name index, and the',
+    '                          brain is absent from BD by measurement. BV addresses',
+    '                          locate and round-trip but do NOT resolve to a name.',
+    '      body-not-in-index   a coverage gap, not a licence refusal: a generic rib and',
+    '                          no individual rib, no coronary artery, no quadratus',
+    '                          lumborum in the 57-structure subset.',
+    '  - The gate checks the partition in BOTH directions. A `real` id that stops',
+    '    resolving is a failure, and a `placeholder` id that STARTS resolving is also a',
+    '    failure, because then the recorded reason has expired and the mapping should',
+    '    be re-authored rather than left on a placeholder.',
+    '  - 3 coordinate mappings resolve through the committed BV template to CELLS ONLY,',
+    '    never to a name. That is the contract, not a gap: see the partition reason.',
   ],
   schema: 'research/1',
+  // NOT bumped by the crosswalk, deliberately. `data/citation-report.json`
+  // records the dataset version it describes, and the gate fails a report that
+  // describes a different one — correctly, because a report that predates an
+  // identifier change must not justify the current identifiers. This change
+  // touches no identifier and no paper: it moves 26 structure ids and adds the
+  // partition declaration, which that report neither justifies nor needs to.
+  // Bumping here would force a regeneration of a report the repo owner has a
+  // pending decision pinned to, to record a change it says nothing about. The
+  // 26 re-authored mappings changed their own ids (`.../fma7197` rather than
+  // `.../atlas-label-liver`), so a highlight stored against the old dataset
+  // fails to resolve rather than resolving to something else, which is the
+  // failure mode the version pin exists to prevent.
   version: 'research-seed-2026.10.1',
-  structureIdSources: ['HCP-MMP1', 'ATLAS-LABEL'],
-  authoredAgainst: { nameIndexVersion: 'seed-names-2026.10.1', status: 'fixture' },
+  structureIdSources: ['FMA', 'HCP-MMP1', 'ATLAS-LABEL'],
+  authoredAgainst: { status: 'partitioned', partitions: partitionsOf([...referenced].sort()) },
   curation: {
     curatedBy: CURATOR,
     curatedOn: CURATED_ON,
@@ -1245,8 +1423,9 @@ const dataset = {
       'attributes to it is NOT, and cannot be by any API',
     notRecorded: [
       'page- and figure-level evidence locators: the claims are supported at abstract or chapter granularity, and an invented figure number would be worse than an absent one',
-      'ontology accessions for gross anatomical structures: the ATLAS-LABEL namespace is a declared placeholder, because a wrong accession resolves to the wrong structure and looks authoritative doing it',
-      'cell-level geometry: the cells come from a synthetic index and will change when coverings.json lands',
+      'ontology accessions for brain parcels and for three body structures the cleared index does not carry: those keep the ATLAS-LABEL and HCP-MMP1 placeholder namespaces, because a wrong accession resolves to the wrong structure and looks authoritative doing it. The 14 body structures the index does carry are on bare FMA concept ids, and each is checked against that index',
+      'measured geometry for every structure outside the BD index: the brain cells come from a synthetic index and cannot be replaced for v1, because no brain parcellation is licensed for redistribution and there is no BV name index. A BV address locates and round-trips; it does not resolve to a name',
+      'the cells of the crosswalked body structures: they are real, and they are held in packages/atlas-assets under a share-alike licence rather than copied into this Apache-2.0 package. They are joined in at resolution, which is why a body structure resolves `empty-covering` against the placeholder index shipped here and resolves for real against the asset index',
     ],
   },
   papers,
@@ -1258,21 +1437,33 @@ const names = {
     'GENERATED by scripts/author-seed.mjs. SYNTHETIC -- not an anatomical name index, and',
     'must never be shipped as one.',
     '',
-    'Exists so data/research-seed.json resolves end to end before the asset pipeline (plan',
-    'task 4) publishes the real coverings.json. Cells are allocated by anatomical group --',
-    'a leading BV digit per group, members in order within it -- so neighbours are plausibly',
-    'near neighbours and overlap results are meaningful rather than random. Body structures',
-    'carry hand-assigned BD anchors, because a vertebral level and a clock sector mean',
-    'something.',
+    'Two kinds of entry live here, and the difference is the point of this file:',
     '',
-    'THE CELLS ARE STILL INVENTED. They encode no measured geometry.',
+    '  1. PLACEHOLDER structures, with INVENTED cells. Cells are allocated by anatomical',
+    '     group -- a leading BV digit per group, members in order within it -- so',
+    '     neighbours are plausibly near neighbours and overlap results are meaningful',
+    '     rather than random. The remaining body placeholders carry hand-assigned BD',
+    '     anchors, because a vertebral level and a clock sector mean something. These',
+    '     cells encode NO measured geometry and cannot be replaced for v1: see the',
+    '     brain-parcellation partition in data/research-seed.json.',
+    '',
+    '  2. CROSSWALKED body structures: a real FMA concept id, the real index\'s own term,',
+    '     and NO CELLS AT ALL. The id and the term are anatomical nomenclature and carry',
+    '     no licence. The cells are derived from the BodyParts3D meshes under CC-BY-SA',
+    '     and stay in packages/atlas-assets, which is why they are not copied here --',
+    '     tools/check-licence-separation.mjs keeps that boundary for the packages.',
+    '',
+    'So a crosswalked structure resolves `empty-covering` against THIS index: named, not',
+    'painted. That is deliberate and is not the same state as `unknown-structure`, so a',
+    'mistyped accession is still caught here, on a branch where the asset index is absent.',
+    'Join packages/atlas-assets/labels/{names,coverings}.json to paint them.',
   ],
-  version: 'seed-names-2026.10.1',
+  version: PLACEHOLDER_INDEX_VERSION,
   synthetic: true,
   structures: [...STRUCTURES.keys()].sort().map((id) => ({
     id,
     name: STRUCTURES.get(id).name,
-    source: id.split(':')[0],
+    source: STRUCTURES.get(id).source,
     cells: STRUCTURES.get(id).cells,
   })),
 };

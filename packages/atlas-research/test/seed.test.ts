@@ -34,12 +34,44 @@ test('every paper has findings and every finding has mappings', () => {
   }
 });
 
-test('the dataset does not claim to be authored against the real index', () => {
-  // The one field that would turn an honest placeholder dataset into a false
-  // claim. It flips to `real` only when the mappings are re-authored against
-  // coverings.json.
-  assert.equal(seed.authoredAgainst.status, 'fixture');
-  assert.equal(seed.authoredAgainst.nameIndexVersion, 'seed-names-2026.10.1');
+test('the dataset says, per structure, which index should name it', () => {
+  // The fields that would turn an honest partly-placeholder dataset into a
+  // false claim in either direction: whole-dataset `fixture` understates the
+  // crosswalked body structures, whole-dataset `real` overstates the brain.
+  assert.equal(seed.authoredAgainst.status, 'partitioned');
+  assert.equal(
+    seed.authoredAgainst.nameIndexVersion,
+    undefined,
+    'no single index names this dataset, so no single version may be pinned as if one did',
+  );
+  const parts = seed.authoredAgainst.partitions ?? [];
+  assert.equal(parts.length, 3);
+
+  const body = parts.find((p) => p.id === 'body-bd');
+  assert.ok(body);
+  assert.equal(body.status, 'real');
+  assert.equal(body.structureIds.length, 14);
+  assert.ok(
+    body.structureIds.every((id) => /^FMA\d+$/.test(id)),
+    'the crosswalked ids are bare FMA concept ids, which is the form the BD index is keyed on',
+  );
+  assert.ok(body.nameIndexVersion.startsWith('bp3d-4.0+uberon-'), body.nameIndexVersion);
+  assert.equal(body.reason, undefined, 'a resolvable partition has nothing to excuse');
+
+  // The two placeholder partitions are a pass, and what makes them one is that
+  // each records WHY, in the words of the decision that made it so. They are
+  // kept apart because the reasons are different in kind: one is a licence
+  // refusal that will not change, the other a coverage gap that might.
+  for (const id of ['brain-parcellation', 'body-not-in-index']) {
+    const part = parts.find((p) => p.id === id);
+    assert.ok(part, id);
+    assert.equal(part.status, 'placeholder');
+    assert.ok((part.reason ?? '').length > 80, `${id} must record why, not gesture at it`);
+  }
+  assert.match(parts.find((p) => p.id === 'brain-parcellation').reason, /NOT CLEARED/);
+  assert.match(parts.find((p) => p.id === 'brain-parcellation').reason, /no BV name index/i);
+  assert.match(parts.find((p) => p.id === 'body-not-in-index').reason, /coverage gap/);
+
   assert.ok(seed.curation.notRecorded.length >= 3, 'the gaps are listed, not implied');
 });
 
@@ -102,20 +134,39 @@ test('no mapping claims an evidence locator it did not record', () => {
 // Resolution against the synthetic index — the stage-B rehearsal
 // ---------------------------------------------------------------------------
 
-test('every mapping resolves, except the coordinates ones', () => {
-  // This is the stage-B criterion rehearsed against the synthetic index. When
-  // coverings.json lands, the same assertion runs against real geometry; what
-  // changes is the index, not this test.
-  const unresolved = index.unresolved;
-  assert.equal(unresolved.length, 3, `expected only the coordinate mappings, got ${unresolved.length}`);
-  for (const m of unresolved) {
-    assert.equal(m.unresolvedReason, 'no-template');
-    assert.equal(m.precision, 'coordinates');
-  }
+test('against the index shipped here, every structure is NAMED and nothing is unknown', () => {
+  // The one-sided bound that survives the crosswalk, and it is the reason the
+  // crosswalked ids are in this index with no cells rather than absent from it.
+  //
+  // Three outcomes, and the distinction between the first two is the whole
+  // point: `empty-covering` is "named here, painted elsewhere" — the cells of a
+  // crosswalked body structure live in the asset package under a share-alike
+  // licence. `unknown-structure` would be "nothing knows this id", which is
+  // what a mistyped accession looks like. So a typo is still caught on a branch
+  // where the asset index is absent, which is most branches.
+  const byReason: Record<string, number> = {};
+  for (const m of index.unresolved) byReason[m.unresolvedReason ?? '?'] = (byReason[m.unresolvedReason ?? '?'] ?? 0) + 1;
+  assert.deepEqual(byReason, { 'empty-covering': 25, 'no-template': 3 }, JSON.stringify(byReason));
+
+  assert.equal(
+    index.mappings.filter((m) => m.unresolvedReason === 'unknown-structure').length,
+    0,
+    'every structure id this dataset uses is in the index shipped beside it, including the FMA ones',
+  );
   for (const m of index.mappings) {
-    if (m.resolution !== 'resolved') continue;
-    assert.ok(m.covering.cells.length > 0, `${m.mappingId} resolved to nothing`);
     assert.ok(m.structureLabelFromIndex, `${m.mappingId} fell back to the curated label`);
+    if (m.resolution === 'resolved') assert.ok(m.covering.cells.length > 0, `${m.mappingId} resolved to nothing`);
+  }
+
+  // And the geometry claim is NOT made here: a body structure resolves to no
+  // cells against this index, and paints only once the real one is joined in.
+  const bodyIds = new Set(
+    (seed.authoredAgainst.partitions ?? []).find((p) => p.status === 'real')?.structureIds ?? [],
+  );
+  const bodyRegionLevel = index.mappings.filter((m) => bodyIds.has(m.structureId) && m.precision === 'region-level');
+  assert.equal(bodyRegionLevel.length, 25);
+  for (const m of bodyRegionLevel) {
+    assert.equal(m.resolution, 'unresolved', `${m.mappingId} claims geometry this package does not hold`);
   }
 });
 
@@ -133,8 +184,22 @@ test('the resolution check can fail: an unknown structure is reported, not swall
 });
 
 test('a curated sub-region stays inside the structure it is filed under', () => {
+  // Against THIS index, two of the three are checked and the third cannot be:
+  // FMA9968 has no cells here, so there is nothing to be inside of. That one is
+  // checked against the real covering by tools/check-research-dataset.mjs,
+  // which fails the `body-bd` partition if the cell is not a descendant — see
+  // the `real-index-subregion-strays` case in tools/verify-gates.mjs. Said
+  // plainly because a test that looks like it checks three and checks two is
+  // worse than one that checks two.
   const subRegions = index.mappings.filter((m) => m.precision === 'cells');
   assert.equal(subRegions.length, 3);
+  assert.equal(
+    subRegions.filter((m) => index.dataset.authoredAgainst.partitions?.some(
+      (p) => p.status === 'real' && p.structureIds.includes(m.structureId),
+    )).length,
+    1,
+    'exactly one sub-region belongs to the partition whose containment the gate checks',
+  );
   for (const m of subRegions) {
     // No disagreement note means the cells sit wholly inside the structure's
     // covering. A note here would be a curation defect worth seeing, which is

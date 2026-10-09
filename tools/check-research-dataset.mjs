@@ -764,6 +764,107 @@ if (selfTestFailures.length > 0) {
 
 const resolved = [];
 
+/** The real index and the real templates, looked for once. */
+const real = loadRealIndex();
+const { templates, sources: templateSources, problems: templateProblems } = loadTemplates();
+problems.push(...templateProblems);
+const strictGeometry = process.argv.includes('--strict-geometry');
+
+if (real.index === null) {
+  const message = [
+    "UNVERIFIED: the asset pipeline's index could not be built, so nothing below has been",
+    '  checked against real geometry:',
+    ...real.why.map((l) => `    ${l}`),
+    '  Looked in:',
+    ...REAL_INDEX_CANDIDATES.map((p) => `    ${p}`),
+    '  Reported rather than failed on purpose: a red build for a dependency this branch',
+    '  cannot satisfy would be ignored, and a real failure would then be invisible inside',
+    '  it. Run with --strict-geometry once the index is expected to exist.',
+  ];
+  if (strictGeometry) problems.push(...message.map((l) => l.replace(/^UNVERIFIED/, 'FAILED')));
+  else report.push(...message);
+} else {
+  report.push(
+    `real index: ${real.index.structures.length} structures, frame ${real.frame ?? 'unstated'}, version ${real.index.version}`,
+    `  joined from ${real.names} and ${real.coverings}`,
+  );
+}
+if (Object.keys(templateSources).length > 0) {
+  report.push(
+    `templates: ${Object.entries(templateSources)
+      .map(([slot, path]) => `${slot} <- ${path}`)
+      .join(', ')}`,
+  );
+}
+
+/**
+ * The partition verdict, for one partition of one dataset.
+ *
+ * A `real` partition must resolve, strictly, and a `cells` mapping in one must
+ * lie wholly inside the structure it is filed under — which is the only form in
+ * which "re-check the sub-regions against real geometry" is a check rather than
+ * a claim.
+ *
+ * A `placeholder` partition is checked in BOTH directions, and the second one
+ * is the point. Its ids must resolve against the placeholder index, so a
+ * mistyped id is still caught. And they must **not** resolve against the real
+ * index, because the recorded reason says no cleared index can name them: the
+ * day one can, that reason has expired and the mapping is owed a crosswalk. A
+ * gate that cannot measure must not fail, and must not silently pass either.
+ */
+function checkPartition({ label, part, index, where, isReal }) {
+  const ids = new Set(part.structureIds);
+  const mine = index.mappings.filter((m) => ids.has(m.structureId));
+  const nonCoordinate = mine.filter((m) => m.precision !== 'coordinates');
+  const bad = nonCoordinate.filter((m) => m.resolution !== 'resolved');
+
+  if (part.status === 'real') {
+    if (bad.length > 0) {
+      problems.push(
+        `${label}: partition ${part.id} declares status "real" but ${bad.length} of` +
+          ` ${nonCoordinate.length} of its non-coordinate mappings do not resolve against` +
+          ` ${where} (version ${index.nameIndexVersion}).`,
+      );
+      for (const m of bad.slice(0, 15)) problems.push(`  ${m.mappingId} (${m.structureId}): ${m.unresolvedReason}`);
+      return;
+    }
+    // Sub-regions, re-checked. `dataset.ts` records the disagreement as a note
+    // rather than trimming the covering; in a `real` partition that note is a
+    // failure, because the cells were authored FROM this index.
+    const strays = mine.filter(
+      (m) => m.precision === 'cells' && m.notes.some((n) => /lie inside|entirely outside/.test(n)),
+    );
+    if (strays.length > 0) {
+      problems.push(
+        `${label}: partition ${part.id} has ${strays.length} curated sub-region(s) that do not lie wholly` +
+          ` inside the structure they are filed under, in ${where}:`,
+      );
+      for (const m of strays) problems.push(`  ${m.mappingId}: ${m.notes.join('; ')}`);
+      return;
+    }
+    const subRegions = mine.filter((m) => m.precision === 'cells').length;
+    report.push(
+      `  ${part.id}: all ${nonCoordinate.length} non-coordinate mappings resolve against ${where}` +
+        `${subRegions > 0 ? `, and all ${subRegions} curated sub-region(s) lie wholly inside their structure` : ''}.`,
+    );
+    return;
+  }
+
+  if (bad.length > 0) {
+    problems.push(
+      `${label}: partition ${part.id} has ${bad.length} of ${nonCoordinate.length} mappings that do not` +
+        ` resolve against the index it declares (${where}).`,
+    );
+    for (const m of bad.slice(0, 10)) problems.push(`  ${m.mappingId} (${m.structureId}): ${m.unresolvedReason}`);
+    return;
+  }
+  if (isReal) return; // the second direction is checked by the caller, once
+  report.push(
+    `  ${part.id}: ${nonCoordinate.length} mapping(s) on declared placeholders, resolved against ${where}.`,
+    `    recorded reason: ${part.reason}`,
+  );
+}
+
 for (const spec of DATASETS) {
   const label = `${spec.id} (${spec.data})`;
   let dataset;
@@ -774,50 +875,169 @@ for (const spec of DATASETS) {
     continue;
   }
 
-  const names = indexFrom(readJson(spec.names));
-  if (names.version !== dataset.authoredAgainst.nameIndexVersion) {
-    // Not cosmetic: a resolution is only reproducible against the index it was
-    // authored for, and every browse result pins both versions.
-    problems.push(
-      `${label}: declares nameIndexVersion ${JSON.stringify(dataset.authoredAgainst.nameIndexVersion)}` +
-        ` but ${spec.names} is version ${JSON.stringify(names.version)}.`,
-    );
-    continue;
+  const declared = indexFrom(readJson(spec.names));
+  const available = new Map([[declared.version, { index: declared, where: spec.names }]]);
+  if (real.index !== null) {
+    available.set(real.index.version, { index: real.index, where: `${real.names} + ${real.coverings}` });
   }
 
-  const index = buildResearchIndex({ dataset, names });
+  /** Resolutions are cached: `coveringIntersect` is quadratic and this is CI. */
+  const indexes = new Map();
+  const resolveAgainst = (names) => {
+    if (!indexes.has(names.version)) indexes.set(names.version, buildResearchIndex({ dataset, names, templates }));
+    return indexes.get(names.version);
+  };
+
+  const partitions = dataset.authoredAgainst.partitions ?? null;
+  const index = resolveAgainst(declared);
   const mappings = index.mappings;
   const byPrecision = {};
   for (const m of mappings) byPrecision[m.precision] = (byPrecision[m.precision] ?? 0) + 1;
-
-  // The one-sided bound: anything other than a coordinates mapping must resolve.
-  const mustResolve = mappings.filter((m) => m.precision !== 'coordinates');
-  const unresolvedNonCoordinate = mustResolve.filter((m) => m.resolution !== 'resolved');
-  if (unresolvedNonCoordinate.length > 0) {
-    problems.push(
-      `${label}: ${unresolvedNonCoordinate.length} of ${mustResolve.length} non-coordinate mappings did not resolve.`,
-    );
-    for (const m of unresolvedNonCoordinate.slice(0, 10)) {
-      problems.push(`  ${m.mappingId}: ${m.unresolvedReason} — ${m.notes.join('; ')}`);
-    }
-  }
-
-  const coordinates = mappings.filter((m) => m.precision === 'coordinates');
-  const awaitingTemplate = coordinates.filter((m) => m.unresolvedReason === 'no-template');
 
   // Citation honesty, as a number rather than an impression.
   const withIdentifier = dataset.papers.filter((p) => p.identifier.kind !== 'none').length;
   const locatorRecorded = mappings.filter((m) => m.evidence.locatorStatus === 'recorded').length;
   const inferred = mappings.filter((m) => m.provenance.basis === 'curator-inference').length;
-
   report.push(
     `${spec.id}: ${dataset.papers.length} papers, ${dataset.findings.length} findings, ` +
       `${mappings.length} mappings ${JSON.stringify(byPrecision)} — ${spec.note}`,
-    `  resolved against ${names.version}: ${mustResolve.length - unresolvedNonCoordinate.length}/${mustResolve.length} non-coordinate mappings`,
-    `  coordinates awaiting a template: ${awaitingTemplate.length}/${coordinates.length}`,
     `  identifiers recorded: ${withIdentifier}/${dataset.papers.length}, each justified by a named source in ${CITATION_REPORT}`,
     `  evidence locators recorded: ${locatorRecorded}/${mappings.length}; curator inferences: ${inferred} (each with a note, enforced at load)`,
   );
+
+  if (partitions === null) {
+    // One index names the whole dataset. The one-sided bound, as before:
+    // anything other than a coordinates mapping must resolve.
+    if (declared.version !== dataset.authoredAgainst.nameIndexVersion) {
+      // Not cosmetic: a resolution is only reproducible against the index it
+      // was authored for, and every browse result pins both versions.
+      problems.push(
+        `${label}: declares nameIndexVersion ${JSON.stringify(dataset.authoredAgainst.nameIndexVersion)}` +
+          ` but ${spec.names} is version ${JSON.stringify(declared.version)}.`,
+      );
+      continue;
+    }
+    const mustResolve = mappings.filter((m) => m.precision !== 'coordinates');
+    const bad = mustResolve.filter((m) => m.resolution !== 'resolved');
+    if (bad.length > 0) {
+      problems.push(`${label}: ${bad.length} of ${mustResolve.length} non-coordinate mappings did not resolve.`);
+      for (const m of bad.slice(0, 10)) {
+        problems.push(`  ${m.mappingId}: ${m.unresolvedReason} — ${m.notes.join('; ')}`);
+      }
+    } else {
+      report.push(
+        `  resolved against ${declared.version}: ${mustResolve.length}/${mustResolve.length} non-coordinate mappings`,
+      );
+    }
+  } else {
+    // An index shipped beside the dataset that no partition claims is an index
+    // nothing resolves through — a leftover, and the kind that gets loaded by
+    // a consumer anyway.
+    if (!partitions.some((p) => p.nameIndexVersion === declared.version)) {
+      problems.push(
+        `${label}: ships ${spec.names} (version ${JSON.stringify(declared.version)}) but no partition` +
+          ' declares that version, so nothing resolves through it.',
+      );
+    }
+
+    for (const part of partitions) {
+      const bound = available.get(part.nameIndexVersion);
+      if (bound === undefined) {
+        const message = [
+          `UNVERIFIED: ${label}: partition ${part.id} (status ${part.status}) declares index` +
+            ` ${JSON.stringify(part.nameIndexVersion)}, which is not present in this tree.`,
+          `  ${part.structureIds.length} structure(s) in it have not been checked against the index they name.`,
+        ];
+        if (strictGeometry) problems.push(...message.map((l) => l.replace(/^UNVERIFIED/, 'FAILED')));
+        else report.push(...message);
+        continue;
+      }
+      checkPartition({
+        label,
+        part,
+        index: resolveAgainst(bound.index),
+        where: bound.where,
+        isReal: false,
+      });
+
+      // The second direction, for placeholders only, and only when there is a
+      // real index to be wrong about.
+      //
+      // The predicate is "the index can NAME it", not "the mapping resolved".
+      // Those come apart for a `cells` mapping, which resolves from its own
+      // curated cells whether or not anything knows the structure they are
+      // filed under — so resolution here would report every curated sub-region
+      // as a crosswalk waiting to happen. `structureLabelFromIndex` is the
+      // claim that actually expires the recorded reason.
+      if (part.status === 'placeholder' && real.index !== null && real.index.version !== part.nameIndexVersion) {
+        const ids = new Set(part.structureIds);
+        const nowNamed = resolveAgainst(real.index)
+          .mappings.filter((m) => ids.has(m.structureId))
+          .filter((m) => m.structureLabelFromIndex);
+        if (nowNamed.length > 0) {
+          problems.push(
+            `${label}: partition ${part.id} is declared a placeholder, but the real index NAMES` +
+              ` ${nowNamed.length} of its structures (${real.names}, version ${real.index.version}).`,
+            '  The recorded reason has expired. Crosswalk them and move them to a `real` partition —',
+            '  a placeholder that a cleared index can name is a mapping pointing at a label instead of',
+            '  at the structure the label names.',
+            ...nowNamed.slice(0, 10).map((m) => `    ${m.mappingId} (${m.structureId}) -> ${m.structureLabel}`),
+          );
+        }
+      }
+    }
+
+    // Coordinates are a separate contract: they are placed by a TEMPLATE, not
+    // named by an index, and in this dataset they are BV — where there is no
+    // name index at all. So the check is two-sided in a different way: the
+    // geometry must resolve once a template exists, and the name must NOT.
+    const coordinates = mappings.filter((m) => m.precision === 'coordinates');
+    if (coordinates.length > 0) {
+      const frames = new Set(dataset.findings.flatMap((f) => f.mappings).filter((m) => m.spatial.kind === 'coordinates').map((m) => m.spatial.frame));
+      const haveAll = [...frames].every((f) => (f === 'BD' ? templates.body : templates.brainVolume) !== undefined);
+      if (!haveAll) {
+        const message = [
+          `UNVERIFIED: ${spec.id}: ${coordinates.length} coordinate mapping(s) in frame(s)` +
+            ` ${[...frames].join(', ')} have no template to place them.`,
+          '  Not shown as region-level and not resolved: a locus we cannot place is a different claim',
+          `  from a region. Publish a template under ${TEMPLATE_DIR}/ and this starts checking.`,
+        ];
+        if (strictGeometry) problems.push(...message.map((l) => l.replace(/^UNVERIFIED/, 'FAILED')));
+        else report.push(...message);
+      } else {
+        const stuck = coordinates.filter((m) => m.resolution !== 'resolved');
+        if (stuck.length > 0) {
+          problems.push(
+            `${spec.id}: ${stuck.length} of ${coordinates.length} coordinate mappings did not resolve even with` +
+              ' a template for their frame:',
+            ...stuck.map((m) => `  ${m.mappingId}: ${m.unresolvedReason} — ${m.notes.join('; ')}`),
+          );
+        }
+        // The contract: cells, never a name. Checked against the real index,
+        // because that is the only index whose naming claim matters.
+        const named =
+          real.index === null
+            ? []
+            : resolveAgainst(real.index)
+                .mappings.filter((m) => m.precision === 'coordinates')
+                .filter((m) => m.structureLabelFromIndex);
+        if (named.length > 0) {
+          problems.push(
+            `${spec.id}: ${named.length} coordinate mapping(s) took a name from the real index.`,
+            '  The expected contract is coordinates ONLY: these are BV addresses, and there is no BV name',
+            '  index (docs/asset-licensing.md §4). If this index now names them, the dataset should say so',
+            '  rather than leaving them in a placeholder partition.',
+            ...named.slice(0, 5).map((m) => `    ${m.mappingId} -> ${m.structureLabel}`),
+          );
+        } else if (stuck.length === 0) {
+          report.push(
+            `  coordinates: all ${coordinates.length} resolve through the template to cells and to NO name,` +
+              ' which is the pinned contract for a frame with no name index.',
+          );
+        }
+      }
+    }
+  }
 
   resolved.push({ spec, dataset, index });
 }
@@ -889,67 +1109,6 @@ for (const spec of DATASETS) {
 // ---------------------------------------------------------------------------
 // The stage-B criterion: reported, not asserted, until the index exists.
 // ---------------------------------------------------------------------------
-
-const real = loadRealIndex();
-const { templates, sources: templateSources, problems: templateProblems } = loadTemplates();
-const strictGeometry = process.argv.includes('--strict-geometry');
-
-problems.push(...templateProblems);
-
-if (real.index === null) {
-  const message = [
-    'UNVERIFIED: no curated mapping has been checked against real geometry.',
-    "  The asset pipeline's index could not be built:",
-    ...real.why.map((l) => `    ${l}`),
-    '  Looked in:',
-    ...REAL_INDEX_CANDIDATES.map((p) => `    ${p}`),
-    '  This is reported rather than failed on purpose: a red build for a dependency this',
-    '  branch cannot satisfy would be ignored, and a real failure would then be invisible',
-    '  inside it. Run with --strict-geometry once the index is expected to exist.',
-  ];
-  if (strictGeometry) {
-    problems.push(...message.map((l) => l.replace(/^UNVERIFIED/, 'FAILED')));
-  } else {
-    report.push(...message);
-  }
-} else {
-  report.push(
-    `real index: ${real.index.structures.length} structures, frame ${real.frame ?? 'unstated'},` +
-      ` version ${real.index.version}`,
-    `  joined from ${real.names} and ${real.coverings}`,
-  );
-  for (const { spec, dataset } of resolved) {
-    const index = buildResearchIndex({ dataset, names: real.index, templates });
-    const mustResolve = index.mappings.filter((m) => m.precision !== 'coordinates');
-    const bad = mustResolve.filter((m) => m.resolution !== 'resolved');
-    if (bad.length > 0) {
-      problems.push(
-        `${spec.id}: ${bad.length} of ${mustResolve.length} mappings do not resolve against the real index` +
-          ` (${real.names} + ${real.coverings}, version ${real.index.version}).`,
-      );
-      for (const m of bad.slice(0, 15)) problems.push(`  ${m.mappingId}: ${m.unresolvedReason}`);
-    } else {
-      report.push(
-        `${spec.id}: all ${mustResolve.length} non-coordinate mappings resolve against the real index` +
-          ` (version ${real.index.version}).`,
-      );
-    }
-    if (dataset.authoredAgainst.status !== 'real') {
-      report.push(
-        `${spec.id}: resolves against the real index but still declares status "fixture".` +
-          ' Flip it once the mappings are re-authored rather than merely found to resolve.',
-      );
-    }
-  }
-}
-
-if (Object.keys(templateSources).length > 0) {
-  report.push(
-    `templates: ${Object.entries(templateSources)
-      .map(([slot, path]) => `${slot} <- ${path}`)
-      .join(', ')}`,
-  );
-}
 
 if (problems.length > 0) fail('research dataset', problems);
 pass('research dataset', report);

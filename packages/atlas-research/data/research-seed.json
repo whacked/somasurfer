@@ -24,24 +24,126 @@
     "  - The region mappings are the curator’s reading of what each paper is about, at",
     "    the granularity its abstract or chapter supports. They are not cell-level claims.",
     "  - Page- and figure-level locators are `not-recorded` rather than invented.",
-    "  - Gross anatomy uses the ATLAS-LABEL placeholder namespace. See",
-    "    schema/research-1.md, section \"Structure id namespaces\".",
     "",
-    "STAGE B, still outstanding: re-author these mappings against the real coverings.json",
-    "from plan task 4 -- crosswalk ATLAS-LABEL onto that index’s accessions and re-check",
-    "every `cells` sub-region. Until then authoredAgainst.status is `fixture` and",
-    "tools/check-research-dataset.mjs reports resolution as UNVERIFIED against real",
-    "geometry rather than passing silently."
+    "STAGE B, and what it could and could not finish:",
+    "",
+    "  - 14 gross body structures are CROSSWALKED onto bare FMA concept ids and are",
+    "    authored against the real BD index. They must resolve against it; the gate",
+    "    fails if one does not. That is the `body-bd` partition, status `real`.",
+    "  - Everything else stays on a declared placeholder, and that is a PASS rather",
+    "    than a deferral, with the reason recorded per partition:",
+    "      brain-parcellation  no cleared index can name these, and none will for v1.",
+    "                          docs/asset-licensing.md section 4 is NOT CLEARED, the",
+    "                          cleared index is BD only with no BV name index, and the",
+    "                          brain is absent from BD by measurement. BV addresses",
+    "                          locate and round-trip but do NOT resolve to a name.",
+    "      body-not-in-index   a coverage gap, not a licence refusal: a generic rib and",
+    "                          no individual rib, no coronary artery, no quadratus",
+    "                          lumborum in the 57-structure subset.",
+    "  - The gate checks the partition in BOTH directions. A `real` id that stops",
+    "    resolving is a failure, and a `placeholder` id that STARTS resolving is also a",
+    "    failure, because then the recorded reason has expired and the mapping should",
+    "    be re-authored rather than left on a placeholder.",
+    "  - 3 coordinate mappings resolve through the committed BV template to CELLS ONLY,",
+    "    never to a name. That is the contract, not a gap: see the partition reason."
   ],
   "schema": "research/1",
   "version": "research-seed-2026.10.1",
   "structureIdSources": [
+    "FMA",
     "HCP-MMP1",
     "ATLAS-LABEL"
   ],
   "authoredAgainst": {
-    "nameIndexVersion": "seed-names-2026.10.1",
-    "status": "fixture"
+    "status": "partitioned",
+    "partitions": [
+      {
+        "id": "body-bd",
+        "status": "real",
+        "nameIndexVersion": "bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da",
+        "structureIds": [
+          "FMA13075",
+          "FMA13295",
+          "FMA15900",
+          "FMA16202",
+          "FMA7088",
+          "FMA7148",
+          "FMA7197",
+          "FMA7198",
+          "FMA7204",
+          "FMA7205",
+          "FMA7309",
+          "FMA7310",
+          "FMA7647",
+          "FMA9968"
+        ]
+      },
+      {
+        "id": "brain-parcellation",
+        "status": "placeholder",
+        "nameIndexVersion": "seed-names-2026.10.2",
+        "structureIds": [
+          "ATLAS-LABEL:amygdala",
+          "ATLAS-LABEL:angular-gyrus",
+          "ATLAS-LABEL:anterior-cingulate-cortex",
+          "ATLAS-LABEL:brainstem",
+          "ATLAS-LABEL:caudate-nucleus",
+          "ATLAS-LABEL:fusiform-gyrus",
+          "ATLAS-LABEL:hippocampus",
+          "ATLAS-LABEL:inferior-frontal-gyrus",
+          "ATLAS-LABEL:insular-cortex",
+          "ATLAS-LABEL:lingual-gyrus",
+          "ATLAS-LABEL:middle-temporal-gyrus",
+          "ATLAS-LABEL:occipital-lobe",
+          "ATLAS-LABEL:parahippocampal-gyrus",
+          "ATLAS-LABEL:postcentral-gyrus",
+          "ATLAS-LABEL:posterior-cingulate-cortex",
+          "ATLAS-LABEL:precentral-gyrus",
+          "ATLAS-LABEL:precuneus",
+          "ATLAS-LABEL:putamen",
+          "ATLAS-LABEL:superior-frontal-gyrus",
+          "ATLAS-LABEL:superior-temporal-gyrus",
+          "ATLAS-LABEL:supramarginal-gyrus",
+          "ATLAS-LABEL:thalamus",
+          "HCP-MMP1:1",
+          "HCP-MMP1:10d",
+          "HCP-MMP1:3b",
+          "HCP-MMP1:4",
+          "HCP-MMP1:44",
+          "HCP-MMP1:45",
+          "HCP-MMP1:55b",
+          "HCP-MMP1:7Pm",
+          "HCP-MMP1:9-46d",
+          "HCP-MMP1:A1",
+          "HCP-MMP1:A4",
+          "HCP-MMP1:FFC",
+          "HCP-MMP1:FOP4",
+          "HCP-MMP1:IPS1",
+          "HCP-MMP1:PFm",
+          "HCP-MMP1:PGs",
+          "HCP-MMP1:PHA1",
+          "HCP-MMP1:RSC",
+          "HCP-MMP1:SFL",
+          "HCP-MMP1:STSvp",
+          "HCP-MMP1:TE1a",
+          "HCP-MMP1:TGd",
+          "HCP-MMP1:V1",
+          "HCP-MMP1:V2"
+        ],
+        "reason": "docs/asset-licensing.md §4 returns VERDICT: NOT CLEARED for brain parcellation, and the verdict is final for v1: Harvard-Oxford is distributed under FSL's non-commercial terms, AAL requires registration and restricts redistribution, and Julich-Brain is CC BY-NC-SA 4.0, whose NC term forecloses commercial use outright. Two further facts make this permanent rather than pending: the cleared index declares \"frame\": \"BD\" and has NO BV name index, and the brain is absent from the BD index by measurement (0.2% of its interior samples fall inside the BD frame, because the brain sits almost entirely above C01). So BV addresses locate and round-trip but do not resolve to a name. These ids stay on declared placeholders: the anatomical TERMS are usable and are not what is licensed; the parcellation that would delineate them is."
+      },
+      {
+        "id": "body-not-in-index",
+        "status": "placeholder",
+        "nameIndexVersion": "seed-names-2026.10.2",
+        "structureIds": [
+          "ATLAS-LABEL:coronary-artery",
+          "ATLAS-LABEL:quadratus-lumborum",
+          "ATLAS-LABEL:rib-7"
+        ],
+        "reason": "these are gross body structures that the cleared BD index does not carry at the specificity the finding claims. It names 57 structures from the BodyParts3D release: there is a generic rib (FMA7574) but no individual rib, so filing a 7th-rib finding under it would paint all of them, and neither the coronary artery nor the quadratus lumborum is in the subset at all. This is a coverage gap in the index rather than a licence refusal, and it is recorded separately for that reason: if the release subset grows, these move to FMA ids and the licence-blocked partition does not."
+      }
+    ]
   },
   "curation": {
     "curatedBy": "Staff Engineer (GStack)",
@@ -50,8 +152,9 @@
     "citationCheck": "every identifier resolved against a named source -- see data/citation-report.json for the per-paper queries, the metadata each source returned and the retrievedOn date. A DOI is recorded only where Crossref or PubMed returned it AND the returned title, first author and year matched this record; otherwise identifier.kind is none and the full citation is in venue. This package still never fetches a URL: verification is a tool, and the gate checks its committed report offline. Existence is checked; whether a paper claims what a finding attributes to it is NOT, and cannot be by any API",
     "notRecorded": [
       "page- and figure-level evidence locators: the claims are supported at abstract or chapter granularity, and an invented figure number would be worse than an absent one",
-      "ontology accessions for gross anatomical structures: the ATLAS-LABEL namespace is a declared placeholder, because a wrong accession resolves to the wrong structure and looks authoritative doing it",
-      "cell-level geometry: the cells come from a synthetic index and will change when coverings.json lands"
+      "ontology accessions for brain parcels and for three body structures the cleared index does not carry: those keep the ATLAS-LABEL and HCP-MMP1 placeholder namespaces, because a wrong accession resolves to the wrong structure and looks authoritative doing it. The 14 body structures the index does carry are on bare FMA concept ids, and each is checked against that index",
+      "measured geometry for every structure outside the BD index: the brain cells come from a synthetic index and cannot be replaced for v1, because no brain parcellation is licensed for redistribution and there is no BV name index. A BV address locates and round-trips; it does not resolve to a name",
+      "the cells of the crosswalked body structures: they are real, and they are held in packages/atlas-assets under a share-alike licence rather than copied into this Apache-2.0 package. They are joined in at resolution, which is why a body structure resolves `empty-covering` against the placeholder index shipped here and resolves for real against the asset index"
     ]
   },
   "papers": [
@@ -1229,7 +1332,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "low",
-            "note": "the sub-region is the curator’s placement of a described extent onto a synthetic index, not a published covering. It will be re-authored against coverings.json."
+            "note": "the sub-region is the curator’s placement of a described extent onto a synthetic index, not a published covering. It cannot be re-authored against a real one for v1: the cleared index is BD only and there is no BV name index, so this cell is checkable for shape and for nothing else."
           }
         },
         {
@@ -2489,7 +2592,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         }
       ],
@@ -2569,7 +2672,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         }
       ],
@@ -2847,7 +2950,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         }
       ],
@@ -3173,9 +3276,9 @@
       ],
       "mappings": [
         {
-          "id": "map:mazziotta-2001-icbm/spinal-extent/atlas-label-spinal-cord",
-          "structureId": "ATLAS-LABEL:spinal-cord",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mazziotta-2001-icbm/spinal-extent/fma7647",
+          "structureId": "FMA7647",
+          "structureIdSource": "FMA",
           "structureLabel": "spinal cord",
           "spatial": {
             "kind": "region-level",
@@ -4031,7 +4134,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         },
         {
@@ -4054,7 +4157,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         }
       ],
@@ -4233,7 +4336,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         }
       ],
@@ -4294,7 +4397,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         }
       ],
@@ -4395,7 +4498,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         }
       ],
@@ -4434,7 +4537,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         }
       ],
@@ -4718,7 +4821,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "medium",
-            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match and will be re-checked against the real index."
+            "note": "the source describes a region rather than a parcel; the parcel named here is the curator’s nearest match, and no cleared index can confirm it — see the brain-parcellation partition."
           }
         },
         {
@@ -4884,7 +4987,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "low",
-            "note": "the sub-region is the curator’s placement of a described extent onto a synthetic index, not a published covering. It will be re-authored against coverings.json."
+            "note": "the sub-region is the curator’s placement of a described extent onto a synthetic index, not a published covering. It cannot be re-authored against a real one for v1: the cleared index is BD only and there is no BV name index, so this cell is checkable for shape and for nothing else."
           }
         }
       ],
@@ -5627,9 +5730,9 @@
       ],
       "mappings": [
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/atlas-label-left-lung",
-          "structureId": "ATLAS-LABEL:left-lung",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7310",
+          "structureId": "FMA7310",
+          "structureIdSource": "FMA",
           "structureLabel": "left lung",
           "spatial": {
             "kind": "region-level",
@@ -5649,9 +5752,9 @@
           }
         },
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/atlas-label-heart",
-          "structureId": "ATLAS-LABEL:heart",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7088",
+          "structureId": "FMA7088",
+          "structureIdSource": "FMA",
           "structureLabel": "heart",
           "spatial": {
             "kind": "region-level",
@@ -5671,9 +5774,9 @@
           }
         },
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/atlas-label-liver",
-          "structureId": "ATLAS-LABEL:liver",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7197",
+          "structureId": "FMA7197",
+          "structureIdSource": "FMA",
           "structureLabel": "liver",
           "spatial": {
             "kind": "region-level",
@@ -5732,10 +5835,10 @@
           }
         },
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/skeletal-parts/atlas-label-thoracic-vertebra-7",
-          "structureId": "ATLAS-LABEL:thoracic-vertebra-7",
-          "structureIdSource": "ATLAS-LABEL",
-          "structureLabel": "thoracic vertebra 7",
+          "id": "map:mitsuhashi-2009-bodyparts3d/skeletal-parts/fma9968",
+          "structureId": "FMA9968",
+          "structureIdSource": "FMA",
+          "structureLabel": "seventh thoracic vertebra",
           "spatial": {
             "kind": "region-level",
             "reason": "a database record for a whole part"
@@ -5771,9 +5874,9 @@
       ],
       "mappings": [
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/concept-ids/atlas-label-right-kidney",
-          "structureId": "ATLAS-LABEL:right-kidney",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mitsuhashi-2009-bodyparts3d/concept-ids/fma7204",
+          "structureId": "FMA7204",
+          "structureIdSource": "FMA",
           "structureLabel": "right kidney",
           "spatial": {
             "kind": "region-level",
@@ -5793,9 +5896,9 @@
           }
         },
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/concept-ids/atlas-label-left-kidney",
-          "structureId": "ATLAS-LABEL:left-kidney",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mitsuhashi-2009-bodyparts3d/concept-ids/fma7205",
+          "structureId": "FMA7205",
+          "structureIdSource": "FMA",
           "structureLabel": "left kidney",
           "spatial": {
             "kind": "region-level",
@@ -5832,9 +5935,9 @@
       ],
       "mappings": [
         {
-          "id": "map:mitsuhashi-2009-bodyparts3d/whole-body-coverage/atlas-label-diaphragm",
-          "structureId": "ATLAS-LABEL:diaphragm",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mitsuhashi-2009-bodyparts3d/whole-body-coverage/fma13295",
+          "structureId": "FMA13295",
+          "structureIdSource": "FMA",
           "structureLabel": "diaphragm",
           "spatial": {
             "kind": "region-level",
@@ -5892,9 +5995,9 @@
       ],
       "mappings": [
         {
-          "id": "map:rosse-2003-fma/reference-ontology/atlas-label-heart",
-          "structureId": "ATLAS-LABEL:heart",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:rosse-2003-fma/reference-ontology/fma7088",
+          "structureId": "FMA7088",
+          "structureIdSource": "FMA",
           "structureLabel": "heart",
           "spatial": {
             "kind": "region-level",
@@ -5914,9 +6017,9 @@
           }
         },
         {
-          "id": "map:rosse-2003-fma/reference-ontology/atlas-label-liver",
-          "structureId": "ATLAS-LABEL:liver",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:rosse-2003-fma/reference-ontology/fma7197",
+          "structureId": "FMA7197",
+          "structureIdSource": "FMA",
           "structureLabel": "liver",
           "spatial": {
             "kind": "region-level",
@@ -5991,9 +6094,9 @@
       ],
       "mappings": [
         {
-          "id": "map:rosse-2003-fma/canonical-anatomy/atlas-label-stomach",
-          "structureId": "ATLAS-LABEL:stomach",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:rosse-2003-fma/canonical-anatomy/fma7148",
+          "structureId": "FMA7148",
+          "structureIdSource": "FMA",
           "structureLabel": "stomach",
           "spatial": {
             "kind": "region-level",
@@ -6013,9 +6116,9 @@
           }
         },
         {
-          "id": "map:rosse-2003-fma/canonical-anatomy/atlas-label-pancreas",
-          "structureId": "ATLAS-LABEL:pancreas",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:rosse-2003-fma/canonical-anatomy/fma7198",
+          "structureId": "FMA7198",
+          "structureIdSource": "FMA",
           "structureLabel": "pancreas",
           "spatial": {
             "kind": "region-level",
@@ -6052,9 +6155,9 @@
       ],
       "mappings": [
         {
-          "id": "map:rosse-2003-fma/not-instance-anatomy/atlas-label-urinary-bladder",
-          "structureId": "ATLAS-LABEL:urinary-bladder",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:rosse-2003-fma/not-instance-anatomy/fma15900",
+          "structureId": "FMA15900",
+          "structureIdSource": "FMA",
           "structureLabel": "urinary bladder",
           "spatial": {
             "kind": "region-level",
@@ -6090,9 +6193,9 @@
       ],
       "mappings": [
         {
-          "id": "map:mungall-2012-uberon/multi-species-integration/atlas-label-liver",
-          "structureId": "ATLAS-LABEL:liver",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mungall-2012-uberon/multi-species-integration/fma7197",
+          "structureId": "FMA7197",
+          "structureIdSource": "FMA",
           "structureLabel": "liver",
           "spatial": {
             "kind": "region-level",
@@ -6112,9 +6215,9 @@
           }
         },
         {
-          "id": "map:mungall-2012-uberon/multi-species-integration/atlas-label-stomach",
-          "structureId": "ATLAS-LABEL:stomach",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mungall-2012-uberon/multi-species-integration/fma7148",
+          "structureId": "FMA7148",
+          "structureIdSource": "FMA",
           "structureLabel": "stomach",
           "spatial": {
             "kind": "region-level",
@@ -6151,9 +6254,9 @@
       ],
       "mappings": [
         {
-          "id": "map:mungall-2012-uberon/cross-ontology-bridges/atlas-label-spinal-cord",
-          "structureId": "ATLAS-LABEL:spinal-cord",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mungall-2012-uberon/cross-ontology-bridges/fma7647",
+          "structureId": "FMA7647",
+          "structureIdSource": "FMA",
           "structureLabel": "spinal cord",
           "spatial": {
             "kind": "region-level",
@@ -6190,9 +6293,9 @@
       ],
       "mappings": [
         {
-          "id": "map:mungall-2012-uberon/taxon-constraints/atlas-label-right-lung",
-          "structureId": "ATLAS-LABEL:right-lung",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mungall-2012-uberon/taxon-constraints/fma7309",
+          "structureId": "FMA7309",
+          "structureIdSource": "FMA",
           "structureLabel": "right lung",
           "spatial": {
             "kind": "region-level",
@@ -6229,9 +6332,9 @@
       ],
       "mappings": [
         {
-          "id": "map:mungall-2012-uberon/structure-classes-not-geometry/atlas-label-sacrum",
-          "structureId": "ATLAS-LABEL:sacrum",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:mungall-2012-uberon/structure-classes-not-geometry/fma16202",
+          "structureId": "FMA16202",
+          "structureIdSource": "FMA",
           "structureLabel": "sacrum",
           "spatial": {
             "kind": "region-level",
@@ -6268,16 +6371,16 @@
       ],
       "mappings": [
         {
-          "id": "map:panjabi-1991-thoracic-morphometry/vertebral-dimensions/atlas-label-thoracic-vertebra-7",
-          "structureId": "ATLAS-LABEL:thoracic-vertebra-7",
-          "structureIdSource": "ATLAS-LABEL",
-          "structureLabel": "thoracic vertebra 7",
+          "id": "map:panjabi-1991-thoracic-morphometry/vertebral-dimensions/fma9968",
+          "structureId": "FMA9968",
+          "structureIdSource": "FMA",
+          "structureLabel": "seventh thoracic vertebra",
           "spatial": {
             "kind": "cells",
             "cells": [
-              "BD-T07-12I-12"
+              "BD-T07-12I-20"
             ],
-            "method": "the curator placed the measured vertebral body onto a sub-cell of the level; a sub-region claim, not a measurement",
+            "method": "the anterior-midline inner cell of the structure’s real covering, refined one octree digit",
             "digits": 2
           },
           "evidence": {
@@ -6291,7 +6394,7 @@
             "assertedOn": "2026-10-09",
             "basis": "curator-inference",
             "confidence": "low",
-            "note": "the sub-region is the curator’s placement of a described extent onto a synthetic index, not a published covering. It will be re-authored against coverings.json."
+            "note": "the sub-region is a cell of the structure’s own covering in the real BD index, refined by one octree digit. The refinement is the curator’s declaration of where in the level the described part sits and not a measurement of it — but it is a sub-region of measured geometry rather than of a synthetic anchor, and the gate fails if it does not lie wholly inside."
           }
         }
       ],
@@ -6312,10 +6415,10 @@
       ],
       "mappings": [
         {
-          "id": "map:panjabi-1991-thoracic-morphometry/pedicle-geometry/atlas-label-thoracic-vertebra-7",
-          "structureId": "ATLAS-LABEL:thoracic-vertebra-7",
-          "structureIdSource": "ATLAS-LABEL",
-          "structureLabel": "thoracic vertebra 7",
+          "id": "map:panjabi-1991-thoracic-morphometry/pedicle-geometry/fma9968",
+          "structureId": "FMA9968",
+          "structureIdSource": "FMA",
+          "structureLabel": "seventh thoracic vertebra",
           "spatial": {
             "kind": "region-level",
             "reason": "reported per level"
@@ -6351,10 +6454,10 @@
       ],
       "mappings": [
         {
-          "id": "map:panjabi-1991-thoracic-morphometry/level-to-level-variation/atlas-label-lumbar-vertebra-4",
-          "structureId": "ATLAS-LABEL:lumbar-vertebra-4",
-          "structureIdSource": "ATLAS-LABEL",
-          "structureLabel": "lumbar vertebra 4",
+          "id": "map:panjabi-1991-thoracic-morphometry/level-to-level-variation/fma13075",
+          "structureId": "FMA13075",
+          "structureIdSource": "FMA",
+          "structureLabel": "fourth lumbar vertebra",
           "spatial": {
             "kind": "region-level",
             "reason": "reported per level; cited here as the adjacent region's contrast"
@@ -6374,9 +6477,9 @@
           }
         },
         {
-          "id": "map:panjabi-1991-thoracic-morphometry/level-to-level-variation/atlas-label-sacrum",
-          "structureId": "ATLAS-LABEL:sacrum",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:panjabi-1991-thoracic-morphometry/level-to-level-variation/fma16202",
+          "structureId": "FMA16202",
+          "structureIdSource": "FMA",
           "structureLabel": "sacrum",
           "spatial": {
             "kind": "region-level",
@@ -6414,9 +6517,9 @@
       ],
       "mappings": [
         {
-          "id": "map:panjabi-1991-thoracic-morphometry/canal-dimensions/atlas-label-spinal-cord",
-          "structureId": "ATLAS-LABEL:spinal-cord",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:panjabi-1991-thoracic-morphometry/canal-dimensions/fma7647",
+          "structureId": "FMA7647",
+          "structureIdSource": "FMA",
           "structureLabel": "spinal cord",
           "spatial": {
             "kind": "region-level",
@@ -6454,10 +6557,10 @@
       ],
       "mappings": [
         {
-          "id": "map:bogduk-2012-lumbar-anatomy/lumbar-vertebra-structure/atlas-label-lumbar-vertebra-4",
-          "structureId": "ATLAS-LABEL:lumbar-vertebra-4",
-          "structureIdSource": "ATLAS-LABEL",
-          "structureLabel": "lumbar vertebra 4",
+          "id": "map:bogduk-2012-lumbar-anatomy/lumbar-vertebra-structure/fma13075",
+          "structureId": "FMA13075",
+          "structureIdSource": "FMA",
+          "structureLabel": "fourth lumbar vertebra",
           "spatial": {
             "kind": "region-level",
             "reason": "a descriptive account of the whole bone"
@@ -6493,9 +6596,9 @@
       ],
       "mappings": [
         {
-          "id": "map:bogduk-2012-lumbar-anatomy/lumbosacral-junction/atlas-label-sacrum",
-          "structureId": "ATLAS-LABEL:sacrum",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:bogduk-2012-lumbar-anatomy/lumbosacral-junction/fma16202",
+          "structureId": "FMA16202",
+          "structureIdSource": "FMA",
           "structureLabel": "sacrum",
           "spatial": {
             "kind": "region-level",
@@ -6573,9 +6676,9 @@
       ],
       "mappings": [
         {
-          "id": "map:bogduk-2012-lumbar-anatomy/nerve-supply/atlas-label-spinal-cord",
-          "structureId": "ATLAS-LABEL:spinal-cord",
-          "structureIdSource": "ATLAS-LABEL",
+          "id": "map:bogduk-2012-lumbar-anatomy/nerve-supply/fma7647",
+          "structureId": "FMA7647",
+          "structureIdSource": "FMA",
           "structureLabel": "spinal cord",
           "spatial": {
             "kind": "region-level",
