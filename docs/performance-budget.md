@@ -74,9 +74,61 @@ compared to a budget stated for a laptop. `tools/perf-budget.mjs` runs a fixed
 calibration workload alongside the measurement and scales by
 `referenceMs / observedMs`. It is a crude single scalar that corrects for
 clock speed and little else, so raw and normalised numbers are both always
-reported, and the gate refuses to run at all if the runner is more than 4×
-off the reference — at that distance the correction would be doing more work
-than the measurement.
+reported, and the gate will not quote a normalised number at all if the runner
+is more than 4× off the reference — at that distance the correction would be
+doing more work than the measurement.
+
+## When the runner is too far from the reference
+
+GitHub's runner pool is heterogeneous. The same tree measured 25 ms on one
+runner and over 100 ms on another, so the speed factor is not a property of the
+build and can land anywhere from under 1× to nearly 5×.
+
+For a while, landing outside `[0.25, 4]` failed the build. That was wrong, and
+it cost a day: run [`37890971145`][dog29] went red on a merge commit that
+changed no file contents, on a tree that had passed the same gate twice. The
+gate was saying "over budget" when the truth was "not measurable from here".
+Those are different claims and only one of them is about the code.
+
+What the gate does now is use the bound that the direction of the error leaves
+sound. The correction is untrustworthy, but its **sign** is not:
+
+| runner | unnormalised time is | over budget means | under budget means |
+| --- | --- | --- | --- |
+| faster than the reference | a **lower** bound — the reference pays at least this | over budget, proven | nothing: `not evaluated` |
+| slower than the reference | an **upper** bound — the reference pays at most this | nothing: `not evaluated` | within budget, proven |
+
+So the gate still only ever fails on certainty, it never reports a normalised
+number it cannot stand behind, and a line it cannot settle is printed as
+`not evaluated` rather than folded into either verdict. Byte budgets do not
+touch the calibration at all and stay exact and hard on every runner.
+
+The cost is sensitivity, and it is worth stating: on a 4.8× runner, a parse
+regression has to be 4.8× larger before the unnormalised lower bound catches
+it. With 40× headroom on `lowResAssetParseMsNormalised` that is tolerable, and
+it is inside the range this document already declares untrustworthy below.
+
+**Widening the band is not the fix.** Raising `maxSpeedFactor` to cover the
+reading we happened to see would buy sensitivity by quoting a larger correction
+as though it were a measurement, which is the thing the refusal exists to
+prevent. The evidence that would justify a wider band is a measured
+distribution of the calibration workload across the runner pool, and a stated
+view on how large a correction is still worth believing. Neither exists yet.
+
+Lengthening the calibration workload — the other obvious move — does not fix
+this either, and it is worth writing down why. The speed factor is a *ratio* of
+the same workload on two machines, so scaling the workload leaves it where it
+was; a 6× longer workload measured here moved the spread from 2.1× to 1.5× but
+did not move the ratio. It would also invalidate `referenceMs`, which is stated
+for the workload as it is and cannot be re-measured without the reference
+machine. The 4.8× reading is mostly real hardware difference, not timer noise.
+
+Three cases in `tools/verify-gates.mjs` pin all of this: that a fast runner
+alone does not fail the build, that an off-band parse line still fails when the
+unnormalised time alone busts it, and that byte budgets survive a useless
+calibration.
+
+[dog29]: https://github.com/whacked/somasurfer/actions/runs/37890971145
 
 ## What is not measured yet
 
@@ -120,6 +172,11 @@ calibration landed between 66 ms and 127 ms against the 120 ms reference. A
 the honest number and it is worth stating plainly: if a parse line ever comes
 within about 4× of its budget, this gate needs more samples per run before it
 can be trusted to distinguish a regression from a noisy runner.
+
+A GitHub runner has since read as low as 25 ms on the same workload, a 4.8×
+speed factor, which is outside the band and reports the parse lines as bounds
+rather than as normalised values. See "When the runner is too far from the
+reference" above for what the table means on a run like that.
 
 Read the whole table as headroom, not as an achievement. 600 of the 682 ms is
 the render allowance placeholder, and the fixture is an analytic shell at
