@@ -19,10 +19,10 @@ guarantees.
 The four that matter most are not parser bugs:
 
 1. **QA-2** — `auditBodyTemplate()` clears a level that demonstrably folds, on a
-   *committed preset*. `docs/alc-1-admissibility.md` §4 claims "the exact verdict
-   matches the observed failures in every row". It does not: `S05` of
-   `anat-adult-p50-split-sacrum` is cleared with **+34 mm of margin** and
-   **utilisation 0.74**, and `measureRoundTrip` observes two failures there. The audit's
+   *committed preset*. `docs/alc-1-admissibility.md` §4 claimed "the exact verdict
+   matches the observed failures in every row" (since corrected). It did not: `S05` of
+   `anat-adult-p50-split-sacrum` was cleared with **+34 mm of margin** and
+   **utilisation 0.74**, and `measureRoundTrip` observed failures there. The audit's
    condition is sound per level against its own two bisector planes; level assignment is
    a first-match scan over the whole column, so a distant level can claim a point the
    audit never considered. No per-level condition can see this.
@@ -123,7 +123,7 @@ through. That is the `BD-T07-02O-9` shape.
 | `INV-ASCII` an accepted input was ASCII | **QA-7** |
 | `INV-CHECK-CANONICAL` an accepted check symbol is the canonical one | **QA-5** |
 | `INV-CHECK-ACCEPTS-LOOSE-CANONICAL` loose body + canonical check is accepted | **QA-5** |
-| `INV-GRAMMAR-LEVEL` the `BD` anchor is in the spec's level set | **QA-6** |
+| `INV-GRAMMAR-LEVEL` the `BD` anchor is in the spec's level set | clean since `1924a2f`; was **QA-6** |
 | `INV-RECOMMENDED-NOT-OVERPRECISE` the display recommendation is honest | **QA-3** |
 
 The ledger is bidirectional: an unfiled violation fails the suite, **and so does a ledger
@@ -264,35 +264,72 @@ template is usable.
 
 The CTO began landing fixes while this pass was still running, so the statuses
 below are the ones the committed tests assert. Every "fixed" row was re-verified
-against the working tree, and the test that pinned the defect was converted into
-a positive guarantee rather than deleted.
+**on the committed tree, with the measurement that found the defect** — not by
+watching an assertion flip — and the test that pinned the defect was converted
+into a positive guarantee rather than deleted. The re-measurement is
+`packages/alc/scripts/verify-retirements.mjs`; its output is in "Retirement
+evidence" below.
 
 | id | severity | status |
 | --- | --- | --- |
-| QA-1 | High | **fixed** — `locate()` now raises `flags.folded` and carries a note naming both the level the address asked for and the level its millimetres land in. Pinned as a positive guarantee by `precision: locate() says so when a template is inadmissible at this cell`. |
-| QA-2 | High | **fixed** — `bodyMmToLocal` now detects multiple bracketing levels, raises `flags.folded`, names the competing levels and states the point is not outside the body. `admissible` was renamed `locallyAdmissible` with the sufficiency caveat, and `scanBodyTemplateFolds()` is the gate. The per-level criterion is still incomplete *by design*, which is now documented and measured: 162 of 3 228 templates in the physiological box (5.0%) satisfy it and fold anyway. |
+| QA-1 | High | **fixed** in `1924a2f` — `bodyLocate` now runs the claim check against the level the *caller asked for*, which is the one thing a bare millimetre point cannot reveal, so the §9 note is reachable through `locate()` and not only through `encodeBody`. `locate()` raises `flags.folded` and carries a note naming both the level the address asked for and the level its millimetres land in. Pinned as a positive guarantee by `precision: locate() says so when a template is inadmissible at this cell`. |
+| QA-2 | High | **fixed** in `1924a2f` — `bodyMmToLocal` now detects multiple bracketing levels, raises `flags.folded`, names the competing levels and states the point is not outside the body. `admissible` was renamed `locallyAdmissible` with the sufficiency caveat, and `scanBodyTemplateFolds()` is the gate. The per-level criterion is still incomplete *by design*, which is now documented and measured: 162 of 3 228 templates in the physiological box (5.0%) satisfy it and fold anyway. |
 | QA-3 | High | **open** — `recommendedDigits()` still returns 8 for a template justifying 5. |
 | QA-4 | High | **open** — `encodeBrainVolume(t, [NaN,NaN,NaN], 6)` still returns `BV-R-000000` with `flags: {}`. |
 | QA-5 | Medium-High | **open** |
-| QA-6 | Medium-High | **fixed** — `canonicalLevel` now holds a per-level set. `ANOMALOUS_LEVELS = ['T13','L06','S06']` are addressable and report the new `homology: 'variant'`; everything else is rejected with the correction named (`BD-C08` explains the C8 *nerve root*). The fix went further than the finding: `variant` vs `absent` distinguishes "real anatomy this template lacks" from "not a level", which is the distinction a UI needs. |
+| QA-6 | Medium-High | **fixed** in `1924a2f` — `canonicalLevel` now holds a per-level set. `ANOMALOUS_LEVELS = ['T13','L06','S06']` are addressable and report the new `homology: 'variant'`; everything else is rejected with the correction named (`BD-C08` explains the C8 *nerve root*). The fix went further than the finding: `variant` vs `absent` distinguishes "real anatomy this template lacks" from "not a level", which is the distinction a UI needs. |
 | QA-7 | Medium | **open** |
 | QA-8 | Medium | **open** — a NaN body coordinate still produces an inadmissibility note against a template the audit certifies. |
-| QA-9 | Medium | **fixed** — falls out of QA-2. `inadmissibleNotes` now reads 31 on the split-sacrum template and stays 0 on a clean one, so the assertion is no longer vacuous. |
-| QA-10 | Low | **fixed** |
+| QA-9 | Medium | **fixed** in `1924a2f` — falls out of QA-2, and went further: the counter now keys off `flags.folded` rather than the unreachable no-claimant note. Re-measured on the committed tree at `samplesPerLevel: 200` — 31 notes on `anat-adult-p50-split-sacrum`, 5 on `ADULT_HYPERKYPHOTIC_SHORT_WIDE`, 0 on `anat-adult-p50` — so it is asserted non-zero on a folder and zero on every preset, and is no longer vacuous. |
+| QA-10 | Low | **fixed** in `9d7d6ff` — the gate grew a `STRUCTURE` stage, which is the only one of the four that can see a duplicate label: the audit and the probe both still pass the template, and that pair of facts is asserted so neither stage can later be pruned as redundant. |
 | QA-11 | Low | **open** |
-| QA-12 | High | **fixed** — `cellRadiusMm`'s 3-D diagonal replaced by `cellReachMm`, the box's directional support function, plus a structural short-circuit: disjoint cells of one template are a definitive no at `toleranceMm: 0`, scoped to zero so a stated tolerance is still a geometric question. All 3 424 disjoint pairs now report `same: false`; the characterisation test is now the invariant itself. |
+| QA-12 | High | **fixed** in `1924a2f` — `cellRadiusMm`'s 3-D diagonal replaced by `cellReachMm`, the box's directional support function, plus a structural short-circuit: disjoint cells of one template are a definitive no at `toleranceMm: 0`, scoped to zero so a stated tolerance is still a geometric question. All 3 424 disjoint pairs now report `same: false`; the characterisation test is now the invariant itself. |
 | QA-13 | Medium | **open** — filed on the resumed run. The displacement half of a fold carries no flag; only reachable on a template the gate rejects. |
 
-Eight of the thirteen are closed. The two High ones still open, QA-3 and QA-4,
-are the same shape — a confident answer with the flag missing — and neither needs
-more than a few lines. Every open defect has an owner and a bounded task:
-QA-3, QA-4, QA-8 and QA-11 on DOG-16; QA-5 and QA-7 on DOG-17; QA-13 on DOG-18.
+**Six of the thirteen are closed** — QA-1, QA-2, QA-6, QA-9, QA-10, QA-12. The
+two High ones still open, QA-3 and QA-4, are the same shape — a confident answer
+with the flag missing — and neither needs more than a few lines. Every open
+defect has an owner and a bounded task: QA-3, QA-4, QA-8 and QA-11 on DOG-16;
+QA-5 and QA-7 on DOG-17; QA-13 on DOG-18.
 
-A note on this table, because it drifted once already: a row here is a claim
-about the tests, and `known defects: the index matches the report` only verifies
-that an id *appears* in both places, which is how the stale QA-1 row survived a
-run. Tightening that check into one that reads the ledger and fails on a
-contradiction is scoped on DOG-10.
+**This table is machine-checked, because it drifted once already.** The old
+`known defects: the index matches the report` only verified that an id
+*appears* in both places, which is how a stale QA-1 row survived a run saying
+"open" after the fix had landed. It now reads this table and fails if a row says
+**open** for a defect with no characterisation test left, or **fixed** for one
+that still has a characterisation test pinning it, or if a **fixed** row cites
+no commit, or if the counts in the sentence above disagree with the rows, or if
+an **open** row's `**Pinned:**` line names a file the test is not in, or a
+`### QA-n` section heading disagrees with its row. The naming rule it depends on
+— a `node:test` title contains `QA-<n>` if and only if that test is a
+characterisation test for an *open* defect — is documented at the top of
+`known-defects.test.ts` and is what a retirement has to honour. Each of those
+six failure modes was verified by mutation, including replaying the original
+drift.
+
+### Retirement evidence
+
+`packages/alc/scripts/verify-retirements.mjs` re-runs the *finding* measurement
+for every retired defect against the committed library and prints a verdict per
+defect. On `9d7d6ff` (library at `1924a2f`), all six pass:
+
+| defect | the measurement that found it, re-run | now |
+| --- | --- | --- |
+| QA-1 | `locate('BD-S02-12O', { body: split }).flags` | `folded: true` + a note naming S02 and the S01 its millimetres land in (was bare `homology: 'exact'`) |
+| QA-2 local | S05 skin point of `anat-adult-p50-split-sacrum`, which the per-level audit clears at margin **+34.1 mm**, utilisation 0.739 | `folded: true`, note names both claimants (S01, S05), no longer misreported as outside the body; `levelsClaiming` returns `['S01','S05']` |
+| QA-2 non-local | `anat-adult-p50` with a 250 mm posterior radius at L05, cleared at utilisation 0.078 | round-trips to **L05** (was L01 "outside the modelled body"), and `scanBodyTemplateFolds` rejects the template (`sound: false`, 17/54 000) |
+| QA-6 | `canonicalLevel` over `C08`/`L09`/`S12` and `T13`/`L06`/`S06` | the first three rejected with the correction named, the three real anomalies still addressable |
+| QA-9 | `measureRoundTrip(..., { samplesPerLevel: 200 }).inadmissibleNotes` | **31** on the split sacrum, **5** on `ADULT_HYPERKYPHOTIC_SHORT_WIDE`, **0** on `anat-adult-p50` (was 0 everywhere, i.e. vacuous) |
+| QA-12 | every distinct cell pair of one template at `toleranceMm: 0` | **0** reported as the same place (was 1 329 of 3 424, 38.8 %) |
+
+Two numbers moved against the original write-ups, both explained and neither a
+regression. `measureRoundTrip().failures` on a folding template goes *down* as
+`inadmissibleNotes` goes up, because `bodyMmToLocal` now resolves to the nearest
+claimant rather than the first, which repairs most mis-decodes as well as
+reporting them; the ambiguity, not the wrong answer, is the defect. And the
+non-local QA-2 reconstruction above gives the audit a 12.8× margin rather than
+the 24× originally reported, because it bulges a single azimuth sample rather
+than a smooth lobe — a different bulge shape, same conclusion.
 
 
 ## Defects
@@ -301,7 +338,7 @@ Severity is about what reaches a user: **High** = a wrong answer presented as a 
 one. **Medium** = a wrong answer that is at least visible, or a correct answer with a
 misleading reason. **Low** = a trap for the next change.
 
-### QA-1 — `locate()` never reports that a template is inadmissible — High
+### QA-1 — `locate()` never reports that a template is inadmissible — High — FIXED
 
 Spec §9: *"Template inadmissible at this level (bisectors cross) → Deterministic fallback
 plus an explicit note naming the level."* Unimplemented. The note exists only in
@@ -319,7 +356,25 @@ encodeBody(split, locate('BD-S02-12O', { body: split }).pointMm, 0);
 `auditBodyTemplate(split)` lists S02 as a violation, so the library *knows*. Both
 directions stay silent. **Fix:** have `bodyLocate` consult the audit (or a cached
 per-level admissibility flag on the template) and attach the note §9 promises.
-**Pinned:** `precision-honesty.test.ts` "QA-1".
+
+**Resolution** (`1924a2f`): the fix is better than the one suggested above — it does not
+consult the audit at all, which matters, because the audit is per-level and clears
+folding levels (QA-2). `bodyLocate` instead asks whether the level the *caller named*
+claims the point, which is the one thing a bare millimetre point cannot reveal, and is
+exactly the question QA-13 identifies as the right one. Re-measured on the committed
+tree with the repro above:
+
+```js
+locate('BD-S02-12O', { body: split }).flags;
+// -> { homology: 'exact', folded: true, notes: ['template anat-adult-p50-split-sacrum
+//      is inadmissible at this cell: the BD frame folds here, and the point this S02
+//      address denotes actually lies in S01 — decoding these millimetres returns S01,
+//      so the address does not survive a round trip.'] }
+```
+
+The note names both levels, so the §9 promise is kept in the decode direction too.
+Retired and replaced by the guarantee `precision: locate() says so when a template is
+inadmissible at this cell`.
 
 ### QA-2 — `auditBodyTemplate()` clears levels that demonstrably fold — High — FIXED
 
@@ -349,10 +404,12 @@ measureRoundTrip(t, { samplesPerLevel: 200 }).failuresByLevel;
 //   -> [S04 x16, S02 x12, S03 x12, S05 x2]   <- S05 fails; the audit cleared it
 ```
 
-This contradicts `docs/alc-1-admissibility.md` §4 directly: that table reports "exact
-verdict FAIL S02,S03,S04" and "observed failures 42" in the same row, and concludes *"the
-exact verdict matches the observed failures in every row"*. Two of those 42 are at S05.
-**The document's central claim is false on the document's own data.**
+This contradicted `docs/alc-1-admissibility.md` §4 directly: that table reports "exact
+verdict FAIL S02,S03,S04" and the observed failures in the same row, and concluded *"the
+exact verdict matches the observed failures in every row"*. Some of those failures are at
+S05. **The document's central claim was false on the document's own data.** Corrected on
+DOG-10: §4 now states that the per-level verdict wrongly *clears* S01 and S05, with the
+measured counts, and says why no per-level condition can do better.
 
 The second shows the general case and how large the mis-statement can be — the audit's
 margin here is **24×**:
@@ -684,6 +741,11 @@ built on `samePlace()`: it is a handful of lines in `cellRadiusMm`/`samePlace`, 
 it lands the sanctioned cross-subject comparison is wrong in the permissive direction —
 the direction that produces a confident false match rather than a visible miss.
 
-`docs/alc-1-admissibility.md` §4 needs correcting regardless of whether QA-2 is fixed:
-the claim that the exact verdict matches observed failures in every row is not true of
-the S05 row.
+`docs/alc-1-admissibility.md` §4 **has been corrected** (DOG-10), independently of
+QA-2's fix: the claim that the exact verdict matches observed failures in every row was
+not true of the S05 row, and the row's "false alarms: S01,S05" cell had the error
+backwards — those are levels the per-level verdict wrongly cleared, not levels the
+worst-case verdict needlessly condemned. Re-measured at 200 samples per level: `S05`
+margin +34.1 mm and one round-trip failure; `scanBodyTemplateFolds` loses 202 of `S05`'s
+skin points, 16 of `S01`'s and 2 of `L05`'s. How much of a one-sided *bound* the
+per-level radius still is, is QA-13 and belongs to DOG-18.

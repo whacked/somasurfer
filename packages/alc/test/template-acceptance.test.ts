@@ -207,7 +207,13 @@ test('acceptance: a localised bulge folds a template the per-level audit gives 2
   assert.equal(report.stages.find((s) => s.stage === 'ADMISSIBILITY-CONSISTENCY')!.passed, false);
 });
 
-test('acceptance: QA-10 — duplicate slab labels pass both the audit and the probe', () => {
+test('acceptance: a duplicate slab label is caught, and only the structural stage can see it', () => {
+  // Was the QA-10 characterisation test. Retired on DOG-10: the defect is the
+  // *gate's*, not the library's, and the gate now rejects this template, so
+  // what is worth asserting is that the structural stage is the one doing it —
+  // the audit and the probe both still pass it, which is why the stage exists
+  // and must not later be pruned as redundant.
+  //
   // The gate cannot be audit-plus-probe alone. Relabel one slab so two share a
   // label: `findSlab` resolves to the first, so the second slab's anatomy has
   // no address, and the probe cannot see it because it only ever asks for

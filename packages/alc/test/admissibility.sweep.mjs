@@ -12,6 +12,7 @@ import {
   auditBodyTemplateWorstCase,
   bodyLocalToMm,
   bodyMmToLocal,
+  scanBodyTemplateFolds,
   spineGeometry,
 } from '../src/index.ts';
 import {
@@ -167,22 +168,92 @@ line('the radius of curvature. That assumes the thickest tissue faces the concav
 line('side. In a trunk it faces the other way, because the spinal canal sits far');
 line('posterior.');
 line();
-line('| template | worst-case verdict | exact verdict | observed failures | false alarms |');
-line('| --- | --- | --- | --- | --- |');
+// Both judgement columns are scored against the *measurement*, not against
+// each other. Scoring "false alarms" as "condemned by the worst case, cleared
+// by the exact criterion" silently treats the exact criterion as ground truth,
+// which is how this section came to claim a match it did not have (QA-2): on
+// the split sacrum it counted S01 and S05 as false alarms when both fold.
+// Ground truth here is `scanBodyTemplateFolds`, which asks of every probed
+// point how many levels claim it.
+line('| template | worst-case verdict | exact verdict | observed failures | folding levels (measured) | worst-case false alarms | missed by the exact verdict |');
+line('| --- | --- | --- | --- | --- | --- | --- |');
+const directional = [];
 for (const params of [...PRESETS, ADULT_P50_SPLIT_SACRUM]) {
   const t = buildAnatomicalBodyTemplate(params);
   const exact = auditBodyTemplate(t);
   const wc = auditBodyTemplateWorstCase(t);
   const probe = measureRoundTrip(t, { samplesPerLevel: 200 });
-  const falseAlarms = wc.violations.filter((v) => !exact.violations.some((d) => d.level === v.level));
+  const scan = scanBodyTemplateFolds(t);
+
+  const order = t.slabs.map((s) => s.label);
+  const byOrder = (a, b) => order.indexOf(a) - order.indexOf(b);
+  const folds = new Map(scan.foldsByLevel.filter((f) => f.folds > 0).map((f) => [f.level, f.folds]));
+  const folding = [...folds.keys()].sort(byOrder);
+  const falseAlarms = wc.violations.map((v) => v.level).filter((l) => !folds.has(l)).sort(byOrder);
+  const missed = folding.filter((l) => !exact.violations.some((d) => d.level === l));
+
+  const verdict = (a) => (a.locallyAdmissible ? 'pass' : `FAIL ${a.violations.map((v) => v.level).join(',')}`);
+  const list = (xs) => (xs.length ? xs.join(',') : '-');
   line(
-    `| \`${params.id}\` | ${wc.locallyAdmissible ? 'pass' : 'FAIL ' + wc.violations.map((v) => v.level).join(',')} | ${exact.locallyAdmissible ? 'pass' : 'FAIL ' + exact.violations.map((v) => v.level).join(',')} | ${probe.failures} | ${falseAlarms.length ? falseAlarms.map((v) => v.level).join(',') : '-'} |`,
+    `| \`${params.id}\` | ${verdict(wc)} | ${verdict(exact)} | ${probe.failures} `
+    + `| ${list(folding)} | ${list(falseAlarms)} | ${missed.length ? `**${missed.join(',')}**` : '-'} |`,
   );
+  directional.push({
+    id: params.id,
+    missed: missed.map((l) => ({
+      level: l,
+      folds: folds.get(l),
+      marginMm: exact.levels.find((x) => x.level === l)?.marginMm ?? NaN,
+      utilisation: exact.levels.find((x) => x.level === l)?.utilisation ?? NaN,
+    })),
+    probed: scan.probed,
+  });
 }
 line();
-line('The exact verdict matches the observed failures in every row. The worst-case');
-line('verdict condemns five lumbar levels of an ordinary wide-waisted adult whose');
-line('skin round-trips perfectly at every azimuth.');
+line('The worst-case verdict condemns five lumbar levels of an ordinary');
+line('wide-waisted adult whose skin round-trips perfectly at every azimuth.');
+line('That is the case for making the criterion directional, and it stands.');
+line();
+
+const missedRows = directional.filter((r) => r.missed.length > 0);
+if (missedRows.length === 0) {
+  line('In every row above, the exact verdict condemns every level the fold scan');
+  line('finds folding. That is an observation about these templates and **not a');
+  line('guarantee**: the criterion is per-level, and level assignment is a scan');
+  line('over the whole column, so a non-adjacent level can claim a point the');
+  line('criterion never looks at. Gate on `scanBodyTemplateFolds()` or');
+  line('`measureRoundTrip()`, not on this column.');
+} else {
+  line('**The exact verdict is necessary, not sufficient, and the last column');
+  line('shows it.** An earlier version of this section claimed "the exact verdict');
+  line('matches the observed failures in every row". That was false on this');
+  line("document's own data, and is QA-2 in `docs/alc-1-attack-report.md`. The");
+  line('levels it clears that fold anyway:');
+  line();
+  for (const r of missedRows) {
+    for (const m of r.missed) {
+      line(
+        `- \`${r.id}\` ${m.level}: cleared with **+${m.marginMm.toFixed(1)} mm** of `
+        + `margin (utilisation ${m.utilisation.toFixed(3)}), and **${m.folds}** of its `
+        + `own skin points, out of ${r.probed.toLocaleString('en-GB')} probed across the `
+        + 'template, are claimed by a level other than their own.',
+      );
+    }
+  }
+  line();
+  line('So those levels are not "false alarms" of the worst-case verdict — they');
+  line('are levels the exact verdict wrongly *cleared*, which is the opposite');
+  line('error and the dangerous direction.');
+  line();
+  line('The reason is structural, not a matter of tuning. This criterion asks');
+  line("only whether a level's own two bounding bisector planes meet beyond its");
+  line('skin, while level assignment scans the whole column, so a non-adjacent');
+  line('level can claim a point the criterion never looks at. No per-level');
+  line('condition can see that. Use the per-level margins to **localise** a fold');
+  line('once one is known to exist, which is what they are genuinely good at,');
+  line('and gate on `scanBodyTemplateFolds()` or `measureRoundTrip()`. The');
+  line('library renamed the flag `locallyAdmissible` for this reason.');
+}
 line();
 
 // ---------------------------------------------------------------------------
@@ -194,8 +265,10 @@ line('   grammar and absent from templates, which `locate()` already reports as'
 line('   `homology: \'absent\'` rather than guessing.');
 line('2. That level\'s axis direction follows the **upper sacral endplate**, not');
 line('   the sacrum\'s chord.');
-line('3. `auditBodyTemplate()` must pass, and its per-level table must be');
-line('   published with the template. CI gates on it.');
+line('3. `scanBodyTemplateFolds()` must find the template **sound**. That is the');
+line('   gate. `auditBodyTemplate()` must also pass and its per-level table must');
+line('   be published with the template, but per §4 that is a necessary');
+line('   condition only, so it cannot be the gate on its own.');
 line('4. Templates also run `measureRoundTrip()`; the audit is analytic, the');
 line('   probe is the thing that cannot be fooled.');
 line();

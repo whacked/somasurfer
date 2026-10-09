@@ -72,18 +72,41 @@ the radius of curvature. That assumes the thickest tissue faces the concave
 side. In a trunk it faces the other way, because the spinal canal sits far
 posterior.
 
-| template | worst-case verdict | exact verdict | observed failures | false alarms |
-| --- | --- | --- | --- | --- |
-| `anat-adult-p50` | pass | pass | 0 | - |
-| `anat-adult-hyperlordotic` | FAIL L01,L02,L03,L04,L05 | pass | 0 | L01,L02,L03,L04,L05 |
-| `anat-adult-large-girth` | FAIL L01,L02,L03,L04,L05 | pass | 0 | L01,L02,L03,L04,L05 |
-| `anat-adult-hyperkyphotic` | pass | pass | 0 | - |
-| `anat-child-7y` | pass | pass | 0 | - |
-| `anat-adult-p50-split-sacrum` | FAIL S01,S02,S03,S04,S05 | FAIL S02,S03,S04 | 45 | S01,S05 |
+| template | worst-case verdict | exact verdict | observed failures | folding levels (measured) | worst-case false alarms | missed by the exact verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| `anat-adult-p50` | pass | pass | 0 | - | - | - |
+| `anat-adult-hyperlordotic` | FAIL L01,L02,L03,L04,L05 | pass | 0 | - | L01,L02,L03,L04,L05 | - |
+| `anat-adult-large-girth` | FAIL L01,L02,L03,L04,L05 | pass | 0 | - | L01,L02,L03,L04,L05 | - |
+| `anat-adult-hyperkyphotic` | pass | pass | 0 | - | - | - |
+| `anat-child-7y` | pass | pass | 0 | - | - | - |
+| `anat-adult-p50-split-sacrum` | FAIL S01,S02,S03,S04,S05 | FAIL S02,S03,S04 | 45 | L05,S01,S02,S03,S04,S05 | - | **L05,S01,S05** |
 
-The exact verdict matches the observed failures in every row. The worst-case
-verdict condemns five lumbar levels of an ordinary wide-waisted adult whose
-skin round-trips perfectly at every azimuth.
+The worst-case verdict condemns five lumbar levels of an ordinary
+wide-waisted adult whose skin round-trips perfectly at every azimuth.
+That is the case for making the criterion directional, and it stands.
+
+**The exact verdict is necessary, not sufficient, and the last column
+shows it.** An earlier version of this section claimed "the exact verdict
+matches the observed failures in every row". That was false on this
+document's own data, and is QA-2 in `docs/alc-1-attack-report.md`. The
+levels it clears that fold anyway:
+
+- `anat-adult-p50-split-sacrum` L05: cleared with **+385.2 mm** of margin (utilisation 0.152), and **2** of its own skin points, out of 62,640 probed across the template, are claimed by a level other than their own.
+- `anat-adult-p50-split-sacrum` S01: cleared with **+54.1 mm** of margin (utilisation 0.733), and **16** of its own skin points, out of 62,640 probed across the template, are claimed by a level other than their own.
+- `anat-adult-p50-split-sacrum` S05: cleared with **+34.1 mm** of margin (utilisation 0.739), and **202** of its own skin points, out of 62,640 probed across the template, are claimed by a level other than their own.
+
+So those levels are not "false alarms" of the worst-case verdict — they
+are levels the exact verdict wrongly *cleared*, which is the opposite
+error and the dangerous direction.
+
+The reason is structural, not a matter of tuning. This criterion asks
+only whether a level's own two bounding bisector planes meet beyond its
+skin, while level assignment scans the whole column, so a non-adjacent
+level can claim a point the criterion never looks at. No per-level
+condition can see that. Use the per-level margins to **localise** a fold
+once one is known to exist, which is what they are genuinely good at,
+and gate on `scanBodyTemplateFolds()` or `measureRoundTrip()`. The
+library renamed the flag `locallyAdmissible` for this reason.
 
 ## 5. Requirements this puts on the asset pipeline
 
@@ -93,8 +116,10 @@ skin round-trips perfectly at every azimuth.
    `homology: 'absent'` rather than guessing.
 2. That level's axis direction follows the **upper sacral endplate**, not
    the sacrum's chord.
-3. `auditBodyTemplate()` must pass, and its per-level table must be
-   published with the template. CI gates on it.
+3. `scanBodyTemplateFolds()` must find the template **sound**. That is the
+   gate. `auditBodyTemplate()` must also pass and its per-level table must
+   be published with the template, but per §4 that is a necessary
+   condition only, so it cannot be the gate on its own.
 4. Templates also run `measureRoundTrip()`; the audit is analytic, the
    probe is the thing that cannot be fooled.
 
