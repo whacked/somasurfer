@@ -680,9 +680,40 @@ behaves as a residual. `coveringsSamePlace`'s `across: 'subjects'` regime delega
 and inherits this; its `within: 'template'` regime is already correct.
 
 **Credit:** the two coarse cases were found by the DOG-5 pre-landing review; the sweep,
-the rate and the inflation factors are this pass. **Owner:** Staff Engineer, under DOG-5.
-**Pinned:** `equality-guard.test.ts` "QA-12", with the rate bounded both ways so the
-defect can neither widen nor be silently retired.
+the rate and the inflation factors are this pass. **Owner:** Staff Engineer, under DOG-11.
+
+What landed is the suggested fix plus two things the finding did not ask for, both
+because the suggested fix alone is not enough.
+
+First, a projection onto the separation direction is a *lower bound* on how far apart
+two boxes are, not the distance, and the bound is loose exactly where the two cells
+differ in size: `BV-L-44` and `BV-R` are 51.0 mm apart and it puts them at 7.4 mm. So
+`separationMm` takes the best of three bounds — the separation direction, and a
+separating-axis test along each cell's own triad, whose per-axis gaps combine in
+quadrature because the triad is orthonormal. For `BV`, where a cell is a true
+axis-aligned box in millimetres, the result is not a bound but the distance: exact over
+4 537 disjoint pairs. That is what makes the fix hold "at every tolerance, not only at
+zero", which is how the finding states the cause.
+
+Second, adjacent siblings *touch*. Their centre gap equals the sum of their reaches to
+the last bit — `BV-L` and `BV-R` are 68.0 mm apart and reach 34.0 mm each — so leaving
+them to `<=` on two floats would decide the commonest comparison in the library by
+rounding, in a frame where cells are half-open and the right answer is therefore a
+definitive no. Within one template the frame already answers this exactly, so disjoint
+cells of one template are a no at `toleranceMm: 0` whatever the millimetres say. It is
+scoped to zero — state a tolerance and it is a geometric question again — and it is
+skipped where `locate` reports `folded`, because a folded template is not a partition
+and two disjoint cells there really can denote the same millimetres.
+
+**Pinned,** as two positive guarantees whose titles no longer carry the id, per the
+retirement protocol. `equality-guard.test.ts` holds the invariant the sweep became:
+every disjoint pair, both frames, depths 1–3, `same === false` at `toleranceMm: 0`, and
+each quoted case refused for a stated reason rather than by accident. That test cannot
+see the geometry, though — the structural answer covers the zero-tolerance case on its
+own — so `compare.test.ts` pins the geometry separately, asserting `separationMm`
+against the cell boxes re-derived in the test. Both superseded measures fail it, naming
+the millimetres they are off by: the half-diagonal by 68.0 mm, the one-direction
+projection by 43.6 mm.
 
 ---
 
