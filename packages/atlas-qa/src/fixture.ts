@@ -66,6 +66,21 @@ export const RESEARCH_DATA_DIRS = [
 export const RESEARCH_FIXTURE_DIR = RESEARCH_DATA_DIRS[1];
 export const OWN_FIXTURE_PATH = join(PACKAGE_ROOT, 'fixtures', 'journey-5papers.json');
 
+/**
+ * The two halves of the real anatomical name index — the one the PAGE binds.
+ *
+ * Read as data, by path, and never imported: `packages/atlas-assets` is an
+ * asset package under CC-BY-SA and this is a code package. Rule 3 of
+ * `tools/check-licence-separation.mjs` forbids the import edge and names the
+ * alternative — "fetch it as data at runtime instead" — which is what the
+ * shipped page does and what these two paths are. Nothing from here reaches a
+ * bundle: `atlas-qa` is a harness and has no `dist/`.
+ */
+export const ASSET_INDEX_PATHS = {
+  names: join(REPO_ROOT, 'packages', 'atlas-assets', 'labels', 'names.json'),
+  coverings: join(REPO_ROOT, 'packages', 'atlas-assets', 'labels', 'coverings.json'),
+} as const;
+
 export interface FixtureFinding {
   readonly id: string;
   readonly summary: string;
@@ -86,7 +101,66 @@ export interface FixtureStructure {
   readonly id: string;
   readonly name: string;
   readonly atlas: 'body' | 'brain';
+  /**
+   * The structure's covering. **May be empty.**
+   *
+   * An empty covering is `named here, painted elsewhere` — a real anatomical id
+   * and the index's own term, with the geometry in another document. It is a
+   * first-class state and not the same as `unknown-structure`:
+   * `packages/atlas-research/data/names-seed.json` says so in its own
+   * `$comment` ("a crosswalked structure resolves `empty-covering` against THIS
+   * index: named, not painted") and `test/seed.test.ts` pins it.
+   *
+   * What it costs is that the structure cannot be a *click target*: there is no
+   * address to select and no cell to draw. Steps needing one report
+   * `unverified` naming the structure. See `FIXTURE_REQUIREMENTS`.
+   */
   readonly cells: readonly string[];
+}
+
+/**
+ * The real anatomical name index, joined from the two asset documents.
+ *
+ * This is the index the shipped page binds, which is why the journey's
+ * ranked-name assertions resolve against it rather than against the research
+ * dataset's own structure list. The research list is a different index with a
+ * different job — it carries the brain parcels findings map to, and on this ref
+ * most of their cells are the seed author's deliberately INVENTED placeholders
+ * (`names-seed.json` declares `synthetic: true`). Measuring a name result
+ * against invented cells and reporting it as a §7 pass is the false green this
+ * whole package exists to prevent, so the two indexes are kept apart and the
+ * report says which one answered.
+ *
+ * `null` when the asset package is not in the tree — then there is no real
+ * index to bind, the research list is all there is, and `oracle.why` says so.
+ */
+export interface AnatomyIndex {
+  readonly version: string;
+  readonly frame: string | null;
+  readonly structures: readonly FixtureStructure[];
+  readonly source: { readonly names: string; readonly coverings: string; readonly sha256: string };
+}
+
+/**
+ * Which index answered for what, carried into the report.
+ *
+ * "The journey passed against the 30-paper corpus" is not a result on its own:
+ * a reader has to be able to tell whether the cells it compared were measured
+ * from meshes or invented by a seed script. These counts are that.
+ */
+export interface FixtureOracle {
+  /** The document the research structure list came from. */
+  readonly researchNames: string;
+  /** `names.json + coverings.json`, or null when the asset package is absent. */
+  readonly anatomyIndex: string | null;
+  /** Research structures whose cells were taken from the real asset index. */
+  readonly paintedFromAssets: readonly string[];
+  /** Research structures still carrying the synthetic index's invented cells. */
+  readonly placeholderCells: readonly string[];
+  /** Research structures named here and painted by no index available here. */
+  readonly emptyCovering: readonly string[];
+  /** Why the real asset index was not bound, when it was not. */
+  readonly why: readonly string[];
 }
 
 export interface ResearchFixture {
@@ -94,6 +168,10 @@ export interface ResearchFixture {
   readonly nameIndexVersion: string;
   readonly structures: readonly FixtureStructure[];
   readonly papers: readonly FixturePaper[];
+  /** The real anatomical index, when this tree has one. See `AnatomyIndex`. */
+  readonly anatomy: AnatomyIndex | null;
+  /** Which index answered for what. See `FixtureOracle`. */
+  readonly oracle: FixtureOracle;
   /** Provenance, for the report. */
   readonly source: { readonly path: string; readonly sha256: string; readonly kind: 'curated' | 'synthetic-qa-fixture' };
 }
@@ -112,6 +190,15 @@ export const FIXTURE_REQUIREMENTS: ReadonlyArray<{
   readonly forSteps: readonly string[];
   readonly describe: string;
   readonly satisfied: (f: ResearchFixture) => boolean;
+  /**
+   * The specific entities that failed it, appended to the reason.
+   *
+   * "the fixture cannot express: at least two body structures with a covering"
+   * sends a reader to grep the whole dataset. "…: FMA13295, FMA7647 and 12
+   * others are named with no covering" sends them to the row in the index. An
+   * `unverified` nobody can act on is barely better than a silent pass.
+   */
+  readonly detail?: (f: ResearchFixture) => string;
 }> = [
   {
     id: 'two-papers-share-a-region',
@@ -155,8 +242,24 @@ export const FIXTURE_REQUIREMENTS: ReadonlyArray<{
   {
     id: 'a-body-structure',
     forSteps: ['select-structure-without-leaving-atlas', 'explicit-brain-navigation'],
-    describe: 'at least two body structures, one of them the body atlas\'s brain, so a selection and a cross-atlas link both have a target',
-    satisfied: (f) => f.structures.filter((s) => s.atlas === 'body').length >= 2,
+    describe:
+      'at least two body structures WITH A COVERING, one of them the body atlas\'s brain, so a selection '
+      + 'and a cross-atlas link both have a target that can actually be clicked. A structure with an empty '
+      + 'covering is admissible — named here, painted elsewhere — but it has no address to select and no '
+      + 'cell to draw, so it cannot be the target of a selection step',
+    satisfied: (f) => f.structures.filter((s) => s.atlas === 'body' && s.cells.length > 0).length >= 2,
+    detail: (f) => {
+      const empty = f.structures.filter((s) => s.atlas === 'body' && s.cells.length === 0);
+      if (empty.length === 0) return `this fixture has ${f.structures.filter((s) => s.atlas === 'body').length} body structures in total`;
+      return (
+        `${empty.length} body structure(s) are named with an empty covering and so cannot be clicked: `
+        + `${empty.slice(0, 6).map((s) => `${s.id} (${s.name})`).join(', ')}`
+        + `${empty.length > 6 ? ` and ${empty.length - 6} more` : ''}`
+        + `${f.oracle.anatomyIndex === null
+          ? '. No real anatomical index is bound in this tree, so nothing could paint them'
+          : `. ${f.oracle.anatomyIndex} is bound but does not carry them`}`
+      );
+    },
   },
   {
     id: 'a-cell-claimed-by-more-than-one-structure',
@@ -216,6 +319,47 @@ export function provenanceGaps(fixture: ResearchFixture): string[] {
   return gaps;
 }
 
+/**
+ * Which index answered, in sentences, for the report.
+ *
+ * Not a problem list and never fatal. Every line is a limit on what a verdict
+ * from this run can be read to mean, which is exactly what has to travel with
+ * the verdict: "§7 passed against the 30-paper corpus" and "§7 passed against
+ * the 30-paper corpus, with 66 of its 80 structures carrying cells a seed
+ * script invented" are different results.
+ */
+export function oracleNotes(fixture: ResearchFixture): string[] {
+  const o = fixture.oracle;
+  const notes: string[] = [];
+  notes.push(`research structures from ${o.researchNames}`);
+  if (o.anatomyIndex === null) {
+    notes.push(
+      'NO real anatomical index is bound in this tree, so every anatomical name result was checked '
+      + 'against the research dataset\'s own structure list and not against the index the page binds'
+      + `${o.why.length > 0 ? `: ${o.why.slice(0, 3).join('; ')}` : ''}`,
+    );
+  } else {
+    notes.push(`anatomical names resolved against ${o.anatomyIndex} — the index the page binds`);
+    notes.push(`${o.paintedFromAssets.length} research structures painted from that index`);
+  }
+  if (o.placeholderCells.length > 0) {
+    notes.push(
+      `${o.placeholderCells.length} research structures carry cells the seed script INVENTED `
+      + `(${o.placeholderCells.slice(0, 4).join(', ')}${o.placeholderCells.length > 4 ? ', …' : ''}). `
+      + 'A spatial comparison involving one of them is a comparison against a placeholder, not a '
+      + 'measurement. There is no real index for their frame to replace them with.',
+    );
+  }
+  if (o.emptyCovering.length > 0) {
+    notes.push(
+      `${o.emptyCovering.length} research structures are named with an EMPTY covering `
+      + `(${o.emptyCovering.slice(0, 4).join(', ')}${o.emptyCovering.length > 4 ? ', …' : ''}) — `
+      + 'admissible, but they cannot be a click target and a mapping to one lights nothing.',
+    );
+  }
+  return notes;
+}
+
 /** Problems with the fixture's own shape. These DO fail, loudly: a broken fixture is not a test result. */
 export function fixtureShapeProblems(raw: unknown, path: string): string[] {
   const problems: string[] = [];
@@ -237,7 +381,22 @@ export function fixtureShapeProblems(raw: unknown, path: string): string[] {
     structureIds.add(s.id);
     if (typeof s.name !== 'string' || s.name === '') problems.push(at(`structure ${s.id} has no name`));
     if (s.atlas !== 'body' && s.atlas !== 'brain') problems.push(at(`structure ${s.id} must declare atlas body|brain`));
-    if (!Array.isArray(s.cells) || s.cells.length === 0) problems.push(at(`structure ${s.id} has no cells`));
+    // An EMPTY covering is legal; a missing `cells` is not.
+    //
+    // This check used to require at least one cell, and refused to load the
+    // whole 30-paper corpus over the 14 structures that are deliberately
+    // cell-less — a real FMA id and the real index's own term, with the
+    // geometry in `packages/atlas-assets` under a different licence.
+    // `names-seed.json` states the design in its own `$comment` and
+    // `packages/atlas-research/test/seed.test.ts` pins it, so what the check
+    // reported as a broken fixture was the curation working as specified.
+    //
+    // The failure mode it was actually guarding against is kept below, where it
+    // belongs: EVERY structure empty means the names were loaded without the
+    // coverings, and that is still fatal.
+    if (!Array.isArray(s.cells)) {
+      problems.push(at(`structure ${s.id} needs a cells array (empty is legal: named here, painted elsewhere)`));
+    }
     for (const cell of s.cells ?? []) {
       try {
         parse(cell);
@@ -245,6 +404,29 @@ export function fixtureShapeProblems(raw: unknown, path: string): string[] {
         problems.push(at(`structure ${s.id} cell ${JSON.stringify(cell)} is not a valid address: ${(e as Error).message}`));
       }
     }
+  }
+
+  // Some structures painted nowhere is the ordinary case. NONE of them painted
+  // anywhere is half an index.
+  //
+  // This is the failure the per-structure cell count used to catch, stated as
+  // the thing that is actually wrong. `names.json` carries ids and terms and no
+  // cells at all, so a loader handed only that half builds every structure with
+  // an empty covering and every mapping resolves `empty-covering` — which reads
+  // as "the curation is wrong" when the truth is that the geometry was never
+  // loaded. `tools/check-research-dataset.mjs` refuses the same half-index for
+  // the same reason. A fixture in that state can pose no spatial question at
+  // all, so it is not a test result.
+  const anyPainted = (o.structures as FixtureStructure[]).some(
+    (s) => Array.isArray(s?.cells) && s.cells.length > 0,
+  );
+  if (!anyPainted) {
+    problems.push(at(
+      `not one of ${(o.structures as unknown[]).length} structures has a single cell, so nothing here can `
+      + 'be resolved, selected, drawn or intersected. One structure named with an empty covering is the '
+      + 'ordinary "named here, painted elsewhere" case; ALL of them means the names were loaded without '
+      + 'the coverings, and every row would report `empty-covering` as though the curation were at fault.',
+    ));
   }
 
   const findingIds = new Set<string>();
@@ -319,17 +501,143 @@ export function loadFixtureFile(path: string): ResearchFixture {
   if (problems.length > 0) {
     throw new Error(`fixture is not usable:\n  ${problems.join('\n  ')}`);
   }
+  const structures = raw.structures as FixtureStructure[];
   return {
     id: raw.id as string,
     nameIndexVersion: raw.nameIndexVersion as string,
-    structures: raw.structures as FixtureStructure[],
+    structures,
     papers: raw.papers as FixturePaper[],
+    // A single-document fixture IS its own index: it carries its own cells and
+    // the harness's own fixture is the control the self-tests run against, so
+    // binding the real asset index here would make those tests depend on
+    // another package's deliverable. See `resolveFixture`'s `preferOwn`.
+    anatomy: null,
+    oracle: {
+      researchNames: rel(path),
+      anatomyIndex: null,
+      paintedFromAssets: [],
+      placeholderCells: structures.filter((s) => s.cells.length > 0).map((s) => s.id),
+      emptyCovering: structures.filter((s) => s.cells.length === 0).map((s) => s.id),
+      why: ['this fixture carries its own cells and is not resolved against an external index'],
+    },
     source: {
       path,
       sha256: sha256(text),
       kind: raw.kind === 'synthetic-qa-fixture' ? 'synthetic-qa-fixture' : 'curated',
     },
   };
+}
+
+// ---------------------------------------------------------------------------
+// The real anatomical index: the join of the two asset documents
+// ---------------------------------------------------------------------------
+
+/**
+ * Build the real name index from `labels/names.json` + `labels/coverings.json`.
+ *
+ * **Never throws.** "The asset package is not in this tree" and "the asset
+ * index is broken" are different reports, and only the second is a defect;
+ * both are returned as `why` so the caller can print them and carry on. A
+ * harness that cannot find its oracle must say so, not abort.
+ *
+ * The join, rather than either half, and the reasoning is
+ * `tools/check-research-dataset.mjs`'s verbatim because it is the same trap:
+ *
+ *   - `coverings.json` alone has no terms, so nothing can be named.
+ *   - `names.json` alone has no cells, so every structure resolves
+ *     `empty-covering` and the data looks wrong when the loader was wrong.
+ *
+ * `paths` is injectable so the tests can prove each refusal against documents
+ * they construct, rather than against whatever happens to be in the tree.
+ */
+export function loadAnatomyIndex(
+  paths: { names: string; coverings: string } = ASSET_INDEX_PATHS,
+): { index: AnatomyIndex; why: readonly string[] } | { index: null; why: readonly string[] } {
+  const read = (path: string): { raw: Record<string, unknown>; text: string } | string => {
+    if (!existsSync(path)) return `${rel(path)} is not in this tree`;
+    try {
+      const text = readFileSync(path, 'utf8');
+      return { raw: JSON.parse(text) as Record<string, unknown>, text };
+    } catch (e) {
+      return `${rel(path)}: not readable as JSON (${(e as Error).message})`;
+    }
+  };
+
+  const names = read(paths.names);
+  const coverings = read(paths.coverings);
+  const why: string[] = [];
+  if (typeof names === 'string') why.push(names);
+  if (typeof coverings === 'string') why.push(coverings);
+  if (typeof names === 'string' || typeof coverings === 'string') return { index: null, why };
+
+  const version = names.raw.version;
+  const indexVersion = coverings.raw.indexVersion;
+  if (typeof version !== 'string' || version === '') {
+    return { index: null, why: [`${rel(paths.names)}: no \`version\`, so a resolution from it is not reproducible`] };
+  }
+  if (indexVersion !== version) {
+    return {
+      index: null,
+      why: [
+        `${rel(paths.names)} is version ${JSON.stringify(version)} but ${rel(paths.coverings)} declares `
+        + `indexVersion ${JSON.stringify(indexVersion)}. Joining them would attach one index's cells to `
+        + "another index's terms.",
+      ],
+    };
+  }
+
+  const cellsById = new Map<string, readonly string[]>();
+  for (const c of (coverings.raw.coverings as Array<Record<string, unknown>>) ?? []) {
+    if (typeof c?.id !== 'string') { why.push(`${rel(paths.coverings)}: a covering entry has no id`); continue; }
+    if (cellsById.has(c.id)) why.push(`${rel(paths.coverings)}: duplicate covering for ${c.id}`);
+    cellsById.set(c.id, Array.isArray(c.cells) ? (c.cells as string[]) : []);
+  }
+
+  const structures: FixtureStructure[] = [];
+  const unnamed = new Set(cellsById.keys());
+  for (const s of (names.raw.structures as Array<Record<string, unknown>>) ?? []) {
+    if (typeof s?.id !== 'string') { why.push(`${rel(paths.names)}: a structure entry has no id`); continue; }
+    unnamed.delete(s.id);
+    const cells = cellsById.get(s.id);
+    if (cells === undefined) {
+      why.push(`${rel(paths.names)}: ${s.id} has no covering in ${rel(paths.coverings)}`);
+      continue;
+    }
+    structures.push({ id: s.id, name: s.name as string, atlas: atlasOfCells(cells), cells });
+  }
+  for (const id of unnamed) {
+    why.push(`${rel(paths.coverings)}: covering ${id} has no entry in ${rel(paths.names)}, so nothing can name it`);
+  }
+  if (why.length > 0) return { index: null, why };
+  if (structures.length === 0) {
+    return { index: null, why: [`${rel(paths.names)}: joined to no structures at all`] };
+  }
+
+  return {
+    index: {
+      version,
+      frame: (coverings.raw.frame as string) ?? null,
+      structures,
+      source: {
+        names: rel(paths.names),
+        coverings: rel(paths.coverings),
+        // Both documents, so the pin covers the index that actually answered.
+        sha256: sha256(`${names.text} ${coverings.text}`),
+      },
+    },
+    why: [],
+  };
+}
+
+/**
+ * Which atlas a covering is in, read off the frame its cells are addressed in.
+ *
+ * `BD` is the body; `BV` and `BR` are the brain. No cells means the frame
+ * cannot be read off the geometry, and the caller decides — see
+ * `atlasOfCrosswalk`.
+ */
+function atlasOfCells(cells: readonly string[]): 'body' | 'brain' {
+  return cells.some((c) => c.startsWith('BD-')) ? 'body' : 'brain';
 }
 
 // ---------------------------------------------------------------------------
@@ -371,10 +679,32 @@ interface CuratedSpatial {
   digits?: number;
 }
 
+/**
+ * Which atlas a structure named with no covering belongs to.
+ *
+ * Only reached when no index available here paints it. `names-seed.json`'s own
+ * `$comment` says what these entries are: "CROSSWALKED body structures: a real
+ * FMA concept id, the real index's own term, and NO CELLS AT ALL … the cells
+ * are derived from the BodyParts3D meshes under CC-BY-SA and stay in
+ * packages/atlas-assets". So an `FMA` entry with no cells is a *body* structure
+ * whose geometry is in the asset package; everything else synthetic here is a
+ * brain parcel.
+ *
+ * Deriving it from the cells alone — which is all this adapter used to do —
+ * filed all fourteen of them under the BRAIN atlas, because `[].some(...)` is
+ * false. That is a quieter bug than the crash above it: the journey would have
+ * looked for a body target among structures that are the body atlas's.
+ */
+function atlasOfCrosswalk(source: unknown): 'body' | 'brain' {
+  return source === 'FMA' ? 'body' : 'brain';
+}
+
 function adaptCurated(research: Record<string, unknown>, names: Record<string, unknown>, paths: {
   research: string;
   names: string;
-}): Omit<ResearchFixture, 'source'> {
+}, anatomy: AnatomyIndex | null): Omit<ResearchFixture, 'source' | 'anatomy' | 'oracle'> & {
+  readonly oracle: Omit<FixtureOracle, 'why'>;
+} {
   const papers = research.papers as Array<Record<string, unknown>> | undefined;
   const findings = research.findings as Array<Record<string, unknown>> | undefined;
   const structures = names.structures as Array<Record<string, unknown>> | undefined;
@@ -405,8 +735,58 @@ function adaptCurated(research: Record<string, unknown>, names: Record<string, u
       .join('. ');
   };
 
-  const structureCells = new Map<string, string[]>(
-    structures.map((s) => [s.id as string, ((s.cells as string[]) ?? [])]),
+  // ---- the join -----------------------------------------------------------
+  //
+  // The research dataset's index names the structures findings map to; the
+  // asset index carries the cells the page paints them with. For the fourteen
+  // body structures that appear in both, the asset index is authoritative —
+  // those entries exist in the research index precisely BECAUSE their geometry
+  // lives in the asset package, and `names-seed.json` ends with the
+  // instruction: "Join packages/atlas-assets/labels/{names,coverings}.json to
+  // paint them."
+  //
+  // A structure the asset index does not carry keeps whatever the research
+  // index gave it. On this ref that is 66 brain parcels with INVENTED cells and
+  // there is no real `BV` index anywhere to replace them with
+  // (`docs/asset-licensing.md`: "There is no BV name index"), so this is not a
+  // choice between a real and a synthetic oracle for them — it is the only
+  // oracle there is, and `oracle.placeholderCells` is how the report says so.
+  const painted = new Map<string, FixtureStructure>(
+    (anatomy?.structures ?? []).map((s) => [s.id, s]),
+  );
+  const adaptedStructures: FixtureStructure[] = structures.map((s) => {
+    const id = s.id as string;
+    const real = painted.get(id);
+    const own = (s.cells as string[]) ?? [];
+    const cells = real ? real.cells : own;
+    return {
+      id,
+      // The research index's own term is kept even when the asset index paints
+      // the structure: it is the term the curator mapped against, and a
+      // silently substituted name would make a provenance claim nobody made.
+      name: s.name as string,
+      atlas: cells.length > 0 ? atlasOfCells(cells) : atlasOfCrosswalk(s.source),
+      cells,
+    };
+  });
+
+  const paintedFromAssets = adaptedStructures.filter((s) => painted.has(s.id)).map((s) => s.id);
+  const paintedSet = new Set(paintedFromAssets);
+  const oracle = {
+    researchNames: rel(paths.names),
+    anatomyIndex: anatomy ? `${anatomy.source.names} + ${anatomy.source.coverings}@${anatomy.version}` : null,
+    paintedFromAssets,
+    // Only a document that declares itself synthetic has placeholder cells. A
+    // real research index with real cells is not maligned by this count.
+    placeholderCells:
+      names.synthetic === true
+        ? adaptedStructures.filter((s) => !paintedSet.has(s.id) && s.cells.length > 0).map((s) => s.id)
+        : [],
+    emptyCovering: adaptedStructures.filter((s) => s.cells.length === 0).map((s) => s.id),
+  };
+
+  const structureCells = new Map<string, readonly string[]>(
+    adaptedStructures.map((s) => [s.id, s.cells]),
   );
 
   const cellsOfMapping = (
@@ -431,7 +811,12 @@ function adaptCurated(research: Record<string, unknown>, names: Record<string, u
       // `detail: false` still, because there is no locus WITHIN the parcel —
       // that is what the marker says, and lighting the parcel is reporting the
       // region, not interpolating a position inside it.
-      return { cells: structureCells.get(structureId) ?? [], detail: false };
+      //
+      // Where the parcel's covering is EMPTY — "named here, painted elsewhere",
+      // and nothing in this tree paints it — the mapping lights nothing. That
+      // is not a downgrade and not an error: the finding still names its
+      // region, and `oracle.emptyCovering` names the structures it happened to.
+      return { cells: [...(structureCells.get(structureId) ?? [])], detail: false };
     }
     if (spatial.kind === 'cells') {
       const cells = spatial.cells ?? [];
@@ -463,14 +848,8 @@ function adaptCurated(research: Record<string, unknown>, names: Record<string, u
   return {
     id: `${(research.version as string) ?? 'curated'}`,
     nameIndexVersion: (names.version as string) ?? 'unversioned',
-    structures: structures.map((s) => ({
-      id: s.id as string,
-      name: s.name as string,
-      // Their index does not label an atlas, so it is derived from the frame
-      // the cells are addressed in: BD is the body, BV and BR are the brain.
-      atlas: ((s.cells as string[]) ?? []).some((c) => c.startsWith('BD-')) ? 'body' : 'brain',
-      cells: (s.cells as string[]) ?? [],
-    })),
+    structures: adaptedStructures,
+    oracle,
     papers: papers.map((p) => {
       const id = p.id as string;
       return {
@@ -509,6 +888,9 @@ function adaptCurated(research: Record<string, unknown>, names: Record<string, u
  * against a known input even after the real fixture lands — otherwise the
  * harness's self-tests start failing for reasons that belong to someone else's
  * deliverable, and a red suite stops meaning anything.
+ *
+ * Throws when a fixture is present and unusable. Callers that must produce a
+ * verdict rather than a stack trace use `tryResolveFixture`.
  */
 export function resolveFixture(options: { preferOwn?: boolean } = {}): ResearchFixture {
   if (!options.preferOwn) {
@@ -516,6 +898,33 @@ export function resolveFixture(options: { preferOwn?: boolean } = {}): ResearchF
     if (curated) return curated;
   }
   return loadFixtureFile(OWN_FIXTURE_PATH);
+}
+
+/**
+ * `resolveFixture`, as a result rather than an exception.
+ *
+ * A fixture that will not load is **`UNVERIFIED`, not a failure.** The
+ * distinction is the whole point of the third exit code: exit 1 says "something
+ * about the product or the harness is wrong", and a fixture this harness cannot
+ * read says nothing at all about the product. The uncaught throw this replaces
+ * exited 1 from module scope — no report, no rows, and a stack trace where a
+ * verdict belongs, which is the one outcome `runner.ts` is built to never
+ * produce.
+ */
+export function tryResolveFixture(
+  options: { preferOwn?: boolean } = {},
+): { fixture: ResearchFixture; why: readonly string[] } | { fixture: null; why: readonly string[] } {
+  try {
+    return { fixture: resolveFixture(options), why: [] };
+  } catch (e) {
+    const error = e as Error;
+    return {
+      fixture: null,
+      why: [
+        `the fixture could not be loaded, so nothing was measured: ${error.message}`,
+      ],
+    };
+  }
 }
 
 /** DOG-37's data, richest directory first, or null when none of it is there yet. */
@@ -527,7 +936,7 @@ export function loadCuratedFixture(): ResearchFixture | null {
   return null;
 }
 
-function loadCuratedFrom(RESEARCH_FIXTURE_DIR: string): ResearchFixture | null {
+export function loadCuratedFrom(RESEARCH_FIXTURE_DIR: string): ResearchFixture | null {
   if (!existsSync(RESEARCH_FIXTURE_DIR)) return null;
   const files = readdirSync(RESEARCH_FIXTURE_DIR).filter((f) => f.endsWith('.json'));
   // Selected by content, not by filename order: the directory holds a names
@@ -556,10 +965,15 @@ function loadCuratedFrom(RESEARCH_FIXTURE_DIR: string): ResearchFixture | null {
 
   const researchText = readFileSync(researchPath, 'utf8');
   const namesText = readFileSync(namesPath, 'utf8');
+  // The real anatomical index, when this tree has one. Looked up BEFORE the
+  // shape check, because whether a structure has a covering is a fact about the
+  // join and not about either document on its own.
+  const anatomy = loadAnatomyIndex();
   const adapted = adaptCurated(
     JSON.parse(researchText) as Record<string, unknown>,
     JSON.parse(namesText) as Record<string, unknown>,
     { research: researchPath, names: namesPath },
+    anatomy.index,
   );
   const problems = fixtureShapeProblems(adapted, researchPath);
   if (problems.length > 0) {
@@ -567,10 +981,18 @@ function loadCuratedFrom(RESEARCH_FIXTURE_DIR: string): ResearchFixture | null {
   }
   return {
     ...adapted,
+    anatomy: anatomy.index,
+    oracle: { ...adapted.oracle, why: anatomy.why },
     source: {
-      path: `${rel(researchPath)} + ${rel(namesPath)}`,
-      // Both files, so the pin covers the pair rather than half of it.
-      sha256: sha256(`${researchText} ${namesText}`),
+      path: `${rel(researchPath)} + ${rel(namesPath)}`
+        + (anatomy.index ? ` + ${anatomy.index.source.names} + ${anatomy.index.source.coverings}` : ''),
+      // Every document that answered, so the pin covers the oracle rather than
+      // half of it. A digest over the research pair alone would read the same
+      // whether or not the real index painted anything, and two runs with
+      // materially different inputs would then claim the same pin.
+      sha256: sha256(
+        `${researchText} ${namesText} ${anatomy.index?.source.sha256 ?? 'no-anatomy-index'}`,
+      ),
       kind: 'curated',
     },
   };
@@ -585,12 +1007,24 @@ export function unmetRequirements(fixture: ResearchFixture): Map<string, string[
   const out = new Map<string, string[]>();
   for (const req of FIXTURE_REQUIREMENTS) {
     if (req.satisfied(fixture)) continue;
+    const detail = req.detail ? ` — ${req.detail(fixture)}` : '';
     for (const step of req.forSteps) {
       if (!out.has(step)) out.set(step, []);
-      out.get(step)!.push(`fixture ${fixture.id} cannot express: ${req.describe}`);
+      out.get(step)!.push(`fixture ${fixture.id} cannot express: ${req.describe}${detail}`);
     }
   }
   return out;
+}
+
+/**
+ * Structures named here and painted by no index available here.
+ *
+ * Admissible, and reported: a reader of a §7 result has to be able to tell
+ * which structures were in the fixture-but-not-paintable state, because a row
+ * that touched one measured a name and not a place.
+ */
+export function emptyCoveringStructures(fixture: ResearchFixture): readonly FixtureStructure[] {
+  return fixture.structures.filter((s) => s.cells.length === 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -651,6 +1085,33 @@ export function nameIndexInput(fixture: ResearchFixture): {
   return {
     version: fixture.nameIndexVersion,
     structures: fixture.structures.map((s) => ({ id: s.id, name: s.name, cells: s.cells })),
+  };
+}
+
+/**
+ * The index an ANATOMICAL name result must be checked against.
+ *
+ * The real asset index when the tree has one, because that is the index the
+ * page binds and the only one whose cells were measured from geometry; the
+ * research dataset's own list otherwise.
+ *
+ * The two are not interchangeable and using the research list for this was the
+ * second half of the loader defect. On the integrated ref the research list is
+ * `synthetic: true` with invented cells for every brain parcel, so a ranked
+ * name list checked against it would have been compared with a number nobody
+ * measured — and it would have *disagreed* with the page, which resolves names
+ * against the 57 real structures and knows nothing of the placeholders. Either
+ * way the row would have reported on the harness's own index rather than on the
+ * build.
+ */
+export function anatomyIndexInput(fixture: ResearchFixture): {
+  version: string;
+  structures: Array<{ id: string; name: string; cells: readonly string[] }>;
+} {
+  if (!fixture.anatomy) return nameIndexInput(fixture);
+  return {
+    version: fixture.anatomy.version,
+    structures: fixture.anatomy.structures.map((s) => ({ id: s.id, name: s.name, cells: s.cells })),
   };
 }
 

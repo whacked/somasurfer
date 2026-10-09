@@ -67,8 +67,8 @@ import { CAPABILITIES } from './contract.ts';
 import { QA_URL_PARAMS, type TemplateChoice } from './matrix.ts';
 import { templateSet } from './templates.ts';
 import {
+  anatomyIndexInput,
   coveringOfPaper,
-  nameIndexInput,
   papersForRegion,
   resolveFixture,
   type ResearchFixture,
@@ -193,7 +193,13 @@ export class ReferenceViewer implements ViewerDriver {
 
   constructor(options: ReferenceViewerOptions = {}) {
     this.fixture = options.fixture ?? resolveFixture();
-    this.index = buildNameIndex(nameIndexInput(this.fixture));
+    // The anatomical index the page binds, when the tree has one — the same
+    // index the journey's ranked-name assertions resolve against. The two must
+    // be the same document or the control disagrees with its own oracle and the
+    // negative control stops being evidence of anything. With no real index
+    // present (`anatomy: null`, which is every fixture the self-tests use) this
+    // is the fixture's own list, exactly as before.
+    this.index = buildNameIndex(anatomyIndexInput(this.fixture));
     this.buildId = options.buildId ?? `reference@${this.fixture.id}`;
     this.withheld = new Set(options.withhold ?? []);
   }
