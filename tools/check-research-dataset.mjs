@@ -522,6 +522,15 @@ function selfTest() {
  */
 function realIndexSelfTest() {
   const failures = [];
+  // `os.tmpdir()` is not guaranteed to exist. TMPDIR can name a run-scoped
+  // directory that was removed with the run that created it, and then
+  // `mkdtempSync` throws ENOENT out of the middle of this gate and takes the
+  // whole research check down with it — a red build caused by the environment
+  // rather than by the data, which is the exact failure this file exists not
+  // to produce. CI caught it: seven of nineteen verify-gates cases went red at
+  // once, all of them here, none of them about their own subject. So the
+  // workspace is created rather than assumed.
+  mkdirSync(tmpdir(), { recursive: true });
   const dir = mkdtempSync(join(tmpdir(), 'research-gate-index-'));
   const write = (name, value) => {
     const path = join(dir, name);
@@ -812,7 +821,7 @@ if (Object.keys(templateSources).length > 0) {
  * day one can, that reason has expired and the mapping is owed a crosswalk. A
  * gate that cannot measure must not fail, and must not silently pass either.
  */
-function checkPartition({ label, part, index, where, isReal }) {
+function checkPartition({ label, part, index, where }) {
   const ids = new Set(part.structureIds);
   const mine = index.mappings.filter((m) => ids.has(m.structureId));
   const nonCoordinate = mine.filter((m) => m.precision !== 'coordinates');
@@ -843,9 +852,14 @@ function checkPartition({ label, part, index, where, isReal }) {
       return;
     }
     const subRegions = mine.filter((m) => m.precision === 'cells').length;
+    const inside =
+      subRegions === 0
+        ? ''
+        : subRegions === 1
+          ? ', and its one curated sub-region lies wholly inside its structure'
+          : `, and all ${subRegions} curated sub-regions lie wholly inside their structures`;
     report.push(
-      `  ${part.id}: all ${nonCoordinate.length} non-coordinate mappings resolve against ${where}` +
-        `${subRegions > 0 ? `, and all ${subRegions} curated sub-region(s) lie wholly inside their structure` : ''}.`,
+      `  ${part.id}: all ${nonCoordinate.length} non-coordinate mappings resolve against ${where}${inside}.`,
     );
     return;
   }
@@ -858,7 +872,6 @@ function checkPartition({ label, part, index, where, isReal }) {
     for (const m of bad.slice(0, 10)) problems.push(`  ${m.mappingId} (${m.structureId}): ${m.unresolvedReason}`);
     return;
   }
-  if (isReal) return; // the second direction is checked by the caller, once
   report.push(
     `  ${part.id}: ${nonCoordinate.length} mapping(s) on declared placeholders, resolved against ${where}.`,
     `    recorded reason: ${part.reason}`,
@@ -943,22 +956,31 @@ for (const spec of DATASETS) {
     for (const part of partitions) {
       const bound = available.get(part.nameIndexVersion);
       if (bound === undefined) {
-        const message = [
-          `UNVERIFIED: ${label}: partition ${part.id} (status ${part.status}) declares index` +
-            ` ${JSON.stringify(part.nameIndexVersion)}, which is not present in this tree.`,
-          `  ${part.structureIds.length} structure(s) in it have not been checked against the index they name.`,
-        ];
+        // Two different situations, and conflating them sends the reader to the
+        // wrong place. Nothing present is the ordinary pre-landing state. An
+        // index present at ANOTHER version is a stale declaration: resolving
+        // against it would prove nothing about the version the mappings were
+        // authored for, and quietly doing so is the trap the version pin exists
+        // to stop.
+        const message =
+          real.index === null
+            ? [
+                `UNVERIFIED: ${label}: partition ${part.id} (status ${part.status}) declares index` +
+                  ` ${JSON.stringify(part.nameIndexVersion)}, which is not present in this tree.`,
+                `  ${part.structureIds.length} structure(s) in it have not been checked against the index they name.`,
+              ]
+            : [
+                `UNVERIFIED: ${label}: partition ${part.id} declares index` +
+                  ` ${JSON.stringify(part.nameIndexVersion)}, but the index present is version` +
+                  ` ${JSON.stringify(real.index.version)} (${real.names} + ${real.coverings}).`,
+                '  One of the two is stale. Resolving against a version the mappings were not authored',
+                '  for would report a result that is not reproducible, so it is not done.',
+              ];
         if (strictGeometry) problems.push(...message.map((l) => l.replace(/^UNVERIFIED/, 'FAILED')));
         else report.push(...message);
         continue;
       }
-      checkPartition({
-        label,
-        part,
-        index: resolveAgainst(bound.index),
-        where: bound.where,
-        isReal: false,
-      });
+      checkPartition({ label, part, index: resolveAgainst(bound.index), where: bound.where });
 
       // The second direction, for placeholders only, and only when there is a
       // real index to be wrong about.
@@ -987,54 +1009,61 @@ for (const spec of DATASETS) {
       }
     }
 
-    // Coordinates are a separate contract: they are placed by a TEMPLATE, not
-    // named by an index, and in this dataset they are BV — where there is no
-    // name index at all. So the check is two-sided in a different way: the
-    // geometry must resolve once a template exists, and the name must NOT.
-    const coordinates = mappings.filter((m) => m.precision === 'coordinates');
-    if (coordinates.length > 0) {
-      const frames = new Set(dataset.findings.flatMap((f) => f.mappings).filter((m) => m.spatial.kind === 'coordinates').map((m) => m.spatial.frame));
-      const haveAll = [...frames].every((f) => (f === 'BD' ? templates.body : templates.brainVolume) !== undefined);
-      if (!haveAll) {
-        const message = [
-          `UNVERIFIED: ${spec.id}: ${coordinates.length} coordinate mapping(s) in frame(s)` +
-            ` ${[...frames].join(', ')} have no template to place them.`,
-          '  Not shown as region-level and not resolved: a locus we cannot place is a different claim',
-          `  from a region. Publish a template under ${TEMPLATE_DIR}/ and this starts checking.`,
-        ];
-        if (strictGeometry) problems.push(...message.map((l) => l.replace(/^UNVERIFIED/, 'FAILED')));
-        else report.push(...message);
-      } else {
-        const stuck = coordinates.filter((m) => m.resolution !== 'resolved');
-        if (stuck.length > 0) {
-          problems.push(
-            `${spec.id}: ${stuck.length} of ${coordinates.length} coordinate mappings did not resolve even with` +
-              ' a template for their frame:',
-            ...stuck.map((m) => `  ${m.mappingId}: ${m.unresolvedReason} — ${m.notes.join('; ')}`),
-          );
-        }
-        // The contract: cells, never a name. Checked against the real index,
-        // because that is the only index whose naming claim matters.
-        const named =
-          real.index === null
-            ? []
-            : resolveAgainst(real.index)
-                .mappings.filter((m) => m.precision === 'coordinates')
-                .filter((m) => m.structureLabelFromIndex);
-        if (named.length > 0) {
-          problems.push(
-            `${spec.id}: ${named.length} coordinate mapping(s) took a name from the real index.`,
-            '  The expected contract is coordinates ONLY: these are BV addresses, and there is no BV name',
-            '  index (docs/asset-licensing.md §4). If this index now names them, the dataset should say so',
-            '  rather than leaving them in a placeholder partition.',
-            ...named.slice(0, 5).map((m) => `    ${m.mappingId} -> ${m.structureLabel}`),
-          );
-        } else if (stuck.length === 0) {
-          report.push(
-            `  coordinates: all ${coordinates.length} resolve through the template to cells and to NO name,` +
-              ' which is the pinned contract for a frame with no name index.',
-          );
-        }
+  }
+
+  // Coordinates are a separate contract, and it applies to every dataset
+  // rather than only to a partitioned one: they are placed by a TEMPLATE, not
+  // named by an index, and here they are BV — where there is no name index at
+  // all. So the check is two-sided in a different way. The geometry must
+  // resolve once a template exists, and the name must NOT.
+  const coordinates = mappings.filter((m) => m.precision === 'coordinates');
+  if (coordinates.length > 0) {
+    const frames = new Set(
+      dataset.findings
+        .flatMap((f) => f.mappings)
+        .filter((m) => m.spatial.kind === 'coordinates')
+        .map((m) => m.spatial.frame),
+    );
+    const haveAll = [...frames].every((f) => (f === 'BD' ? templates.body : templates.brainVolume) !== undefined);
+    if (!haveAll) {
+      const message = [
+        `UNVERIFIED: ${spec.id}: ${coordinates.length} coordinate mapping(s) in frame(s)` +
+          ` ${[...frames].join(', ')} have no template to place them.`,
+        '  Not shown as region-level and not resolved: a locus we cannot place is a different claim',
+        `  from a region. Publish a template under ${TEMPLATE_DIR}/ and this starts checking.`,
+      ];
+      if (strictGeometry) problems.push(...message.map((l) => l.replace(/^UNVERIFIED/, 'FAILED')));
+      else report.push(...message);
+    } else {
+      const stuck = coordinates.filter((m) => m.resolution !== 'resolved');
+      if (stuck.length > 0) {
+        problems.push(
+          `${spec.id}: ${stuck.length} of ${coordinates.length} coordinate mappings did not resolve even with` +
+            ' a template for their frame:',
+          ...stuck.map((m) => `  ${m.mappingId}: ${m.unresolvedReason} — ${m.notes.join('; ')}`),
+        );
+      }
+      // The contract: cells, never a name. Checked against the real index,
+      // because that is the only index whose naming claim matters.
+      const named =
+        real.index === null
+          ? []
+          : resolveAgainst(real.index)
+              .mappings.filter((m) => m.precision === 'coordinates')
+              .filter((m) => m.structureLabelFromIndex);
+      if (named.length > 0) {
+        problems.push(
+          `${spec.id}: ${named.length} coordinate mapping(s) took a name from the real index.`,
+          '  The expected contract is coordinates ONLY: these are BV addresses, and there is no BV name',
+          '  index (docs/asset-licensing.md §4). If this index now names them, the dataset should say so',
+          '  rather than leaving them in a placeholder partition.',
+          ...named.slice(0, 5).map((m) => `    ${m.mappingId} -> ${m.structureLabel}`),
+        );
+      } else if (stuck.length === 0) {
+        report.push(
+          `  coordinates: all ${coordinates.length} resolve through the template to cells and to NO name,` +
+            ' which is the pinned contract for a frame with no name index.',
+        );
       }
     }
   }
