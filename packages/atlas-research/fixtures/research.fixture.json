@@ -1,0 +1,748 @@
+{
+  "$comment": [
+    "The 5-paper fixture. Conforms to schema/research-1.md and is meant to be built",
+    "against by the Web/3D Engineer (plan task 5) and QA (plan task 7) directly.",
+    "",
+    "Its mappings are authored against fixtures/names.fixture.json, whose CELLS ARE",
+    "INVENTED — see that file. The citations are real publications; the region mappings",
+    "are illustrative, not a curation claim about those papers' contents at cell level.",
+    "",
+    "Every state the viewer has to render is present on purpose:",
+    "",
+    "  region-level only ....... most mappings; the explicit marker case",
+    "  sub-region cells ........ finding:amunts-1999-broca/area-44-variability",
+    "  unresolvable coordinates  finding:mazziotta-2001-icbm/peak-coordinates, which stays",
+    "                            `unresolved: no-template` until a BV template is loaded",
+    "                            and must NOT be drawn as region-level",
+    "  no source link .......... paper:brodmann-1909-localisation, paper:amunts-1999-broca",
+    "  no identifier ........... the same two, with identifier.kind `none`",
+    "  two-paper overlap ....... areas 44 and 45: glasser-2016 and brodmann-1909",
+    "  three-paper overlap ..... V1: glasser-2016, brodmann-1909 and mazziotta-2001",
+    "  cross-frame paper ....... paper:mazziotta-2001-icbm maps BV regions AND a BD one,",
+    "                            so a brain-only filter must still reveal the BD mapping",
+    "  curator inference ....... every historical-to-modern mapping, with its note"
+  ],
+  "schema": "research/1",
+  "version": "research-fixture-2026.10.1",
+  "structureIdSources": ["UBERON", "HCP-MMP1"],
+  "authoredAgainst": {
+    "nameIndexVersion": "fixture-names-2026.10.1",
+    "status": "fixture"
+  },
+  "curation": {
+    "curatedBy": "Staff Engineer (GStack)",
+    "curatedOn": "2026-10-09",
+    "method": "hand-authored fixture: real citations, illustrative region mappings against the synthetic name index",
+    "citationCheck": "curator-transcribed; no identifier was resolved, because this package never fetches a URL",
+    "notRecorded": [
+      "page- and figure-level evidence locators: the claims here are supported at abstract or chapter granularity, and an invented figure number would be worse than an absent one",
+      "cell-level anatomical truth: the cells come from a synthetic index and will change when coverings.json lands"
+    ]
+  },
+  "papers": [
+    {
+      "id": "paper:glasser-2016-mmp1",
+      "title": "A multi-modal parcellation of human cerebral cortex",
+      "authors": ["Glasser MF", "Coalson TS", "Robinson EC", "Hacker CD", "Harwell J", "Yacoub E"],
+      "year": 2016,
+      "venue": "Nature 536:171-178",
+      "identifier": { "kind": "doi", "value": "10.1038/nature18933" },
+      "sourceUrl": "https://doi.org/10.1038/nature18933",
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-parcellation",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "paper:brodmann-1909-localisation",
+      "title": "Vergleichende Lokalisationslehre der Grosshirnrinde",
+      "authors": ["Brodmann K"],
+      "year": 1909,
+      "venue": "Johann Ambrosius Barth, Leipzig",
+      "identifier": { "kind": "none", "value": null },
+      "sourceUrl": null,
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "paper:amunts-1999-broca",
+      "title": "Broca's region revisited: cytoarchitecture and intersubject variability",
+      "authors": ["Amunts K", "Schleicher A", "Buergel U", "Mohlberg H", "Uylings HBM", "Zilles K"],
+      "year": 1999,
+      "venue": "Journal of Comparative Neurology 412(2):319-341",
+      "identifier": { "kind": "none", "value": null },
+      "sourceUrl": null,
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "medium",
+        "note": "identifier deliberately left as `none`: the curator did not have a verified DOI to hand, and a guessed one would be unfalsifiable without the article"
+      }
+    },
+    {
+      "id": "paper:mitsuhashi-2009-bodyparts3d",
+      "title": "BodyParts3D: 3D structure database for anatomical concepts",
+      "authors": ["Mitsuhashi N", "Fujieda K", "Tamura T", "Kawamoto S", "Takagi T", "Okubo K"],
+      "year": 2009,
+      "venue": "Nucleic Acids Research 37(Database issue):D782-D785",
+      "identifier": { "kind": "doi", "value": "10.1093/nar/gkn613" },
+      "sourceUrl": "https://doi.org/10.1093/nar/gkn613",
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "paper:mazziotta-2001-icbm",
+      "title": "A probabilistic atlas and reference system for the human brain",
+      "authors": ["Mazziotta J", "Toga A", "Evans A", "Fox P", "Lancaster J", "Zilles K"],
+      "year": 2001,
+      "venue": "Philosophical Transactions of the Royal Society B 356:1293-1322",
+      "identifier": { "kind": "doi", "value": "10.1098/rstb.2001.0915" },
+      "sourceUrl": "https://doi.org/10.1098/rstb.2001.0915",
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "finding:glasser-2016-mmp1/area-55b",
+      "paperId": "paper:glasser-2016-mmp1",
+      "statement": "Area 55b is delineated as a distinct parcel in the posterior inferior frontal region, separable from its neighbours on multi-modal grounds.",
+      "topics": ["parcellation", "language"],
+      "mappings": [
+        {
+          "id": "map:glasser-2016-mmp1/area-55b/hcp-mmp1-55b",
+          "structureId": "HCP-MMP1:55b",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Area 55b",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "the parcellation defines the parcel as a whole; no locus within it is reported"
+          },
+          "evidence": {
+            "summary": "Reported as a separate parcel on the basis of myelin content, cortical thickness and task contrast.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-parcellation",
+            "confidence": "high"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-parcellation",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:glasser-2016-mmp1/broca-subdivision",
+      "paperId": "paper:glasser-2016-mmp1",
+      "statement": "Broca's region is subdivided into areas 44 and 45, with the border placed on multi-modal gradients rather than on gross landmarks.",
+      "topics": ["parcellation", "language"],
+      "mappings": [
+        {
+          "id": "map:glasser-2016-mmp1/broca-subdivision/hcp-mmp1-44",
+          "structureId": "HCP-MMP1:44",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Area 44 (pars opercularis)",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "the parcel is reported as a whole"
+          },
+          "evidence": {
+            "summary": "Named as one of the two parcels the region is divided into.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-parcellation",
+            "confidence": "high"
+          }
+        },
+        {
+          "id": "map:glasser-2016-mmp1/broca-subdivision/hcp-mmp1-45",
+          "structureId": "HCP-MMP1:45",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Area 45 (pars triangularis)",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "the parcel is reported as a whole"
+          },
+          "evidence": {
+            "summary": "Named as the other of the two parcels the region is divided into.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-parcellation",
+            "confidence": "high"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-parcellation",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:glasser-2016-mmp1/frontopolar",
+      "paperId": "paper:glasser-2016-mmp1",
+      "statement": "Area 10d is separated from adjacent frontopolar cortex as its own parcel.",
+      "topics": ["parcellation"],
+      "mappings": [
+        {
+          "id": "map:glasser-2016-mmp1/frontopolar/hcp-mmp1-10d",
+          "structureId": "HCP-MMP1:10d",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Area 10d",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "the parcel is reported as a whole"
+          },
+          "evidence": {
+            "summary": "Listed among the frontopolar parcels the parcellation distinguishes.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-parcellation",
+            "confidence": "medium"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-parcellation",
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "finding:glasser-2016-mmp1/v1",
+      "paperId": "paper:glasser-2016-mmp1",
+      "statement": "V1 is delineated from myelin content and retinotopic organisation, and is one of the most reliably placed parcels.",
+      "topics": ["parcellation", "vision"],
+      "mappings": [
+        {
+          "id": "map:glasser-2016-mmp1/v1/hcp-mmp1-v1",
+          "structureId": "HCP-MMP1:V1",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Primary visual cortex (V1)",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "the parcel is reported as a whole"
+          },
+          "evidence": {
+            "summary": "Named as a parcel delineated by myelin and retinotopy.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-parcellation",
+            "confidence": "high"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-parcellation",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:brodmann-1909-localisation/area-44",
+      "paperId": "paper:brodmann-1909-localisation",
+      "statement": "Area 44 is defined cytoarchitectonically in the pars opercularis of the inferior frontal gyrus.",
+      "topics": ["cytoarchitecture", "language"],
+      "mappings": [
+        {
+          "id": "map:brodmann-1909-localisation/area-44/hcp-mmp1-44",
+          "structureId": "HCP-MMP1:44",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Area 44 (pars opercularis)",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "a cytoarchitectonic area description, with no coordinates or sub-region detail"
+          },
+          "evidence": {
+            "summary": "Described as a cytoarchitectonic field occupying the opercular part of the inferior frontal gyrus.",
+            "kind": "section",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "curator-inference",
+            "confidence": "medium",
+            "note": "Brodmann's cytoarchitectonic area 44 is mapped onto the modern multi-modal parcel of the same number. The two are not the same object: they are delineated on different evidence and their borders differ between individuals."
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:brodmann-1909-localisation/area-45",
+      "paperId": "paper:brodmann-1909-localisation",
+      "statement": "Area 45 is defined cytoarchitectonically in the pars triangularis of the inferior frontal gyrus.",
+      "topics": ["cytoarchitecture", "language"],
+      "mappings": [
+        {
+          "id": "map:brodmann-1909-localisation/area-45/hcp-mmp1-45",
+          "structureId": "HCP-MMP1:45",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Area 45 (pars triangularis)",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "a cytoarchitectonic area description, with no coordinates or sub-region detail"
+          },
+          "evidence": {
+            "summary": "Described as a cytoarchitectonic field occupying the triangular part of the inferior frontal gyrus.",
+            "kind": "section",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "curator-inference",
+            "confidence": "medium",
+            "note": "Brodmann's area 45 is mapped onto the modern parcel of the same number; see the note on area 44."
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:brodmann-1909-localisation/area-17",
+      "paperId": "paper:brodmann-1909-localisation",
+      "statement": "Area 17 is defined as the striate area of the occipital lobe.",
+      "topics": ["cytoarchitecture", "vision"],
+      "mappings": [
+        {
+          "id": "map:brodmann-1909-localisation/area-17/hcp-mmp1-v1",
+          "structureId": "HCP-MMP1:V1",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Primary visual cortex (V1)",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "a cytoarchitectonic area description, with no coordinates or sub-region detail"
+          },
+          "evidence": {
+            "summary": "Described as the striate field, identified by the stria of Gennari.",
+            "kind": "section",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "curator-inference",
+            "confidence": "high",
+            "note": "Brodmann's area 17 is taken as V1. This identification is conventional and well supported, but it is still an identification across two delineation methods, not a reading of either source."
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:amunts-1999-broca/area-44-variability",
+      "paperId": "paper:amunts-1999-broca",
+      "statement": "The cytoarchitectonic borders of areas 44 and 45 vary markedly between individuals, with the greatest variability at the posterior border of area 44.",
+      "topics": ["cytoarchitecture", "variability", "language"],
+      "mappings": [
+        {
+          "id": "map:amunts-1999-broca/area-44-variability/hcp-mmp1-44-posterior",
+          "structureId": "HCP-MMP1:44",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Area 44 (pars opercularis)",
+          "spatial": {
+            "kind": "cells",
+            "cells": ["BV-L-041"],
+            "method": "curator placed the posterior portion of the area onto the sub-cells of the fixture index's area 44; a sub-region claim, not a measurement",
+            "digits": 3
+          },
+          "evidence": {
+            "summary": "Variability is reported as greatest at the posterior border, so the claim is about part of the area rather than all of it.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "curator-inference",
+            "confidence": "low",
+            "note": "the sub-region is the curator's placement of a described border onto a synthetic index, not a published covering. It will be re-authored against coverings.json."
+          }
+        },
+        {
+          "id": "map:amunts-1999-broca/area-44-variability/hcp-mmp1-45",
+          "structureId": "HCP-MMP1:45",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Area 45 (pars triangularis)",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "variability is reported for the area as a whole"
+          },
+          "evidence": {
+            "summary": "Area 45 is one of the two areas the variability analysis covers.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-text",
+            "confidence": "high"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:amunts-1999-broca/gyrus-level",
+      "paperId": "paper:amunts-1999-broca",
+      "statement": "Intersubject variability is also reported for the inferior frontal gyrus as a whole, which the two areas do not tile.",
+      "topics": ["cytoarchitecture", "variability"],
+      "mappings": [
+        {
+          "id": "map:amunts-1999-broca/gyrus-level/uberon-0002420",
+          "structureId": "UBERON:0002420",
+          "structureIdSource": "UBERON",
+          "structureLabel": "inferior frontal gyrus",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "a gross anatomical region, reported without finer location"
+          },
+          "evidence": {
+            "summary": "The gyrus is the frame of reference the areas are described within.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-text",
+            "confidence": "medium"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "finding:mitsuhashi-2009-bodyparts3d/per-part-meshes",
+      "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+      "statement": "A whole-body 3D structure database supplies per-part surface meshes keyed to anatomical concept ids.",
+      "topics": ["asset-source", "whole-body"],
+      "mappings": [
+        {
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/uberon-0002048",
+          "structureId": "UBERON:0002048",
+          "structureIdSource": "UBERON",
+          "structureLabel": "left lung",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "a database record for a whole part; the database has geometry, but this finding is about coverage, not location"
+          },
+          "evidence": {
+            "summary": "The lungs are among the parts the database supplies as individual meshes.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-text",
+            "confidence": "high"
+          }
+        },
+        {
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/uberon-0000948",
+          "structureId": "UBERON:0000948",
+          "structureIdSource": "UBERON",
+          "structureLabel": "heart",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "a database record for a whole part"
+          },
+          "evidence": {
+            "summary": "The heart is among the parts the database supplies as individual meshes.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-text",
+            "confidence": "high"
+          }
+        },
+        {
+          "id": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/uberon-0002107",
+          "structureId": "UBERON:0002107",
+          "structureIdSource": "UBERON",
+          "structureLabel": "liver",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "a database record for a whole part"
+          },
+          "evidence": {
+            "summary": "The liver is among the parts the database supplies as individual meshes.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-text",
+            "confidence": "high"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:mitsuhashi-2009-bodyparts3d/skeletal-parts",
+      "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+      "statement": "Skeletal parts are addressable individually, including each rib.",
+      "topics": ["asset-source", "skeleton"],
+      "mappings": [
+        {
+          "id": "map:mitsuhashi-2009-bodyparts3d/skeletal-parts/uberon-0002228",
+          "structureId": "UBERON:0002228",
+          "structureIdSource": "UBERON",
+          "structureLabel": "7th rib",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "a database record for a whole part"
+          },
+          "evidence": {
+            "summary": "Ribs appear as separately named parts rather than as one thoracic cage mesh.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-text",
+            "confidence": "medium"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "finding:mazziotta-2001-icbm/reference-system",
+      "paperId": "paper:mazziotta-2001-icbm",
+      "statement": "A probabilistic reference system for the human brain is built from a large subject population in a common stereotaxic space.",
+      "topics": ["template", "registration"],
+      "mappings": [
+        {
+          "id": "map:mazziotta-2001-icbm/reference-system/uberon-0002298",
+          "structureId": "UBERON:0002298",
+          "structureIdSource": "UBERON",
+          "structureLabel": "brainstem",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "the reference system covers the structure; no locus within it is reported"
+          },
+          "evidence": {
+            "summary": "The reference system spans the whole brain including the brainstem.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-text",
+            "confidence": "medium"
+          }
+        },
+        {
+          "id": "map:mazziotta-2001-icbm/reference-system/hcp-mmp1-v1",
+          "structureId": "HCP-MMP1:V1",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Primary visual cortex (V1)",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "the reference system covers the structure; no locus within it is reported"
+          },
+          "evidence": {
+            "summary": "Cortical areas including the striate cortex are represented probabilistically in the reference system.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-text",
+            "confidence": "medium"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-text",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "finding:mazziotta-2001-icbm/peak-coordinates",
+      "paperId": "paper:mazziotta-2001-icbm",
+      "statement": "Locations in the reference system are expressed as stereotaxic coordinates, so a published peak is a point rather than a region.",
+      "topics": ["template", "coordinates"],
+      "mappings": [
+        {
+          "id": "map:mazziotta-2001-icbm/peak-coordinates/hcp-mmp1-a1",
+          "structureId": "HCP-MMP1:A1",
+          "structureIdSource": "HCP-MMP1",
+          "structureLabel": "Primary auditory cortex (A1)",
+          "spatial": {
+            "kind": "coordinates",
+            "space": "MNI152",
+            "frame": "BV",
+            "pointsMm": [[-52, -18, 7]],
+            "digits": 4,
+            "note": "an illustrative stereotaxic point in the auditory region, carried so the viewer has a coordinates mapping to render before a template exists"
+          },
+          "evidence": {
+            "summary": "Coordinates are the reference system's native way of naming a location.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "published-coordinates",
+            "confidence": "low"
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "published-coordinates",
+        "confidence": "low"
+      }
+    },
+    {
+      "id": "finding:mazziotta-2001-icbm/spinal-extent",
+      "paperId": "paper:mazziotta-2001-icbm",
+      "statement": "The reference system is defined for the brain; the spinal cord lies outside it and can only be named at region level.",
+      "topics": ["template", "scope"],
+      "mappings": [
+        {
+          "id": "map:mazziotta-2001-icbm/spinal-extent/uberon-0002240",
+          "structureId": "UBERON:0002240",
+          "structureIdSource": "UBERON",
+          "structureLabel": "spinal cord",
+          "spatial": {
+            "kind": "region-level",
+            "reason": "outside the reference system's own extent, so no coordinate claim is available at all"
+          },
+          "evidence": {
+            "summary": "The scope statement is about what the reference system does not cover.",
+            "kind": "abstract",
+            "locator": null,
+            "locatorStatus": "not-recorded"
+          },
+          "provenance": {
+            "assertedBy": "Staff Engineer (GStack)",
+            "assertedOn": "2026-10-09",
+            "basis": "curator-inference",
+            "confidence": "low",
+            "note": "a deliberately cross-frame mapping: it places a body-frame (BD) region on a paper whose other mappings are brain-frame (BV), so that a brain-only filter can be shown not to hide it."
+          }
+        }
+      ],
+      "provenance": {
+        "assertedBy": "Staff Engineer (GStack)",
+        "assertedOn": "2026-10-09",
+        "basis": "curator-inference",
+        "confidence": "low",
+        "note": "the scope limit is stated in the source; attaching it to the spinal cord as a mapped region is the curator's framing"
+      }
+    }
+  ]
+}

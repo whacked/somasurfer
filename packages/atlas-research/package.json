@@ -1,0 +1,34 @@
+{
+  "name": "@gstack/atlas-research",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Research data model: papers, findings and region mappings with provenance on every link, plus both browse modes and the solid-colour layer computation.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./src/*": "./src/*",
+    "./fixtures/*": "./fixtures/*",
+    "./data/*": "./data/*"
+  },
+  "files": [
+    "src",
+    "schema",
+    "fixtures",
+    "data"
+  ],
+  "sideEffects": false,
+  "atlas": {
+    "licenceClass": "code"
+  },
+  "scripts": {
+    "test": "node --test 'test/*.test.ts'",
+    "check": "node ../../tools/check-research-dataset.mjs"
+  },
+  "dependencies": {
+    "@gstack/alc": "*"
+  },
+  "license": "Apache-2.0"
+}

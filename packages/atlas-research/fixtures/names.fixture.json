@@ -1,0 +1,143 @@
+{
+  "$comment": [
+    "SYNTHETIC. This is not an anatomical name index and must never be shipped as one.",
+    "",
+    "The real index comes from the asset pipeline (plan task 4) as coverings.json, with",
+    "cells derived from BodyParts3D meshes and an ICBM152 parcellation. Until it lands,",
+    "this file lets the research model, both browse modes and the solid-colour layers be",
+    "built and tested end to end. The structure ids and names are real ontology ids and",
+    "real labels; the CELLS ARE INVENTED, chosen only to exercise the shapes that matter:",
+    "",
+    "  - a containment chain  (inferior frontal gyrus BV-L-04 contains areas 44, 45, 55b)",
+    "  - a midline structure spanning both BV hemisphere roots",
+    "  - overlapping structures in one cell (7th rib and lower lobe of left lung)",
+    "  - structures in both frames, so a cross-atlas selection can be exercised",
+    "",
+    "`authoredAgainst.status` in a dataset says `fixture` while its mappings are authored",
+    "against this file. Switching to the real index is a dataset edit, not a code edit."
+  ],
+  "version": "fixture-names-2026.10.1",
+  "synthetic": true,
+  "structures": [
+    {
+      "id": "UBERON:0002420",
+      "name": "inferior frontal gyrus",
+      "source": "UBERON",
+      "cells": ["BV-L-04"]
+    },
+    {
+      "id": "HCP-MMP1:44",
+      "name": "Area 44 (pars opercularis)",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-040", "BV-L-041"]
+    },
+    {
+      "id": "HCP-MMP1:45",
+      "name": "Area 45 (pars triangularis)",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-042"]
+    },
+    {
+      "id": "HCP-MMP1:55b",
+      "name": "Area 55b",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-043"]
+    },
+    {
+      "id": "HCP-MMP1:10d",
+      "name": "Area 10d",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-200", "BV-L-201"]
+    },
+    {
+      "id": "HCP-MMP1:13l",
+      "name": "Area 13l",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-202"]
+    },
+    {
+      "id": "HCP-MMP1:A1",
+      "name": "Primary auditory cortex (A1)",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-300"]
+    },
+    {
+      "id": "HCP-MMP1:STSdp",
+      "name": "Superior temporal sulcus, dorsal posterior",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-301"]
+    },
+    {
+      "id": "HCP-MMP1:V1",
+      "name": "Primary visual cortex (V1)",
+      "source": "HCP-MMP1",
+      "cells": ["BV-L-600", "BV-R-600"]
+    },
+    {
+      "id": "UBERON:0001873",
+      "name": "caudate nucleus",
+      "source": "UBERON",
+      "cells": ["BV-L-100", "BV-R-100"]
+    },
+    {
+      "id": "UBERON:0001876",
+      "name": "amygdala",
+      "source": "UBERON",
+      "cells": ["BV-L-101", "BV-R-101"]
+    },
+    {
+      "id": "UBERON:0002298",
+      "name": "brainstem",
+      "source": "UBERON",
+      "cells": ["BV-L-110", "BV-R-110"]
+    },
+    {
+      "id": "UBERON:0002048",
+      "name": "left lung",
+      "source": "UBERON",
+      "cells": ["BD-T07-03O", "BD-T07-04O"]
+    },
+    {
+      "id": "UBERON:0008946",
+      "name": "lower lobe of left lung",
+      "source": "UBERON",
+      "cells": ["BD-T07-03O-4", "BD-T07-03O-5"]
+    },
+    {
+      "id": "UBERON:0002228",
+      "name": "7th rib",
+      "source": "UBERON",
+      "cells": ["BD-T07-03O-52", "BD-T07-03O-53"]
+    },
+    {
+      "id": "UBERON:0001103",
+      "name": "intercostal muscle",
+      "source": "UBERON",
+      "cells": ["BD-T07-03O-51"]
+    },
+    {
+      "id": "UBERON:0000948",
+      "name": "heart",
+      "source": "UBERON",
+      "cells": ["BD-T06-01I", "BD-T07-01I", "BD-T07-02I"]
+    },
+    {
+      "id": "UBERON:0002107",
+      "name": "liver",
+      "source": "UBERON",
+      "cells": ["BD-T10-10O", "BD-T10-11O", "BD-T11-10O"]
+    },
+    {
+      "id": "UBERON:0004538",
+      "name": "left kidney",
+      "source": "UBERON",
+      "cells": ["BD-L01-08O", "BD-L02-08O"]
+    },
+    {
+      "id": "UBERON:0002240",
+      "name": "spinal cord",
+      "source": "UBERON",
+      "cells": ["BD-C05-12I", "BD-C06-12I", "BD-T03-12I"]
+    }
+  ]
+}
