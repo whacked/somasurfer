@@ -94,7 +94,7 @@ const DEFAULT_LAYERS: Record<'body' | 'brain', Record<string, LayerState>> = {
 /** Deterministic, so a report is diffable between runs. */
 const PAPER_COLOURS = ['paper-colour-1', 'paper-colour-2', 'paper-colour-3', 'paper-colour-4', 'paper-colour-5'];
 
-interface AtlasView {
+export interface AtlasView {
   camera: Camera;
   layers: Record<string, LayerState>;
   isolatedStructureId: string | null;
@@ -107,7 +107,7 @@ interface AtlasView {
   templateId: string | null;
 }
 
-function freshView(atlas: 'body' | 'brain'): AtlasView {
+export function freshView(atlas: 'body' | 'brain'): AtlasView {
   return {
     camera: { ...DEFAULT_CAMERA[atlas] },
     layers: structuredClone(DEFAULT_LAYERS[atlas]),

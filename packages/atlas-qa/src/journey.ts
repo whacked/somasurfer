@@ -40,10 +40,10 @@ import {
 } from '../../alc/src/index.ts';
 import {
   changedFacets,
+  facetKey,
   facetsEqual,
   hasMessage,
   messageCodes,
-  messageText,
   type Capability,
   type ViewState,
   type ViewerDriver,
@@ -339,6 +339,25 @@ export const JOURNEY: readonly JourneyStep[] = [
             `ranked names for ${s.selection.address} disagree with the name index`,
           );
           c.equal(s.nameIndexVersion, expected.indexVersion, 'displayed name-index version');
+          // "Never one name" needs a cell with more than one claimant to mean
+          // anything, and the fixture requirement guarantees one exists. Before
+          // that requirement was added, every cell in the fixture had exactly
+          // one owner and the mutant returning only the top match passed this
+          // step — the assertion was live and the input was vacuous.
+          if (expected.matches.length >= 2) {
+            c.must(
+              names.length >= 2,
+              `the name index claims ${expected.matches.length} structures overlap `
+              + `${s.selection.address} and the panel showed ${names.length}. Names are always a ranked `
+              + 'list with fractions, never one name — a cell overlapping several structures that reports '
+              + 'one of them has made a choice the data does not support.',
+            );
+            const fractions = names.map((n) => n.fraction);
+            c.must(
+              new Set(fractions).size > 1 || fractions.length < 2,
+              `every displayed fraction is ${fractions[0]}, which cannot be right for nested structures`,
+            );
+          }
         }
       }
       c.must(
@@ -395,6 +414,27 @@ export const JOURNEY: readonly JourneyStep[] = [
 
       const brain = await ctx.driver.openBrainAtlas();
       c.equal(brain.atlas, 'brain', 'atlas after the explicit Open brain atlas action');
+
+      // Then move the camera and change a layer HERE, in the brain atlas.
+      //
+      // Without this the return trip is a vacuous test: nothing has touched
+      // the body view while we were away, so a build that simply navigates
+      // back — restoring nothing — passes. The negative control caught exactly
+      // that; the mutant that drops the saved view went green. A build holding
+      // one camera and one layer set for both atlases is a real and likely
+      // implementation, and these two lines are what make the difference
+      // between the two designs observable on the way back.
+      await ctx.driver.orbit(90);
+      const brainLayers = Object.keys(brain.layers);
+      if (brainLayers.length > 0) {
+        await ctx.driver.setLayer(brainLayers[0], { visible: false, opacity: 0.25 });
+      }
+      const moved = await ctx.driver.state();
+      c.must(
+        facetKey(moved.camera) !== facetKey(brain.camera),
+        'orbiting in the brain atlas did not move the camera, so the return trip cannot be tested',
+      );
+      ctx.snapshots.set('brain-view-after-changes', moved);
       return c.problems;
     },
   },

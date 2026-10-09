@@ -40,7 +40,7 @@ import type {
   ViewState,
   Vec3,
 } from './contract.ts';
-import { ReferenceViewer, type ReferenceViewerOptions } from './referenceViewer.ts';
+import { ReferenceViewer, freshView, type ReferenceViewerOptions } from './referenceViewer.ts';
 import type { CaseClass } from './matrix.ts';
 import { REQUIRED_CLASSES, DEEP_LINK_MATRIX } from './matrix.ts';
 
@@ -139,9 +139,16 @@ export const MUTANTS: readonly Mutant[] = [
     build: mutantOf('return-loses-the-previous-view', (o) =>
       new (class extends ReferenceViewer {
         async returnToBody(): Promise<ViewState> {
-          // Navigates back, but drops the stash — the camera and layers go to
-          // their defaults and the selection is lost.
+          // Navigates back to a FRESH body view: the camera, the layers, the
+          // isolate and label state and the selection are all gone.
+          //
+          // The first version of this mutant only dropped the stash, which
+          // broke nothing, because the reference viewer never clobbers
+          // `views.body` while the brain atlas is open — so there was nothing
+          // for the restore to undo and the mutant went green. Resetting the
+          // view is the defect a shared camera/layer model actually produces.
           this.stashedBodyView = null;
+          this.views.body = freshView('body');
           this.atlas = 'body';
           return super.state();
         }

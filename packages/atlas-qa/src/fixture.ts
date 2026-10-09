@@ -139,6 +139,23 @@ export const FIXTURE_REQUIREMENTS: ReadonlyArray<{
     describe: 'at least two body structures, one of them the body atlas\'s brain, so a selection and a cross-atlas link both have a target',
     satisfied: (f) => f.structures.filter((s) => s.atlas === 'body').length >= 2,
   },
+  {
+    id: 'a-cell-claimed-by-more-than-one-structure',
+    forSteps: ['select-structure-without-leaving-atlas'],
+    describe:
+      'at least one cell is claimed by two or more structures, so "a ranked name list with containment '
+      + 'fractions, never one name" has a second name to rank — in a fixture where every cell has exactly '
+      + 'one owner the requirement is untestable, and a build showing only the top match passes',
+    satisfied: (f) => {
+      // Nested or equal cells count: a structure occupying a sub-cell of
+      // another's is claimed alongside it, which is the ordinary case plan §6
+      // describes ("a cell overlapping several structures").
+      const cells = f.structures.flatMap((s) => s.cells.map((c) => ({ id: s.id, cell: c })));
+      return cells.some((a) =>
+        cells.some((b) => b.id !== a.id && (b.cell === a.cell || b.cell.startsWith(`${a.cell}`))),
+      );
+    },
+  },
 ];
 
 function sha256(text: string): string {

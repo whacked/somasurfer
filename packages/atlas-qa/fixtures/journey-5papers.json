@@ -26,7 +26,16 @@
     "  P-05 maps a body region as well as a brain one, so a paper's mappings",
     "       can span both atlases.",
     "  P-03 maps exactly one region, so 'reveals all its regions' is not",
-    "       accidentally satisfied by a fixture where every paper is multi-region."
+    "       accidentally satisfied by a fixture where every paper is multi-region.",
+    "",
+    "BODY-COSTAL-CARTILAGE occupies BD-T04-12O-1, a sub-cell of the sternum's",
+    "BD-T04-12O, so resolving the sternum's cell returns TWO structures with",
+    "different containment fractions (1.0 and 0.125). It was added after the",
+    "negative-control run: every other structure here claims its cells alone,",
+    "which made 'a ranked name list, never one name' untestable — the mutant",
+    "that returns only the top match passed, because there was never a second",
+    "match to drop. A fixture where every cell has one owner cannot pose the",
+    "question plan section 6 asks."
   ],
   "schemaVersion": 1,
   "id": "qa-journey-5papers",
@@ -84,6 +93,12 @@
       "name": "sternum (fixture)",
       "atlas": "body",
       "cells": ["BD-T04-12O", "BD-T05-12O"]
+    },
+    {
+      "id": "BODY-COSTAL-CARTILAGE",
+      "name": "fourth costal cartilage (fixture)",
+      "atlas": "body",
+      "cells": ["BD-T04-12O-1"]
     },
     {
       "id": "BODY-THORAX-ANT",
