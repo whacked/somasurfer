@@ -2,19 +2,25 @@
   "name": "@gstack/atlas-assets",
   "version": "0.1.0",
   "private": true,
-  "description": "Atlas geometry, textures and label sets. Separately licensed from the code — see ./LICENSE and ./ATTRIBUTION.md.",
+  "description": "Atlas geometry, textures and label sets. Separately licensed from the code \u2014 see ./LICENSE and ./ATTRIBUTION.md.",
   "atlas": {
     "licenceClass": "asset",
-    "licenceStatus": "pending",
-    "licenceDecision": "DOG-2 D1 (mesh licence)",
+    "licenceStatus": "settled",
+    "licenceDecision": "DOG-2 D1 (mesh licence), approved 2026-10-09",
     "attribution": "./attribution.json",
-    "payloadDirs": ["geometry", "templates", "labels"]
+    "payloadDirs": [
+      "geometry",
+      "templates",
+      "labels"
+    ]
   },
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "check": "node ../../tools/check-licence-separation.mjs",
     "geometry:make": "node ../../tools/make-placeholder-geometry.mjs",
     "attribution:print": "node ../../tools/render-attribution.mjs",
-    "attribution:report": "npm run -s attribution:print > ATTRIBUTION.md"
+    "attribution:report": "npm run -s attribution:print > ATTRIBUTION.md",
+    "templates:audit:print": "node --experimental-strip-types ../../tools/report-template-audit.mjs",
+    "templates:audit": "npm run -s templates:audit:print > ../../docs/alc-1-body-template-audit.md"
   }
 }
