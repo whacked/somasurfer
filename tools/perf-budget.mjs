@@ -401,6 +401,16 @@ const kindOf = (key) => {
 
 const SIGIL = { exact: ' ', normalised: ' ', 'at-least': '≥', 'at-most': '≤' };
 
+/**
+ * True when the line's figure is a one-sided bound rather than the quantity its
+ * key names. The JSON report nulls these, and every sentence printed about them
+ * has to say "at least"/"at most" rather than "measured".
+ */
+const isBound = (key) => {
+  const kind = kindOf(key);
+  return kind === 'at-least' || kind === 'at-most';
+};
+
 const rows = [];
 const over = [];
 const notEvaluated = [];
@@ -444,7 +454,14 @@ for (const [key, spec] of Object.entries(budget.budgets)) {
 
   if (verdict === 'unverified') {
     const u = spec.unverified;
-    unverified.push(`${key}: ${fmt(key, value)} measured against a budget of ${fmt(key, spec.limit)}`
+    // Off-band this line's number is a bound, not a measurement, and an
+    // unverified line is no more exempt from saying so than a gated one is.
+    const quantity = kind === 'at-least'
+      ? `at least ${fmt(key, value)}`
+      : kind === 'at-most'
+        ? `at most ${fmt(key, value)}`
+        : `${fmt(key, value)} measured`;
+    unverified.push(`${key}: ${quantity} against a budget of ${fmt(key, spec.limit)}`
       + ` (${(used * 100).toFixed(0)}%), NOT GATED.`);
     unverified.push(`  why it is not gated: ${u.reason}`);
     unverified.push(`  what would clear it: ${u.clearedBy}`);
@@ -553,14 +570,23 @@ const report = {
   // normalised figure that was not computed, so publishing the unnormalised
   // number here would make the key a false claim about its own contents. The
   // bound is in `verdicts[key].reported`, where its kind travels with it.
+  //
+  // Keyed off the KIND and not off the verdict. The two used to coincide, and
+  // DOG-80's `unverified` verdict broke the coincidence: an unverified line is a
+  // statement about the LIMIT and says nothing about whether the figure beside
+  // it was normalised, so an off-band unverified line went on publishing a raw
+  // number under a `...Normalised` key. `perf-fast-runner-is-not-a-failure`
+  // caught it. The kind is what the sentence above was always about, and
+  // off-band over-budget lines are now nulled here too, which is what that
+  // sentence said and what the previous condition did not quite do.
   measurements: Object.fromEntries(
-    Object.keys(budget.budgets).map((k) => [k, verdicts[k].verdict === 'not evaluated' ? null : measurements[k]]),
+    Object.keys(budget.budgets).map((k) => [k, isBound(k) ? null : measurements[k]]),
   ),
   budgets: Object.fromEntries(Object.entries(budget.budgets).map(([k, v]) => [k, v.limit])),
   utilisation: Object.fromEntries(
     Object.entries(budget.budgets).map(([k, v]) => [
       k,
-      verdicts[k].verdict === 'not evaluated' ? null : Number((measurements[k] / v.limit).toFixed(3)),
+      isBound(k) ? null : Number((measurements[k] / v.limit).toFixed(3)),
     ]),
   ),
   // Which lines the numbers above can carry a verdict for, and in which
