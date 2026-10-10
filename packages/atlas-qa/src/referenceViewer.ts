@@ -265,7 +265,14 @@ export class ReferenceViewer implements ViewerDriver {
 
     this.views = { body: freshView('body'), brain: freshView('brain') };
     this.stashedBodyView = null;
-    this.atlas = 'body';
+    // Rule 1 of `docs/deep-link-atlas-rule.md`: the `atlas` parameter decides
+    // the atlas, and an unknown or absent value means the default. Until DOG-72
+    // this was not read at all — the atlas was inferred from the address's
+    // frame instead, so a link naming its atlas and a link merely implying one
+    // were indistinguishable here, and the round trip plan §7 requires was
+    // covered only through the in-app `openBrainAtlas()` path.
+    const asked = params.get('atlas');
+    this.atlas = asked === 'brain' || asked === 'body' ? asked : 'body';
     this.acceptedAddress = null;
     this.filter = null;
     this.selectedPapers = [];
@@ -293,12 +300,19 @@ export class ReferenceViewer implements ViewerDriver {
   /**
    * Resolve an address into the current view.
    *
-   * DECISION: a BV address deep-linked from the URL enters the brain atlas
-   * directly. That is not the automatic navigation DOG-1 §2 forbids — the user
-   * named the brain cell in the address, so arriving in the brain atlas is what
-   * they asked for. Selection inside an atlas still never navigates.
+   * DECIDED, DOG-72, `docs/deep-link-atlas-rule.md`: **nothing here switches the
+   * atlas.** The `atlas` parameter decides it and nothing else does, so an
+   * address belonging to the other atlas — out of a URL or off the clipboard,
+   * the same either way — is selected where we stand and reported with
+   * `cross_atlas_offer`. This method used to send a `fromUrl` BV address
+   * straight to the brain atlas; the argument for that is in the decision
+   * record, as is the reason it lost.
+   *
+   * `fromUrl` is kept because `reject()` has no business knowing it either way
+   * and the callers read better for saying where the address came from.
    */
   protected applyAddress(input: string, options: { fromUrl?: boolean } = {}): void {
+    void options;
     let parsed;
     try {
       parsed = parse(input);
@@ -307,14 +321,12 @@ export class ReferenceViewer implements ViewerDriver {
       return;
     }
 
-    // Resolve BEFORE switching atlas. Switching first and then discovering the
-    // address does not resolve leaves the user in the brain atlas looking at an
-    // error about an address that was never shown — and it made the
-    // `no_template` row report that the camera and layers had changed, which
-    // they had, for no reason the user asked for.
+    // Resolve BEFORE anything is applied. Applying first and then discovering
+    // the address does not resolve leaves the user looking at an error about an
+    // address that was never shown — and it made the `no_template` row report
+    // that the camera and layers had changed, which they had, for no reason the
+    // user asked for.
     const templates = templateSet(this.template);
-    const targetAtlas: 'body' | 'brain' =
-      parsed.frame === 'BV' && options.fromUrl ? 'brain' : this.atlas;
 
     let located;
     try {
@@ -323,8 +335,19 @@ export class ReferenceViewer implements ViewerDriver {
       this.reject(error as AlcError, parsed.canonical);
       return;
     }
-    this.atlas = targetAtlas;
     const v = this.view();
+
+    /**
+     * The address resolved, and it lives in the other atlas.
+     *
+     * Rule 3: it still selects and still names itself; what does not happen is
+     * the drawing and the camera move, because this atlas holds no geometry
+     * that could contain it. Exactly the shape of the assets-unavailable case
+     * below, for the same reason — a resolved address with nothing to show for
+     * it — so it shares that guard rather than returning early.
+     */
+    const home: 'body' | 'brain' = parsed.frame === 'BD' ? 'body' : 'brain';
+    const elsewhere = home !== this.atlas;
 
     v.templateId = located.templateId;
     const flags = located.flags;
@@ -364,12 +387,22 @@ export class ReferenceViewer implements ViewerDriver {
     if (flags.folded) {
       v.messages.push({ code: 'folded', severity: 'notice', text: notes });
     }
+    if (elsewhere) {
+      v.messages.push({
+        code: 'cross_atlas_offer',
+        severity: 'notice',
+        text:
+          `This address belongs to the ${home} atlas. The view has not been changed — `
+          + `open the ${home} atlas to see it.`,
+      });
+    }
 
     // DECISION: with no geometry loaded there is nothing to draw and nothing to
     // fly to, so neither happens. The address still resolves and the names are
     // still shown — plan §6's last row — but presenting an empty viewport as a
-    // located result would claim more than the build can deliver.
-    if (this.assetsOk) {
+    // located result would claim more than the build can deliver. A cross-atlas
+    // address is the same situation reached a different way.
+    if (this.assetsOk && !elsewhere) {
       v.camera = {
         targetMm: [...displayed.pointMm] as unknown as Vec3,
         distanceMm: Math.max(50, Math.hypot(...displayed.extentMm) * 8),

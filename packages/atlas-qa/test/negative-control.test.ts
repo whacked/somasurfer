@@ -1,14 +1,14 @@
 /**
  * The negative-control run, as a gate rather than an anecdote.
  *
- * "We saw it go red once" decays. This runs all fourteen deliberately broken
+ * "We saw it go red once" decays. This runs all sixteen deliberately broken
  * builds on every CI run and requires each to be caught BY THE CASE THAT
  * DECLARES IT OWNS IT — so a mutant failing for an unrelated reason does not
  * count, and a case that stops doing its job is reported against that case
  * rather than vanishing into an aggregate.
  *
  * The control matters as much as the mutants. Every mutant is run against the
- * same fixture as a reference build that passes 40/40 in the same file, which
+ * same fixture as a reference build that passes every row in the same file, which
  * is what makes a mutant's failure attributable to its mutation instead of to
  * ambient breakage.
  */

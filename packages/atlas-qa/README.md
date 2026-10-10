@@ -13,7 +13,7 @@ requirement, and the build has to come to it.
 ```
 npm run qa:journey              # run the journey + matrix, print the report
 npm run qa:journey -- --strict  # a must-pass case that cannot be evaluated FAILS
-npm run qa:negative-control     # the fourteen broken builds, and what catches each
+npm run qa:negative-control     # the sixteen broken builds, and what catches each
 npm test --workspace @gstack/atlas-qa    # the 78 gates that work with no viewer
 ```
 
@@ -180,7 +180,7 @@ Which message appears, what the camera does, what does not change — all litera
 Digit counts and encoded addresses — derived from the bound template. `maxUsefulDigits`
 is a measured property of the mesh that will legitimately rise when the mesh gets
 finer, and a test that hard-pins it goes red on a *correct* improvement to the
-asset. A false red in a suite carrying fourteen deliberate failures is worse than
+asset. A false red in a suite carrying sixteen deliberate failures is worse than
 a missing case: it teaches everyone to discount the colour.
 
 The fold address stays literal, with its reason in the code: it has to be an
@@ -192,7 +192,7 @@ it in both directions instead.
 
 ## The negative control
 
-A harness nobody has watched fail is decoration. `src/mutants.ts` holds fourteen
+A harness nobody has watched fail is decoration. `src/mutants.ts` holds sixteen
 builds, each breaking exactly **one** guarantee, each declaring which case must
 notice — and `caughtBy` is asserted, so a mutant failing for an unrelated reason
 does not count. The unmutated control passes 40/40 in the same run, which is what
@@ -285,11 +285,11 @@ rows down with it.
 | file | what |
 | --- | --- |
 | `src/contract.ts` | the `ViewerDriver` and `ViewState` a build must expose |
-| `src/matrix.ts` | 33 enumerated deep-link rows, 31 must-pass |
+| `src/matrix.ts` | 35 enumerated deep-link rows, 33 must-pass |
 | `src/journey.ts` | the eight DOG-1 §7 clauses as ordered, dependency-aware steps |
 | `src/runner.ts` | the pass/fail/unverified algebra and the report |
 | `src/referenceViewer.ts` | the conformant stand-in that makes the suite executable |
-| `src/mutants.ts` | fourteen broken builds and what must catch each |
+| `src/mutants.ts` | sixteen broken builds and what must catch each |
 | `src/templates.ts` | the templates harness and build must agree on |
 | `src/fixture.ts` | fixture loading, pinning, the curated-schema adapter and the anatomical-index join |
 | `test/` | the 78 gates that work with no viewer in existence |

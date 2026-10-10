@@ -109,7 +109,7 @@ export const TEMPLATE_IDS = {
  * `maxUsefulDigits` is also a *measured* property that will legitimately rise
  * when the mesh gets finer, without invalidating a single issued address. A
  * test that hard-pins it therefore goes red on a correct improvement to the
- * asset, and a false red in a suite with fourteen deliberate failures is worse
+ * asset, and a false red in a suite with sixteen deliberate failures is worse
  * than a missing case: it teaches everyone to discount the colour.
  */
 export function bodyDigitLimit(choice: TemplateChoice = 'body'): number {

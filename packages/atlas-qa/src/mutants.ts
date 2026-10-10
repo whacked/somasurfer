@@ -3,7 +3,7 @@
  *
  * A harness nobody has watched fail is decoration. The repo already works this
  * way — `tools/verify-gates.mjs` breaks each CI gate on purpose and requires it
- * to be caught — and this is the same argument applied to §7: fourteen builds,
+ * to be caught — and this is the same argument applied to §7: sixteen builds,
  * each breaking exactly ONE guarantee, each declaring which case is supposed to
  * notice.
  *
@@ -132,6 +132,59 @@ export const MUTANTS: readonly Mutant[] = [
           // a control.
           this.atlas = 'brain';
           return super.state();
+        }
+      })(o)),
+  },
+  {
+    id: 'link-switches-atlas',
+    breaks:
+      'a URL carrying an address from the other atlas switches to it instead of selecting where it stands',
+    // Both rows of the class notice, and they notice different halves: the
+    // no-parameter row because the atlas moved at all, the explicit-atlas row
+    // because a parameter that was written down lost to an inference.
+    caughtBy: ['brain-deep-link-resolves', 'cross-atlas-link-honours-the-explicit-atlas'],
+    caughtAs: 'fail',
+    exercises: ['cross-atlas-link'],
+    build: mutantOf('link-switches-atlas', (o) =>
+      new (class extends ReferenceViewer {
+        protected applyAddress(input: string, options: { fromUrl?: boolean } = {}): void {
+          // The rule DOG-72 rejected, restored exactly: arriving by URL with a
+          // brain address is treated as the explicit act of entering the brain
+          // atlas. Not a strawman — it is what this file did until the
+          // decision, and `docs/deep-link-atlas-rule.md` is the argument it
+          // lost. That is the point of having it here: the mutant worth keeping
+          // caught is the plausible alternative, not an absurdity.
+          //
+          // `BV` only. A `BR` address is refused for its frame before anything
+          // is applied, so switching there would break the "a refusal changes
+          // nothing" guarantee as well — two defects in one build, and then
+          // neither row's failure is attributable to this mutation.
+          if (options.fromUrl && input.trim().toUpperCase().startsWith('BV-')) {
+            this.atlas = 'brain';
+          }
+          super.applyAddress(input, options);
+        }
+      })(o)),
+  },
+  {
+    id: 'cross-atlas-offer-is-withheld',
+    breaks: 'an address belonging to the other atlas selects silently, with no offer and no route forward',
+    // The quieter half of the same rule, and the likelier one to ship: nothing
+    // switches, nothing is drawn, and the user is never told why. Without this
+    // mutant the offer is only asserted by rows that would still pass on the
+    // atlas and the cell alone, which is how the shell's one remaining job
+    // under rule 3 would go unmeasured.
+    caughtBy: ['brain-deep-link-resolves', 'cross-atlas-link-honours-the-explicit-atlas'],
+    caughtAs: 'fail',
+    exercises: ['cross-atlas-link'],
+    build: mutantOf('cross-atlas-offer-is-withheld', (o) =>
+      new (class extends ReferenceViewer {
+        async state(): Promise<ViewState> {
+          const s = await super.state();
+          return Object.freeze({
+            ...s,
+            messages: Object.freeze(s.messages.filter((m) => m.code !== 'cross_atlas_offer')),
+          }) as unknown as ViewState;
         }
       })(o)),
   },
