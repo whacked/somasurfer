@@ -19,6 +19,7 @@ import {
   AlcError,
   ENABLED_FRAMES,
   FRAMES,
+  ancestors,
   encodeBody,
   locate,
   parse,
@@ -247,6 +248,57 @@ test('BR is still disabled and BD/BV still enabled', () => {
   assert.ok(!ENABLED_FRAMES.has('BR'), 'BR is enabled now; the frame_disabled row needs rewriting');
   assert.ok(ENABLED_FRAMES.has('BV'), 'BV must be enabled for the brain rows to mean anything');
   assert.ok(ENABLED_FRAMES.has('BD'), 'BD must be enabled');
+});
+
+test('no ancestor of either frame-level refusal resolves, which is what those rows assert', () => {
+  // The premise under `br-frame-disabled`, `no-template` and
+  // `br-offer-is-not-fabricated-by-truncation`. Each asserts
+  // `no_ancestor_resolvable`, and that is only the right expectation while
+  // every rung of the chain is unplaceable. The reason it holds is structural
+  // — `locate()` raises `frame_disabled` and `no_template` from the FRAME,
+  // before it looks at a cell, and `ancestors()` never leaves the frame — but
+  // "structural" is an argument, and this is the measurement.
+  //
+  // The day it stops holding, those rows have to become
+  // `coarsest_ancestor_offered` rows, and this test is what says so instead of
+  // them quietly asserting the wrong half of the contract.
+  const walks: Array<{ address: string; template: Parameters<typeof templateSet>[0] }> = [
+    { address: 'BR-L-1', template: 'body' },
+    { address: 'BR-L-4710', template: 'body' },
+    { address: 'BV-L-4721', template: 'no-brain' },
+  ];
+  for (const { address, template } of walks) {
+    const templates = templateSet(template);
+    const chain = [...ancestors(address).map((a) => a.canonical), parse(address).canonical];
+    for (const rung of chain) {
+      let finite = false;
+      try {
+        finite = Number.isFinite(locate(rung, templates).pointMm[0]);
+      } catch {
+        finite = false;
+      }
+      assert.equal(
+        finite,
+        false,
+        `${rung} (an ancestor of ${address} in ${template}) now resolves to millimetres. There IS a `
+        + 'coarsest resolvable ancestor here, so the row must offer it rather than report a dead end.',
+      );
+    }
+  }
+});
+
+test('the deep BR address still has ancestors, or its row tests nothing', () => {
+  // `br-offer-is-not-fabricated-by-truncation` catches a build that computes
+  // the offer by truncating the address. That is only a test of anything while
+  // the address HAS rungs to truncate — `BR-L-1`, the shallow row, has none,
+  // which is exactly why the deep row exists.
+  const chain = ancestors('BR-L-4710').map((a) => a.canonical);
+  assert.ok(
+    chain.length >= 3,
+    `BR-L-4710 now has ${chain.length} ancestors (${chain.join(', ')}); a string-truncating build would `
+    + 'have nothing to offer, and the row would pass vacuously',
+  );
+  assert.deepEqual(ancestors('BR-L-1').map((a) => a.canonical), [], 'BR-L-1 has gained ancestors');
 });
 
 test('the folding fixture still folds where the matrix pinned, and the sound template does not', () => {

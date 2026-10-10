@@ -153,6 +153,7 @@ export const REQUIRED_CLASSES = [
   'c08-correction',
   'frame-disabled',
   'no-template',
+  'coarsest-ancestor',
   'length-cap',
   'assets-unavailable',
   'equality-guard',
@@ -252,6 +253,23 @@ export interface MatrixRow {
     readonly textMustContain?: readonly string[];
     /** Selection must be cleared / preserved / set to this address. */
     readonly selectionAddress?: string | null;
+    /**
+     * The addresses the selection is ALLOWED to hold, where more than one
+     * answer is correct.
+     *
+     * Added by DOG-70 for the two frame-level refusals, where requiring the
+     * selection to be untouched forbade correct behaviour. `frame_disabled` and
+     * `no_template` are reported *against the address the user gave*, so a
+     * viewer that records that address in order to render the message against
+     * it is right, and so is one that records nothing — the plan states
+     * neither. What is NOT acceptable is the selection landing somewhere else,
+     * which is what going silent on the facet would have permitted.
+     *
+     * So the row says "null or the address asked for", which is weaker than
+     * `selectionAddress` and much stronger than omitting it. Mutually exclusive
+     * with `selectionAddress`; the integrity gate refuses both at once.
+     */
+    readonly selectionAddressAnyOf?: readonly (string | null)[];
     readonly assetsAvailable?: boolean;
     /** Names must still resolve even though geometry failed (plan §6, last row). */
     readonly namesResolve?: boolean;
@@ -788,46 +806,107 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
   },
 
   // -------------------------------------------------------------------------
-  // The two refusals that have a fallback, and must offer it.
+  // The two refusals that are allowed a fallback, and the offer slot itself.
+  //
+  // DOG-70 rewrote this group. As authored, both rows demanded a
+  // `coarsest_ancestor_offered` message in exactly the two situations where no
+  // ancestor can resolve, so neither could pass against a correct build:
+  //
+  //   BR-L-1     every rung is in BR, and BR ships with no locatable template
+  //   BV-L-4721  every rung is in BV, and the `no-brain` set has no BV template
+  //   (measured; `test/oracle.test.ts` re-derives both walks on every run)
+  //
+  // `locate()` raises `frame_disabled` and `no_template` from the FRAME, before
+  // it looks at a cell, and `ancestors()` never leaves the frame — so when the
+  // obstruction is the frame itself, every rung fails identically and `null` is
+  // the only honest answer. The requirement these rows carry is therefore not
+  // "offer an ancestor" but "answer the question": say which coarser address
+  // can be opened, or say plainly that none can. Two codes, one per answer, and
+  // the row forbids the other.
   // -------------------------------------------------------------------------
   {
     id: 'br-frame-disabled',
-    classes: ['frame-disabled'],
+    classes: ['frame-disabled', 'coarsest-ancestor'],
     mustPass: true,
     input: { kind: 'url', url: BODY_URL('BR-L-1') },
     requires: ['deep-link'],
     expect: {
       observable:
         'A BR cortical-surface address is accepted by the grammar and refused by the viewer: the message '
-        + 'explains the frame ships disabled in v1, and OFFERS THE COARSEST RESOLVABLE ANCESTOR rather '
-        + 'than leaving the user at a dead end. The camera does not move until they take the offer.',
-      messages: ['frame_disabled', 'coarsest_ancestor_offered'],
-      forbiddenMessages: ['rejected_grammar'],
+        + 'explains the frame ships disabled in v1, and ANSWERS THE FALLBACK QUESTION — here by saying '
+        + 'plainly that no coarser ancestor can be placed either, because every ancestor of a BR address '
+        + 'is also in BR. It must not invent an offer it cannot honour. The camera and the layers do not '
+        + 'move, and nothing is drawn.',
+      messages: ['frame_disabled', 'no_ancestor_resolvable'],
+      forbiddenMessages: ['rejected_grammar', 'coarsest_ancestor_offered'],
       camera: 'unchanged',
-      unchanged: ['camera', 'layers', 'selection', 'atlas'],
+      unchanged: ['camera', 'layers', 'atlas'],
       cellKind: null,
+      // Not `unchanged: [... 'selection']`, which this row asserted until
+      // DOG-70 and which forbids correct behaviour: the refusal is reported
+      // against the address the user gave, so recording that address as the
+      // selection is one right answer and recording nothing is the other.
+      // Landing on some OTHER address is not.
+      selectionAddressAnyOf: [null, 'BR-L-1'],
     },
     oracle: [{ kind: 'reject', input: 'BR-L-1', code: 'frame_disabled' }],
-    why: 'Plan §4 and §6 both require the offer. A refusal with no route forward is the thing being avoided.',
+    why:
+      'Plan §4 and §6 require a route forward rather than a dead end. Where there is no route, saying so '
+      + 'IS the route — the alternative is a refusal that silently omits the control and reads as a '
+      + 'missing feature.',
   },
   {
     id: 'no-template',
-    classes: ['no-template'],
+    classes: ['no-template', 'coarsest-ancestor'],
     mustPass: true,
     input: { kind: 'url', url: BODY_URL('BV-L-4721', `&${QA_URL_PARAMS.template}=no-brain`) },
     requires: ['deep-link', 'qa-template-override'],
     expect: {
       observable:
         'A well-formed BV address with no brain template loaded is explained as a missing template — not '
-        + 'as a bad address — and the coarsest resolvable ancestor is offered. The distinction matters: '
-        + 'the user\'s address is correct and the build is incomplete.',
-      messages: ['no_template', 'coarsest_ancestor_offered'],
-      forbiddenMessages: ['rejected_grammar', 'frame_disabled'],
+        + 'as a bad address — and the fallback question is answered: no ancestor resolves either, because '
+        + 'they are all in BV and BV is the frame with no template. The distinction matters: the user\'s '
+        + 'address is correct and the build is incomplete. The camera and the layers do not move.',
+      messages: ['no_template', 'no_ancestor_resolvable'],
+      forbiddenMessages: ['rejected_grammar', 'frame_disabled', 'coarsest_ancestor_offered'],
       camera: 'unchanged',
-      unchanged: ['camera', 'layers', 'selection'],
+      unchanged: ['camera', 'layers'],
       cellKind: null,
+      selectionAddressAnyOf: [null, 'BV-L-4721'],
     },
     oracle: [{ kind: 'reject', input: 'BV-L-4721', code: 'no_template', template: 'no-brain' }],
+  },
+  {
+    id: 'br-offer-is-not-fabricated-by-truncation',
+    classes: ['coarsest-ancestor', 'frame-disabled'],
+    mustPass: true,
+    input: { kind: 'url', url: BODY_URL('BR-L-4710') },
+    requires: ['deep-link'],
+    expect: {
+      observable:
+        'A DEEP BR address — one with four ancestors of its own (BR-L-4, BR-L-47, BR-L-471) — is refused '
+        + 'with the same two messages as the shallow one: the frame is disabled, and no ancestor can be '
+        + 'placed. No coarser address is offered, because none of those four resolves either. A build '
+        + 'that offers BR-L-4 here has computed the offer by TRUNCATING THE STRING instead of by '
+        + 'checking what resolves, and is pointing the user at a second dead end.',
+      messages: ['frame_disabled', 'no_ancestor_resolvable'],
+      forbiddenMessages: ['coarsest_ancestor_offered', 'rejected_grammar'],
+      camera: 'unchanged',
+      unchanged: ['camera', 'layers', 'atlas'],
+      cellKind: null,
+      selectionAddressAnyOf: [null, 'BR-L-4710'],
+    },
+    oracle: [{ kind: 'reject', input: 'BR-L-4710', code: 'frame_disabled' }],
+    why:
+      'The honest row in the coarsest-ancestor class, and the reason the class is not simply deleted. '
+      + 'DOG-70 asked for a row exercising the offer where one genuinely exists; in v1 there is no such '
+      + 'input, and that is structural rather than incidental: `no_template` and `frame_disabled` are '
+      + 'raised per FRAME and `ancestors()` stays inside the frame, so either every rung resolves or '
+      + 'none does. The branch becomes reachable — and this class gains a positive row — the day a frame '
+      + 'ships a template that can place its coarse cells but not its fine ones. Until then the '
+      + 'checkable half of the requirement is that the offer is derived from resolvability, which is '
+      + 'what `BR-L-1` cannot test (it has no ancestors at all to truncate) and this row can. '
+      + '`mutants.ts` carries the build that gets it wrong.',
   },
   {
     id: 'brain-deep-link-resolves',
@@ -1003,6 +1082,7 @@ export function matrixIntegrityProblems(rows: readonly MatrixRow[] = DEEP_LINK_M
       row.expect.atlas !== undefined,
       row.expect.unchanged.length > 0,
       row.expect.selectionAddress !== undefined,
+      (row.expect.selectionAddressAnyOf?.length ?? 0) > 0,
       row.expect.assetsAvailable !== undefined,
       row.expect.camera === 'unchanged',
       row.classes.includes('equality-guard'),
@@ -1037,9 +1117,41 @@ export function matrixIntegrityProblems(rows: readonly MatrixRow[] = DEEP_LINK_M
     for (const code of msgs) {
       if (forbidden.has(code)) problems.push(`${at}: ${code} is both required and forbidden`);
     }
-    if ((msgs.has('frame_disabled') || msgs.has('no_template')) && !msgs.has('coarsest_ancestor_offered')) {
+    // The fallback slot. Plan §4 and §6 require these two refusals to say what
+    // can be done instead, and DOG-70 established there are two honest answers
+    // — so the rule is that the row answers with exactly ONE of them. Demanding
+    // `coarsest_ancestor_offered` unconditionally, which this gate did as
+    // authored, demands an offer that cannot exist when the obstruction is the
+    // frame itself, and so can only be satisfied by a build that invents one.
+    const offered = msgs.has('coarsest_ancestor_offered');
+    const deadEnd = msgs.has('no_ancestor_resolvable');
+    if ((msgs.has('frame_disabled') || msgs.has('no_template')) && !offered && !deadEnd) {
       problems.push(
-        `${at}: ${[...msgs].join('/')} must come with the coarsest resolvable ancestor on offer (plan §4).`,
+        `${at}: ${[...msgs].join('/')} must answer the fallback question (plan §4) — either `
+        + 'coarsest_ancestor_offered, or no_ancestor_resolvable where nothing coarser can be placed. '
+        + 'A refusal that says neither is a dead end with an apology.',
+      );
+    }
+    if (offered && deadEnd) {
+      problems.push(
+        `${at}: asserts both an ancestor on offer and that no ancestor resolves. One view cannot be `
+        + 'both; decide which this row is about.',
+      );
+    }
+    // Where the row has established that nothing coarser resolves, a build
+    // offering something anyway is not merely unexpected — it is pointing the
+    // user at an address that will refuse them too, which is the string
+    // -truncation defect `br-offer-is-not-fabricated-by-truncation` exists for.
+    if (deadEnd && !forbidden.has('coarsest_ancestor_offered')) {
+      problems.push(
+        `${at}: asserts that no ancestor resolves without forbidding coarsest_ancestor_offered. A `
+        + 'fabricated offer is the defect this row is positioned to catch.',
+      );
+    }
+    if (row.expect.selectionAddress !== undefined && row.expect.selectionAddressAnyOf !== undefined) {
+      problems.push(
+        `${at}: sets both selectionAddress and selectionAddressAnyOf. The exact claim and the `
+        + 'either-or claim cannot both be the requirement.',
       );
     }
     // A cell with no millimetres must not be flown to. `variant` and `absent`
