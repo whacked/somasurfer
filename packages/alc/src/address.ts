@@ -174,7 +174,7 @@ export function format(input: string, options: { check?: boolean } = {}): string
  * `covering.test.ts` asserts it IS canonical, which is the stronger claim, so
  * that a frame whose parent form stops round-tripping is caught here.
  */
-function parentKey(a: Address): string | null {
+export function parentKey(a: Address): string | null {
   if (a.frame === 'BR') {
     const p = brParentDigits(a.digits);
     return p === null ? null : `BR-${a.anchors[0]}-${p}`;
@@ -311,7 +311,7 @@ export function branchingBelow(p: Address): number {
  * harmless. It cannot be a member of a set of parsed addresses, so the lookup
  * simply misses.
  */
-function containingKeys(a: Address): string[] {
+export function containingKeys(a: Address): string[] {
   const out: string[] = [];
   for (let k = 1; k < a.anchors.length; k += 1) {
     out.push(`${a.frame}-${a.anchors.slice(0, k).join('-')}`);
