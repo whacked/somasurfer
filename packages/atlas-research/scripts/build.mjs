@@ -19,7 +19,7 @@
  *
  * The four `'../../alc/src/index.ts'` sites — in `layers.ts`, `browse.ts`,
  * `dataset.ts` and `validate.ts` — become one hoisted namespace import of
- * `ALC_SPECIFIER`, which every inlined module destructures from. It has to be
+ * a sibling `alc.js`, which every inlined module destructures from. It has to be
  * the *same* alc the page already loads: `buildNameIndex()` keys its lookup
  * tables in a `WeakMap` by index identity, so a second copy of alc is a second
  * WeakMap, and `buildResearchIndex()` would reject a `NameIndex` the page built
@@ -54,24 +54,38 @@ import { stripTypeScriptTypes } from 'node:module';
 const PKG = resolvePath(import.meta.dirname, '..');
 const SRC = join(PKG, 'src');
 const DIST = join(PKG, 'dist');
+const ESM = join(DIST, 'esm');
 const ENTRY = join(SRC, 'index.ts');
 const BUNDLE = join(DIST, 'atlas-research.js');
-const ESM_ENTRY = join(DIST, 'esm', 'index.js');
+const ESM_ENTRY = join(ESM, 'index.js');
 
 /** The one module that is not inlined. */
 const ALC_SOURCE = resolvePath(PKG, '..', 'alc', 'src', 'index.ts');
 
 /**
- * Where the emitted JS imports alc from: a sibling file named `alc.js`.
+ * What the emitted JS calls alc, and where each output expects to find it.
  *
- * Relative rather than bare, because the page resolves no import map: the
- * viewer's own `src/alc.js` is substituted for alc's browser bundle at
- * `dist/app/alc.js`, so a research bundle emitted next to it resolves this
- * specifier to exactly that file and the page gets one alc. Keep the two
- * outputs side by side, or pass alc through this specifier some other way;
- * what must not happen is a second copy.
+ * A relative specifier rather than a bare one, because the page resolves no
+ * import map: the viewer's own `src/alc.js` is substituted for alc's browser
+ * bundle at `dist/app/alc.js`, so a research bundle emitted next to it
+ * resolves to exactly that file and the page gets one alc. Keep them side by
+ * side, or supply alc under this name some other way; what must not happen is
+ * a second copy.
+ *
+ * Each output's specifier is computed from where that output sits relative to
+ * its own `alc.js`, rather than written down once as './alc.js'. The two
+ * coincide while `src/` is flat, and a subdirectory would silently have
+ * emitted a specifier pointing at a file that does not exist.
  */
-const ALC_SPECIFIER = './alc.js';
+const ALC_FILENAME = 'alc.js';
+const ALC_AT_BUNDLE = join(DIST, ALC_FILENAME);
+const ALC_AT_ESM = join(ESM, ALC_FILENAME);
+
+/** `'./alc.js'`, `'../alc.js'` — an ESM specifier for a path on disk. */
+function relativeSpecifier(fromDir, toFile) {
+  const path = relative(fromDir, toFile).split(sep).join('/');
+  return path.startsWith('.') ? path : `./${path}`;
+}
 
 /** The binding the inlined modules destructure alc out of. */
 const ALC_NAMESPACE = '__alc';
@@ -138,7 +152,7 @@ function classify(file, specifier) {
   if (!specifier.startsWith('.')) {
     throw new Error(
       `${relative(PKG, file)} imports '${specifier}'. The browser build inlines this package and `
-      + `takes @gstack/alc from '${ALC_SPECIFIER}'; it has nowhere to resolve a bare specifier.`,
+      + `takes @gstack/alc from a sibling '${ALC_FILENAME}'; it has nowhere to resolve a bare specifier.`,
     );
   }
   const target = resolvePath(dirname(file), specifier);
@@ -192,12 +206,15 @@ const moduleId = (file) => `__m_${relative(SRC, file).replace(/\.ts$/, '').repla
 function buildEsm() {
   let count = 0;
   for (const file of walk(SRC)) {
+    const target = join(ESM, relative(SRC, file).replace(/\.ts$/, '.js'));
     const source = strip(file).replace(FROM_STATEMENT, (match, keyword, clause, specifier) => {
       const { kind } = classify(file, specifier);
-      const rewritten = kind === 'alc' ? ALC_SPECIFIER : specifier.replace(/\.ts$/, '.js');
+      const rewritten =
+        kind === 'alc'
+          ? relativeSpecifier(dirname(target), ALC_AT_ESM)
+          : specifier.replace(/\.ts$/, '.js');
       return `${keyword} ${clause} from '${rewritten}';`;
     });
-    const target = join(DIST, 'esm', relative(SRC, file).replace(/\.ts$/, '.js'));
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, source);
     count += 1;
@@ -225,6 +242,8 @@ async function buildBundle() {
   const alcUsed = new Map(); // name -> first file that imports it
   let alcSites = 0;
 
+  const alcSpecifier = relativeSpecifier(dirname(BUNDLE), ALC_AT_BUNDLE);
+
   const chunks = [
     '/**',
     ' * @gstack/atlas-research — the research layer: papers, findings, region',
@@ -234,13 +253,13 @@ async function buildBundle() {
     ' * One IIFE per source module, in dependency order; see the build script for',
     ' * why the module scopes are preserved rather than hoisted.',
     ' *',
-    ` * @gstack/alc is NOT inlined. It is imported from '${ALC_SPECIFIER}', which must`,
+    ` * @gstack/alc is NOT inlined. It is imported from '${alcSpecifier}', which must`,
     ' * resolve to the same alc the page loads: a second copy of the library is a',
     ' * second identity WeakMap, and buildResearchIndex() would then reject a',
     ' * NameIndex the page built with the other copy.',
     ' */',
     '',
-    `import * as ${ALC_NAMESPACE} from '${ALC_SPECIFIER}';`,
+    `import * as ${ALC_NAMESPACE} from '${alcSpecifier}';`,
     '',
   ];
 
@@ -298,7 +317,7 @@ async function buildBundle() {
 
   mkdirSync(DIST, { recursive: true });
   writeFileSync(BUNDLE, chunks.join('\n'));
-  return { modules: order.length, exports: entryNames.length, alcSites, alcNames: alcUsed.size };
+  return { modules: order.length, exports: entryNames.length, alcSites, alcNames: alcUsed.size, alcSpecifier };
 }
 
 // ---------------------------------------------------------------------------
@@ -396,23 +415,21 @@ async function verify() {
   const expected = Object.keys(source).filter((name) => name !== 'default').sort();
   if (expected.length === 0) throw new Error('src/index.ts exports nothing at runtime');
 
-  if (!ALC_SPECIFIER.startsWith('.')) {
-    throw new Error(`ALC_SPECIFIER is '${ALC_SPECIFIER}'; verification can only resolve a relative one`);
-  }
-
-  // The outputs import alc from a sibling `alc.js`, which under Node is this
-  // shim: a re-export of the very module the source graph imports, so both
-  // sides of the comparison share one alc and one identity WeakMap. The shims
-  // are removed again in the `finally` — shipping one would be the second copy
-  // of alc this whole arrangement exists to prevent.
+  // The outputs import alc from an `alc.js` of their own, which under Node is
+  // this shim: a re-export of the very module the source graph imports, so
+  // both sides of the comparison share one alc and one identity WeakMap. The
+  // shims are removed again in the `finally` — shipping one would be the
+  // second copy of alc this whole arrangement exists to prevent.
   const shimText = `export * from ${JSON.stringify(pathToFileURL(ALC_SOURCE).href)};\n`;
   const shims = [];
   const report = [];
   try {
-    for (const output of [BUNDLE, ESM_ENTRY]) {
-      const shim = resolvePath(dirname(output), ALC_SPECIFIER);
-      writeFileSync(shim, shimText);
-      shims.push(shim);
+    for (const [output, alcAt] of [
+      [BUNDLE, ALC_AT_BUNDLE],
+      [ESM_ENTRY, ALC_AT_ESM],
+    ]) {
+      writeFileSync(alcAt, shimText);
+      shims.push(alcAt);
 
       const label = relative(PKG, output);
       const built = await import(pathToFileURL(output).href);
@@ -460,6 +477,6 @@ console.log(
 );
 console.log(
   `@gstack/alc              external: ${bundle.alcSites} import site(s), ${bundle.alcNames} names, `
-  + `from '${ALC_SPECIFIER}'`,
+  + `from '${bundle.alcSpecifier}'`,
 );
 for (const line of report) console.log(`verified      ${line}`);

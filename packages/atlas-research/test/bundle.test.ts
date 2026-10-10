@@ -30,7 +30,7 @@ import { strict as assert } from 'node:assert';
 import test from 'node:test';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { buildNameIndex, type NameIndex, type NameIndexInput } from '../../alc/src/index.ts';
@@ -42,8 +42,9 @@ const ALC_SOURCE = join(ALC_DIR, 'src', 'index.ts');
 const ALC_BUNDLE = join(ALC_DIR, 'dist', 'alc.js');
 
 const OUTPUTS = ['dist/atlas-research.js', 'dist/esm/index.js'] as const;
-/** Where each output resolves `'./alc.js'` to. */
+/** Where each output expects to find alc, and so where the shims go. */
 const SHIMS = ['dist/alc.js', 'dist/esm/alc.js'] as const;
+const alcPositions = SHIMS.map((p) => join(PKG_DIR, p));
 
 execFileSync(process.execPath, ['scripts/build.mjs'], { cwd: PKG_DIR, stdio: 'pipe' });
 
@@ -135,8 +136,21 @@ test('bundle: the browser outputs use no Node built-ins and no bare specifiers',
     assert.equal(/\brequire\(/.test(text), false, `${file} uses require()`);
     assert.equal(/\bprocess\.|__dirname|Buffer\b/.test(text), false, `${file} touches a Node global`);
     for (const specifier of specifiersOf(file)) {
-      assert.ok(specifier.startsWith('./'), `${file}: non-sibling specifier ${specifier}`);
+      assert.ok(
+        specifier.startsWith('./') || specifier.startsWith('../'),
+        `${file}: non-relative specifier ${specifier}`,
+      );
       assert.ok(specifier.endsWith('.js'), `${file}: specifier ${specifier} should be rewritten to .js`);
+      // Every specifier resolves to something the build emitted, with one
+      // allowed exception: alc's, which the page supplies and the build
+      // deliberately does not. Asserting the resolved path rather than the
+      // literal `'./alc.js'` keeps this true if src/ ever gains a
+      // subdirectory, where the right specifier is `'../alc.js'`.
+      const target = resolve(dirname(join(PKG_DIR, file)), specifier);
+      assert.ok(
+        alcPositions.includes(target) || existsSync(target),
+        `${file}: ${specifier} resolves to ${target}, which the build did not emit`,
+      );
     }
   }
 });
