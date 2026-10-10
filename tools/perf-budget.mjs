@@ -151,7 +151,19 @@ function nameIndexFiles() {
   if (!existsSync(indexPath)) {
     fail('performance budget', [`${rel(indexPath)} does not exist. Run \`npm run build\` first.`]);
   }
-  const descriptor = JSON.parse(readFileSync(indexPath, 'utf8')).nameIndex ?? {};
+  const descriptor = JSON.parse(readFileSync(indexPath, 'utf8')).nameIndex;
+
+  // A build that declares no name index has nothing here to measure, and that
+  // is a fact about the build rather than a failure — `main` is such a build
+  // today, with no app.js step 1 and no assets/labels. It is reported, loudly,
+  // in the detail block and in the JSON, because an omission nobody could see
+  // is the whole of DOG-80 and a silent zero would recreate it.
+  if (descriptor === undefined || descriptor === null) return [];
+
+  // A descriptor that exists but is not one this understands is different: the
+  // build has a name index and this gate cannot find it, so measuring the
+  // critical path without it would be the DOG-80 defect with the evidence
+  // sitting right there.
   if (descriptor.source !== 'asset') {
     fail('performance budget', [
       `The atlas index declares name index source ${JSON.stringify(descriptor.source ?? null)}, not "asset".`,
@@ -159,7 +171,9 @@ function nameIndexFiles() {
       `This gate measures the name index because app.js builds it on the critical`,
       `path, and it finds it through this descriptor rather than by hardcoding a`,
       `path. A source this does not understand means the critical-path measurement`,
-      `would silently omit the name index again, which is the DOG-80 defect.`,
+      `would silently omit the name index again, which is the DOG-80 defect. If this`,
+      `build genuinely has no name index, omit the \`nameIndex\` key rather than`,
+      `declaring a source, and the line will say so instead of failing.`,
     ]);
   }
   const paths = [descriptor.namesPath, descriptor.coveringsPath].map((p) =>
@@ -238,7 +252,9 @@ const indexParseMs = (() => {
     let sink = 0;
     for (const text of dataSources) sink += indexLookups(JSON.parse(text));
     // Step 1 of app.js, with the documents the build actually emitted.
-    sink += buildNameIndex(joinNameIndex(JSON.parse(namesText), JSON.parse(coveringsText))).structures.length;
+    if (namesText !== undefined) {
+      sink += buildNameIndex(joinNameIndex(JSON.parse(namesText), JSON.parse(coveringsText))).structures.length;
+    }
     const dt = performance.now() - t0;
     if (!Number.isFinite(sink) || sink <= 0) throw new Error('index parse produced nothing');
     best = Math.min(best, dt);
@@ -246,8 +262,9 @@ const indexParseMs = (() => {
   return best;
 })();
 
-/** Structures and cells in the index just measured, for the report. */
+/** Structures and cells in the index just measured, or null if the build has none. */
 const nameIndexScale = (() => {
+  if (nameIndexPaths.length === 0) return null;
   const doc = JSON.parse(readFileSync(nameIndexPaths[1], 'utf8'));
   const coverings = doc.coverings ?? [];
   return { structures: coverings.length, cells: coverings.reduce((n, s) => n + (s.cells?.length ?? 0), 0) };
@@ -510,8 +527,11 @@ const detail = [
   `reference: ${budget.referenceMachine.label}, ${downlinkMbps} Mbit/s, ${rttMs} ms RTT`,
   ...calibrationNote,
   `raw parse: index ${indexParseMs.toFixed(1)} ms, assets ${assetParseMs.toFixed(1)} ms on this machine`,
-  `  the index term includes the name index app.js builds on the critical path:`
-    + ` ${nameIndexScale.structures} structures, ${nameIndexScale.cells} cells`,
+  nameIndexScale === null
+    ? `  NAME INDEX NOT IN THIS BUILD: the atlas index declares none, so the index term`
+      + ` is data/*.json only and says nothing about app.js step 1.`
+    : `  the index term includes the name index app.js builds on the critical path:`
+      + ` ${nameIndexScale.structures} structures, ${nameIndexScale.cells} cells`,
   `files: ${bundleFiles.length} bundle, ${indexFiles.length} index (${nameIndexPaths.length} of them the name index), ${assetFiles.length} asset`,
   ...(calibrationOverrideMs !== null
     ? [
@@ -564,7 +584,9 @@ const report = {
   raw: { indexParseMs, assetParseMs },
   // The index parse term is not just JSON.parse any more, so what it covered is
   // part of the report rather than something a reader has to infer from a key.
-  nameIndex: { ...nameIndexScale, files: nameIndexPaths.map((p) => rel(p)), countedAs: 'index' },
+  nameIndex: nameIndexScale === null
+    ? { measured: false, reason: 'the atlas index declares no name index in this build' }
+    : { measured: true, ...nameIndexScale, files: nameIndexPaths.map((p) => rel(p)), countedAs: 'index' },
   // `null` for a line this run could not establish. Never a zero, never a pass,
   // and deliberately not the bound: off-band these keys are named for a
   // normalised figure that was not computed, so publishing the unnormalised

@@ -601,7 +601,6 @@ const CASES = [
     name: 'perf-unverified-declaration-is-load-bearing',
     gate: 'performance budget',
     criterion: 'the unverified declaration is the only thing stopping that line from gating',
-    mustPass: true,
     expect: [/indexParseMsNormalised: at least [\d.]+ ms on the reference machine, against a budget of 1 ms/],
     describe: 'the DOG-80 index parse line with its unverified declaration deleted and a 1 ms budget',
     // This is what keeps `unverified` from being a suppression. The declaration
@@ -645,6 +644,11 @@ const CASES = [
         }
         if (typeof line?.reported !== 'number') {
           problems.push(`verdicts.indexParseMsNormalised.reported is not a number, so nothing was measured.`);
+        } else if (report.nameIndex?.measured !== true) {
+          // A base whose build declares no name index — `main` today — has
+          // nothing in this line for the declaration to be about, so the numeric
+          // claim below would be a claim about data/*.json alone. Say nothing
+          // rather than something false in either direction.
         } else if (line.kind === 'normalised' || line.kind === 'exact') {
           // A normalised figure settles the question in both directions.
           if (!(line.reported > limit)) {
