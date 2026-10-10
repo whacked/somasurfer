@@ -164,8 +164,8 @@ work inside `covering()` brings the row under 40 ms either. What to do about it
 is a product decision — see `clearedBy` in the budget file for the three
 options — and not something this gate can settle.
 
-**This is not a suppression, and two must-pass cases in `tools/verify-gates.mjs`
-are what make that true rather than merely claimed:**
+**This is not a suppression, and three cases in `tools/verify-gates.mjs` are
+what make that true rather than merely claimed:**
 
 - `perf-unverified-declaration-is-load-bearing` deletes the declaration, drops
   the limit to 1 ms, and requires the line to go **red** — so with the
@@ -177,13 +177,22 @@ are what make that true rather than merely claimed:**
   The limit is dropped on purpose. Requiring red at the real 40 ms made the
   case's colour depend on whether the runner's raw index parse happened to land
   above 40 ms, which wandered between 38 ms and 66 ms on one machine and made
-  the case pass and fail alternately. The structural claim is deterministic; the
-  numeric one is not, so they are asserted separately. The same case's `audit`
-  carries the numeric half **one-sidedly**: it requires the line to be over its
-  real limit whenever the run produced a normalised figure, and claims nothing
-  when the runner is off-band and the figure is only a bound. That is the check
-  which goes red the day somebody takes the name index off the critical path and
-  forgets to delete the declaration with it.
+  the case pass and fail alternately. A must-pass case whose red is a coin flip
+  is worse than no case, so the deterministic structural claim is asserted here
+  and the measurement is asserted separately below.
+- `perf-unverified-line-is-over-its-real-limit` breaks **nothing** and asserts
+  against the tree as committed: the line reports `UNVERIFIED`, and it really is
+  over the 40 ms it is declared against. The numeric half is **one-sided** — it
+  requires over-budget whenever the run produced a normalised figure, and claims
+  nothing when the runner is off-band and the figure is only a bound, or when
+  the build declares no name index at all. This is the check that goes red the
+  day somebody takes the name index off the critical path and forgets to delete
+  the declaration with it.
+
+  It is a separate case rather than the previous one's `audit` for a reason worth
+  knowing if you extend this file: **`audit` runs while that case's breakage is
+  still staged**, so an audit there inspects a budget file with the declaration
+  already deleted. The first draft asserted the verdict it had just removed.
 - `perf-unverified-needs-a-stated-reason` empties the `reason` and requires the
   gate to **fail naming the line**. Without it, `"unverified": {}` would be a
   one-line way to turn any budget line off with no sentence attached.
