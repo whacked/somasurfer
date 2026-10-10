@@ -6,14 +6,21 @@
  * one-IIFE-per-module single file, same self-verification, no bundler. Read
  * that script first; this header only records the three things that differ.
  *
- * Two outputs, the same shape alc emits:
+ * Three outputs, the same shape alc emits:
  *
  *   dist/esm/**.js             one file per module, `.ts` specifiers rewritten
  *                              to `.js`. The module graph still matches source.
  *   dist/atlas-research.js     a single ESM file for a plain
- *                              `<script type="module">`, which is what
- *                              `packages/atlas-web/build.mjs` can substitute
- *                              the way it already substitutes dist/app/alc.js.
+ *                              `<script type="module">`: the whole package,
+ *                              which is what `exports['.'].browser` and
+ *                              `exports['./bundle']` advertise.
+ *   dist/atlas-research.viewer.js
+ *                              the same, built from `src/index.viewer.ts` —
+ *                              only the names the viewer imports, and so only
+ *                              the modules those reach. This is the one
+ *                              `packages/atlas-web/build.mjs` substitutes for
+ *                              `src/atlas-research.js`, the way it already
+ *                              substitutes dist/app/alc.js.
  *
  * ## 1. `@gstack/alc` is external, not inlined
  *
@@ -44,6 +51,40 @@
  * inside its own package — an error that names a command that then fails from
  * the repo root. `npm run ci` runs from the repo root, so this one anchors on
  * `import.meta.dirname`.
+ *
+ * ## 4. Two entries, and what `verify()` now asserts instead of equality
+ *
+ * The page imports three of the package's 24 exports. Serving it the whole
+ * package costs 9.0 KiB of gzip against a 150 KiB `bundleGzipBytes` budget
+ * that was reading 98%, so the bundle the page loads is built from
+ * `src/index.viewer.ts` instead — see that file for the three names and for
+ * the failure mode this introduces.
+ *
+ * `moduleOrder()` below already walks reachability from whatever entry it is
+ * given, so the trim needs no bundler logic anywhere: a smaller entry is a
+ * smaller graph. `browse.ts` and `layers.ts` were in the shipped bundle for
+ * one reason, that `index.ts` re-exports them.
+ *
+ * What the trim does change is this script's central invariant. It used to
+ * assert that every output exports exactly what `src/index.ts` does, which is
+ * what kept the suite and the browser on one module graph. The two graphs now
+ * differ in EXTENT by design, so that equality is the wrong statement — and
+ * deleting it is the wrong answer. It becomes three statements:
+ *
+ *   - each output exports exactly what the entry IT was built from exports,
+ *     which is the same check against the module that describes that output;
+ *   - `index.viewer.ts`'s exports are a PROPER subset of `index.ts`'s, and
+ *     each one is the same binding by identity, so the browser's surface is
+ *     drawn from the full graph rather than reimplemented beside it — and a
+ *     viewer entry that has quietly grown back to the full surface, which
+ *     would spend the headroom again, fails here;
+ *   - every output still resolves the fixture dataset mapping-for-mapping
+ *     identically to the TypeScript source. That one is unchanged, and it is
+ *     why a narrower surface is not a different answer.
+ *
+ * The fourth statement — that no viewer module imports a name this entry does
+ * not export — cannot be made here, because this package cannot see the
+ * viewer. It is in `packages/atlas-web/build.mjs`, over the emitted tree.
  */
 
 import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
@@ -58,6 +99,10 @@ const ESM = join(DIST, 'esm');
 const ENTRY = join(SRC, 'index.ts');
 const BUNDLE = join(DIST, 'atlas-research.js');
 const ESM_ENTRY = join(ESM, 'index.js');
+
+/** The viewer's three names, and the bundle built from them. See note 4. */
+const VIEWER_ENTRY = join(SRC, 'index.viewer.ts');
+const VIEWER_BUNDLE = join(DIST, 'atlas-research.viewer.js');
 
 /** The one module that is not inlined. */
 const ALC_SOURCE = resolvePath(PKG, '..', 'alc', 'src', 'index.ts');
@@ -226,8 +271,16 @@ function buildEsm() {
 // Output 2: single-file ESM bundle
 // ---------------------------------------------------------------------------
 
-async function buildBundle() {
-  const { order, sources } = moduleOrder(ENTRY);
+/**
+ * One single-file ESM bundle, from `entry`, to `bundlePath`.
+ *
+ * Parameterised over the entry because the page and the package want different
+ * extents of the same graph; see note 4. Everything else — the rewrite, the
+ * alc boundary, the module scopes — is identical for both, deliberately: two
+ * bundles from one code path cannot differ in the rewrite, only in reach.
+ */
+async function buildBundle(entry, bundlePath, surface) {
+  const { order, sources } = moduleOrder(entry);
 
   // Export names come from importing each module, so they are whatever the
   // runtime actually exports — not whatever a regex guessed from the source.
@@ -242,14 +295,13 @@ async function buildBundle() {
   const alcUsed = new Map(); // name -> first file that imports it
   let alcSites = 0;
 
-  const alcSpecifier = relativeSpecifier(dirname(BUNDLE), ALC_AT_BUNDLE);
+  const alcSpecifier = relativeSpecifier(dirname(bundlePath), join(dirname(bundlePath), ALC_FILENAME));
 
   const chunks = [
     '/**',
-    ' * @gstack/atlas-research — the research layer: papers, findings, region',
-    ' * mappings, both browse modes, and the solid-colour data path.',
+    ` * @gstack/atlas-research — ${surface}`,
     ' *',
-    ' * Generated by scripts/build.mjs from the TypeScript source. Do not edit.',
+    ` * Generated by scripts/build.mjs from ${relative(PKG, entry)}. Do not edit.`,
     ' * One IIFE per source module, in dependency order; see the build script for',
     ' * why the module scopes are preserved rather than hoisted.',
     ' *',
@@ -310,14 +362,22 @@ async function buildBundle() {
     );
   }
 
-  const entryNames = exportNames.get(ENTRY);
-  chunks.push(`const { ${entryNames.join(', ')} } = ${moduleId(ENTRY)};`);
+  const entryNames = exportNames.get(entry);
+  chunks.push(`const { ${entryNames.join(', ')} } = ${moduleId(entry)};`);
   chunks.push(`export { ${entryNames.join(', ')} };`);
   chunks.push('');
 
-  mkdirSync(DIST, { recursive: true });
-  writeFileSync(BUNDLE, chunks.join('\n'));
-  return { modules: order.length, exports: entryNames.length, alcSites, alcNames: alcUsed.size, alcSpecifier };
+  mkdirSync(dirname(bundlePath), { recursive: true });
+  writeFileSync(bundlePath, chunks.join('\n'));
+  return {
+    output: relative(PKG, bundlePath),
+    modules: order.length,
+    exports: entryNames.length,
+    alcSites,
+    alcNames: alcUsed.size,
+    alcSpecifier,
+    bytes: statSync(bundlePath).size,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -410,10 +470,79 @@ async function compareBehaviour(source, built, label) {
   return { resolved: resolvedInWhole, movedToUnknown: nowUnknown };
 }
 
+const runtimeNames = (module) => Object.keys(module).filter((name) => name !== 'default').sort();
+
+/**
+ * The viewer entry is a NARROWING of `src/index.ts`, not a second API.
+ *
+ * Checked by identity rather than by name, because a name check would be
+ * satisfied by a reimplementation — and the whole argument for serving a
+ * subset is that it is the same code, reached through a shorter path. The
+ * properness of the subset is checked too: an `index.viewer.ts` that has grown
+ * back to the full surface would silently re-spend the `bundleGzipBytes`
+ * headroom this file exists to recover, and would be green on every other
+ * check here.
+ */
+async function verifyViewerSurface() {
+  const full = await import(pathToFileURL(ENTRY).href);
+  const viewer = await import(pathToFileURL(VIEWER_ENTRY).href);
+  const fullNames = runtimeNames(full);
+  const viewerNames = runtimeNames(viewer);
+
+  if (viewerNames.length === 0) throw new Error(`${relative(PKG, VIEWER_ENTRY)} exports nothing at runtime`);
+
+  const extra = viewerNames.filter((name) => !fullNames.includes(name));
+  if (extra.length > 0) {
+    throw new Error(
+      `${relative(PKG, VIEWER_ENTRY)} exports ${extra.join(', ')}, which src/index.ts does not.\n`
+      + '  The entry the browser gets must be a subset of the package, not a surface beside it:\n'
+      + '  a name only the browser has is a name the suite never runs.',
+    );
+  }
+
+  const rebound = viewerNames.filter((name) => viewer[name] !== full[name]);
+  if (rebound.length > 0) {
+    throw new Error(
+      `${relative(PKG, VIEWER_ENTRY)} exports ${rebound.join(', ')} as a different binding from `
+      + 'src/index.ts.\n'
+      + '  Re-export the name from the module index.ts takes it from; do not restate the\n'
+      + '  implementation, or the browser runs code the suite does not.',
+    );
+  }
+
+  if (viewerNames.length >= fullNames.length) {
+    throw new Error(
+      `${relative(PKG, VIEWER_ENTRY)} exports all ${viewerNames.length} of src/index.ts's names, so the `
+      + 'bundle the page loads is the whole package again.\n'
+      + '  That is the state this entry exists to avoid: it costs ~9 KiB of gzip against a\n'
+      + '  bundleGzipBytes budget that was reading 98%. Either narrow it again, or say on the\n'
+      + '  record that the viewer genuinely needs the full surface and delete this entry.',
+    );
+  }
+
+  return { viewerNames, fullNames };
+}
+
 async function verify() {
   const source = await import(pathToFileURL(ENTRY).href);
-  const expected = Object.keys(source).filter((name) => name !== 'default').sort();
-  if (expected.length === 0) throw new Error('src/index.ts exports nothing at runtime');
+  if (runtimeNames(source).length === 0) throw new Error('src/index.ts exports nothing at runtime');
+
+  const surface = await verifyViewerSurface();
+
+  /**
+   * Each output, paired with the entry that describes what it exports.
+   *
+   * The pairing is the restated invariant: equality against `src/index.ts` was
+   * right while every output had the same extent, and is wrong now that the
+   * viewer bundle deliberately does not. Equality against the output's OWN
+   * entry is the same check, kept exact, against the module that makes the
+   * claim.
+   */
+  const outputs = [
+    [BUNDLE, ALC_AT_BUNDLE, ENTRY],
+    [VIEWER_BUNDLE, ALC_AT_BUNDLE, VIEWER_ENTRY],
+    [ESM_ENTRY, ALC_AT_ESM, ENTRY],
+  ];
 
   // The outputs import alc from an `alc.js` of their own, which under Node is
   // this shim: a re-export of the very module the source graph imports, so
@@ -424,21 +553,20 @@ async function verify() {
   const shims = [];
   const report = [];
   try {
-    for (const [output, alcAt] of [
-      [BUNDLE, ALC_AT_BUNDLE],
-      [ESM_ENTRY, ALC_AT_ESM],
-    ]) {
+    for (const [output, alcAt, entry] of outputs) {
       writeFileSync(alcAt, shimText);
       shims.push(alcAt);
 
+      const expected = runtimeNames(await import(pathToFileURL(entry).href));
       const label = relative(PKG, output);
       const built = await import(pathToFileURL(output).href);
-      const got = Object.keys(built).filter((name) => name !== 'default').sort();
+      const got = runtimeNames(built);
       if (got.join(',') !== expected.join(',')) {
         const missing = expected.filter((n) => !got.includes(n));
         const extra = got.filter((n) => !expected.includes(n));
         throw new Error(
-          `${label} export mismatch; missing: ${missing.join(', ') || 'none'}; extra: ${extra.join(', ') || 'none'}`,
+          `${label} export mismatch against ${relative(PKG, entry)}; `
+          + `missing: ${missing.join(', ') || 'none'}; extra: ${extra.join(', ') || 'none'}`,
         );
       }
 
@@ -460,23 +588,41 @@ async function verify() {
   } finally {
     for (const shim of shims) rmSync(shim, { force: true });
   }
-  return report;
+  return { report, surface };
 }
 
 // ---------------------------------------------------------------------------
 
 rmSync(DIST, { recursive: true, force: true });
 const esmFiles = buildEsm();
-const bundle = await buildBundle();
-const report = await verify();
+const bundles = [
+  await buildBundle(
+    ENTRY,
+    BUNDLE,
+    'the research layer: papers, findings, region mappings, both browse modes,\n'
+    + ' * and the solid-colour data path.',
+  ),
+  await buildBundle(
+    VIEWER_ENTRY,
+    VIEWER_BUNDLE,
+    'the subset the viewer imports. Not the whole package; see\n'
+    + ' * src/index.viewer.ts for which names, and why the page is served this instead.',
+  ),
+];
+const { report, surface } = await verify();
 
-const bytes = statSync(BUNDLE).size;
 console.log(`dist/esm                 ${esmFiles} modules`);
+for (const b of bundles) {
+  console.log(
+    `${b.output.padEnd(24)} ${b.modules} modules, ${b.exports} exports, ${(b.bytes / 1024).toFixed(1)} kB`,
+  );
+}
+// One line per bundle would be the same sentence twice: the alc boundary is a
+// property of the rewrite, which both bundles share by construction.
+const [{ alcSites, alcNames, alcSpecifier }] = bundles;
+console.log(`@gstack/alc              external: ${alcSites} import site(s), ${alcNames} names, from '${alcSpecifier}'`);
 console.log(
-  `dist/atlas-research.js   ${bundle.modules} modules, ${bundle.exports} exports, ${(bytes / 1024).toFixed(1)} kB`,
-);
-console.log(
-  `@gstack/alc              external: ${bundle.alcSites} import site(s), ${bundle.alcNames} names, `
-  + `from '${bundle.alcSpecifier}'`,
+  `src/index.viewer.ts      ${surface.viewerNames.length} of src/index.ts's ${surface.fullNames.length} exports, `
+  + `same bindings: ${surface.viewerNames.join(', ')}`,
 );
 for (const line of report) console.log(`verified      ${line}`);
