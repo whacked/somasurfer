@@ -58,12 +58,24 @@ const REPO_ROOT = dirname(dirname(PACKAGE_ROOT));
  * Preference order rather than a single path, because which one is "the"
  * dataset is DOG-37's call to change and should not need a change here.
  */
-export const RESEARCH_DATA_DIRS = [
-  join(REPO_ROOT, 'packages', 'atlas-research', 'data'),
-  join(REPO_ROOT, 'packages', 'atlas-research', 'fixtures'),
-];
-/** Kept as the first entry's alias for callers that want to name the location. */
-export const RESEARCH_FIXTURE_DIR = RESEARCH_DATA_DIRS[1];
+export const RESEARCH_DATA_DIRS = process.env.ATLAS_QA_RESEARCH_DIR
+  // One directory, and only this one, when the variable is set.
+  //
+  // The seam exists for a single must-pass case: that a fixture which will not
+  // load exits 2 and prints UNVERIFIED rather than throwing. Proving that needs
+  // a BROKEN pair of documents on disk, and the committed ones are not broken —
+  // so without a way to point the loader somewhere else the case could only be
+  // written as an assertion about the source text of `bin/qa-journey.mjs`,
+  // which would pass against a rewrite that reintroduced the crash. It is
+  // deliberately one directory rather than a prepend: a test that silently
+  // falls through to the real data is a test that proves nothing.
+  ? [process.env.ATLAS_QA_RESEARCH_DIR]
+  : [
+    join(REPO_ROOT, 'packages', 'atlas-research', 'data'),
+    join(REPO_ROOT, 'packages', 'atlas-research', 'fixtures'),
+  ];
+/** Kept as the last entry's alias for callers that want to name the location. */
+export const RESEARCH_FIXTURE_DIR = RESEARCH_DATA_DIRS[RESEARCH_DATA_DIRS.length - 1];
 export const OWN_FIXTURE_PATH = join(PACKAGE_ROOT, 'fixtures', 'journey-5papers.json');
 
 /**

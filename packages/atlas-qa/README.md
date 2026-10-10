@@ -213,10 +213,51 @@ asserting against a known input.
 
 `FIXTURE_REQUIREMENTS` checks a fixture can actually *pose* each question — two
 papers sharing a region, a paper reaching outside one region, a finding with no
-spatial detail, a cell claimed by more than one structure. A fixture missing one
-makes the affected step `unverified`, **not** `pass`. That distinction is the
-whole file: "the build got this wrong" and "nothing here could have tested it"
-must never print the same.
+spatial detail, a cell claimed by more than one structure, two *painted* body
+structures. A fixture missing one makes the affected step `unverified`, **not**
+`pass`. That distinction is the whole file: "the build got this wrong" and
+"nothing here could have tested it" must never print the same.
+
+### Two indexes, and they are not interchangeable
+
+A real-corpus run reads **two** structure indexes, and conflating them was how
+the loader came to measure papers against cells nobody had measured:
+
+| index | what it is | what it answers |
+| --- | --- | --- |
+| the **research** list (`data/names-seed.json`) | the structures findings map to. `synthetic: true`: 66 of its 80 are brain parcels whose cells a seed script **invented**, and there is no real index in any frame to replace them with (`docs/asset-licensing.md`: "There is no BV name index") | which regions a paper maps |
+| the **anatomical** index (`atlas-assets/labels/names.json` + `coverings.json`, joined by id) | the 57 real body structures the **page** binds, cells sampled from BodyParts3D meshes | ranked names, containment fractions, what a selection draws |
+
+`anatomyIndexInput()` returns the second when the tree has it. The fourteen ids
+that appear in both are painted from it — `names-seed.json` ends with that
+instruction verbatim — and `oracleNotes()` prints the split next to the verdict,
+because "§7 passed against the 30-paper corpus" and "…with 66 of its structures
+carrying invented cells" are different results.
+
+### An empty covering is admissible
+
+A structure with a real id, the index's own term and **no cells** is *named
+here, painted elsewhere*. It is a first-class state, distinct from
+`unknown-structure`, and it is what the fourteen crosswalked body structures are
+on a branch without the asset package. What it costs is that it cannot be a
+click target: no address to select, no cell to draw. So `planJourney` prefers a
+painted structure the bound anatomical index also names, and a step left with
+only an empty one reports `unverified` **naming the structure and the index that
+does not carry it**.
+
+What is still refused, loudly: a missing `cells` key, and a document in which
+*every* structure is empty — that is `names.json` loaded without
+`coverings.json`, and it would report every mapping as `empty-covering` as
+though the curation were at fault.
+
+### A fixture that will not load is `UNVERIFIED`, not a failure
+
+`tryResolveFixture()` returns the reason instead of throwing it, and the CLI
+exits **2**. Exit 1 is a claim about the product or about the harness's own
+consistency; "I could not read the input" is neither. `--strict` does not
+upgrade it, because nothing was put to the build. This replaced an uncaught
+throw from module scope that exited 1 with no report and took forty unrelated
+rows down with it.
 
 ---
 
@@ -231,8 +272,8 @@ must never print the same.
 | `src/referenceViewer.ts` | the conformant stand-in that makes the suite executable |
 | `src/mutants.ts` | thirteen broken builds and what must catch each |
 | `src/templates.ts` | the templates harness and build must agree on |
-| `src/fixture.ts` | fixture loading, pinning, and the curated-schema adapter |
-| `test/` | the 56 gates that work with no viewer in existence |
+| `src/fixture.ts` | fixture loading, pinning, the curated-schema adapter and the anatomical-index join |
+| `test/` | the 74 gates that work with no viewer in existence |
 | `bin/qa-journey.mjs` | the CLI task 7 executes |
 
 ## What is *not* here
