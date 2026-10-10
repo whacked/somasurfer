@@ -257,7 +257,14 @@ export class ReferenceViewer implements ViewerDriver {
 
     this.views = { body: freshView('body'), brain: freshView('brain') };
     this.stashedBodyView = null;
-    this.atlas = 'body';
+    // Rule 1 of `docs/deep-link-atlas-rule.md`: the `atlas` parameter decides
+    // the atlas, and an unknown or absent value means the default. Until DOG-72
+    // this was not read at all — the atlas was inferred from the address's
+    // frame instead, so a link naming its atlas and a link merely implying one
+    // were indistinguishable here, and the round trip plan §7 requires was
+    // covered only through the in-app `openBrainAtlas()` path.
+    const asked = params.get('atlas');
+    this.atlas = asked === 'brain' || asked === 'body' ? asked : 'body';
     this.acceptedAddress = null;
     this.filter = null;
     this.selectedPapers = [];

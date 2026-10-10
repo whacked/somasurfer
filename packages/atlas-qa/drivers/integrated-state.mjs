@@ -316,7 +316,16 @@ export default async function createDriver(options = {}) {
     // happen. `app.js` draws and flies here, with no `elsewhere` guard, and a
     // driver that quietly corrected that would turn a real defect into a green
     // row. It is DOG-75; the matrix row is red until it lands.
-    if (sel?.ok && sel.elsewhere) {
+    //
+    // Not when the build cannot realise the address at all. This selection
+    // model stays `ok` and still resolves names when the brain template is
+    // missing or the frame ships disabled, so `elsewhere` is set there too —
+    // and "open the brain atlas" is not a route forward into an atlas that has
+    // no template to draw in. Those are the two codes the contract pairs
+    // `cross_atlas_offer` against, and conflating them is what that pairing
+    // exists to prevent.
+    const unrealisable = messages.some((m) => m.code === 'no_template' || m.code === 'frame_disabled');
+    if (sel?.ok && sel.elsewhere && !unrealisable) {
       messages.push({
         code: 'cross_atlas_offer',
         severity: 'notice',
