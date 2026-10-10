@@ -626,9 +626,30 @@ const CASES = [
       requireBuild();
       return withUnverified('indexParseMsNormalised', null, 1);
     },
-    // The numeric half, gated only in the direction the run can settle. This is
-    // also the check that goes red the day somebody takes the name index off the
-    // critical path and forgets to delete the declaration with it.
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
+  {
+    name: 'perf-unverified-line-is-over-its-real-limit',
+    gate: 'performance budget',
+    criterion: 'the declared line is really over the budget it is declared against',
+    mustPass: true,
+    expect: [
+      /UNVERIFIED, MEASURED BUT NOT GATED:/,
+      /indexParseMsNormalised: (?:at least |at most )?[\d.]+ ms.*NOT GATED\./,
+    ],
+    describe: 'the tree as committed, with nothing broken',
+    // The numeric half of the case above, and it has to be a separate case
+    // because `audit` runs while that one's breakage is still staged — it would
+    // be inspecting a budget file with the declaration already deleted, and the
+    // first draft did exactly that and asserted the verdict it had just removed.
+    //
+    // Nothing is broken here. The claim is about the tree as committed: the line
+    // really is over the 40 ms it is declared against, so the declaration is
+    // carrying a real failure rather than hiding an absent one.
+    break: () => {
+      requireBuild();
+      return () => {};
+    },
     audit: () => {
       const dir = mkdtempSync(join(tmpdir(), 'perf-unverified-'));
       const path = join(dir, 'perf.json');
@@ -650,7 +671,9 @@ const CASES = [
           // claim below would be a claim about data/*.json alone. Say nothing
           // rather than something false in either direction.
         } else if (line.kind === 'normalised' || line.kind === 'exact') {
-          // A normalised figure settles the question in both directions.
+          // A normalised figure settles the question in both directions. Off-band
+          // the figure is a one-sided bound and under the limit it proves
+          // nothing, so nothing is claimed — the rule the gate uses on itself.
           if (!(line.reported > limit)) {
             problems.push(
               `indexParseMsNormalised measured ${line.reported.toFixed(1)} ms against its ${limit} ms budget,`
@@ -660,14 +683,12 @@ const CASES = [
             problems.push(`  delete the block and let the line gate again.`);
           }
         }
-        // Off-band the figure is a one-sided bound. Under the limit it proves
-        // nothing, so nothing is claimed — the same rule the gate itself uses.
         return problems;
       } finally {
         rmSync(dir, { recursive: true, force: true });
       }
     },
-    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+    check: () => run('perf-budget.mjs'),
   },
   {
     name: 'perf-unverified-needs-a-stated-reason',
