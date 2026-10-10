@@ -22,6 +22,12 @@
  *   printed on every run rather than papered over, and docs/performance-budget.md
  *   says what it will take to close it.
  *
+ * A line that passes with almost no room left is reported too, as TIGHT. That
+ * is not a verdict and cannot fail a build; it is there because "green" and
+ * "green with 3.6 KB of 150 KiB left" are not the same state, and the gate used
+ * to print them identically. The threshold is `headroom.warnAtFraction` in the
+ * budget file, which explains what it is for.
+ *
  * Parse times are normalised by a calibration workload so a fast or slow
  * runner does not silently move the gate. Raw numbers are always reported too.
  *
@@ -248,6 +254,25 @@ const isBytes = (key) => key.endsWith('Bytes');
 const fmt = (key, v) => (isBytes(key) ? `${(v / 1024).toFixed(1)} KiB` : `${v.toFixed(0)} ms`);
 
 /**
+ * The fraction of a limit past which a passing line is reported as tight.
+ *
+ * Required rather than defaulted, for the reason an unclassified budget line
+ * fails above: a number that decides what the gate says about a 98%-full budget
+ * is not something to infer silently from its absence.
+ */
+const warnAtFraction = budget.headroom?.warnAtFraction;
+if (!(warnAtFraction > 0 && warnAtFraction <= 1)) {
+  fail('performance budget', [
+    `ci/performance-budget.json needs headroom.warnAtFraction, a number in (0, 1].`,
+    `Got ${JSON.stringify(budget.headroom?.warnAtFraction)}.`,
+    ``,
+    `It is the fraction of a limit past which a line that still passes is reported`,
+    `as nearly full. It gates nothing and fails nothing; it is how the cost of`,
+    `filling a budget reaches the change that fills it rather than the next one.`,
+  ]);
+}
+
+/**
  * What a line's number is allowed to prove.
  *
  *   exact       both directions. The bytes are the bytes.
@@ -266,9 +291,26 @@ const kindOf = (key) => {
 
 const SIGIL = { exact: ' ', normalised: ' ', 'at-least': '≥', 'at-most': '≤' };
 
+/**
+ * Whether a line's figure can show that the line is nearly full.
+ *
+ * `exact` and `normalised` figures *are* the occupancy, so they settle it.
+ * `at-least` is a lower bound on it: the reference machine pays at least this
+ * much, so a reading near the limit can only understate how full the line is
+ * and reporting it as tight is sound.
+ *
+ * `at-most` is the one kind that cannot. It is an upper bound, so a reading at
+ * 95% of the limit is consistent with true occupancy of 5%, and calling that
+ * tight would be inventing a shortage out of a slow runner. Lines like that are
+ * left alone — the same rule as the verdicts above, applied to the same bounds.
+ */
+const canShowTight = (kind) => kind !== 'at-most';
+
 const rows = [];
 const over = [];
 const notEvaluated = [];
+const tight = [];
+const tightLines = [];
 const verdicts = {};
 
 for (const [key, spec] of Object.entries(budget.budgets)) {
@@ -297,12 +339,30 @@ for (const [key, spec] of Object.entries(budget.budgets)) {
   // a measurement of the line the key is named after.
   verdicts[key] = { kind, verdict, reported: value };
 
+  // Nearly full, but not over: a passing line with little room left. Deliberately
+  // not part of the verdict above — nothing about the build's acceptability turns
+  // on it, only what the run says out loud.
+  const isTight = !exceeds && canShowTight(kind) && used >= warnAtFraction;
+
   rows.push(
     `${key.padEnd(30)} ${(SIGIL[kind] + fmt(key, value)).padStart(13)} / ${fmt(key, spec.limit).padStart(12)}` +
-      `  ${(used * 100).toFixed(0).padStart(4)}% ${verdict === 'over' ? 'OVER' : verdict === 'not evaluated' ? 'not evaluated' : ''}`,
+      `  ${(used * 100).toFixed(0).padStart(4)}% ${verdict === 'over' ? 'OVER' : verdict === 'not evaluated' ? 'not evaluated' : ''}` +
+      `${isTight ? ' TIGHT' : ''}`,
   );
 
   if (verdict === 'not evaluated') notEvaluated.push(key);
+
+  if (isTight) {
+    // `at-least` lines know a floor on what is spent, so what is *left* is a
+    // ceiling. Both figures are hedged in the direction the bound allows.
+    const atLeast = kind === 'at-least';
+    tight.push(key);
+    tightLines.push(
+      `  ${key}: ${atLeast ? 'at least ' : ''}${(used * 100).toFixed(0)}% of ${fmt(key, spec.limit)}, ` +
+        `${atLeast ? 'at most ' : ''}${fmt(key, spec.limit - value)} left`,
+    );
+    tightLines.push(`    covers: ${spec.covers}`);
+  }
 
   if (verdict === 'over') {
     const claim =
@@ -366,6 +426,21 @@ const detail = [
         ``,
       ]
     : []),
+  // Said on a passing run, which is the only kind of run it can be said on.
+  // A line this full is a fact about the build that the pass/fail verdict has
+  // no way to carry.
+  ...(tight.length > 0
+    ? [
+        `TIGHT — within ${((1 - warnAtFraction) * 100).toFixed(0)}% of the limit, passing but nearly full:`,
+        ...tightLines,
+        `This is not a failure and not a limit: no verdict and no exit status changed.`,
+        `The room on these lines is nearly spent, and the next addition to one of them`,
+        `is what turns this build red — for whoever makes it, not for whoever spent`,
+        `the room. Recover some, or spend what is left deliberately. Do not raise the`,
+        `limit to fit: docs/performance-budget.md, "Changing a budget".`,
+        ``,
+      ]
+    : []),
   `NOT MEASURED: the same two derived numbers in a real browser. That needs the`,
   `viewer and a headless browser in CI. Until then the ${budget.renderAllowanceMs.value} ms render allowance`,
   `in derivedFirstInteractionMs is a stated placeholder, not an observation.`,
@@ -407,6 +482,12 @@ const report = {
   // reading a bound as if it were a measurement.
   verdicts,
   notEvaluated,
+  // Lines that pass with little room left. Advisory by construction: a consumer
+  // deciding whether the build is acceptable reads `verdicts`, and will find
+  // nothing here that contradicts it. `tight` lists only lines whose figure can
+  // establish fullness, so an `at-most` line is never in it however high its
+  // utilisation reads.
+  headroom: { warnAtFraction, tight },
   notMeasured: ['browser-observed low-resolution asset load', 'browser-observed first interaction'],
 };
 

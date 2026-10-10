@@ -51,6 +51,43 @@ with room for parse. It is also roughly where a 20k-triangle body shell plus
 label sets lands, so it constrains the asset pipeline without being
 unachievable.
 
+## Headroom, and why a green line can still be news
+
+A line at 98% of its limit passes. It is also one small module away from
+failing, and until DOG-83 the gate printed those two states identically: a
+budget was met or it was busted, and the room left over was not reported at
+all.
+
+Any line at or above `headroom.warnAtFraction` of its limit — **0.9** — is now
+reported as `TIGHT` on a run that still passes:
+
+```
+bundleGzipBytes                    146.5 KiB /    150.0 KiB    98%  TIGHT
+
+TIGHT — within 10% of the limit, passing but nearly full:
+  bundleGzipBytes: 98% of 150.0 KiB, 3.5 KiB left
+    covers: index.html + app/*.js + app/*.css, gzipped
+```
+
+**This is not a second budget.** It changes no verdict, it changes no exit
+status, and it cannot fail a build. It exists so the cost of filling a budget
+lands on the change that fills it rather than on the next person to touch the
+page, who would otherwise meet the line as a red build for a change that was
+not the one that spent the room.
+
+One line is deliberately exempt. On a runner too slow to normalise, a
+calibrated line is an **upper** bound — "at most 95% of the limit" is equally
+consistent with 5% — so `at-most` figures are never reported as tight however
+high their utilisation reads. Calling one of them nearly full would be
+manufacturing a shortage out of slow hardware and sending someone to trim a
+budget that was never under pressure. `exact` and `normalised` figures are the
+occupancy and settle it; `at-least` is a lower bound on it, so a tight reading
+there can only understate how full the line is and is sound to report.
+
+Raising `warnAtFraction` to quiet a warning achieves nothing — it hides the
+notice and leaves the shortage. Raising a **limit** to make a change fit is the
+thing that must not happen; see "Changing a budget" below.
+
 ## How the two felt numbers are derived
 
 CI does not have a mid-range laptop or a 25 Mbit/s link, so the felt numbers
@@ -140,6 +177,11 @@ is for whatever reads it later, and it has to survive being read carelessly:
   its direction attached.
 - `calibration.decisionBasis` is `normalised` or `one-sided-bound-from-raw`.
   Anything branching on the report should branch on that.
+- `headroom` is `{ warnAtFraction, tight }`, where `tight` lists the lines that
+  passed with less than `1 - warnAtFraction` of their limit to spare. Advisory
+  by construction: a consumer deciding whether the build is acceptable reads
+  `verdicts`, and will find nothing in `headroom` that contradicts it. A line
+  known only as an upper bound is never listed, however high its `utilisation`.
 
 Byte lines are exact on every runner and are never nulled; nulling them would
 be the fallback swallowing what it is supposed to gate.
@@ -149,6 +191,15 @@ does not fail the build, that its JSON report nulls what it did not establish
 while keeping the bound and the byte lines, that an off-band parse line still
 fails when the unnormalised time alone busts it, and that byte budgets survive a
 useless calibration.
+
+Two more pin the headroom reporting, and both are must-pass cases: a line staged
+at 95% of its limit is reported as `TIGHT` while the gate still exits 0, and a
+line known only as an upper bound is not, even at the same 95%. Each stages its
+limit from what the build actually measures — the bundle is 4 KiB on `main` and
+146 KiB with the viewer merged, so a written-down size would test a different
+thing on each branch and nothing at all on one of them. A warning is the kind of
+output that can stop appearing without anything going red, so the only thing
+that would notice is a case asserting it is still there.
 
 [dog29]: https://github.com/whacked/somasurfer/actions/runs/37890971145
 
@@ -207,9 +258,57 @@ most of the remaining room, which is the point of writing the budget down
 before either arrives: when the number moves, it will be obvious which line
 moved it.
 
+### The table above is `main`, and `main` has no viewer
+
+Those numbers are what this branch builds, and they are why a 3% bundle line
+appears in a document about a budget under pressure. With the viewer and the
+research layer merged, the same line reads **146.5 KiB of 150.0 KiB, 98%**
+(measured on `dog-78-research-curated-corpus` at `5c7f801`, `gzip -9`, DOG-83).
+The felt line is not under pressure at all on that build:
+`derivedFirstInteractionMs` is 741 ms of 3500 ms, 21%. Bytes are the binding
+constraint, not time.
+
+What fills the line is library code, not the renderer. `app/alc.js` (54,156 B)
+and `app/atlas-research.js` (24,113 B) are 78 KB of the 150 KiB between them,
+over half the limit; the hand-written WebGL2 renderer is 5,854 B, 3.9%. DOG-41
+had argued the *shape* of this line was wrong because a 126 KiB three.js build
+did not belong on it — that argument did not survive the renderer shipping
+without three.js. The line is measuring what it was written to measure: "the
+point at which a 25 Mbit/s link spends more time on our own code than on a
+round trip".
+
+**The limit does not move.** 98% is an honest reading of a line doing its
+stated job, and there is no change in the product that would justify restating
+it — which is the only thing that justifies restating one.
+
+The room comes back from the bundle instead. `dist/app/atlas-research.js` is
+all of `src/index.ts`, 6 modules and 24 exports, and the page imports three
+functions from it at one site: `loadDataset`, `buildResearchIndex` and
+`formatCitation` in `packages/atlas-web/src/viewer/corpus.js`. `browse.ts` and
+`layers.ts` are unreachable from those three and nothing in the viewer imports
+either. Bundling an entry module that exports only those three measures:
+
+| | raw | gzip -9 |
+| --- | --- | --- |
+| `dist/app/atlas-research.js`, all 24 exports | 91,182 B | 24,012 B |
+| the same, three exports | 54,741 B | 14,828 B |
+
+**9,184 B of gzip, which takes the line from 98% to 92%** and the headroom from
+3.6 KB to 12.5 KB — about 3.5× — measured end to end through this gate, not
+estimated. The trimmed bundle was imported from `dist/app/` as emitted and
+resolves 28 of 170 mappings against the real name index with no templates
+passed, which is the figure `corpus.js` documents for that call. It is tracked
+in DOG-84; `packages/atlas-research/scripts/build.mjs` already walks module
+reachability from its entry, so what it needs is a second entry module and a
+restatement of the export-name parity check, not a bundler.
+
 ## Changing a budget
 
 Edit `ci/performance-budget.json` and this document in the same commit, and
 say in the commit message what changed about the product that justified it.
 Raising a budget to make CI green is the failure this file exists to make
 visible.
+
+"To make CI green" includes making it *stay* green. A limit raised while a line
+reads `TIGHT`, by whoever is trying to land the change that would have busted
+it, is the same failure arriving a commit earlier.

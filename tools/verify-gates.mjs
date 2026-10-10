@@ -49,6 +49,44 @@ function withBudgetLimit(line, limit) {
   return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
 }
 
+/**
+ * A scratch directory, with its parent created first.
+ *
+ * `os.tmpdir()` reads TMPDIR, which on some runners names a per-run directory
+ * that no longer exists by the time this script runs. `mkdtempSync` then throws
+ * ENOENT and the case reds for a reason that has nothing to do with the gate
+ * under test — a false red that looks exactly like a real one.
+ */
+function scratchDir(prefix) {
+  const base = tmpdir();
+  mkdirSync(base, { recursive: true });
+  return mkdtempSync(join(base, prefix));
+}
+
+/**
+ * What this build measures on one budget line, read from the gate's own report.
+ *
+ * Cases that need to construct an occupancy — 95% of a limit, say — derive the
+ * limit from this instead of hard-coding a size. The bundle is 4 KiB on `main`
+ * and 146 KiB with the viewer merged, so a written-down number would make the
+ * case test a different thing on every branch, and nothing at all on one of
+ * them.
+ */
+function measureLine(line, args) {
+  const dir = scratchDir('perf-measure-');
+  const path = join(dir, 'perf.json');
+  try {
+    run('perf-budget.mjs', [...args, '--json', path]);
+    const value = JSON.parse(readFileSync(path, 'utf8')).measurements[line];
+    if (typeof value !== 'number') {
+      throw new Error(`the gate reported no number for ${line}, so no occupancy can be constructed from it`);
+    }
+    return value;
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
 const run = (script, args = []) =>
   spawnSync(process.execPath, [join(REPO_ROOT, 'tools', script), ...args], {
     cwd: REPO_ROOT,
@@ -289,7 +327,7 @@ const CASES = [
     // human; this is for whatever reads the JSON, and it is the half that can
     // regress without anyone noticing.
     audit: () => {
-      const dir = mkdtempSync(join(tmpdir(), 'perf-report-'));
+      const dir = scratchDir('perf-report-');
       const path = join(dir, 'perf.json');
       try {
         run('perf-budget.mjs', ['--calibration-ms', '25', '--json', path]);
@@ -366,6 +404,130 @@ const CASES = [
       return withBudgetLimit('bundleGzipBytes', 1024);
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
+  {
+    name: 'perf-tight-line-warns-before-it-reds',
+    gate: 'performance budget',
+    criterion: 'a line nearly at its limit is reported as tight on a run that still passes',
+    mustPass: true,
+    expect: [
+      /TIGHT — within 10% of the limit, passing but nearly full:/,
+      /bundleGzipBytes: 9[45]% of [\d.]+ KiB, [\d.]+ KiB left/,
+      /not a failure and not a limit/,
+      /Do not raise the\s+limit to fit/,
+    ],
+    describe: 'a bundle at 95% of its byte budget: green, with about one addition of room left',
+    // DOG-83. bundleGzipBytes reached 98% of 150 KiB on the integration branch
+    // and the gate said "✓" with no more emphasis than it gives 3%. Nothing was
+    // broken, which was the problem: the next person to add a module would have
+    // taken the red for a change that did not spend the room.
+    //
+    // This is the must-pass half of that warning. It has to be a must-pass case:
+    // a warning that quietly stops being printed leaves no trace anywhere, and
+    // the only thing that would notice is a case asserting it is still there.
+    break: () => {
+      requireBuild();
+      // 95% of whatever this build actually is, so the case constructs the same
+      // condition on `main` at 4 KiB and on a viewer branch at 146 KiB.
+      const measured = measureLine('bundleGzipBytes', ['--calibration-ms', '25']);
+      return withBudgetLimit('bundleGzipBytes', Math.ceil(measured / 0.95));
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+    // Two claims the console cannot make on its own: that the warning reached
+    // the JSON, and that it did not spray. `lowResAssetGzipBytes` sits at a few
+    // percent on every branch, so its absence is what distinguishes a threshold
+    // from a thing that fires on everything.
+    audit: () => {
+      const dir = scratchDir('perf-tight-');
+      const path = join(dir, 'perf.json');
+      try {
+        run('perf-budget.mjs', ['--calibration-ms', '25', '--json', path]);
+        const report = JSON.parse(readFileSync(path, 'utf8'));
+        const problems = [];
+        const tight = report.headroom?.tight;
+        if (!Array.isArray(tight)) {
+          problems.push(`headroom.tight is ${JSON.stringify(tight)}, expected an array of line names.`);
+        } else {
+          if (!tight.includes('bundleGzipBytes')) {
+            problems.push(`headroom.tight is ${JSON.stringify(tight)}; the line at 95% of its limit is not in it.`);
+          }
+          if (tight.includes('lowResAssetGzipBytes')) {
+            problems.push(`headroom.tight contains lowResAssetGzipBytes, which is a few percent full:`);
+            problems.push(`  the threshold is firing on lines with room, which makes it worth nothing.`);
+          }
+        }
+        // The warning must not have become a verdict on its way to the report.
+        if (report.verdicts.bundleGzipBytes?.verdict !== 'within') {
+          problems.push(
+            `verdicts.bundleGzipBytes.verdict is ${JSON.stringify(report.verdicts.bundleGzipBytes?.verdict)}, ` +
+              `expected "within": a tight line still passes.`,
+          );
+        }
+        return problems;
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    },
+  },
+  {
+    name: 'perf-an-upper-bound-is-not-a-shortage',
+    gate: 'performance budget',
+    criterion: 'a line known only as an upper bound is never reported as tight',
+    mustPass: true,
+    expect: [/OUTSIDE \[0\.25, 4\]/, /Calibrated lines are shown unnormalised and marked ≤/],
+    describe: 'a derived line at 95% of an upper bound on a slow runner: not evidence of a shortage',
+    // The one kind of figure the warning must stay quiet about, and the reason
+    // it is not just `value / limit >= 0.9`. On a runner too slow to normalise,
+    // a calibrated line is an upper bound: "at most 95% of the limit" is equally
+    // consistent with 5%. Reporting that as nearly full would manufacture a
+    // shortage out of slow hardware, and would send someone trimming a budget
+    // that was never under pressure.
+    //
+    // derivedFirstInteractionMs is the line to construct it on: it is dominated
+    // by byte-derived transfer time and the fixed render allowance, with a parse
+    // term of a millisecond or two, so 95% here is stable rather than a reading
+    // that drifts across the threshold between runs.
+    break: () => {
+      requireBuild();
+      const measured = measureLine('derivedFirstInteractionMs', ['--calibration-ms', '500']);
+      return withBudgetLimit('derivedFirstInteractionMs', Math.ceil(measured / 0.95));
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '500']),
+    audit: () => {
+      const dir = scratchDir('perf-at-most-');
+      const path = join(dir, 'perf.json');
+      try {
+        run('perf-budget.mjs', ['--calibration-ms', '500', '--json', path]);
+        const report = JSON.parse(readFileSync(path, 'utf8'));
+        const problems = [];
+        const key = 'derivedFirstInteractionMs';
+        // If the construction did not land, the case proves nothing — and a case
+        // that silently proves nothing is worse than one that fails, so say so.
+        if (report.verdicts[key]?.kind !== 'at-most') {
+          problems.push(
+            `verdicts.${key}.kind is ${JSON.stringify(report.verdicts[key]?.kind)}, expected "at-most":`,
+            `  the --calibration-ms 500 runner should be below the band, and this case has`,
+            `  nothing to assert unless it is.`,
+          );
+        }
+        if (!(report.utilisation[key] >= 0.9)) {
+          problems.push(
+            `utilisation.${key} is ${JSON.stringify(report.utilisation[key])}, expected >= 0.9:`,
+            `  the staged limit was meant to put this line inside the warning threshold, so`,
+            `  its absence from headroom.tight below would prove nothing.`,
+          );
+        }
+        if (report.headroom?.tight?.includes(key)) {
+          problems.push(
+            `headroom.tight contains ${key}, which is known only as an upper bound:`,
+            `  "at most 95% of the limit" does not establish that the line is nearly full.`,
+          );
+        }
+        return problems;
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    },
   },
 ];
 
