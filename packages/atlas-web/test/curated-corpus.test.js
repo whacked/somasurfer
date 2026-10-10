@@ -325,8 +325,8 @@ describe('the partitions reach the surface', () => {
     assert.deepEqual(
       corpus().resolution.byPartition,
       [
-        { partitionId: 'brain-parcellation', resolved: 5, unresolved: 135 },
         { partitionId: 'body-bd', resolved: 26, unresolved: 0 },
+        { partitionId: 'brain-parcellation', resolved: 5, unresolved: 135 },
         { partitionId: 'body-not-in-index', resolved: 0, unresolved: 4 },
       ],
     );

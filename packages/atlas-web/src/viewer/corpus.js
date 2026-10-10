@@ -90,7 +90,7 @@
  */
 
 import { parse } from '../alc.js';
-import { buildResearchIndex, loadDataset } from '../atlas-research.js';
+import { buildResearchIndex, formatCitation, loadDataset } from '../atlas-research.js';
 import { ResearchError } from './research.js';
 import { atlasForFrame } from './state.js';
 
@@ -285,7 +285,11 @@ export function curatedModel(doc, { names, templates } = {}) {
       url: paper.sourceUrl,
       authors: Object.freeze([...paper.authors]),
       identifier: paper.identifier,
-      citation: index.mappingsOf(paper.id)[0]?.citation ?? null,
+      // From the library, not from the paper's first mapping: a paper with no
+      // mappings at all would otherwise lose its citation, and a corpus where
+      // two thirds of the papers have no geometry is not the place to make a
+      // citation depend on having some.
+      citation: formatCitation(paper),
       findings: Object.freeze(findings),
       cells: Object.freeze(cells),
       atlases: Object.freeze([...new Set(cells.map((c) => c.atlas))].sort()),
@@ -330,7 +334,17 @@ export function curatedModel(doc, { names, templates } = {}) {
  */
 function summarise(index, owners, dataset) {
   const resolved = index.mappings.filter((m) => m.resolution === 'resolved');
-  const byPartition = new Map();
+
+  // Seeded in the dataset's own declaration order, so the rows come out in a
+  // stable order that does not depend on which finding happened to be first.
+  // A partition with no mappings at all still gets a row — a declared
+  // partition that turns out to be unused is worth seeing, not hiding.
+  const byPartition = new Map(
+    (dataset.authoredAgainst?.partitions ?? []).map((p) => [
+      p.id,
+      { partitionId: p.id, resolved: 0, unresolved: 0 },
+    ]),
+  );
   for (const m of index.mappings) {
     const key = owners.get(m.structureId)?.id ?? null;
     const row = byPartition.get(key) ?? { partitionId: key, resolved: 0, unresolved: 0 };

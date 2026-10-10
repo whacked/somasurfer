@@ -117,8 +117,8 @@ export const CURATED_CORPUS_RESOLUTION = Object.freeze({
    * about a rib would be a new false claim introduced while fixing another.
    */
   byPartition: Object.freeze([
-    Object.freeze({ partitionId: 'brain-parcellation', resolved: 5, unresolved: 135 }),
     Object.freeze({ partitionId: 'body-bd', resolved: 26, unresolved: 0 }),
+    Object.freeze({ partitionId: 'brain-parcellation', resolved: 5, unresolved: 135 }),
     Object.freeze({ partitionId: 'body-not-in-index', resolved: 0, unresolved: 4 }),
   ]),
 });
