@@ -52,6 +52,16 @@ function withBudgetLimit(line, limit) {
   return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
 }
 
+/** `ci/performance-budget.json` with one budget line's `unverified` block changed. */
+function withUnverified(line, unverified) {
+  const budget = JSON.parse(readFileSync(PERF_BUDGET, 'utf8'));
+  const spec = { ...budget.budgets[line] };
+  if (unverified === null) delete spec.unverified;
+  else spec.unverified = unverified;
+  budget.budgets[line] = spec;
+  return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
+}
+
 const run = (script, args = []) =>
   spawnSync(process.execPath, [join(REPO_ROOT, 'tools', script), ...args], {
     cwd: REPO_ROOT,
@@ -576,6 +586,46 @@ const CASES = [
     break: () => {
       requireBuild();
       return withBudgetLimit('bundleGzipBytes', 1024);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
+  {
+    name: 'perf-unverified-line-is-really-over-budget',
+    gate: 'performance budget',
+    criterion: 'a line declared UNVERIFIED would go red if the declaration were removed',
+    expect: [/indexParseMsNormalised: at least \d+ ms on the reference machine, against a budget of 40 ms/],
+    describe: 'the DOG-80 index parse line with its unverified declaration deleted',
+    // This is what keeps `unverified` from being a suppression. The declaration
+    // stops a line gating, so the one thing nobody can afford to get wrong is a
+    // declaration sitting over a line that was going to pass anyway: that would
+    // read as "we know this is over budget and chose not to gate it" while the
+    // truth was "nothing was wrong and the line stopped being checked".
+    //
+    // Deleting the block and requiring RED proves the number really is over the
+    // limit, so the declaration is carrying a real failure and not hiding an
+    // absent one. It is also the case that goes green on its own the day
+    // somebody takes the name index off the critical path and forgets to delete
+    // the declaration with it — at which point this case says so.
+    break: () => {
+      requireBuild();
+      return withUnverified('indexParseMsNormalised', null);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
+  {
+    name: 'perf-unverified-needs-a-stated-reason',
+    gate: 'performance budget',
+    criterion: 'a line cannot stop being gated without a reason and a way back',
+    expect: [
+      /declared unverified without saying why: indexParseMsNormalised/,
+      /needs a non-empty `reason` and a non-empty `clearedBy`/,
+    ],
+    describe: 'an unverified declaration with the reason emptied out',
+    // The other half. Without this, `"unverified": {}` is a one-line way to turn
+    // any budget line off, and the sentence explaining why would be optional.
+    break: () => {
+      requireBuild();
+      return withUnverified('indexParseMsNormalised', { sinceIssue: 'DOG-80', reason: '  ', clearedBy: '' });
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
   },
