@@ -561,6 +561,18 @@ const CASES = [
         };
         expectNull('indexParseMsNormalised');
         expectNull('lowResAssetParseMsNormalised');
+        // The DOG-98 lines, for the regression this case already caught once.
+        // DOG-80's `unverified` verdict published a raw number under a
+        // `...Normalised` key off-band and this audit is what found it. The two
+        // new lines are the same shape of hazard, and `nameIndexBuildUsPerCell`
+        // is the worse half: it carries the correction without carrying
+        // `Normalised` in its name, so it reads like a pure ratio that could not
+        // be affected by the calibration. Moving either line into EXACT_LINES
+        // would be a one-word diff with no other symptom.
+        if (report.nameIndex?.measured === true) {
+          expectNull('nameIndexBuildMsNormalised');
+          expectNull('nameIndexBuildUsPerCell');
+        }
         if (report.calibration.decisionBasis !== 'one-sided-bound-from-raw') {
           problems.push(`calibration.decisionBasis is ${JSON.stringify(report.calibration.decisionBasis)}.`);
         }

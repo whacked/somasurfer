@@ -78,7 +78,9 @@ for a label index per frame".
 
 DOG-80 put the name index build inside `indexParseMsNormalised`, which made that
 row measure the right total against a limit written for part of it: 40 ms set for
-`data/*.json` alone, now also carrying a 55–85 ms index build. The row was
+`data/*.json` alone, now also carrying an index build that read 55–85 ms on a
+best-of-three (the figure quoted throughout DOG-80 and DOG-97; it reads lower
+here for the reason under "Why the reading is a best-of-15"). The row was
 declared `UNVERIFIED` rather than quoting a verdict the gate did not have, and
 DOG-97 settled it as a **scope split, not a raise** — no existing limit moved.
 
