@@ -36,10 +36,15 @@
  *
  * ## A finding that was never placed is shown, not dropped
  *
- * `FXP-5` reports "thoracic spine" with no level and no side, so it has no
- * cells at all. Silently omitting it would let the atlas imply the literature
- * is more spatially precise than it is. It carries `placed: false` and its own
- * `regionOnly` sentence, and it is counted in the paper's finding total.
+ * A finding whose mappings could not be placed has no cells at all. Silently
+ * omitting it would let the atlas imply the literature is more spatially
+ * precise than it is. It carries `placed: false` and its own `regionOnly`
+ * sentence, and it is counted in the paper's finding total either way.
+ *
+ * On the curated corpus this is the common case, not the edge one: 96 of the
+ * 120 findings have no placed geometry, because the brain parcellation that
+ * would locate them is not licence-cleared. `viewer/corpus.js` is where that
+ * residue acquires its explanation.
  *
  * ## A corpus that does not say what it is does not load
  *

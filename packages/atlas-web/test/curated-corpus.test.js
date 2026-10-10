@@ -25,13 +25,18 @@
  */
 
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import { CURATED_CORPUS_RESOLUTION } from '../catalogue/asset-templates.mjs';
 import { curatedModel } from '../src/viewer/corpus.js';
 import { papersOverlapping, revealPaper } from '../src/viewer/research.js';
 import { realAssets, realTemplates } from './real-assets.js';
-import { curatedSeed } from './support.js';
+import { curatedSeed, sourceFilesOf } from './support.js';
+
+const PACKAGE_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 /** The index version every count below is relative to. */
 const NAME_INDEX_VERSION =
@@ -368,6 +373,31 @@ describe('the partitions reach the surface', () => {
       CURATED_CORPUS_RESOLUTION.byPartition.map((p) => ({ ...p })),
       model.resolution.byPartition.map((p) => ({ ...p })),
     );
+  });
+
+  it('no module the browser loads names a paper from the invented corpus', () => {
+    // The acceptance criterion is "no `FXP-*` id and no `example.invalid` URL
+    // anywhere in dist/", and `build.mjs` mirrors all of `src/` into
+    // `dist/app/`. It already refuses to EMIT a research document carrying
+    // either marker, which covers `dist/data/`; this covers the other half,
+    // which a doc comment is quite capable of reintroducing — two of them did.
+    //
+    // `buildResearchFixture()` keeps both markers and keeps its home in
+    // `fixtures/`, which the browser never loads. That is the point: the
+    // fixture did not stop existing, it stopped being page content.
+    const offenders = [];
+    for (const file of sourceFilesOf('src')) {
+      const text = readFileSync(file, 'utf8');
+      for (const marker of ['FXP-', 'example.invalid']) {
+        if (text.includes(marker)) offenders.push(`${relative(PACKAGE_ROOT, file)}: ${marker}`);
+      }
+    }
+    assert.deepEqual(offenders, []);
+    // Not vacuous: the markers are real and the scanner finds them where they
+    // legitimately live. Without this, deleting the fixture would make the
+    // check above pass by having nothing to find.
+    const fixture = readFileSync(join(PACKAGE_ROOT, 'fixtures', 'fixtures.mjs'), 'utf8');
+    assert.ok(fixture.includes('FXP-') && fixture.includes('example.invalid'));
   });
 
   it('refuses a dataset that is not research/1', () => {
