@@ -33,7 +33,11 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { ENABLED_FRAMES, FRAMES, VERTEBRAL_LEVELS } from '../alc/src/index.ts';
-import { ASSET_TEMPLATES, NAME_INDEX_FILES } from './catalogue/asset-templates.mjs';
+import {
+  ASSET_TEMPLATES,
+  CURATED_CORPUS_RESOLUTION,
+  NAME_INDEX_FILES,
+} from './catalogue/asset-templates.mjs';
 import { buildResearchFixture, buildTemplates } from './fixtures/fixtures.mjs';
 // The one value the build shares with the client: the roles a research corpus
 // may declare. Imported from the validator that enforces it rather than
@@ -302,12 +306,22 @@ const curatedCorpus = {
   mappingCount: curatedSeed.findings.reduce((n, f) => n + f.mappings.length, 0),
   /** Said in the artefact, so a release note cannot claim this page serves it. */
   servedOnThisPage: false,
+  /**
+   * What the browser-side join yields, declared because the build cannot
+   * measure it. See `CURATED_CORPUS_RESOLUTION` in the catalogue for why it is
+   * a declaration and how it is kept from rotting.
+   */
+  resolution: CURATED_CORPUS_RESOLUTION,
   reason:
-    'The curated corpus is a dataset deliverable, not page content in v1. Against the cleared '
-    + 'BodyParts3D name index this page binds, 28 of its mappings resolve and 142 do not: the '
-    + 'brain parcellation that would place them did not clear licensing (docs/asset-licensing.md '
-    + '§4), and the only index that resolves them is declared synthetic. Painting those would be '
-    + 'invented geometry under real citations.',
+    'The curated corpus is a dataset deliverable, and v1 serves it by resolving it in the browser '
+    + 'rather than in the build. Against the cleared BodyParts3D name index this page binds, with '
+    + `both templates bound, ${CURATED_CORPUS_RESOLUTION.resolvedMappings} of its mappings resolve `
+    + `and ${CURATED_CORPUS_RESOLUTION.unresolvedMappings} do not. Of those that do not, `
+    + '135 are in a brain parcellation that did not clear licensing (docs/asset-licensing.md §4) '
+    + 'and 4 are a coverage gap in the cleared subset; the dataset records those separately and so '
+    + 'does the page. Nothing is painted that the index did not place: the only index that would '
+    + 'resolve the brain half is declared synthetic, and using it would be invented geometry under '
+    + 'real citations.',
   path: 'packages/atlas-research/data/research-seed.json',
 };
 

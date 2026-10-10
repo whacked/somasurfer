@@ -250,20 +250,49 @@ export function revealPaper(model, paperId, activeFilter = null) {
   }
   const within = (address) => (filter === null ? null : overlaps(address, filter));
 
+  const annotate = (cell) => ({ ...cell, withinFilter: within(cell.address) });
+
   const findings = paper.findings.map((finding) => ({
     ...finding,
-    cells: finding.cells.map((cell) => ({ ...cell, withinFilter: within(cell.address) })),
+    cells: finding.cells.map(annotate),
+    /**
+     * The curated corpus's mapping level, annotated and otherwise untouched.
+     *
+     * `mappings` is absent from a fixture finding, which has no structure ids
+     * at all, so it stays absent rather than becoming an empty array: "this
+     * corpus has no mapping level" and "this finding mapped nothing" are
+     * different facts and must not print alike.
+     *
+     * Every mapping is here, placed or not, which is the rule at the top of
+     * this file applied one level down: annotating a mapping with
+     * `withinFilter` is allowed, dropping one is not. An unresolved mapping has
+     * no cells, so it never acquires a `withinFilter` of its own — it is listed
+     * because the paper mapped it, not because it can be drawn.
+     */
+    ...(finding.mappings
+      ? { mappings: finding.mappings.map((m) => ({ ...m, cells: m.cells.map(annotate) })) }
+      : {}),
   }));
   const cells = findings.flatMap((f) => f.cells);
+  const mappings = findings.flatMap((f) => f.mappings ?? []);
 
   return {
     paper,
     findings,
     cells,
+    /** Every mapping of the paper, in document order. Empty for a fixture. */
+    mappings,
     /** Atlases these mappings span. More than one is the cross-atlas case. */
     atlases: [...new Set(cells.map((c) => c.atlas))].sort(),
     outsideFilter: filter === null ? 0 : cells.filter((c) => c.withinFilter === false).length,
     unplaced: findings.filter((f) => !f.placed).length,
+    /**
+     * Mappings with no extent. Reported beside `mappings.length` so a panel can
+     * say "6 of 6 could not be placed", which is the honest headline for a
+     * paper like Brodmann 1909 and reads nothing like a panel that merely came
+     * up empty.
+     */
+    unresolvedMappings: mappings.filter((m) => !m.placed).length,
   };
 }
 

@@ -24,7 +24,7 @@ index. The synthetic templates still ship, and are bindable.
 | Brain volume template | `icbm152-2009c-asym`, `maxUsefulDigits` **6** |
 | Name index | 57 FMA structures, 3 478 cells, frame `BD` only |
 | Name index version | `bp3d-4.0+uberon-…` — read it, never hard-code it |
-| Research corpus | the 5-paper fixture, role `fixture` — read `__atlas.researchCorpus()`, never assume it |
+| Research corpus | the 5-paper fixture, role `fixture`, until DOG-76 ships the browser build — **read `__atlas.researchCorpus()`, never assume it.** See *The curated corpus* below |
 
 `maxUsefulDigits` is **not** in the catalogue. It is read off the bound
 template, which is the only reading that can be right; a harness asserting a
@@ -56,22 +56,69 @@ it rather than for a timeout.
 | `rendererAvailable()` | `false` when the 3D view degraded |
 | `atlasAvailable(atlas)` | `false` when that atlas's geometry failed |
 | `research()` | the loaded research model, or `null` |
-| `researchCorpus()` | **which corpus this page served**: `{ version, role, caveat, paperCount, findingCount }`, or `null` if it failed to load |
+| `researchCorpus()` | **which corpus this page served**: `{ version, role, caveat, paperCount, findingCount }`, plus `nameIndexVersion`, `resolution` and `partitions` when the role is `curated`; `null` if it failed to load |
 | `researchDeclared()` | what the build said it would serve: `atlas-index.json`'s `research` block, including `curatedCorpus` |
 
 **Name the dataset every research row measured.** This repo holds two research
-datasets: the 5-paper fixture this page serves, and DOG-37's curated 30-paper
-seed set, which `packages/atlas-qa/src/fixture.ts` prefers for the Node-side
-oracle. They are different corpora with different paper ids, so a row that
-drives the page, finds `FXP-1` and reports **pass** has measured invented
-papers. `researchCorpus().role` is `fixture` or `curated` and is the one call
+datasets: the 5-paper fixture, and DOG-37's curated 30-paper seed set, which
+`packages/atlas-qa/src/fixture.ts` prefers for the Node-side oracle. They are
+different corpora with different paper ids, so a row that drives the page,
+finds `FXP-1` and reports **pass** has measured invented papers. `researchCorpus().role` is `fixture` or `curated` and is the one call
 that settles it — report it per row rather than inferring it from a paper id.
 
-The curated corpus is deliberately **not** page content in v1. Against the
-cleared BodyParts3D name index the page binds, 28 of its 170 mappings resolve
-and 142 do not, because the brain parcellation that would place them did not
-clear licensing. The reasoning and the measurement are in `build.mjs` above the
-research emit, and the counts are restated in `researchDeclared().curatedCorpus`.
+### The curated corpus: what resolves, and what the numbers mean
+
+The curated corpus is resolved **in the browser**, against the real name index,
+by `curatedModel()` in `src/viewer/corpus.js`. It cannot be resolved in the
+build: resolving a structure id means reading the name index, the name index is
+an asset payload, and rule 6 of `tools/check-licence-separation.mjs` holds
+`dist/data/` to deriving nothing from asset content. So the dataset ships as
+text and the join happens at load.
+
+Measured against `bp3d-4.0+uberon-…+8772477294da` with both templates bound:
+
+| | |
+| --- | --- |
+| Mappings placed | **31 of 170** |
+| Papers with any geometry | **10 of 30** |
+| Findings with any geometry | **24 of 120** |
+| Placed but unnameable | **5** — real extent, curated label, no index name |
+| Not placed | **139** |
+
+Without the brain template bound this drops to 28 across 8 papers, because the
+three `coordinates` mappings resolve `no-template`. A row that binds
+`?template=` must re-read the counts rather than assume these.
+
+**Do not read an empty research panel as a failure.** Twenty of the thirty
+papers legitimately have no geometry at all, so "nothing is painted" is the
+*correct* rendering for two thirds of the corpus — and is visually identical to
+a broken join. A count is the only thing that separates them: compare
+`researchCorpus().resolution` with
+`researchDeclared().curatedCorpus.resolution` and report a disagreement rather
+than a verdict. `test/curated-corpus.test.js` pins every figure above on the
+committed tree, and `CURATED_CORPUS_RESOLUTION` in the catalogue is where the
+declared copy lives.
+
+**The 139 do not share one reason, and a row must not report them as if they
+did.** Joined against the dataset's `authoredAgainst.partitions`:
+
+| Partition | Status | Placed | Not placed | Why not |
+| --- | --- | --- | --- | --- |
+| `brain-parcellation` | placeholder, 46 ids | 5 | 135 | no brain parcellation cleared redistribution (`docs/asset-licensing.md` §4) |
+| `body-bd` | real, 14 ids | 26 | 0 | — |
+| `body-not-in-index` | placeholder, 3 ids | 0 | 4 | coverage gap in the cleared subset, **not** a licence refusal |
+
+A mapping's `unresolved.reason` is `placeholder-partition` for all 139, never
+`unknown-structure`. Those words are reserved — DOG-46 — for an id declared
+against the index that is actually loaded and still failing to resolve, which is
+a mistyped accession. **A row that sees `unknown-structure` has found a real
+data defect and must not report it as the licence gap.** It happens zero times
+today, and `unresolved.partitionId` is what a row should group by.
+
+Note the five that are placed *and* unresolvable by name: `cells` and
+`coordinates` mappings carry their own geometry and never needed the index to
+name anything, so they have real extent under a curated label. They carry
+`labelFromIndex: false`. A row must not report that label as an index name.
 
 ### Stage B additions
 
@@ -79,7 +126,7 @@ research emit, and the counts are restated in `researchDeclared().curatedCorpus`
 | --- | --- |
 | `nameIndexSourceTemplate` | the template `coverings.json` was sampled against |
 | `requestedTemplate` | what `?template=` asked for, or `null` |
-| `revealPaper(paperId)` | reveals a paper and returns **all** its mappings |
+| `revealPaper(paperId)` | reveals a paper and returns **all** its mappings. On a curated corpus, `.mappings` is every mapping placed or not, and `.unresolvedMappings` counts those with no extent |
 | `papersHere()` | ids of papers overlapping the current selection |
 | `comparePapers(a, b)` | `{shared, onlyA, onlyB, disjoint}`, by overlap |
 | `highlightCount()` | how many highlight volumes are uploaded |
@@ -185,10 +232,15 @@ claims, so it produces none of them:
   machine in Node. `derivedFirstInteractionMs` in the performance budget
   remains a stated placeholder, not an observation; the 600 ms render
   allowance inside it is unmeasured. A real-browser pass is DOG-39's.
-- **The research corpus is the 5-paper fixture**, not DOG-37's curated set.
-  The *behaviour* is corpus independent and asserted as such, but no claim is
-  made here about the curated corpus's content. DOG-68 settled that this is
-  the shipping state for v1 rather than a gap, and made the page, the index
-  and the document all say so; what is still not covered is any §7 row run
-  against the curated corpus, because the page does not serve it.
+- **The page still serves the 5-paper fixture**, so no §7 row has yet been run
+  against the curated corpus *through the page*. What changed is that the gap
+  is now only a packaging one: `curatedModel()` resolves the curated corpus
+  against the real index and the real templates, and
+  `test/curated-corpus.test.js` measures the result, but `dist/app/` cannot
+  load the resolver until `packages/atlas-research/dist/atlas-research.js`
+  exists — DOG-76, the browser build, with `@gstack/alc` external to it.
+  DOG-68's finding that the two corpora must be distinguishable **stands**;
+  what it also concluded, that the curated corpus could not be served at all,
+  is superseded by the measurement above. Read `researchCorpus().role` per row
+  either way: it is the call that says which corpus a row measured.
 - **`BR` ships disabled** and has no template, by design.
