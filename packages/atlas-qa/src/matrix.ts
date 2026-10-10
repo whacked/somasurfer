@@ -157,6 +157,12 @@ export const REQUIRED_CLASSES = [
   'assets-unavailable',
   'equality-guard',
   'cross-atlas-restore',
+  /**
+   * Which atlas a link lands in, when the address and the parameter could
+   * disagree. Enumerated rather than left to one row, because DOG-72 was
+   * exactly this case going unstated in two places at once.
+   */
+  'cross-atlas-link',
   'url-hygiene',
 ] as const;
 
@@ -266,6 +272,26 @@ const BODY_URL = (address: string, extra = ''): string => `/?a=${encodeURICompon
 /** `BD-T07-03O-` is 11 characters, so 53 digits is exactly the 64-character cap. */
 const AT_CAP = `BD-T07-03O-${'5'.repeat(53)}`;
 const OVER_CAP = `BD-T07-03O-${'5'.repeat(54)}`;
+
+/**
+ * The atlas a row's address belongs to, or null when the row has no address or
+ * its frame is not one a v1 atlas realises.
+ *
+ * Read off the row's own input rather than declared, so a row cannot assert the
+ * cross-atlas rule for one address while carrying another. The `a` parameter is
+ * the only source: a click row addresses the template it clicks in by
+ * construction.
+ */
+function homeAtlasOfRow(row: MatrixRow): 'body' | 'brain' | null {
+  if (row.input.kind !== 'url') return null;
+  const query = row.input.url.includes('?') ? row.input.url.slice(row.input.url.indexOf('?') + 1) : '';
+  const address = new URLSearchParams(query).get('a');
+  if (address === null || address === '') return null;
+  const frame = address.trim().toUpperCase().split('-')[0];
+  if (frame === 'BD') return 'body';
+  if (frame === 'BV' || frame === 'BR') return 'brain';
+  return null;
+}
 
 /** Rejections share a shape: nothing moves, nothing is selected, nothing is lost. */
 const REJECTION_UNCHANGED: readonly Facet[] = [
@@ -829,24 +855,92 @@ export const DEEP_LINK_MATRIX: readonly MatrixRow[] = [
     },
     oracle: [{ kind: 'reject', input: 'BV-L-4721', code: 'no_template', template: 'no-brain' }],
   },
+  // -------------------------------------------------------------------------
+  // Which atlas a link lands in. DECIDED, DOG-72 —
+  // `docs/deep-link-atlas-rule.md`. The `atlas` parameter decides and nothing
+  // else does, so these three rows are the whole rule: it is honoured when
+  // present, the address does not vote when it is absent, and the two are not
+  // allowed to disagree about the same address.
+  //
+  // This row used to assert the opposite — that a `BV` address with no `atlas`
+  // parameter enters the brain atlas, because the user named it. That was a
+  // defensible rule and it is not the decided one; the argument it lost to is
+  // in the decision record, not repeated here.
+  // -------------------------------------------------------------------------
   {
     id: 'brain-deep-link-resolves',
-    classes: ['canonical', 'cross-atlas-restore'],
+    classes: ['canonical', 'cross-atlas-link'],
     mustPass: true,
     input: { kind: 'url', url: BODY_URL('BV-L-4721') },
     requires: ['brain-atlas', 'deep-link'],
     expect: {
       observable:
-        'A BV address deep-links straight into the BRAIN atlas with the cell outlined at its true extent. '
-        + 'Arriving by URL is the one way the brain atlas may be entered without the explicit action, '
-        + 'because the user named it.',
-      messages: ['name_index_version'],
-      forbiddenMessages: ['no_template', 'frame_disabled'],
+        'A hand-written BV address with NO atlas parameter stays in the body atlas and selects: the '
+        + 'address resolves and is named, nothing is drawn and the camera does not move — the body atlas '
+        + 'holds no geometry that could contain a brain cell — and the view says which atlas the address '
+        + 'belongs to and offers to open it. A link does not switch atlas; the atlas parameter does.',
+      messages: ['cross_atlas_offer'],
+      // Neither refusal. The address is good and this build has the template:
+      // reporting either one here would tell the user their address or the
+      // build was at fault, when the only fact is that it lives elsewhere.
+      forbiddenMessages: ['no_template', 'frame_disabled', 'rejected_grammar'],
+      camera: 'unchanged',
+      unchanged: ['atlas', 'camera', 'layers', 'cell'],
+      urlAddress: 'BV-L-4721',
+      cellKind: null,
+      atlas: 'body',
+    },
+    oracle: [{ kind: 'locate', address: 'BV-L-4721', template: 'brain', flags: { homology: 'exact' } }],
+    why:
+      'The decided rule, and the row the decision changed. Red against a build whose selection path has '
+      + 'no cross-atlas guard — it draws the brain cell in the body atlas and flies the body camera to '
+      + 'brain coordinates while telling the user the view has not changed. That is DOG-75, and this row '
+      + 'is the requirement rather than a snapshot of the build.',
+  },
+  {
+    id: 'brain-deep-link-restores',
+    classes: ['canonical', 'cross-atlas-restore'],
+    mustPass: true,
+    input: { kind: 'url', url: BODY_URL('BV-L-4721', '&atlas=brain') },
+    requires: ['brain-atlas', 'deep-link', 'view-restore'],
+    expect: {
+      observable:
+        'The link the product itself produces from the brain atlas — address AND atlas — reopens in the '
+        + 'brain atlas with the cell outlined at its true extent and the camera on it. This is the round '
+        + 'trip plan §7 actually requires, and the reason the decided rule needs no implied switch: '
+        + 'encodeView emits the atlas whenever it is not the default.',
+      messages: [],
+      forbiddenMessages: ['no_template', 'frame_disabled', 'cross_atlas_offer'],
       camera: 'flies-to-cell',
       unchanged: [],
       urlAddress: 'BV-L-4721',
       cellKind: 'extent',
       atlas: 'brain',
+    },
+    oracle: [{ kind: 'locate', address: 'BV-L-4721', template: 'brain', flags: { homology: 'exact' } }],
+    why:
+      'Carries the `cross-atlas-restore` class, which `brain-deep-link-resolves` used to carry while '
+      + 'testing something else. A class whose only row has stopped being about restoring is a hole the '
+      + 'enumeration gate cannot see.',
+  },
+  {
+    id: 'cross-atlas-link-honours-the-explicit-atlas',
+    classes: ['cross-atlas-link'],
+    mustPass: true,
+    input: { kind: 'url', url: BODY_URL('BV-L-4721', '&atlas=body') },
+    requires: ['brain-atlas', 'deep-link'],
+    expect: {
+      observable:
+        'A link naming one atlas and an address belonging to another is not a contradiction to resolve: '
+        + 'the atlas parameter is obeyed as written, the address selects where it was asked to, and the '
+        + 'offer carries the move. This is the case the rejected rule would have had to break a tie for.',
+      messages: ['cross_atlas_offer'],
+      forbiddenMessages: ['no_template', 'frame_disabled'],
+      camera: 'unchanged',
+      unchanged: ['atlas', 'camera', 'layers', 'cell'],
+      urlAddress: 'BV-L-4721',
+      cellKind: null,
+      atlas: 'body',
     },
     oracle: [{ kind: 'locate', address: 'BV-L-4721', template: 'brain', flags: { homology: 'exact' } }],
   },
@@ -1041,6 +1135,36 @@ export function matrixIntegrityProblems(rows: readonly MatrixRow[] = DEEP_LINK_M
       problems.push(
         `${at}: ${[...msgs].join('/')} must come with the coarsest resolvable ancestor on offer (plan §4).`,
       );
+    }
+
+    // The decided cross-atlas rule, structurally. A row whose address lives in
+    // one atlas and whose expectation lands in the other is asserting rule 3 of
+    // `docs/deep-link-atlas-rule.md` whether it means to or not, and all three
+    // halves of it have to be there: the offer is the whole reason not switching
+    // is acceptable, and a cell drawn — or a camera flown — into an atlas that
+    // cannot contain it is the defect the rule exists to forbid.
+    const home = homeAtlasOfRow(row);
+    const refuses = [...msgs].some((m) => m.startsWith('rejected_') || m === 'no_template' || m === 'frame_disabled');
+    if (home !== null && !refuses && home !== (row.expect.atlas ?? 'body')) {
+      if (!msgs.has('cross_atlas_offer')) {
+        problems.push(
+          `${at}: lands in the ${row.expect.atlas ?? 'body'} atlas with a ${home}-atlas address and does `
+          + 'not require cross_atlas_offer. Not switching is only acceptable because the view says where '
+          + 'the address lives and offers the move.',
+        );
+      }
+      if (row.expect.cellKind !== null) {
+        problems.push(
+          `${at}: expects a cell drawn in the ${row.expect.atlas ?? 'body'} atlas for an address that `
+          + `belongs to the ${home} atlas. There is no geometry here that could contain it.`,
+        );
+      }
+      if (row.expect.camera !== 'unchanged') {
+        problems.push(
+          `${at}: expects the camera to move for an address belonging to the ${home} atlas. Flying this `
+          + "atlas's camera to another atlas's coordinates is the move rule 3 forbids.",
+        );
+      }
     }
     // A cell with no millimetres must not be flown to. `variant` and `absent`
     // both return NaN, so a row claiming a camera move is asserting a bug.

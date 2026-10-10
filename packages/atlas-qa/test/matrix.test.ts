@@ -64,6 +64,12 @@ test('the issue\'s named minimum coverage is all present, by row', () => {
     ['a BR address (frame_disabled)', (id) => id === 'br-frame-disabled'],
     ['a missing template (no_template)', (id) => id === 'no-template'],
     ['an address at the 64-character cap', (id) => id === 'length-at-the-64-character-cap'],
+    // DOG-72's decided rule, both directions. Named here because the rule is
+    // the kind that gets re-argued: a later reader who thinks a link should
+    // switch atlas has to delete a row this list holds them to, not quietly
+    // invert an expectation.
+    ['a cross-atlas link with no atlas parameter', (id) => id === 'brain-deep-link-resolves'],
+    ['a cross-atlas link that names its atlas', (id) => id === 'brain-deep-link-restores'],
   ];
   const ids = DEEP_LINK_MATRIX.map((r) => r.id);
   const missing = required.filter(([, match]) => !ids.some(match)).map(([what]) => what);
@@ -151,10 +157,14 @@ test('a must-pass row cannot be demoted without this suite noticing', () => {
   // legitimate change and a reviewable one; doing it silently is not, and this
   // is the line that makes it reviewable. Raise the number when you add
   // must-pass rows; lower it only in the same commit as the reason.
+  //
+  // 30 -> 32: DOG-72 added `brain-deep-link-restores` and
+  // `cross-atlas-link-honours-the-explicit-atlas` when the cross-atlas link
+  // rule was decided. Nothing was demoted or deleted.
   assert.equal(
     MUST_PASS_ROW_IDS.length,
-    30,
-    `the matrix has ${MUST_PASS_ROW_IDS.length} must-pass rows, this suite expects 30. If you added `
+    32,
+    `the matrix has ${MUST_PASS_ROW_IDS.length} must-pass rows, this suite expects 32. If you added `
     + 'rows, raise the number. If a row was demoted or deleted, say why in the commit.',
   );
 });
