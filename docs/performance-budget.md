@@ -46,6 +46,11 @@ library added to the page shell.
 | `indexParseMsNormalised` | 40 ms | parse the indexes and build the lookup maps, **including the name index** — `UNVERIFIED`, see below |
 | `lowResAssetParseMsNormalised` | 400 ms | parse the low-resolution asset payloads |
 
+2.5 MiB at 25 Mbit/s is about 0.84 s of transfer, which fits the 2.5 s budget
+with room for parse. It is also roughly where a 20k-triangle body shell plus
+label sets lands, so it constrains the asset pipeline without being
+unachievable.
+
 ### The name index is an index, not an asset (DOG-80)
 
 `assets/labels/names.json` and `assets/labels/coverings.json` are served out of
@@ -66,11 +71,6 @@ The gate now classifies by **role**: the name index counts as index on the byte
 line and on the parse line both, so the critical path is costed once and
 consistently. `indexGzipBytes` was written for this — "256 KiB holds the full
 ALC-1 level and frame tables with room for a label index per frame".
-
-2.5 MiB at 25 Mbit/s is about 0.84 s of transfer, which fits the 2.5 s budget
-with room for parse. It is also roughly where a 20k-triangle body shell plus
-label sets lands, so it constrains the asset pipeline without being
-unachievable.
 
 ## How the two felt numbers are derived
 
