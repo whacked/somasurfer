@@ -7,8 +7,11 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
+      "browser": "./dist/atlas-research.js",
       "default": "./src/index.ts"
     },
+    "./bundle": "./dist/atlas-research.js",
+    "./esm/*": "./dist/esm/*",
     "./src/*": "./src/*",
     "./fixtures/*": "./fixtures/*",
     "./data/*": "./data/*"
@@ -17,13 +20,15 @@
     "src",
     "schema",
     "fixtures",
-    "data"
+    "data",
+    "dist"
   ],
   "sideEffects": false,
   "atlas": {
     "licenceClass": "code"
   },
   "scripts": {
+    "build": "node scripts/build.mjs",
     "test": "node --test 'test/*.test.ts'",
     "check": "node ../../tools/check-research-dataset.mjs"
   },
