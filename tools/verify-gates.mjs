@@ -52,12 +52,20 @@ function withBudgetLimit(line, limit) {
   return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
 }
 
-/** `ci/performance-budget.json` with one budget line's `unverified` block changed. */
-function withUnverified(line, unverified) {
+/**
+ * `ci/performance-budget.json` with one budget line's `unverified` block
+ * changed, and optionally its limit, in a single substitution.
+ *
+ * Both at once rather than two chained calls: each helper re-reads the file, so
+ * chaining works only by accident of ordering and gives two restore functions
+ * where `break` returns one.
+ */
+function withUnverified(line, unverified, limit = null) {
   const budget = JSON.parse(readFileSync(PERF_BUDGET, 'utf8'));
   const spec = { ...budget.budgets[line] };
   if (unverified === null) delete spec.unverified;
   else spec.unverified = unverified;
+  if (limit !== null) spec.limit = limit;
   budget.budgets[line] = spec;
   return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
 }
@@ -590,25 +598,70 @@ const CASES = [
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
   },
   {
-    name: 'perf-unverified-line-is-really-over-budget',
+    name: 'perf-unverified-declaration-is-load-bearing',
     gate: 'performance budget',
-    criterion: 'a line declared UNVERIFIED would go red if the declaration were removed',
-    expect: [/indexParseMsNormalised: at least \d+ ms on the reference machine, against a budget of 40 ms/],
-    describe: 'the DOG-80 index parse line with its unverified declaration deleted',
+    criterion: 'the unverified declaration is the only thing stopping that line from gating',
+    mustPass: true,
+    expect: [/indexParseMsNormalised: at least [\d.]+ ms on the reference machine, against a budget of 1 ms/],
+    describe: 'the DOG-80 index parse line with its unverified declaration deleted and a 1 ms budget',
     // This is what keeps `unverified` from being a suppression. The declaration
-    // stops a line gating, so the one thing nobody can afford to get wrong is a
-    // declaration sitting over a line that was going to pass anyway: that would
-    // read as "we know this is over budget and chose not to gate it" while the
-    // truth was "nothing was wrong and the line stopped being checked".
+    // stops a line gating, so the thing nobody can afford to get wrong is a
+    // declaration sitting over a line that was going to pass anyway — that reads
+    // as "we know this is over budget and chose not to gate it" when the truth
+    // is "nothing was wrong and the line stopped being checked".
     //
-    // Deleting the block and requiring RED proves the number really is over the
-    // limit, so the declaration is carrying a real failure and not hiding an
-    // absent one. It is also the case that goes green on its own the day
-    // somebody takes the name index off the critical path and forgets to delete
-    // the declaration with it — at which point this case says so.
+    // The limit is dropped to 1 ms along with the declaration, deliberately, and
+    // the first draft of this case did not do that. It deleted the declaration
+    // and required red at the real 40 ms, which made the case's colour depend on
+    // whether the runner's raw index parse happened to land above 40 ms — it
+    // wandered between 38 ms and 66 ms on one machine and the case passed and
+    // failed alternately. A must-pass case whose red is a coin flip on a
+    // contended runner is worse than no case, so what is asserted here is the
+    // STRUCTURAL claim, which is deterministic: with the declaration gone the
+    // line gates again and can go red.
+    //
+    // Whether it is over its REAL limit is a measurement, not a structural
+    // property, so it is checked one-sidedly in `audit` below and in the gate's
+    // own output on every run.
     break: () => {
       requireBuild();
-      return withUnverified('indexParseMsNormalised', null);
+      return withUnverified('indexParseMsNormalised', null, 1);
+    },
+    // The numeric half, gated only in the direction the run can settle. This is
+    // also the check that goes red the day somebody takes the name index off the
+    // critical path and forgets to delete the declaration with it.
+    audit: () => {
+      const dir = mkdtempSync(join(tmpdir(), 'perf-unverified-'));
+      const path = join(dir, 'perf.json');
+      try {
+        run('perf-budget.mjs', ['--json', path]);
+        const report = JSON.parse(readFileSync(path, 'utf8'));
+        const line = report.verdicts.indexParseMsNormalised;
+        const limit = report.budgets.indexParseMsNormalised;
+        const problems = [];
+        if (line?.verdict !== 'unverified') {
+          problems.push(`indexParseMsNormalised reports ${JSON.stringify(line?.verdict)}, expected "unverified".`);
+          problems.push(`  The declaration in ci/performance-budget.json is what puts it there.`);
+        }
+        if (typeof line?.reported !== 'number') {
+          problems.push(`verdicts.indexParseMsNormalised.reported is not a number, so nothing was measured.`);
+        } else if (line.kind === 'normalised' || line.kind === 'exact') {
+          // A normalised figure settles the question in both directions.
+          if (!(line.reported > limit)) {
+            problems.push(
+              `indexParseMsNormalised measured ${line.reported.toFixed(1)} ms against its ${limit} ms budget,`
+              + ` which is WITHIN it.`,
+            );
+            problems.push(`  The unverified declaration is then describing a problem that no longer exists:`);
+            problems.push(`  delete the block and let the line gate again.`);
+          }
+        }
+        // Off-band the figure is a one-sided bound. Under the limit it proves
+        // nothing, so nothing is claimed — the same rule the gate itself uses.
+        return problems;
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
   },

@@ -167,13 +167,23 @@ options — and not something this gate can settle.
 **This is not a suppression, and two must-pass cases in `tools/verify-gates.mjs`
 are what make that true rather than merely claimed:**
 
-- `perf-unverified-line-is-really-over-budget` deletes the declaration and
-  requires the line to go **red**. A declaration sitting over a line that would
-  have passed anyway is the dangerous case — it reads as "we know this is over
-  and chose not to gate it" when the truth is "nothing was wrong and the line
-  stopped being checked". This case also goes green on its own the day somebody
-  takes the name index off the critical path and forgets to delete the
-  declaration with it.
+- `perf-unverified-declaration-is-load-bearing` deletes the declaration, drops
+  the limit to 1 ms, and requires the line to go **red** — so with the
+  declaration gone the line demonstrably gates again. A declaration sitting over
+  a line that would have passed anyway is the dangerous case: it reads as "we
+  know this is over and chose not to gate it" when the truth is "nothing was
+  wrong and the line stopped being checked".
+
+  The limit is dropped on purpose. Requiring red at the real 40 ms made the
+  case's colour depend on whether the runner's raw index parse happened to land
+  above 40 ms, which wandered between 38 ms and 66 ms on one machine and made
+  the case pass and fail alternately. The structural claim is deterministic; the
+  numeric one is not, so they are asserted separately. The same case's `audit`
+  carries the numeric half **one-sidedly**: it requires the line to be over its
+  real limit whenever the run produced a normalised figure, and claims nothing
+  when the runner is off-band and the figure is only a bound. That is the check
+  which goes red the day somebody takes the name index off the critical path and
+  forgets to delete the declaration with it.
 - `perf-unverified-needs-a-stated-reason` empties the `reason` and requires the
   gate to **fail naming the line**. Without it, `"unverified": {}` would be a
   one-line way to turn any budget line off with no sentence attached.
