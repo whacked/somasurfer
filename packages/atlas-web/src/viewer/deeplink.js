@@ -119,7 +119,14 @@ export function encodeView(view) {
   const params = new URLSearchParams();
 
   if (hasAddress(view?.address)) params.set('a', view.address);
-  if (atlas !== DEFAULT_VIEW.atlas) params.set('atlas', atlas);
+  // A default is normally omitted, which is what keeps the entry URL bare. The
+  // exception is a view that asks for its atlas to be stated: an address
+  // belonging to the OTHER atlas does not imply the one it is being shown in,
+  // so `atlas=body` is the difference between a link that says where it goes
+  // and a link that has to be interpreted. The request comes from the view and
+  // never from the address — this module carries an address as an opaque string
+  // on purpose, and `parse()` lives downstream of it.
+  if (atlas !== DEFAULT_VIEW.atlas || view?.atlasExplicit === true) params.set('atlas', atlas);
 
   const camera = view?.camera;
   if (camera && Number.isFinite(camera.distance) && camera.distance > 0) {

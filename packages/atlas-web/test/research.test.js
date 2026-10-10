@@ -303,12 +303,18 @@ describe('research runs against the real templates without moving the atlas', ()
       const selected = v.select(cell.address);
       assert.ok(selected.ok, cell.address);
       assert.equal(v.atlas, 'body', `${cell.address} must not switch the atlas`);
-      assert.ok(selected.pointMm.every(Number.isFinite), cell.address);
       if (cell.atlas === 'brain') {
         assert.equal(selected.elsewhere, 'brain', 'it offers, rather than teleports');
         assert.equal(selected.names.covered, false, 'and BV still has no names');
+        // It resolved — in the brain template, which is not the one this view
+        // is drawing. The millimetres are reported as that atlas's answer and
+        // withheld from the view, so nothing draws them here.
+        assert.ok(selected.elsewhereCell.pointMm.every(Number.isFinite), cell.address);
+        assert.equal(selected.pointMm, null, `${cell.address} must not place itself in the body view`);
+        assert.equal(selected.cell, null, `${cell.address} must not be drawable in the body atlas`);
       } else {
         assert.equal(selected.names.covered, true);
+        assert.ok(selected.pointMm.every(Number.isFinite), cell.address);
       }
     }
   });

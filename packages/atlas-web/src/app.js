@@ -437,26 +437,36 @@ function renderAddressPanel() {
 
   const facts = el('dl', { className: 'facts' });
   facts.dataset.testid = 'cell-extent';
-  const extent = selection.extentMm ?? [NaN, NaN, NaN];
+  /**
+   * An address that lives in the other atlas has no millimetres HERE.
+   *
+   * The viewer withholds them, so these read from `elsewhereCell` and say
+   * whose answer they are. "not placed in this template" would be the wrong
+   * sentence twice over: a template did place this cell, and the reason the
+   * numbers are not this view's is not the reason that sentence reports.
+   */
+  const away = selection.elsewhere ? ` in the ${selection.elsewhere} atlas` : '';
+  const placed = selection.elsewhereCell ?? selection;
+  const extent = placed.extentMm ?? [NaN, NaN, NaN];
   facts.append(el('dt', { textContent: 'Cell extent' }));
   facts.append(el('dd', {
-    textContent: selection.extentMm && Number.isFinite(extent[0])
-      ? `${fmt(extent[0], 2)} × ${fmt(extent[1], 2)} × ${fmt(extent[2], 2)} mm`
+    textContent: placed.extentMm && Number.isFinite(extent[0])
+      ? `${fmt(extent[0], 2)} × ${fmt(extent[1], 2)} × ${fmt(extent[2], 2)} mm${away}`
       : 'not placed in this template',
   }));
   // The millimetre centre, always. On a named frame it is corroboration; on an
   // unnamed one it is the whole answer, so it is not conditional on names.
-  const centre = selection.pointMm ?? [NaN, NaN, NaN];
+  const centre = placed.pointMm ?? [NaN, NaN, NaN];
   facts.append(el('dt', { textContent: 'Cell centre' }));
   const centreDd = el('dd', {
     textContent: Number.isFinite(centre[0])
-      ? `${fmt(centre[0], 1)}, ${fmt(centre[1], 1)}, ${fmt(centre[2], 1)} mm`
+      ? `${fmt(centre[0], 1)}, ${fmt(centre[1], 1)}, ${fmt(centre[2], 1)} mm${away}`
       : 'not placed in this template',
   });
   centreDd.dataset.testid = 'cell-centre';
   facts.append(centreDd);
   facts.append(el('dt', { textContent: 'Template' }));
-  facts.append(el('dd', { textContent: selection.templateId ?? 'none bound' }));
+  facts.append(el('dd', { textContent: placed.templateId ?? 'none bound' }));
   panel.append(facts);
 
   if (selection.elsewhere) {
@@ -1126,6 +1136,12 @@ function select(input, { fly = false, push = true } = {}) {
     uploadSelectedCell();
     // The filter moved, so the faint/bright split on the highlights moved.
     uploadHighlights();
+    // There is deliberately no `elsewhere` branch here: an address living in
+    // the other atlas comes back from the viewer with no `cell`, so there is
+    // nothing to upload and nothing to fly to. Keeping the rule in the viewer
+    // instead of copying it into the shell is the point — a second copy is how
+    // this panel came to say "the view has not been changed" while the camera
+    // was already at the other atlas's coordinates (DOG-75).
     if (fly && model.cell) {
       viewer.setCamera(flyToCell(viewer.cameraOf(), meshBounds(model.cell)));
     }

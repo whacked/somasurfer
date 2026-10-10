@@ -23,6 +23,38 @@
  * The only transitions that change the atlas are `openAtlas()` and
  * `returnToPrevious()`, both of which are user actions.
  *
+ * ## Not switching is not enough: it must not DRAW there either
+ *
+ * Reporting `elsewhere` and leaving `state.atlas` alone was only the first half,
+ * and for a while the second half was missing: the selection still carried its
+ * mesh and its millimetres, so the shell uploaded a brain cell into the body
+ * scene and flew the body camera to brain coordinates while the panel said the
+ * view had not changed. Those numbers are the other template's; next to a view
+ * of this one they are not a smaller truth but a different coordinate system,
+ * and the camera move is the teleport this rule exists to refuse.
+ *
+ * So an address whose frame lives in the other atlas has NO geometry in this
+ * view. `cell`, `pointMm`, `extentMm` and `templateId` come back null and the
+ * resolution is kept under `elsewhereCell`, where the panel reports it as that
+ * atlas's answer and nothing that draws can pick it up by accident. The guard
+ * is here and not in the shell because this object is the behaviour of record —
+ * a rule the shell implements privately is a rule the journey cannot measure,
+ * and that is exactly how the two halves came apart (DOG-75).
+ *
+ * ## A cross-atlas selection is still a view, so it is still a link
+ *
+ * `state.address[a]` means "the address atlas `a` is showing", not "an address
+ * belonging to frame `a`". It used to mean the second, which made the first
+ * unrepresentable: `toView()` reads the current atlas's slot, so the brain
+ * address you had just selected in the body atlas was missing from the URL the
+ * page then showed, and copying that link lost the selection (plan §7: every
+ * view is linkable). Filing it under the atlas being viewed also makes the
+ * return stack's snapshot true — it restores what you were looking at.
+ *
+ * The destination atlas's own slot is therefore not written on selection. The
+ * address rides to it through `openAtlas`, which is where the move actually
+ * happens, so the offer still lands on the cell it offered.
+ *
  * ## Camera and layers are per atlas, and the return is a snapshot
  *
  * Two mechanisms, because they answer two different questions. Per-atlas
@@ -190,11 +222,29 @@ export function createViewer(options = {}) {
 
       const home = atlasForFrame(model.frame);
       // Reported, never acted on. The shell turns this into an offer.
-      model.elsewhere = home !== null && home !== state.atlas ? home : null;
+      const elsewhere = home !== null && home !== state.atlas ? home : null;
+      model.elsewhere = elsewhere;
+      // The geometry of an address that lives in the other atlas is withheld
+      // from the view and kept here instead. See the module header.
+      model.elsewhereCell = elsewhere === null ? null : {
+        atlas: elsewhere,
+        templateId: model.templateId,
+        pointMm: model.pointMm,
+        extentMm: model.extentMm,
+        cell: model.cell,
+      };
+      if (elsewhere !== null) {
+        model.templateId = null;
+        model.pointMm = null;
+        model.extentMm = null;
+        model.cell = null;
+      }
       state.selection = model;
-      // Only record the address against the atlas it belongs to, so coming back
-      // to the body atlas does not find a brain address sitting in its slot.
-      if (home !== null) state.address[home] = model.address;
+      // The address THIS atlas's view is showing, whichever atlas the address
+      // belongs to, because that is what a link to this view has to carry. The
+      // destination atlas's own slot is left alone until the move actually
+      // happens, in `openAtlas`.
+      state.address[state.atlas] = model.address;
       return model;
     },
 
@@ -288,6 +338,12 @@ export function createViewer(options = {}) {
     openAtlas(atlas) {
       if (!(atlas in state.layers)) throw new Error(`unknown atlas ${JSON.stringify(atlas)}`);
       if (atlas === state.atlas) return state.atlas;
+      // The address being offered to this atlas, read before the atlas moves:
+      // accepting *Open brain atlas* has to land on the cell that was offered,
+      // and that address is filed under the atlas we are leaving.
+      const offered = state.selection?.ok && state.selection.elsewhere === atlas
+        ? state.selection.address
+        : null;
       state.returnStack.push({
         atlas: state.atlas,
         camera: cloneCamera(state.camera[state.atlas]),
@@ -297,9 +353,10 @@ export function createViewer(options = {}) {
       });
       state.atlas = atlas;
       // Re-select the address this atlas was last showing, so its own panel is
-      // populated rather than showing the other atlas's selection.
+      // populated rather than showing the other atlas's selection — unless we
+      // arrived by accepting an offer, which names its own address.
       state.selection = null;
-      const pending = state.address[atlas];
+      const pending = offered ?? state.address[atlas];
       if (pending) api.select(pending);
       return state.atlas;
     },
@@ -341,6 +398,16 @@ export function createViewer(options = {}) {
         camera: state.camera[state.atlas],
         layers: state.layers[state.atlas],
         labels: state.labels[state.atlas],
+        /**
+         * Say the atlas out loud when the address does not imply it.
+         *
+         * `encodeView` omits a default, so a brain address selected in the
+         * body atlas would otherwise encode as a bare `?a=BV-…`, and which
+         * atlas that link reopens in would depend on a rule rather than on
+         * what it says. One link, one meaning: the view that is only half
+         * about this atlas is the one that states it.
+         */
+        atlasExplicit: state.selection?.ok === true && state.selection.elsewhere !== null,
       };
     },
 
