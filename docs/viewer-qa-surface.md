@@ -249,7 +249,12 @@ claims, so it produces none of them:
   the research panel is `UNVERIFIED` until one is provisioned. Read
   `researchCorpus().role` per row regardless: it is the call that says which
   corpus a row measured.
-- **`bundleGzipBytes` is at 98% of budget** (146.5 KiB of 150.0 KiB) now that
-  `dist/app/atlas-research.js` ships. The gate is green with 3.6 KB of headroom,
-  which is not enough for the next change to assume. DOG-41 owns that line.
+- **`bundleGzipBytes` is at 92% of budget** (138.0 KiB of 150.0 KiB), with
+  12.0 KB of headroom. It read 98% / 3.6 KB when `dist/app/atlas-research.js`
+  first shipped; DOG-84 made that file the three exports the page imports
+  rather than all 24 of `@gstack/atlas-research`, recovering 8,702 B of gzip.
+  DOG-41 owns the line itself. One consequence for a QA pass: the browser's
+  research surface is now narrower than the one every §7 row is driven through
+  in Node, so a viewer importing a fourth name is a build failure rather than
+  something a row could discover. See `packages/atlas-web/src/atlas-research.js`.
 - **`BR` ships disabled** and has no template, by design.
