@@ -17,7 +17,7 @@ the site, so an asset cannot reach a user without its attribution.
 | BD body template, BodyParts3D 4.0 adult | `templates/bp3d-4.0-adult-body-centroid.body.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); adaptation by GStack | **yes** |
 | BV brain-volume template, ICBM152 2009c | `templates/icbm152-2009c-asym.brain-volume.json` | [MNI-BIC-permissive](https://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009) | Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University; adaptation by GStack | no |
 | ALC-1 name index and structure coverings | `labels/names.json`<br>`labels/coverings.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); UBERON / OBO Foundry; adaptation by GStack | **yes** |
-| Brain meshes, cleared group: 248 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly | `brain/zanatomy-2929e94/meshes.lowres.bin`<br>`brain/zanatomy-2929e94/meshes.fullres.bin`<br>`brain/zanatomy-2929e94/structures.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack | **yes** |
+| Brain meshes, cleared group: 244 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly | `brain/zanatomy-2929e94/meshes.lowres.bin`<br>`brain/zanatomy-2929e94/meshes.fullres.bin`<br>`brain/zanatomy-2929e94/structures.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack | **yes** |
 | MNI (ICBM152 2009c) to brain-mesh affine, with residuals | `registration/mni-to-zanatomy-2929e94.json` | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | GStack | no |
 
 ## Provenance
@@ -66,7 +66,7 @@ the site, so an asset cannot reach a user without its attribution.
 - **derived from** BodyParts3D/Anatomography 4.0 — BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan
 - **derived from** UBERON (basic.obo) — CC-BY-3.0, UBERON / OBO Foundry contributors
 
-### Brain meshes, cleared group: 248 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly
+### Brain meshes, cleared group: 244 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly
 
 - **id** `zanatomy-brain-meshes-cleared`
 - **licence** CC-BY-SA-4.0
@@ -96,7 +96,7 @@ The following assets carry a share-alike obligation:
 
 - BD body template, BodyParts3D 4.0 adult — CC-BY-SA-4.0
 - ALC-1 name index and structure coverings — CC-BY-SA-4.0
-- Brain meshes, cleared group: 248 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly — CC-BY-SA-4.0
+- Brain meshes, cleared group: 244 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly — CC-BY-SA-4.0
 
 That obligation is confined to this package by the following, checked on
 every push by `tools/check-licence-separation.mjs`:

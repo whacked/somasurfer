@@ -572,13 +572,28 @@ passed. It moved three structures out of `zanatomy-undeclared-brain-materials`:
 | Midbrain.l, Midbrain.r | **pass**: BodyParts3D's own mesh, p95 0.14 mm | brain.glb | `brainproject-brain-glb`, `zanatomy`, `bodyparts3d` |
 | Corpus callosum | **fail** on label agreement (0.77, threshold 0.90) | BodyParts3D FMA86464 directly, placed by the test's transform | `bodyparts3d` |
 
-**W2 therefore ships 248 structures.** 143 remain held, including 126 of the 128
-cortical ones, and the 46 Dundee nerves remain unverified. The provenance
-manifest records the move per structure (`shipsFrom`, `formerlyHeldBecause`), and
-rule 10 checks it.
-
 The same run found that the four colliculi do **not** match BodyParts3D's
-colliculi. They are cleared by inference from the `Nucleus` material. That
-inference is about *which* cleared source they come from, and it is now known to
-be wrong as to BodyParts3D, though they may still be Z-Anatomy's own work. They
-are reported on DOG-123, not re-classified here.
+colliculi. Only the inference from their `Nucleus` material had cleared them,
+and that inference is about *which* cleared source they come from. It is now
+known to be wrong as to BodyParts3D. The CTO decided (DOG-127, 2026-10-11
+19:54) to hold them fail-closed: an unsettled source does not ship. They are in
+the group `held-by-decision`, held by name in `DECISION_HOLDS`
+(`tools/lib/brain-provenance.mjs`) with the decision cited.
+
+**W2 therefore ships 244 structures:** 245 + 3 − 4. Held: 143 in
+`zanatomy-undeclared-brain-materials`, including 126 of the 128 cortical ones;
+46 Dundee nerves, still unverified; and the 4 colliculi. 145 of the 244 are still
+cleared by the material inference alone; `docs/brain-origin-test.md` lists them.
+
+**What CI checks, and what it cannot.** The provenance manifest records each
+move per structure (`shipsFrom`, `formerlyHeldBecause`, `heldBecause`). Both the
+licence gate (rule 10) and the mesh gate re-derive every record from the inputs
+the manifest records: materials, `bx_source`, `bx_parent`. They apply §7.3, the
+committed origin result (re-judged against the pre-registered thresholds) and
+the decision holds, so a hand-edited group or source fails. What no offline gate
+can check is the recorded inputs themselves, or the geometry. For example,
+nothing in CI can confirm that the corpus callosum's bytes are BodyParts3D's
+FMA86464 (`shipsFrom`) rather than the glb's: that needs the glb and the
+BodyParts3D archive, which are not in the repository. The gates check what each
+structure is *labelled*. Rebuilding with `tools/build-meshes.mjs` from the
+pinned inputs is what checks what it *is*.

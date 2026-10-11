@@ -34,7 +34,7 @@ import { join } from 'node:path';
 import { REPO_ROOT, fail, pass } from './lib/repo.mjs';
 import { readMeshBin, structureGeometry } from './lib/meshbin.mjs';
 import { bounds, degenerateTriangles, surfaceArea, surfaceDeviation } from './lib/mesh-geometry.mjs';
-import { GROUPS } from './lib/brain-provenance.mjs';
+import { GROUPS, verifyProvenance } from './lib/brain-provenance.mjs';
 import { BRAIN_MESH_BUILD, brainAssetPaths } from './lib/brain-asset-paths.mjs';
 import { HELD_OUT, LANDMARKS, MAX_OPEN_EDGE_SHARE, evaluate, meshGeometries, volumeCentroid } from './lib/brain-registration.mjs';
 import { checkSample } from './lib/brain-qa-sample.mjs';
@@ -73,6 +73,14 @@ try {
   fail(GATE, [`A mesh file does not parse: ${err.message}`]);
 }
 
+// --- The manifest itself: re-derived, not taken as given ----------------------
+// Only build-meshes.mjs writes it, and that needs the glb, so nothing else would
+// notice a record hand-edited to `cleared`. Every group and source is derived
+// again here from the inputs the manifest records.
+const ORIGIN_RESULT = join(assets, 'provenance', 'origin-test-bodyparts3d.json');
+if (!existsSync(ORIGIN_RESULT)) fail(GATE, ['packages/atlas-assets/provenance/origin-test-bodyparts3d.json is missing; the provenance manifest cannot be re-derived without it.']);
+for (const p of verifyProvenance(provenance, JSON.parse(readFileSync(ORIGIN_RESULT, 'utf8')))) problems.push(`provenance: ${p}`);
+
 // --- Presence: the shippable manifest against both files' own tables -------
 const shippable = provenance.structures.filter((s) => s.group === GROUPS.cleared);
 const byId = new Map(provenance.structures.map((s) => [s.id, s]));
@@ -82,7 +90,9 @@ for (const [tier, mesh] of [['low', low], ['full', full]]) {
     if (!ids.has(s.id)) problems.push(`${s.name.trim()} (id ${s.id}) is in the source manifest but missing from the ${tier} tier.`);
   }
   for (const t of mesh.table) {
-    if (!byId.has(t.id)) problems.push(`The ${tier} tier carries structure id ${t.id}, which the provenance manifest does not know.`);
+    const rec = byId.get(t.id);
+    if (!rec) problems.push(`The ${tier} tier carries structure id ${t.id}, which the provenance manifest does not know.`);
+    else if (rec.group !== GROUPS.cleared) problems.push(`The ${tier} tier carries ${rec.name.trim()} (id ${t.id}), which is held as ${rec.group}.`);
   }
   if (ids.size !== mesh.table.length) problems.push(`The ${tier} tier lists a structure id more than once.`);
 }
@@ -242,8 +252,11 @@ const reportLines = [
         `| leave-one-out | ${reg.summary.leaveOneOut.meanMm} | ${reg.summary.leaveOneOut.maxMm} |`,
         `| **held out: red nucleus, L and R** | **${reg.summary.heldOut.meanMm}** | **${reg.summary.heldOut.maxMm}** |`,
         '',
-        `Per-axis scale, mesh mm per MNI mm: ${reg.axisScaleMeshMmPerMniMm.join(', ')}. The held-out figure is the honest one: any`,
-        'coordinate carried onto this mesh is placed to within about that distance, never exactly.',
+        `Per-axis scale, mesh mm per MNI mm: ${reg.axisScaleMeshMmPerMniMm.join(', ')}. The held-out figure is the honest one,`,
+        'and only near the deep grey nuclei. Every landmark is one, and the red nucleus sits just outside their',
+        'hull, which is likely why it reads worse than leave-one-out. For structures far from that cluster (the',
+        'cerebellum, pons and medulla, corpus callosum, and cortex) the error is extrapolated and unmeasured, and is',
+        'likely larger. No coordinate carried onto this mesh is placed exactly.',
       ]
     : []),
   '',
@@ -277,7 +290,8 @@ else if (readFileSync(REPORT_DOC, 'utf8') !== reportText) {
 if (problems.length > 0) fail(GATE, problems);
 
 pass(GATE, [
-  `${paths.id}: ${rows.length} of ${shippable.length} shippable structures in both tiers; ${doc.excluded.length} held structures in neither.`,
+  `${paths.id}: provenance re-derived for all ${provenance.structures.length} structures;`
+    + ` ${rows.length} of ${shippable.length} shippable structures in both tiers; ${doc.excluded.length} held structures in neither.`,
   `Floor ${BRAIN_MESH_BUILD.floorTriangles} met by all; no degenerate triangle; no sliver; area low/full ${fmt(Math.min(...rows.map((r) => r.ratio)))}-${fmt(Math.max(...rows.map((r) => r.ratio)))}.`,
   `Published error re-measured for all ${rows.length}: Hausdorff median ${fmt(pct(hs, 0.5))} mm, max ${fmt(Math.max(...hs))} mm.`,
   `Registration re-derived: held-out ${reg.summary.heldOut.maxMm} mm; QA sample ${sample.sample.length} structures,`

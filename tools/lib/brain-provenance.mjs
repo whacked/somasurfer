@@ -24,6 +24,8 @@
  *     is theirs and only the cut is the atlas's.
  */
 
+import { ORIGIN_TEST, originPasses } from './origin-test.mjs';
+
 /** Held: the materials of the two models Z-Anatomy lists with no licence. */
 export const UNDECLARED_MATERIALS = new Set(['Brain', 'Brain-Inner', 'White matter']);
 
@@ -68,6 +70,7 @@ export const GROUPS = {
   cleared: 'cleared',
   undeclared: 'zanatomy-undeclared-brain-materials',
   nerves: 'dundee-cranial-nerves',
+  decision: 'held-by-decision',
 };
 
 /**
@@ -139,6 +142,10 @@ export function classifyStructure({ name, extras, materials }) {
     label: extras.bx_label,
     category: extras.bx_cat,
     side: extras.bx_side,
+    // Recorded so CI can classify this structure again from the manifest alone
+    // (verifyProvenance); without them the inputs of the decision are not here.
+    bxSource: extras.bx_source ?? null,
+    bxParent: extras.bx_parent ?? null,
     materials: mats,
     group,
     sources: [...sources].sort(),
@@ -162,12 +169,39 @@ export const REPLACEMENTS = Object.freeze({
   'Corpus callosum': { source: 'bodyparts3d', concept: 'FMA86464', route: 'CTO decision on DOG-127, 2026-10-11 18:32' },
 });
 
+/**
+ * Re-judge the committed origin result rather than take its verdicts as given.
+ * A hand-edited `clears` list, a `passes: true` on a row whose numbers fail, or
+ * a control that no longer discriminates all throw: the result file is the only
+ * input of a clearance, so an inconsistent one stops the build and the gate
+ * alike instead of clearing anything.
+ */
+export function judgeOriginResult(result) {
+  const controls = result.structures.map((r) => originPasses(r.control));
+  const share = controls.filter(Boolean).length / controls.length;
+  const discriminates = controls.length > 0 && share <= ORIGIN_TEST.maxNegativeControlPassShare;
+  const clears = discriminates
+    ? result.structures.filter((r) => r.role === 'held-out' && originPasses(r.matched)).map((r) => r.name)
+    : [];
+  const recorded = [...result.result.clears].sort();
+  if (JSON.stringify(recorded) !== JSON.stringify([...clears].sort())) {
+    throw new Error(
+      `the origin result clears ${JSON.stringify(recorded)}, but its own figures under the pre-registered thresholds clear ${JSON.stringify(clears)}`
+        + ` (negative control ${controls.filter(Boolean).length} of ${controls.length} passing, ${discriminates ? 'discriminating' : 'NOT discriminating'}).`,
+    );
+  }
+  if (result.negativeControl?.discriminates !== discriminates) {
+    throw new Error(`the origin result records discriminates: ${result.negativeControl?.discriminates}; its control rows say ${discriminates}.`);
+  }
+  return new Set(clears);
+}
+
 export function applyOriginResult(structure, result) {
   const name = structure.name.trim();
   const row = result.structures.find((r) => r.name === name && r.role === 'held-out');
   if (!row) return structure;
   const evidence = `packages/atlas-assets/provenance/origin-test-bodyparts3d.json: mean ${row.matched.meanSymmetricMm} mm, p95 ${row.matched.p95Mm} mm, label agreement ${row.matched.labelAgreement}`;
-  if (result.result.clears.includes(name)) {
+  if (judgeOriginResult(result).has(name)) {
     return {
       ...structure,
       group: GROUPS.cleared,
@@ -193,21 +227,111 @@ export function applyOriginResult(structure, result) {
   return structure;
 }
 
+/**
+ * Structures the material rules clear but a decision holds. Each is held by its
+ * exact name with the decision cited, so the hold is visible in the manifest
+ * and nothing about it is inferred:
+ *
+ *   - the four colliculi cleared only by the `Nucleus` material inference, and
+ *     the origin test found they are not BodyParts3D's meshes (p95 ~9.6 mm as
+ *     fit structures). An unsettled source does not ship.
+ */
+const COLLICULI_HOLD = Object.freeze({
+  route: 'CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed',
+  reason: 'cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D\'s mesh (docs/brain-origin-test.md); source unsettled, held fail-closed',
+});
+export const DECISION_HOLDS = Object.freeze({
+  'Inferior colliculus.l': COLLICULI_HOLD,
+  'Inferior colliculus.r': COLLICULI_HOLD,
+  'Superior colliculus.l': COLLICULI_HOLD,
+  'Superior colliculus.r': COLLICULI_HOLD,
+});
+
+export function applyDecisionHold(structure) {
+  const hold = DECISION_HOLDS[structure.name.trim()];
+  if (!hold || structure.group !== GROUPS.cleared) return structure;
+  return {
+    ...structure,
+    group: GROUPS.decision,
+    heldBecause: [`${hold.reason} (${hold.route})`],
+  };
+}
+
+/** One structure, start to finish: the material rules, then the measurement, then any decision. */
+function decide(classified, originResult) {
+  let s = { shipsFrom: 'brain.glb', ...classified };
+  if (originResult) s = applyOriginResult(s, originResult);
+  s = applyDecisionHold(s);
+  return JSON.parse(JSON.stringify(s));
+}
+
 /** The whole manifest, from decoded nodes, plus counts per group. */
 export function buildProvenance(nodes, originResult = null) {
+  const names = new Set(nodes.map((n) => n.name.trim()));
+  const unmatched = Object.keys(DECISION_HOLDS).filter((n) => !names.has(n));
+  if (unmatched.length > 0) throw new Error(`DECISION_HOLDS names ${unmatched.join(', ')}, which the glb does not contain; a hold that matches nothing holds nothing.`);
   const structures = nodes
-    .map((n) => classifyStructure({ name: n.name, extras: n.extras, materials: n.parts.map((p) => p.material) }))
-    .map((s) => ({ shipsFrom: 'brain.glb', ...s }))
-    .map((s) => (originResult ? applyOriginResult(s, originResult) : s))
-    .map((s) => JSON.parse(JSON.stringify(s)))
+    .map((n) => decide(classifyStructure({ name: n.name, extras: n.extras, materials: n.parts.map((p) => p.material) }), originResult))
     .sort((a, b) => a.id - b.id);
+  return { structures, ...countGroups(structures) };
+}
+
+function countGroups(structures) {
   const counts = {};
   for (const s of structures) counts[s.group] = (counts[s.group] ?? 0) + 1;
   const cortical = structures.filter((s) => s.category === 'cortex');
-  return {
-    structures,
-    counts,
-    corticalHeld: cortical.filter((s) => s.group !== GROUPS.cleared).length,
-    cortical: cortical.length,
-  };
+  return { counts, corticalHeld: cortical.filter((s) => s.group !== GROUPS.cleared).length, cortical: cortical.length };
+}
+
+/**
+ * Check a committed manifest without the glb: classify every record again from
+ * the inputs it records (name, ids, materials, bx_source/bx_parent), apply the
+ * committed origin result and the decision holds, and require the manifest to
+ * be exactly that. A record hand-edited to `cleared`, a source dropped, a count
+ * nudged: each is a difference here.
+ *
+ * What this cannot check is the recorded inputs themselves: that a structure's
+ * materials really are what the manifest says, and that its geometry is the
+ * glb's. Both need the glb, which is not in the repository.
+ *
+ * Returns a list of problems; empty means the manifest is what the rules give.
+ */
+export function verifyProvenance(manifest, originResult) {
+  const problems = [];
+  let rebuilt;
+  try {
+    rebuilt = manifest.structures.map((rec) => decide(classifyStructure({
+      name: rec.name,
+      extras: {
+        bx_id: rec.id,
+        bx_label: rec.label,
+        bx_cat: rec.category,
+        bx_side: rec.side,
+        bx_source: rec.bxSource ?? undefined,
+        ...(rec.bxParent != null ? { bx_parent: rec.bxParent } : {}),
+      },
+      materials: rec.materials ?? [],
+    }), originResult));
+  } catch (err) {
+    return [`the provenance manifest does not re-derive: ${err.message}`];
+  }
+  const names = new Set(manifest.structures.map((s) => s.name.trim()));
+  for (const n of Object.keys(DECISION_HOLDS)) {
+    if (!names.has(n)) problems.push(`DECISION_HOLDS names ${n}, which the provenance manifest does not list.`);
+  }
+  manifest.structures.forEach((rec, i) => {
+    const want = rebuilt[i];
+    const fields = [...new Set([...Object.keys(rec), ...Object.keys(want)])]
+      .filter((k) => JSON.stringify(rec[k]) !== JSON.stringify(want[k]));
+    if (fields.length > 0) {
+      problems.push(`${rec.name.trim()} (id ${rec.id}): the manifest records ${fields.map((k) => `${k} ${JSON.stringify(rec[k])}`).join(', ')};`
+        + ` re-deriving it under §7.3, the origin result and the decision holds gives ${fields.map((k) => JSON.stringify(want[k])).join(', ')}.`);
+    }
+  });
+  const { counts, cortical, corticalHeld } = countGroups(rebuilt);
+  const wantCounts = { ...counts, cortical, corticalHeld };
+  if (JSON.stringify(manifest.counts) !== JSON.stringify(wantCounts)) {
+    problems.push(`the provenance manifest counts ${JSON.stringify(manifest.counts)}; its records give ${JSON.stringify(wantCounts)}.`);
+  }
+  return problems;
 }

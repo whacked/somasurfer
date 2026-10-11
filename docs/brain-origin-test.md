@@ -153,3 +153,58 @@ BodyParts3D's own colliculi. They may still be Z-Anatomy's own modelling, which
 Z-Anatomy's licence covers, so this does not by itself un-clear them. It does
 show that the material-name inference can be wrong about *which* cleared source
 a structure came from. That is reported to the CTO on DOG-123, not resolved here.
+
+**Decided since (CTO, DOG-127, 2026-10-11 19:54): the colliculi are held.** Their
+clearance rested on the material inference alone, this test is the first direct
+evidence about that inference, and it was wrong about their source. An
+unsettled source does not ship. `DECISION_HOLDS` in
+`tools/lib/brain-provenance.mjs` holds all four by name, citing the decision, in
+the group `held-by-decision`. W2 ships 244 structures.
+
+**What was and was not pre-registered.** The thresholds and the alignment rule
+were committed first, in `0c98385`, and have not changed since. The matching
+machinery was not committed first: `tools/lib/origin-match.mjs`,
+`tools/test-bp3d-origin.mjs`, the reference parcel set and the 14-structure fit
+set all landed in the results commit, `60be6f9`, so they were chosen with the
+reference in hand. The results give no sign of tuning toward a pass: the midbrain
+passes by about 10x, and the corpus callosum failed. The fit set also contains
+the four colliculi, which mismatch at p95 ≈ 9.6 mm. They contribute to the one
+similarity transform, and the fit converged to 0.31 mm regardless.
+
+### Structures cleared by material inference alone
+
+Under the CTO's follow-up, these are the cleared structures whose standing
+rests on the §7.3 material-name inference and nothing else. They are every
+cleared record in `packages/atlas-assets/provenance/brain-zanatomy-2929e94.json`
+whose `basis` reads "cleared BY INFERENCE". There are **145 of 244**. The
+other 99 rest on something more:
+- 96 are imaging-registered, cleared by their atlas;
+- 2 (the midbrain) passed this test;
+- 1 (the corpus callosum) ships from BodyParts3D directly.
+
+A dagger (†) marks the 10 that this test did measure, as fit structures. Each one
+matched BodyParts3D within all three thresholds, with p95 ≤ 0.30 mm and label
+agreement ≥ 0.93. That evidence is weaker than a held-out pass, because the
+transform was fitted on them. The other 135 have no direct evidence of their
+source.
+
+| category | material | n | structures |
+| --- | --- | ---: | --- |
+| arteries | `Artery` | 48 | Anterior cerebral artery.l, Anterior cerebral artery.r, Anterior communicating artery, Anterior inferior cerebellar artery.l, Anterior inferior cerebellar artery.r, Anterior spinal artery.l, Anterior spinal artery.r, Basilar artery, Callosomarginal artery.l, Callosomarginal artery.r, Distal lateral striate branches.l, Distal lateral striate branches.r, Frontal branches of callosomarginal artery.l, Frontal branches of callosomarginal artery.r, Insular branches of middle cerebral artery (M2).r, Insular branches of middle cerebral artery (M2-segment).l, Internal carotid artery.l, Internal carotid artery.r, Lateral pontine branches of basilar artery.l, Lateral pontine branches of basilar artery.r, Medial pontine branches of basilar artery.l, Medial pontine branches of basilar artery.r, Middle cerebral artery (M1-segment).l, Middle cerebral artery (M1-segment).r, Middle cerebral artery (M3 segment).l, Middle cerebral artery (M3-segment).r, Ophthalmic artery.l, Ophthalmic artery.r, Orbitofrontal branches of anterior cerebral artery.l, Orbitofrontal branches of anterior cerebral artery.r, Parietal branches of middle cerebral artery.l, Parietal branches of middle cerebral artery.r, Pericallosal artery.l, Pericallosal artery.r, Posterior cerebral artery.l, Posterior cerebral artery.r, Posterior communicating artery.l, Posterior communicating artery.r, Posterior inferior cerebellar artery.l, Posterior inferior cerebellar artery.r, Proximal lateral striate branches.l, Proximal lateral striate branches.r, Superior cerebellar artery.l, Superior cerebellar artery.r, Temporal branches of middle cerebral artery.l, Temporal branches of middle cerebral artery.r, Vertebral artery.l, Vertebral artery.r |
+| brainstem | `LCR` | 1 | Aqueduct of midbrain |
+| brainstem | `Nucleus` | 6 | Olive.l, Olive.r, Pyramid of medulla oblongata.l, Pyramid of medulla oblongata.r, Red nucleus.l, Red nucleus.r |
+| brainstem | `Nucleus (afferent fibers)` | 2 | Vestibular nuclei.l, Vestibular nuclei.r |
+| brainstem | `Nucleus (efferent fibers)` | 10 | Accessory nucleus of oculomotor nerve.l, Accessory nucleus of oculomotor nerve.r, Motor nucleus of facial nerve.l, Motor nucleus of facial nerve.r, Nucleus of abducens nerve.l, Nucleus of abducens nerve.r, Nucleus of oculomotor nerve.l, Nucleus of oculomotor nerve.r, Superior salivatory nucleus.l, Superior salivatory nucleus.r |
+| cerebellum | `Cerebellum` | 31 | Anterior quadrangular lobule.l, Anterior quadrangular lobule.r, Biventral lobule.l, Biventral lobule.r, Central lobule, Culmen, Declive, Flocculus.l, Flocculus.r, Folium of vermis, Gracile lobule.l, Gracile lobule.r, Inferior semilunar lobule.l, Inferior semilunar lobule.r, Lingula of cerebellum, Nodule of vermis, Peduncle of flocculus.l, Peduncle of flocculus.r, Posterior quadrangular lobule.l, Posterior quadrangular lobule.r, Pyramis of vermis, Superior cerebellar peduncle.l, Superior cerebellar peduncle.r, Superior semilunar lobule.l, Superior semilunar lobule.r, Tonsil of cerebellum.l, Tonsil of cerebellum.r, Tuber of vermis, Uvula of vermis, Wing of central lobule.l, Wing of central lobule.r |
+| cortex | `Nucleus` | 2 | Hippocampus.l †, Hippocampus.r † |
+| cranial_nerves | `Bone-4` | 2 | Hypoglossal nerve (XII).l, Hypoglossal nerve (XII).r |
+| cranial_nerves | `Nucleus (afferent fibers)` | 2 | Sensory root of trigeminal nerve.l, Sensory root of trigeminal nerve.r |
+| deep_grey | `Nucleus` | 5 | Caudate nucleus.l †, Caudate nucleus.r †, Putamen.l †, Putamen.r †, Septal nuclei |
+| diencephalon | `Nucleus` | 10 | Adenohypophysis, Habenula, Lateral geniculate body.l, Lateral geniculate body.r, Mamillary body.l, Mamillary body.r, Medial geniculate body.l, Medial geniculate body.r, Neurohypophysis, Pineal gland |
+| meninges_dura | `Cartilage` | 3 | Falx cerebri, Tentorium cerebelli.l, Tentorium cerebelli.r |
+| veins_sinuses | `Artery` | 17 | Anterior intercavernous sinus, Basilar venous plexus, Cavernous sinus.l, Cavernous sinus.r, Inferior petrosal sinus.l, Inferior petrosal sinus.r, Inferior sagittal sinus, Occipital sinus, Posterior intercavernous sinus, Sigmoid sinus.l, Sigmoid sinus.r, Straight sinus, Superior petrosal sinus.l, Superior petrosal sinus.r, Superior sagittal sinus, Transverse sinus.l, Transverse sinus.r |
+| ventricles | `Artery` | 2 | Choroid plexus.l, Choroid plexus.r |
+| ventricles | `LCR` | 4 | Fourth ventricle †, Lateral ventricle.l †, Lateral ventricle.r †, Third ventricle † |
+
+The manifest is the authority for this list, and CI re-derives the manifest on
+every run. If the two disagree, the manifest is right.

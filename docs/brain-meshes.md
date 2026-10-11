@@ -10,20 +10,25 @@ cannot check.
 
 | | structures | where |
 | --- | ---: | --- |
-| cleared, shipped | 248 | `packages/atlas-assets/brain/zanatomy-2929e94/` (CC BY-SA 4.0, entry `zanatomy-brain-meshes-cleared`) |
+| cleared, shipped | 244 | `packages/atlas-assets/brain/zanatomy-2929e94/` (CC BY-SA 4.0, entry `zanatomy-brain-meshes-cleared`) |
 | undeclared Z-Anatomy materials, held | 143 (126 of the 128 cortical) | in neither mesh file; listed by name under `excluded` in `structures.json` |
 | Dundee cranial nerves, unverified | 46 | the same |
+| held by decision: the four colliculi | 4 | the same; CTO decision on DOG-127, 2026-10-11 19:54 |
 
 These groups come from `docs/asset-licensing.md` §7.3. The cortex stays held after
 §7.8: the upstream title behind Brainder is not established. The fallback the CTO
 decided in advance is a first-party ICBM152 cortex; see
-`docs/brain-cortex-fallback.md`. The 248 are §7.3's 245 plus three that a measurement moved
-(`docs/brain-origin-test.md`):
+`docs/brain-cortex-fallback.md`. The 244 are §7.3's 245, plus three that a measurement moved
+(`docs/brain-origin-test.md`), less the four colliculi a decision holds:
 - **midbrain L and R** passed the pre-registered test as BodyParts3D's own meshes,
   and ship from the glb citing `bodyparts3d`;
 - **the corpus callosum** failed it, and ships BodyParts3D's FMA86464 mesh
   instead. It is placed by the test's own transform, and `structures.json`
-  records `shipsFrom` for every structure.
+  records `shipsFrom` for every structure;
+- **the four colliculi** are held. Only the `Nucleus` material inference cleared
+  them, and the same test found they are not BodyParts3D's meshes. The CTO's
+  decision (DOG-127, 2026-10-11 19:54) holds them fail-closed, by name, in
+  `DECISION_HOLDS` (`tools/lib/brain-provenance.mjs`).
 
 **Provenance is generated, not written.** `tools/build-meshes.mjs` classifies all
 437 structures from the materials inside the pinned glb. It writes the result to
@@ -53,8 +58,11 @@ perf gate would stop measuring what the page does.
 
 **The frame is not MNI.** Positions are in brainproject's mesh frame: glTF, metres,
 +x is the model's left, +y superior, +z anterior. `packages/atlas-assets/registration/`
-maps MNI millimetres into it, and its held-out error is the one every
-coordinate-placed finding inherits.
+maps MNI millimetres into it. Its held-out error, 8.55 mm at the red nucleus, is the
+one every coordinate-placed finding inherits *near the deep grey nuclei*. All ten
+landmarks are deep nuclei. Far from them (the cerebellum, pons and medulla, corpus
+callosum, and cortex) the affine extrapolates and its error is unmeasured. It is
+likely larger. CIT168 has no landmark out there to hold out.
 
 ## Two tiers
 

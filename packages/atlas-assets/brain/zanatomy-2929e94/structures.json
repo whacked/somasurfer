@@ -46,25 +46,26 @@
  "tiers": {
   "low": {
    "file": "brain/zanatomy-2929e94/meshes.lowres.bin",
-   "bytes": 1127232,
-   "gzipBytes": 812547,
-   "sha256": "92264f7f6df3f9476d5c6a28a1e6652e8cbf1d4f5f97637c7aeb94434c30dcc9",
+   "bytes": 1121904,
+   "gzipBytes": 808952,
+   "sha256": "8f58abbdd8327aa6a8860db71cd8b35bbcc4c58c865fcdac4050fb611a75e9c2",
    "loading": "eager"
   },
   "full": {
    "file": "brain/zanatomy-2929e94/meshes.fullres.bin",
-   "bytes": 7289480,
-   "gzipBytes": 5320761,
-   "sha256": "2d595c1d948c28f40754d796810c9f60fdfc3e3b58f2d6ec043bdb3682383cec",
+   "bytes": 7270832,
+   "gzipBytes": 5309123,
+   "sha256": "7685c4adfa06f3aa59aef94ee6c19667aee0ebbf6cf505ddeec9b88703a477e0",
    "loading": "lazy"
   }
  },
  "counts": {
-  "structures": 248,
-  "excluded": 189,
+  "structures": 244,
+  "excluded": 193,
   "zanatomy-undeclared-brain-materials": 143,
   "dundee-cranial-nerves": 46,
-  "cleared": 248
+  "cleared": 244,
+  "held-by-decision": 4
  },
  "structures": [
   {
@@ -3932,98 +3933,8 @@
    }
   },
   {
-   "id": 130,
-   "slot": 88,
-   "name": "Inferior colliculus.l",
-   "label": "Inferior colliculus",
-   "category": "brainstem",
-   "side": "left",
-   "region": "Brainstem",
-   "ta2": [
-    "Bonus collection",
-    "Brain",
-    "Brainstem",
-    "Central nervous system",
-    "Head",
-    "Inferior colliculus",
-    "Main divisions",
-    "Midbrain",
-    "Nervous system",
-    "Regions of human body",
-    "Scene Collection",
-    "Tectum of midbrain"
-   ],
-   "sources": [
-    "bodyparts3d",
-    "brainproject-brain-glb",
-    "zanatomy"
-   ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
-   "shipsFrom": "brain.glb",
-   "full": {
-    "triangles": 464,
-    "vertices": 236,
-    "areaMm2": 346.1
-   },
-   "low": {
-    "triangles": 128,
-    "vertices": 68,
-    "areaMm2": 328.4
-   },
-   "sourceTriangles": 464,
-   "errorMm": {
-    "hausdorff": 0.525,
-    "mean": 0.122
-   }
-  },
-  {
-   "id": 131,
-   "slot": 89,
-   "name": "Inferior colliculus.r",
-   "label": "Inferior colliculus",
-   "category": "brainstem",
-   "side": "right",
-   "region": "Brainstem",
-   "ta2": [
-    "Bonus collection",
-    "Brain",
-    "Brainstem",
-    "Central nervous system",
-    "Head",
-    "Inferior colliculus",
-    "Main divisions",
-    "Midbrain",
-    "Nervous system",
-    "Regions of human body",
-    "Scene Collection",
-    "Tectum of midbrain"
-   ],
-   "sources": [
-    "bodyparts3d",
-    "brainproject-brain-glb",
-    "zanatomy"
-   ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
-   "shipsFrom": "brain.glb",
-   "full": {
-    "triangles": 464,
-    "vertices": 236,
-    "areaMm2": 346.1
-   },
-   "low": {
-    "triangles": 128,
-    "vertices": 68,
-    "areaMm2": 328.3
-   },
-   "sourceTriangles": 464,
-   "errorMm": {
-    "hausdorff": 0.524,
-    "mean": 0.125
-   }
-  },
-  {
    "id": 132,
-   "slot": 90,
+   "slot": 88,
    "name": "Inferior fronto-occipital fasciculus.l",
    "label": "Inferior fronto-occipital fasciculus",
    "category": "tracts",
@@ -4068,7 +3979,7 @@
   },
   {
    "id": 133,
-   "slot": 91,
+   "slot": 89,
    "name": "Inferior fronto-occipital fasciculus.r",
    "label": "Inferior fronto-occipital fasciculus",
    "category": "tracts",
@@ -4113,7 +4024,7 @@
   },
   {
    "id": 134,
-   "slot": 92,
+   "slot": 90,
    "name": "Inferior longitudinal fasciculus.l",
    "label": "Inferior longitudinal fasciculus",
    "category": "tracts",
@@ -4158,7 +4069,7 @@
   },
   {
    "id": 135,
-   "slot": 93,
+   "slot": 91,
    "name": "Inferior longitudinal fasciculus.r",
    "label": "Inferior longitudinal fasciculus",
    "category": "tracts",
@@ -4203,7 +4114,7 @@
   },
   {
    "id": 138,
-   "slot": 94,
+   "slot": 92,
    "name": "Inferior petrosal sinus.l",
    "label": "Inferior petrosal sinus",
    "category": "veins_sinuses",
@@ -4243,7 +4154,7 @@
   },
   {
    "id": 139,
-   "slot": 95,
+   "slot": 93,
    "name": "Inferior petrosal sinus.r",
    "label": "Inferior petrosal sinus",
    "category": "veins_sinuses",
@@ -4283,7 +4194,7 @@
   },
   {
    "id": 140,
-   "slot": 96,
+   "slot": 94,
    "name": "Inferior sagittal sinus",
    "label": "Inferior sagittal sinus",
    "category": "veins_sinuses",
@@ -4323,7 +4234,7 @@
   },
   {
    "id": 141,
-   "slot": 97,
+   "slot": 95,
    "name": "Inferior semilunar lobule.l",
    "label": "Inferior semilunar lobule",
    "category": "cerebellum",
@@ -4365,7 +4276,7 @@
   },
   {
    "id": 142,
-   "slot": 98,
+   "slot": 96,
    "name": "Inferior semilunar lobule.r",
    "label": "Inferior semilunar lobule",
    "category": "cerebellum",
@@ -4407,7 +4318,7 @@
   },
   {
    "id": 147,
-   "slot": 99,
+   "slot": 97,
    "name": "Insular branches of middle cerebral artery (M2).r",
    "label": "Insular branches of middle cerebral artery (M2)",
    "category": "arteries",
@@ -4449,7 +4360,7 @@
   },
   {
    "id": 148,
-   "slot": 100,
+   "slot": 98,
    "name": "Insular branches of middle cerebral artery (M2-segment).l",
    "label": "Insular branches of middle cerebral artery (M2-segment)",
    "category": "arteries",
@@ -4491,7 +4402,7 @@
   },
   {
    "id": 149,
-   "slot": 101,
+   "slot": 99,
    "name": "Internal carotid artery.l",
    "label": "Internal carotid artery",
    "category": "arteries",
@@ -4534,7 +4445,7 @@
   },
   {
    "id": 150,
-   "slot": 102,
+   "slot": 100,
    "name": "Internal carotid artery.r",
    "label": "Internal carotid artery",
    "category": "arteries",
@@ -4577,7 +4488,7 @@
   },
   {
    "id": 153,
-   "slot": 103,
+   "slot": 101,
    "name": "Intralaminar and lateral posterior nuclei.l",
    "label": "Intralaminar and lateral posterior nuclei",
    "category": "diencephalon",
@@ -4622,7 +4533,7 @@
   },
   {
    "id": 154,
-   "slot": 104,
+   "slot": 102,
    "name": "Intralaminar and lateral posterior nuclei.r",
    "label": "Intralaminar and lateral posterior nuclei",
    "category": "diencephalon",
@@ -4667,7 +4578,7 @@
   },
   {
    "id": 161,
-   "slot": 105,
+   "slot": 103,
    "name": "Lateral geniculate body.l",
    "label": "Lateral geniculate body",
    "category": "diencephalon",
@@ -4710,7 +4621,7 @@
   },
   {
    "id": 162,
-   "slot": 106,
+   "slot": 104,
    "name": "Lateral geniculate body.r",
    "label": "Lateral geniculate body",
    "category": "diencephalon",
@@ -4753,7 +4664,7 @@
   },
   {
    "id": 163,
-   "slot": 107,
+   "slot": 105,
    "name": "Lateral hypothalamus.l",
    "label": "Lateral hypothalamus",
    "category": "diencephalon",
@@ -4798,7 +4709,7 @@
   },
   {
    "id": 164,
-   "slot": 108,
+   "slot": 106,
    "name": "Lateral hypothalamus.r",
    "label": "Lateral hypothalamus",
    "category": "diencephalon",
@@ -4843,7 +4754,7 @@
   },
   {
    "id": 165,
-   "slot": 109,
+   "slot": 107,
    "name": "Lateral nucleus.l",
    "label": "Lateral nucleus",
    "category": "deep_grey",
@@ -4890,7 +4801,7 @@
   },
   {
    "id": 166,
-   "slot": 110,
+   "slot": 108,
    "name": "Lateral nucleus.r",
    "label": "Lateral nucleus",
    "category": "deep_grey",
@@ -4937,7 +4848,7 @@
   },
   {
    "id": 171,
-   "slot": 111,
+   "slot": 109,
    "name": "Lateral pontine branches of basilar artery.l",
    "label": "Lateral pontine branches of basilar artery",
    "category": "arteries",
@@ -4979,7 +4890,7 @@
   },
   {
    "id": 172,
-   "slot": 112,
+   "slot": 110,
    "name": "Lateral pontine branches of basilar artery.r",
    "label": "Lateral pontine branches of basilar artery",
    "category": "arteries",
@@ -5021,7 +4932,7 @@
   },
   {
    "id": 173,
-   "slot": 113,
+   "slot": 111,
    "name": "Lateral ventricle.l",
    "label": "Lateral ventricle",
    "category": "ventricles",
@@ -5066,7 +4977,7 @@
   },
   {
    "id": 174,
-   "slot": 114,
+   "slot": 112,
    "name": "Lateral ventricle.r",
    "label": "Lateral ventricle",
    "category": "ventricles",
@@ -5111,7 +5022,7 @@
   },
   {
    "id": 179,
-   "slot": 115,
+   "slot": 113,
    "name": "Lingula of cerebellum",
    "label": "Lingula of cerebellum",
    "category": "cerebellum",
@@ -5153,7 +5064,7 @@
   },
   {
    "id": 182,
-   "slot": 116,
+   "slot": 114,
    "name": "Mamillary body.l",
    "label": "Mamillary body",
    "category": "diencephalon",
@@ -5196,7 +5107,7 @@
   },
   {
    "id": 183,
-   "slot": 117,
+   "slot": 115,
    "name": "Mamillary body.r",
    "label": "Mamillary body",
    "category": "diencephalon",
@@ -5239,7 +5150,7 @@
   },
   {
    "id": 186,
-   "slot": 118,
+   "slot": 116,
    "name": "Medial geniculate body.l",
    "label": "Medial geniculate body",
    "category": "diencephalon",
@@ -5282,7 +5193,7 @@
   },
   {
    "id": 187,
-   "slot": 119,
+   "slot": 117,
    "name": "Medial geniculate body.r",
    "label": "Medial geniculate body",
    "category": "diencephalon",
@@ -5325,7 +5236,7 @@
   },
   {
    "id": 188,
-   "slot": 120,
+   "slot": 118,
    "name": "Medial lemniscus.l",
    "label": "Medial lemniscus",
    "category": "tracts",
@@ -5370,7 +5281,7 @@
   },
   {
    "id": 189,
-   "slot": 121,
+   "slot": 119,
    "name": "Medial lemniscus.r",
    "label": "Medial lemniscus",
    "category": "tracts",
@@ -5415,7 +5326,7 @@
   },
   {
    "id": 192,
-   "slot": 122,
+   "slot": 120,
    "name": "Medial pontine branches of basilar artery.l",
    "label": "Medial pontine branches of basilar artery",
    "category": "arteries",
@@ -5457,7 +5368,7 @@
   },
   {
    "id": 193,
-   "slot": 123,
+   "slot": 121,
    "name": "Medial pontine branches of basilar artery.r",
    "label": "Medial pontine branches of basilar artery",
    "category": "arteries",
@@ -5499,7 +5410,7 @@
   },
   {
    "id": 194,
-   "slot": 124,
+   "slot": 122,
    "name": "Mediodorsal nucleus.l",
    "label": "Mediodorsal nucleus",
    "category": "diencephalon",
@@ -5544,7 +5455,7 @@
   },
   {
    "id": 195,
-   "slot": 125,
+   "slot": 123,
    "name": "Mediodorsal nucleus.r",
    "label": "Mediodorsal nucleus",
    "category": "diencephalon",
@@ -5589,7 +5500,7 @@
   },
   {
    "id": 201,
-   "slot": 126,
+   "slot": 124,
    "name": "Midbrain.l",
    "label": "Midbrain",
    "category": "brainstem",
@@ -5632,7 +5543,7 @@
   },
   {
    "id": 202,
-   "slot": 127,
+   "slot": 125,
    "name": "Midbrain.r",
    "label": "Midbrain",
    "category": "brainstem",
@@ -5675,7 +5586,7 @@
   },
   {
    "id": 203,
-   "slot": 128,
+   "slot": 126,
    "name": "Middle cerebellar peduncle",
    "label": "Middle cerebellar peduncle",
    "category": "tracts",
@@ -5720,7 +5631,7 @@
   },
   {
    "id": 204,
-   "slot": 129,
+   "slot": 127,
    "name": "Middle cerebral artery (M1-segment).l",
    "label": "Middle cerebral artery (M1-segment)",
    "category": "arteries",
@@ -5762,7 +5673,7 @@
   },
   {
    "id": 205,
-   "slot": 130,
+   "slot": 128,
    "name": "Middle cerebral artery (M1-segment).r",
    "label": "Middle cerebral artery (M1-segment)",
    "category": "arteries",
@@ -5804,7 +5715,7 @@
   },
   {
    "id": 206,
-   "slot": 131,
+   "slot": 129,
    "name": "Middle cerebral artery (M3 segment).l",
    "label": "Middle cerebral artery (M3 segment)",
    "category": "arteries",
@@ -5846,7 +5757,7 @@
   },
   {
    "id": 207,
-   "slot": 132,
+   "slot": 130,
    "name": "Middle cerebral artery (M3-segment).r",
    "label": "Middle cerebral artery (M3-segment)",
    "category": "arteries",
@@ -5888,7 +5799,7 @@
   },
   {
    "id": 210,
-   "slot": 133,
+   "slot": 131,
    "name": "Middle longitudinal fasciculus.l",
    "label": "Middle longitudinal fasciculus",
    "category": "tracts",
@@ -5933,7 +5844,7 @@
   },
   {
    "id": 211,
-   "slot": 134,
+   "slot": 132,
    "name": "Middle longitudinal fasciculus.r",
    "label": "Middle longitudinal fasciculus",
    "category": "tracts",
@@ -5978,7 +5889,7 @@
   },
   {
    "id": 214,
-   "slot": 135,
+   "slot": 133,
    "name": "Motor nucleus of facial nerve.l",
    "label": "Motor nucleus of facial nerve",
    "category": "brainstem",
@@ -6023,7 +5934,7 @@
   },
   {
    "id": 215,
-   "slot": 136,
+   "slot": 134,
    "name": "Motor nucleus of facial nerve.r",
    "label": "Motor nucleus of facial nerve",
    "category": "brainstem",
@@ -6068,7 +5979,7 @@
   },
   {
    "id": 218,
-   "slot": 137,
+   "slot": 135,
    "name": "Neurohypophysis",
    "label": "Neurohypophysis",
    "category": "diencephalon",
@@ -6113,7 +6024,7 @@
   },
   {
    "id": 219,
-   "slot": 138,
+   "slot": 136,
    "name": "Nodule of vermis",
    "label": "Nodule of vermis",
    "category": "cerebellum",
@@ -6155,7 +6066,7 @@
   },
   {
    "id": 220,
-   "slot": 139,
+   "slot": 137,
    "name": "Nucleus accumbens.l",
    "label": "Nucleus accumbens",
    "category": "deep_grey",
@@ -6200,7 +6111,7 @@
   },
   {
    "id": 221,
-   "slot": 140,
+   "slot": 138,
    "name": "Nucleus accumbens.r",
    "label": "Nucleus accumbens",
    "category": "deep_grey",
@@ -6245,7 +6156,7 @@
   },
   {
    "id": 222,
-   "slot": 141,
+   "slot": 139,
    "name": "Nucleus of abducens nerve.l",
    "label": "Nucleus of abducens nerve",
    "category": "brainstem",
@@ -6290,7 +6201,7 @@
   },
   {
    "id": 223,
-   "slot": 142,
+   "slot": 140,
    "name": "Nucleus of abducens nerve.r",
    "label": "Nucleus of abducens nerve",
    "category": "brainstem",
@@ -6335,7 +6246,7 @@
   },
   {
    "id": 224,
-   "slot": 143,
+   "slot": 141,
    "name": "Nucleus of oculomotor nerve.l",
    "label": "Nucleus of oculomotor nerve",
    "category": "brainstem",
@@ -6382,7 +6293,7 @@
   },
   {
    "id": 225,
-   "slot": 144,
+   "slot": 142,
    "name": "Nucleus of oculomotor nerve.r",
    "label": "Nucleus of oculomotor nerve",
    "category": "brainstem",
@@ -6429,7 +6340,7 @@
   },
   {
    "id": 228,
-   "slot": 145,
+   "slot": 143,
    "name": "Occipital sinus",
    "label": "Occipital sinus",
    "category": "veins_sinuses",
@@ -6469,7 +6380,7 @@
   },
   {
    "id": 235,
-   "slot": 146,
+   "slot": 144,
    "name": "Olive.l",
    "label": "Olive",
    "category": "brainstem",
@@ -6512,7 +6423,7 @@
   },
   {
    "id": 236,
-   "slot": 147,
+   "slot": 145,
    "name": "Olive.r",
    "label": "Olive",
    "category": "brainstem",
@@ -6555,7 +6466,7 @@
   },
   {
    "id": 237,
-   "slot": 148,
+   "slot": 146,
    "name": "Ophthalmic artery.l",
    "label": "Ophthalmic artery",
    "category": "arteries",
@@ -6597,7 +6508,7 @@
   },
   {
    "id": 238,
-   "slot": 149,
+   "slot": 147,
    "name": "Ophthalmic artery.r",
    "label": "Ophthalmic artery",
    "category": "arteries",
@@ -6639,7 +6550,7 @@
   },
   {
    "id": 245,
-   "slot": 150,
+   "slot": 148,
    "name": "Optic radiation.l",
    "label": "Optic radiation",
    "category": "tracts",
@@ -6684,7 +6595,7 @@
   },
   {
    "id": 246,
-   "slot": 151,
+   "slot": 149,
    "name": "Optic radiation.r",
    "label": "Optic radiation",
    "category": "tracts",
@@ -6729,7 +6640,7 @@
   },
   {
    "id": 259,
-   "slot": 152,
+   "slot": 150,
    "name": "Orbitofrontal branches of anterior cerebral artery.l",
    "label": "Orbitofrontal branches of anterior cerebral artery",
    "category": "arteries",
@@ -6771,7 +6682,7 @@
   },
   {
    "id": 260,
-   "slot": 153,
+   "slot": 151,
    "name": "Orbitofrontal branches of anterior cerebral artery.r",
    "label": "Orbitofrontal branches of anterior cerebral artery",
    "category": "arteries",
@@ -6813,7 +6724,7 @@
   },
   {
    "id": 263,
-   "slot": 154,
+   "slot": 152,
    "name": "Parietal branches of middle cerebral artery.l",
    "label": "Parietal branches of middle cerebral artery",
    "category": "arteries",
@@ -6855,7 +6766,7 @@
   },
   {
    "id": 264,
-   "slot": 155,
+   "slot": 153,
    "name": "Parietal branches of middle cerebral artery.r",
    "label": "Parietal branches of middle cerebral artery",
    "category": "arteries",
@@ -6897,7 +6808,7 @@
   },
   {
    "id": 265,
-   "slot": 156,
+   "slot": 154,
    "name": "Peduncle of flocculus.l",
    "label": "Peduncle of flocculus",
    "category": "cerebellum",
@@ -6939,7 +6850,7 @@
   },
   {
    "id": 266,
-   "slot": 157,
+   "slot": 155,
    "name": "Peduncle of flocculus.r",
    "label": "Peduncle of flocculus",
    "category": "cerebellum",
@@ -6981,7 +6892,7 @@
   },
   {
    "id": 267,
-   "slot": 158,
+   "slot": 156,
    "name": "Pericallosal artery.l",
    "label": "Pericallosal artery",
    "category": "arteries",
@@ -7023,7 +6934,7 @@
   },
   {
    "id": 268,
-   "slot": 159,
+   "slot": 157,
    "name": "Pericallosal artery.r",
    "label": "Pericallosal artery",
    "category": "arteries",
@@ -7065,7 +6976,7 @@
   },
   {
    "id": 271,
-   "slot": 160,
+   "slot": 158,
    "name": "Posterior cerebral artery.l",
    "label": "Posterior cerebral artery",
    "category": "arteries",
@@ -7107,7 +7018,7 @@
   },
   {
    "id": 272,
-   "slot": 161,
+   "slot": 159,
    "name": "Posterior cerebral artery.r",
    "label": "Posterior cerebral artery",
    "category": "arteries",
@@ -7149,7 +7060,7 @@
   },
   {
    "id": 274,
-   "slot": 162,
+   "slot": 160,
    "name": "Posterior communicating artery.l",
    "label": "Posterior communicating artery",
    "category": "arteries",
@@ -7189,7 +7100,7 @@
   },
   {
    "id": 275,
-   "slot": 163,
+   "slot": 161,
    "name": "Posterior communicating artery.r",
    "label": "Posterior communicating artery",
    "category": "arteries",
@@ -7229,7 +7140,7 @@
   },
   {
    "id": 278,
-   "slot": 164,
+   "slot": 162,
    "name": "Posterior hypothalamus.l",
    "label": "Posterior hypothalamus",
    "category": "diencephalon",
@@ -7274,7 +7185,7 @@
   },
   {
    "id": 279,
-   "slot": 165,
+   "slot": 163,
    "name": "Posterior hypothalamus.r",
    "label": "Posterior hypothalamus",
    "category": "diencephalon",
@@ -7319,7 +7230,7 @@
   },
   {
    "id": 280,
-   "slot": 166,
+   "slot": 164,
    "name": "Posterior inferior cerebellar artery.l",
    "label": "Posterior inferior cerebellar artery",
    "category": "arteries",
@@ -7361,7 +7272,7 @@
   },
   {
    "id": 281,
-   "slot": 167,
+   "slot": 165,
    "name": "Posterior inferior cerebellar artery.r",
    "label": "Posterior inferior cerebellar artery",
    "category": "arteries",
@@ -7403,7 +7314,7 @@
   },
   {
    "id": 282,
-   "slot": 168,
+   "slot": 166,
    "name": "Posterior thalamic radiation.l",
    "label": "Posterior thalamic radiation",
    "category": "tracts",
@@ -7448,7 +7359,7 @@
   },
   {
    "id": 283,
-   "slot": 169,
+   "slot": 167,
    "name": "Posterior thalamic radiation.r",
    "label": "Posterior thalamic radiation",
    "category": "tracts",
@@ -7493,7 +7404,7 @@
   },
   {
    "id": 288,
-   "slot": 170,
+   "slot": 168,
    "name": "Preoptic hypothalamus.l",
    "label": "Preoptic hypothalamus",
    "category": "diencephalon",
@@ -7538,7 +7449,7 @@
   },
   {
    "id": 289,
-   "slot": 171,
+   "slot": 169,
    "name": "Preoptic hypothalamus.r",
    "label": "Preoptic hypothalamus",
    "category": "diencephalon",
@@ -7583,7 +7494,7 @@
   },
   {
    "id": 290,
-   "slot": 172,
+   "slot": 170,
    "name": "Pulvinar.l",
    "label": "Pulvinar",
    "category": "diencephalon",
@@ -7628,7 +7539,7 @@
   },
   {
    "id": 291,
-   "slot": 173,
+   "slot": 171,
    "name": "Pulvinar.r",
    "label": "Pulvinar",
    "category": "diencephalon",
@@ -7673,7 +7584,7 @@
   },
   {
    "id": 292,
-   "slot": 174,
+   "slot": 172,
    "name": "Red nucleus.l",
    "label": "Red nucleus",
    "category": "brainstem",
@@ -7719,7 +7630,7 @@
   },
   {
    "id": 293,
-   "slot": 175,
+   "slot": 173,
    "name": "Red nucleus.r",
    "label": "Red nucleus",
    "category": "brainstem",
@@ -7765,7 +7676,7 @@
   },
   {
    "id": 294,
-   "slot": 176,
+   "slot": 174,
    "name": "Reticulospinal tract.l",
    "label": "Reticulospinal tract",
    "category": "tracts",
@@ -7810,7 +7721,7 @@
   },
   {
    "id": 295,
-   "slot": 177,
+   "slot": 175,
    "name": "Reticulospinal tract.r",
    "label": "Reticulospinal tract",
    "category": "tracts",
@@ -7855,7 +7766,7 @@
   },
   {
    "id": 296,
-   "slot": 178,
+   "slot": 176,
    "name": "Septal nuclei",
    "label": "Septal nuclei",
    "category": "deep_grey",
@@ -7899,7 +7810,7 @@
   },
   {
    "id": 311,
-   "slot": 179,
+   "slot": 177,
    "name": "Pineal gland",
    "label": "Pineal gland",
    "category": "diencephalon",
@@ -7944,7 +7855,7 @@
   },
   {
    "id": 316,
-   "slot": 180,
+   "slot": 178,
    "name": "Posterior intercavernous sinus",
    "label": "Posterior intercavernous sinus",
    "category": "veins_sinuses",
@@ -7984,7 +7895,7 @@
   },
   {
    "id": 317,
-   "slot": 181,
+   "slot": 179,
    "name": "Posterior quadrangular lobule.l",
    "label": "Posterior quadrangular lobule",
    "category": "cerebellum",
@@ -8026,7 +7937,7 @@
   },
   {
    "id": 318,
-   "slot": 182,
+   "slot": 180,
    "name": "Posterior quadrangular lobule.r",
    "label": "Posterior quadrangular lobule",
    "category": "cerebellum",
@@ -8068,7 +7979,7 @@
   },
   {
    "id": 323,
-   "slot": 183,
+   "slot": 181,
    "name": "Proximal lateral striate branches.l",
    "label": "Proximal lateral striate branches",
    "category": "arteries",
@@ -8110,7 +8021,7 @@
   },
   {
    "id": 324,
-   "slot": 184,
+   "slot": 182,
    "name": "Proximal lateral striate branches.r",
    "label": "Proximal lateral striate branches",
    "category": "arteries",
@@ -8152,7 +8063,7 @@
   },
   {
    "id": 325,
-   "slot": 185,
+   "slot": 183,
    "name": "Putamen.l",
    "label": "Putamen",
    "category": "deep_grey",
@@ -8198,7 +8109,7 @@
   },
   {
    "id": 326,
-   "slot": 186,
+   "slot": 184,
    "name": "Putamen.r",
    "label": "Putamen",
    "category": "deep_grey",
@@ -8244,7 +8155,7 @@
   },
   {
    "id": 327,
-   "slot": 187,
+   "slot": 185,
    "name": "Pyramid of medulla oblongata.l",
    "label": "Pyramid of medulla oblongata",
    "category": "brainstem",
@@ -8287,7 +8198,7 @@
   },
   {
    "id": 328,
-   "slot": 188,
+   "slot": 186,
    "name": "Pyramid of medulla oblongata.r",
    "label": "Pyramid of medulla oblongata",
    "category": "brainstem",
@@ -8330,7 +8241,7 @@
   },
   {
    "id": 329,
-   "slot": 189,
+   "slot": 187,
    "name": "Pyramis of vermis",
    "label": "Pyramis of vermis",
    "category": "cerebellum",
@@ -8372,7 +8283,7 @@
   },
   {
    "id": 330,
-   "slot": 190,
+   "slot": 188,
    "name": "Sensory root of trigeminal nerve.l",
    "label": "Sensory root of trigeminal nerve",
    "category": "cranial_nerves",
@@ -8415,7 +8326,7 @@
   },
   {
    "id": 331,
-   "slot": 191,
+   "slot": 189,
    "name": "Sensory root of trigeminal nerve.r",
    "label": "Sensory root of trigeminal nerve",
    "category": "cranial_nerves",
@@ -8458,7 +8369,7 @@
   },
   {
    "id": 333,
-   "slot": 192,
+   "slot": 190,
    "name": "Sigmoid sinus.l",
    "label": "Sigmoid sinus",
    "category": "veins_sinuses",
@@ -8498,7 +8409,7 @@
   },
   {
    "id": 334,
-   "slot": 193,
+   "slot": 191,
    "name": "Sigmoid sinus.r",
    "label": "Sigmoid sinus",
    "category": "veins_sinuses",
@@ -8538,7 +8449,7 @@
   },
   {
    "id": 337,
-   "slot": 194,
+   "slot": 192,
    "name": "Straight sinus",
    "label": "Straight sinus",
    "category": "veins_sinuses",
@@ -8578,7 +8489,7 @@
   },
   {
    "id": 344,
-   "slot": 195,
+   "slot": 193,
    "name": "Substantia nigra.l",
    "label": "Substantia nigra",
    "category": "deep_grey",
@@ -8623,7 +8534,7 @@
   },
   {
    "id": 345,
-   "slot": 196,
+   "slot": 194,
    "name": "Substantia nigra.r",
    "label": "Substantia nigra",
    "category": "deep_grey",
@@ -8668,7 +8579,7 @@
   },
   {
    "id": 346,
-   "slot": 197,
+   "slot": 195,
    "name": "Subthalamic nucleus.l",
    "label": "Subthalamic nucleus",
    "category": "deep_grey",
@@ -8713,7 +8624,7 @@
   },
   {
    "id": 347,
-   "slot": 198,
+   "slot": 196,
    "name": "Subthalamic nucleus.r",
    "label": "Subthalamic nucleus",
    "category": "deep_grey",
@@ -8758,7 +8669,7 @@
   },
   {
    "id": 350,
-   "slot": 199,
+   "slot": 197,
    "name": "Superior cerebellar artery.l",
    "label": "Superior cerebellar artery",
    "category": "arteries",
@@ -8800,7 +8711,7 @@
   },
   {
    "id": 351,
-   "slot": 200,
+   "slot": 198,
    "name": "Superior cerebellar artery.r",
    "label": "Superior cerebellar artery",
    "category": "arteries",
@@ -8842,7 +8753,7 @@
   },
   {
    "id": 354,
-   "slot": 201,
+   "slot": 199,
    "name": "Superior cerebellar peduncle",
    "label": "Superior cerebellar peduncle",
    "category": "tracts",
@@ -8887,7 +8798,7 @@
   },
   {
    "id": 355,
-   "slot": 202,
+   "slot": 200,
    "name": "Superior cerebellar peduncle.l",
    "label": "Superior cerebellar peduncle",
    "category": "cerebellum",
@@ -8929,7 +8840,7 @@
   },
   {
    "id": 356,
-   "slot": 203,
+   "slot": 201,
    "name": "Superior cerebellar peduncle.r",
    "label": "Superior cerebellar peduncle",
    "category": "cerebellum",
@@ -8970,98 +8881,8 @@
    }
   },
   {
-   "id": 357,
-   "slot": 204,
-   "name": "Superior colliculus.l",
-   "label": "Superior colliculus",
-   "category": "brainstem",
-   "side": "left",
-   "region": "Brainstem",
-   "ta2": [
-    "Bonus collection",
-    "Brain",
-    "Brainstem",
-    "Central nervous system",
-    "Head",
-    "Main divisions",
-    "Midbrain",
-    "Nervous system",
-    "Regions of human body",
-    "Scene Collection",
-    "Superior colliculus",
-    "Tectum of midbrain"
-   ],
-   "sources": [
-    "bodyparts3d",
-    "brainproject-brain-glb",
-    "zanatomy"
-   ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
-   "shipsFrom": "brain.glb",
-   "full": {
-    "triangles": 458,
-    "vertices": 233,
-    "areaMm2": 325.7
-   },
-   "low": {
-    "triangles": 128,
-    "vertices": 68,
-    "areaMm2": 309.8
-   },
-   "sourceTriangles": 458,
-   "errorMm": {
-    "hausdorff": 0.466,
-    "mean": 0.106
-   }
-  },
-  {
-   "id": 358,
-   "slot": 205,
-   "name": "Superior colliculus.r",
-   "label": "Superior colliculus",
-   "category": "brainstem",
-   "side": "right",
-   "region": "Brainstem",
-   "ta2": [
-    "Bonus collection",
-    "Brain",
-    "Brainstem",
-    "Central nervous system",
-    "Head",
-    "Main divisions",
-    "Midbrain",
-    "Nervous system",
-    "Regions of human body",
-    "Scene Collection",
-    "Superior colliculus",
-    "Tectum of midbrain"
-   ],
-   "sources": [
-    "bodyparts3d",
-    "brainproject-brain-glb",
-    "zanatomy"
-   ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
-   "shipsFrom": "brain.glb",
-   "full": {
-    "triangles": 458,
-    "vertices": 233,
-    "areaMm2": 325.7
-   },
-   "low": {
-    "triangles": 128,
-    "vertices": 68,
-    "areaMm2": 308.7
-   },
-   "sourceTriangles": 458,
-   "errorMm": {
-    "hausdorff": 0.466,
-    "mean": 0.108
-   }
-  },
-  {
    "id": 363,
-   "slot": 206,
+   "slot": 202,
    "name": "Superior longitudinal fasciculus I.l",
    "label": "Superior longitudinal fasciculus I",
    "category": "tracts",
@@ -9106,7 +8927,7 @@
   },
   {
    "id": 364,
-   "slot": 207,
+   "slot": 203,
    "name": "Superior longitudinal fasciculus I.r",
    "label": "Superior longitudinal fasciculus I",
    "category": "tracts",
@@ -9151,7 +8972,7 @@
   },
   {
    "id": 365,
-   "slot": 208,
+   "slot": 204,
    "name": "Superior longitudinal fasciculus II.l",
    "label": "Superior longitudinal fasciculus II",
    "category": "tracts",
@@ -9196,7 +9017,7 @@
   },
   {
    "id": 366,
-   "slot": 209,
+   "slot": 205,
    "name": "Superior longitudinal fasciculus II.r",
    "label": "Superior longitudinal fasciculus II",
    "category": "tracts",
@@ -9241,7 +9062,7 @@
   },
   {
    "id": 367,
-   "slot": 210,
+   "slot": 206,
    "name": "Superior longitudinal fasciculus III.l",
    "label": "Superior longitudinal fasciculus III",
    "category": "tracts",
@@ -9286,7 +9107,7 @@
   },
   {
    "id": 368,
-   "slot": 211,
+   "slot": 207,
    "name": "Superior longitudinal fasciculus III.r",
    "label": "Superior longitudinal fasciculus III",
    "category": "tracts",
@@ -9331,7 +9152,7 @@
   },
   {
    "id": 373,
-   "slot": 212,
+   "slot": 208,
    "name": "Superior petrosal sinus.l",
    "label": "Superior petrosal sinus",
    "category": "veins_sinuses",
@@ -9371,7 +9192,7 @@
   },
   {
    "id": 374,
-   "slot": 213,
+   "slot": 209,
    "name": "Superior petrosal sinus.r",
    "label": "Superior petrosal sinus",
    "category": "veins_sinuses",
@@ -9411,7 +9232,7 @@
   },
   {
    "id": 375,
-   "slot": 214,
+   "slot": 210,
    "name": "Superior sagittal sinus",
    "label": "Superior sagittal sinus",
    "category": "veins_sinuses",
@@ -9451,7 +9272,7 @@
   },
   {
    "id": 376,
-   "slot": 215,
+   "slot": 211,
    "name": "Superior salivatory nucleus.l",
    "label": "Superior salivatory nucleus",
    "category": "brainstem",
@@ -9496,7 +9317,7 @@
   },
   {
    "id": 377,
-   "slot": 216,
+   "slot": 212,
    "name": "Superior salivatory nucleus.r",
    "label": "Superior salivatory nucleus",
    "category": "brainstem",
@@ -9541,7 +9362,7 @@
   },
   {
    "id": 378,
-   "slot": 217,
+   "slot": 213,
    "name": "Superior semilunar lobule.l",
    "label": "Superior semilunar lobule",
    "category": "cerebellum",
@@ -9583,7 +9404,7 @@
   },
   {
    "id": 379,
-   "slot": 218,
+   "slot": 214,
    "name": "Superior semilunar lobule.r",
    "label": "Superior semilunar lobule",
    "category": "cerebellum",
@@ -9625,7 +9446,7 @@
   },
   {
    "id": 384,
-   "slot": 219,
+   "slot": 215,
    "name": "Superior thalamic radiation.l",
    "label": "Superior thalamic radiation",
    "category": "tracts",
@@ -9670,7 +9491,7 @@
   },
   {
    "id": 385,
-   "slot": 220,
+   "slot": 216,
    "name": "Superior thalamic radiation.r",
    "label": "Superior thalamic radiation",
    "category": "tracts",
@@ -9715,7 +9536,7 @@
   },
   {
    "id": 388,
-   "slot": 221,
+   "slot": 217,
    "name": "Temporal branches of middle cerebral artery.l",
    "label": "Temporal branches of middle cerebral artery",
    "category": "arteries",
@@ -9757,7 +9578,7 @@
   },
   {
    "id": 389,
-   "slot": 222,
+   "slot": 218,
    "name": "Temporal branches of middle cerebral artery.r",
    "label": "Temporal branches of middle cerebral artery",
    "category": "arteries",
@@ -9799,7 +9620,7 @@
   },
   {
    "id": 394,
-   "slot": 223,
+   "slot": 219,
    "name": "Tentorium cerebelli.l",
    "label": "Tentorium cerebelli",
    "category": "meninges_dura",
@@ -9843,7 +9664,7 @@
   },
   {
    "id": 395,
-   "slot": 224,
+   "slot": 220,
    "name": "Tentorium cerebelli.r",
    "label": "Tentorium cerebelli",
    "category": "meninges_dura",
@@ -9887,7 +9708,7 @@
   },
   {
    "id": 396,
-   "slot": 225,
+   "slot": 221,
    "name": "Third ventricle",
    "label": "Third ventricle",
    "category": "ventricles",
@@ -9931,7 +9752,7 @@
   },
   {
    "id": 397,
-   "slot": 226,
+   "slot": 222,
    "name": "Tonsil of cerebellum.l",
    "label": "Tonsil of cerebellum",
    "category": "cerebellum",
@@ -9973,7 +9794,7 @@
   },
   {
    "id": 398,
-   "slot": 227,
+   "slot": 223,
    "name": "Tonsil of cerebellum.r",
    "label": "Tonsil of cerebellum",
    "category": "cerebellum",
@@ -10015,7 +9836,7 @@
   },
   {
    "id": 403,
-   "slot": 228,
+   "slot": 224,
    "name": "Transverse sinus.l",
    "label": "Transverse sinus",
    "category": "veins_sinuses",
@@ -10055,7 +9876,7 @@
   },
   {
    "id": 404,
-   "slot": 229,
+   "slot": 225,
    "name": "Transverse sinus.r",
    "label": "Transverse sinus",
    "category": "veins_sinuses",
@@ -10095,7 +9916,7 @@
   },
   {
    "id": 413,
-   "slot": 230,
+   "slot": 226,
    "name": "Tuber of vermis",
    "label": "Tuber of vermis",
    "category": "cerebellum",
@@ -10137,7 +9958,7 @@
   },
   {
    "id": 414,
-   "slot": 231,
+   "slot": 227,
    "name": "Tuberal hypothalamus.l",
    "label": "Tuberal hypothalamus",
    "category": "diencephalon",
@@ -10182,7 +10003,7 @@
   },
   {
    "id": 415,
-   "slot": 232,
+   "slot": 228,
    "name": "Tuberal hypothalamus.r",
    "label": "Tuberal hypothalamus",
    "category": "diencephalon",
@@ -10227,7 +10048,7 @@
   },
   {
    "id": 416,
-   "slot": 233,
+   "slot": 229,
    "name": "Uncinate fasciculus.l",
    "label": "Uncinate fasciculus",
    "category": "tracts",
@@ -10272,7 +10093,7 @@
   },
   {
    "id": 417,
-   "slot": 234,
+   "slot": 230,
    "name": "Uncinate fasciculus.r",
    "label": "Uncinate fasciculus",
    "category": "tracts",
@@ -10317,7 +10138,7 @@
   },
   {
    "id": 418,
-   "slot": 235,
+   "slot": 231,
    "name": "Uvula of vermis",
    "label": "Uvula of vermis",
    "category": "cerebellum",
@@ -10359,7 +10180,7 @@
   },
   {
    "id": 421,
-   "slot": 236,
+   "slot": 232,
    "name": "Ventral anterior nucleus.l",
    "label": "Ventral anterior nucleus",
    "category": "diencephalon",
@@ -10404,7 +10225,7 @@
   },
   {
    "id": 422,
-   "slot": 237,
+   "slot": 233,
    "name": "Ventral anterior nucleus.r",
    "label": "Ventral anterior nucleus",
    "category": "diencephalon",
@@ -10449,7 +10270,7 @@
   },
   {
    "id": 423,
-   "slot": 238,
+   "slot": 234,
    "name": "Ventral laterodorsal nucleus.l",
    "label": "Ventral laterodorsal nucleus",
    "category": "diencephalon",
@@ -10494,7 +10315,7 @@
   },
   {
    "id": 424,
-   "slot": 239,
+   "slot": 235,
    "name": "Ventral laterodorsal nucleus.r",
    "label": "Ventral laterodorsal nucleus",
    "category": "diencephalon",
@@ -10539,7 +10360,7 @@
   },
   {
    "id": 425,
-   "slot": 240,
+   "slot": 236,
    "name": "Ventral lateroventral nucleus.l",
    "label": "Ventral lateroventral nucleus",
    "category": "diencephalon",
@@ -10584,7 +10405,7 @@
   },
   {
    "id": 426,
-   "slot": 241,
+   "slot": 237,
    "name": "Ventral lateroventral nucleus.r",
    "label": "Ventral lateroventral nucleus",
    "category": "diencephalon",
@@ -10629,7 +10450,7 @@
   },
   {
    "id": 427,
-   "slot": 242,
+   "slot": 238,
    "name": "Vertebral artery.l",
    "label": "Vertebral artery",
    "category": "arteries",
@@ -10672,7 +10493,7 @@
   },
   {
    "id": 428,
-   "slot": 243,
+   "slot": 239,
    "name": "Vertebral artery.r",
    "label": "Vertebral artery",
    "category": "arteries",
@@ -10715,7 +10536,7 @@
   },
   {
    "id": 431,
-   "slot": 244,
+   "slot": 240,
    "name": "Vestibular nuclei.l",
    "label": "Vestibular nuclei",
    "category": "brainstem",
@@ -10761,7 +10582,7 @@
   },
   {
    "id": 432,
-   "slot": 245,
+   "slot": 241,
    "name": "Vestibular nuclei.r",
    "label": "Vestibular nuclei",
    "category": "brainstem",
@@ -10807,7 +10628,7 @@
   },
   {
    "id": 435,
-   "slot": 246,
+   "slot": 242,
    "name": "Wing of central lobule.l",
    "label": "Wing of central lobule",
    "category": "cerebellum",
@@ -10849,7 +10670,7 @@
   },
   {
    "id": 436,
-   "slot": 247,
+   "slot": 243,
    "name": "Wing of central lobule.r",
    "label": "Wing of central lobule",
    "category": "cerebellum",
@@ -11309,6 +11130,26 @@
    "group": "dundee-cranial-nerves",
    "heldBecause": [
     "carries the `Nerve` material (Dundee CAHID cranial nerves, unverified)"
+   ]
+  },
+  {
+   "id": 130,
+   "name": "Inferior colliculus.l",
+   "category": "brainstem",
+   "side": "left",
+   "group": "held-by-decision",
+   "heldBecause": [
+    "cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D's mesh (docs/brain-origin-test.md); source unsettled, held fail-closed (CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed)"
+   ]
+  },
+  {
+   "id": 131,
+   "name": "Inferior colliculus.r",
+   "category": "brainstem",
+   "side": "right",
+   "group": "held-by-decision",
+   "heldBecause": [
+    "cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D's mesh (docs/brain-origin-test.md); source unsettled, held fail-closed (CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed)"
    ]
   },
   {
@@ -12419,6 +12260,26 @@
    "group": "zanatomy-undeclared-brain-materials",
    "heldBecause": [
     "carries undeclared material(s) `Brain`"
+   ]
+  },
+  {
+   "id": 357,
+   "name": "Superior colliculus.l",
+   "category": "brainstem",
+   "side": "left",
+   "group": "held-by-decision",
+   "heldBecause": [
+    "cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D's mesh (docs/brain-origin-test.md); source unsettled, held fail-closed (CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed)"
+   ]
+  },
+  {
+   "id": 358,
+   "name": "Superior colliculus.r",
+   "category": "brainstem",
+   "side": "right",
+   "group": "held-by-decision",
+   "heldBecause": [
+    "cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D's mesh (docs/brain-origin-test.md); source unsettled, held fail-closed (CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed)"
    ]
   },
   {

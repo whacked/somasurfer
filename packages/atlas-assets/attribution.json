@@ -117,7 +117,7 @@
     },
     {
       "id": "zanatomy-brain-meshes-cleared",
-      "title": "Brain meshes, cleared group: 248 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly",
+      "title": "Brain meshes, cleared group: 244 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly",
       "files": [
         "brain/zanatomy-2929e94/meshes.lowres.bin",
         "brain/zanatomy-2929e94/meshes.fullres.bin",

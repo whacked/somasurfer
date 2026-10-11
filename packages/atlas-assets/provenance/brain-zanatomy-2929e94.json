@@ -16,7 +16,8 @@
  "counts": {
   "zanatomy-undeclared-brain-materials": 143,
   "dundee-cranial-nerves": 46,
-  "cleared": 248,
+  "cleared": 244,
+  "held-by-decision": 4,
   "cortical": 128,
   "corticalHeld": 126
  },
@@ -28,6 +29,8 @@
    "label": "Posterior transverse collateral sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -51,6 +54,8 @@
    "label": "Posterior transverse collateral sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -74,6 +79,8 @@
    "label": "Abducens nerve (VI)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -96,6 +103,8 @@
    "label": "Abducens nerve (VI)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -118,6 +127,8 @@
    "label": "Accessory nerve (XI)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -140,6 +151,8 @@
    "label": "Accessory nerve (XI)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -162,6 +175,8 @@
    "label": "Accessory nucleus of oculomotor nerve",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -180,6 +195,8 @@
    "label": "Accessory nucleus of oculomotor nerve",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -198,6 +215,8 @@
    "label": "Acoustic radiation",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -213,6 +232,8 @@
    "label": "Acoustic radiation",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -228,6 +249,8 @@
    "label": "Adenohypophysis",
    "category": "diencephalon",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": "Pituitary gland",
    "materials": [
     "Nucleus"
    ],
@@ -246,6 +269,8 @@
    "label": "Angular gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -269,6 +294,8 @@
    "label": "Angular gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -292,6 +319,8 @@
    "label": "Anterior cerebral artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -310,6 +339,8 @@
    "label": "Anterior cerebral artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -328,6 +359,8 @@
    "label": "Anterior commissure",
    "category": "white_matter",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -350,6 +383,8 @@
    "label": "Anterior communicating artery",
    "category": "arteries",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -368,6 +403,8 @@
    "label": "Anterior division of mandibular nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -390,6 +427,8 @@
    "label": "Anterior division of mandibular nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -412,6 +451,8 @@
    "label": "Anterior hypothalamus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -429,6 +470,8 @@
    "label": "Anterior hypothalamus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -446,6 +489,8 @@
    "label": "Anterior inferior cerebellar artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -464,6 +509,8 @@
    "label": "Anterior inferior cerebellar artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -482,6 +529,8 @@
    "label": "Anterior intercavernous sinus",
    "category": "veins_sinuses",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -500,6 +549,8 @@
    "label": "Anterior nuclei of thalamus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -517,6 +568,8 @@
    "label": "Anterior nuclei of thalamus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -534,6 +587,8 @@
    "label": "Anterior occipital sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -557,6 +612,8 @@
    "label": "Anterior occipital sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -580,6 +637,8 @@
    "label": "Anterior quadrangular lobule",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -598,6 +657,8 @@
    "label": "Anterior quadrangular lobule",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -616,6 +677,8 @@
    "label": "Anterior spinal artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -634,6 +697,8 @@
    "label": "Anterior spinal artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -652,6 +717,8 @@
    "label": "Anterior thalamic radiation",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -667,6 +734,8 @@
    "label": "Anterior thalamic radiation",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -682,6 +751,8 @@
    "label": "Aqueduct of midbrain",
    "category": "brainstem",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "LCR"
    ],
@@ -700,6 +771,8 @@
    "label": "Arcuate fasciculus",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -715,6 +788,8 @@
    "label": "Arcuate fasciculus",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -730,6 +805,8 @@
    "label": "Basilar artery",
    "category": "arteries",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -748,6 +825,8 @@
    "label": "Basilar venous plexus",
    "category": "veins_sinuses",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -766,6 +845,8 @@
    "label": "Basolateral complex",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 amygdala (Tyszka 2016)",
+   "bxParent": "Amygdaloid body",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -783,6 +864,8 @@
    "label": "Basolateral complex",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 amygdala (Tyszka 2016)",
+   "bxParent": "Amygdaloid body",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -800,6 +883,8 @@
    "label": "Biventral lobule",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -818,6 +903,8 @@
    "label": "Biventral lobule",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -836,6 +923,8 @@
    "label": "Buccal nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -858,6 +947,8 @@
    "label": "Buccal nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -880,6 +971,8 @@
    "label": "Calcarine sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -903,6 +996,8 @@
    "label": "Calcarine sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -926,6 +1021,8 @@
    "label": "Callosomarginal artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -944,6 +1041,8 @@
    "label": "Callosomarginal artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -962,6 +1061,8 @@
    "label": "Caudate nucleus",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -980,6 +1081,8 @@
    "label": "Caudate nucleus",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -998,6 +1101,8 @@
    "label": "Cavernous sinus",
    "category": "veins_sinuses",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -1016,6 +1121,8 @@
    "label": "Cavernous sinus",
    "category": "veins_sinuses",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -1034,6 +1141,8 @@
    "label": "Central lobule",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -1052,6 +1161,8 @@
    "label": "Central nucleus",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 amygdala (Tyszka 2016)",
+   "bxParent": "Amygdaloid body",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1069,6 +1180,8 @@
    "label": "Central nucleus",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 amygdala (Tyszka 2016)",
+   "bxParent": "Amygdaloid body",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1086,6 +1199,8 @@
    "label": "Central sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1109,6 +1224,8 @@
    "label": "Central sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1132,6 +1249,8 @@
    "label": "Choroid plexus",
    "category": "ventricles",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -1150,6 +1269,8 @@
    "label": "Choroid plexus",
    "category": "ventricles",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -1168,6 +1289,8 @@
    "label": "Cingulate gyrus (Posteroventral part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1191,6 +1314,8 @@
    "label": "Cingulate gyrus (Posteroventral part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1214,6 +1339,8 @@
    "label": "Cingulate gyrus and sulcus (Middle anterior part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1237,6 +1364,8 @@
    "label": "Cingulate gyrus and sulcus (Middle anterior part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1260,6 +1389,8 @@
    "label": "Cingulate gyrus and sulcus (Middle posterior part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1283,6 +1414,8 @@
    "label": "Cingulate gyrus and sulcus (Middle posterior part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1306,6 +1439,8 @@
    "label": "Cingulate gyrus and sulcus (Posterior dorsal part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1329,6 +1464,8 @@
    "label": "Cingulate gyrus and sulcus (Posterior dorsal part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1352,6 +1489,8 @@
    "label": "Cingulate sulcus (Marginal part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1375,6 +1514,8 @@
    "label": "Cingulate sulcus (Marginal part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1398,6 +1539,8 @@
    "label": "Circular sulcus of insula",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1421,6 +1564,8 @@
    "label": "Circular sulcus of insula",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1444,6 +1589,8 @@
    "label": "Collateral sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1467,6 +1614,8 @@
    "label": "Collateral sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1490,6 +1639,8 @@
    "label": "Corpus callosum",
    "category": "white_matter",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Temporal lobe"
    ],
@@ -1509,6 +1660,8 @@
    "label": "Corticobulbar tract",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1524,6 +1677,8 @@
    "label": "Corticobulbar tract",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1539,6 +1694,8 @@
    "label": "Corticomedial group",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 amygdala (Tyszka 2016)",
+   "bxParent": "Amygdaloid body",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1556,6 +1713,8 @@
    "label": "Corticomedial group",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 amygdala (Tyszka 2016)",
+   "bxParent": "Amygdaloid body",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1573,6 +1732,8 @@
    "label": "Corticopontine tract (frontal)",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1588,6 +1749,8 @@
    "label": "Corticopontine tract (frontal)",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1603,6 +1766,8 @@
    "label": "Corticopontine tract (occipital)",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1618,6 +1783,8 @@
    "label": "Corticopontine tract (occipital)",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1633,6 +1800,8 @@
    "label": "Corticopontine tract (parietal)",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1648,6 +1817,8 @@
    "label": "Corticopontine tract (parietal)",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1663,6 +1834,8 @@
    "label": "Corticospinal tract",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1678,6 +1851,8 @@
    "label": "Corticospinal tract",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1693,6 +1868,8 @@
    "label": "Corticostriatal tract (anterior)",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1708,6 +1885,8 @@
    "label": "Corticostriatal tract (anterior)",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1723,6 +1902,8 @@
    "label": "Corticostriatal tract (posterior)",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1738,6 +1919,8 @@
    "label": "Corticostriatal tract (posterior)",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1753,6 +1936,8 @@
    "label": "Corticostriatal tract (superior)",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1768,6 +1953,8 @@
    "label": "Corticostriatal tract (superior)",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1783,6 +1970,8 @@
    "label": "Culmen",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -1801,6 +1990,8 @@
    "label": "Cuneus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1824,6 +2015,8 @@
    "label": "Cuneus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -1847,6 +2040,8 @@
    "label": "Declive",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -1865,6 +2060,8 @@
    "label": "Dentatorubrothalamic tract",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1880,6 +2077,8 @@
    "label": "Dentatorubrothalamic tract",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -1895,6 +2094,8 @@
    "label": "Distal lateral striate branches",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -1913,6 +2114,8 @@
    "label": "Distal lateral striate branches",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -1931,6 +2134,8 @@
    "label": "Facial nerve (VII)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -1953,6 +2158,8 @@
    "label": "Facial nerve (VII)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -1975,6 +2182,8 @@
    "label": "Falx cerebri",
    "category": "meninges_dura",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cartilage"
    ],
@@ -1993,6 +2202,8 @@
    "label": "Flocculus",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -2011,6 +2222,8 @@
    "label": "Flocculus",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -2029,6 +2242,8 @@
    "label": "Folium of vermis",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -2047,6 +2262,8 @@
    "label": "Fornix",
    "category": "white_matter",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -2069,6 +2286,8 @@
    "label": "Fornix",
    "category": "white_matter",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -2091,6 +2310,8 @@
    "label": "Fourth ventricle",
    "category": "ventricles",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "LCR"
    ],
@@ -2109,6 +2330,8 @@
    "label": "Frontal aslant tract",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2124,6 +2347,8 @@
    "label": "Frontal aslant tract",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2139,6 +2364,8 @@
    "label": "Frontal branches of callosomarginal artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2157,6 +2384,8 @@
    "label": "Frontal branches of callosomarginal artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2175,6 +2404,8 @@
    "label": "Globus pallidus external",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": "Globus pallidus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2192,6 +2423,8 @@
    "label": "Globus pallidus external",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": "Globus pallidus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2209,6 +2442,8 @@
    "label": "Globus pallidus internal",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": "Globus pallidus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2226,6 +2461,8 @@
    "label": "Globus pallidus internal",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": "Globus pallidus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2243,6 +2480,8 @@
    "label": "Gracile lobule",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -2261,6 +2500,8 @@
    "label": "Gracile lobule",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -2279,6 +2520,8 @@
    "label": "Habenula",
    "category": "diencephalon",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -2297,6 +2540,8 @@
    "label": "Hippocampal commissure",
    "category": "white_matter",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -2319,6 +2564,8 @@
    "label": "Hippocampus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -2337,6 +2584,8 @@
    "label": "Hippocampus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -2355,6 +2604,8 @@
    "label": "Hypoglossal nerve (XII)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Bone-4"
    ],
@@ -2373,6 +2624,8 @@
    "label": "Hypoglossal nerve (XII)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Bone-4"
    ],
@@ -2391,6 +2644,8 @@
    "label": "Inferior alveolar nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -2413,6 +2668,8 @@
    "label": "Inferior alveolar nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -2435,6 +2692,8 @@
    "label": "Inferior cerebellar peduncle",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2450,6 +2709,8 @@
    "label": "Inferior cerebellar peduncle",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2465,16 +2726,21 @@
    "label": "Inferior colliculus",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
-   "group": "cleared",
+   "group": "held-by-decision",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D's mesh (docs/brain-origin-test.md); source unsettled, held fail-closed (CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -2483,16 +2749,21 @@
    "label": "Inferior colliculus",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
-   "group": "cleared",
+   "group": "held-by-decision",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D's mesh (docs/brain-origin-test.md); source unsettled, held fail-closed (CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -2501,6 +2772,8 @@
    "label": "Inferior fronto-occipital fasciculus",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2516,6 +2789,8 @@
    "label": "Inferior fronto-occipital fasciculus",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2531,6 +2806,8 @@
    "label": "Inferior longitudinal fasciculus",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2546,6 +2823,8 @@
    "label": "Inferior longitudinal fasciculus",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2561,6 +2840,8 @@
    "label": "Inferior occipital gyrus and sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -2584,6 +2865,8 @@
    "label": "Inferior occipital gyrus and sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -2607,6 +2890,8 @@
    "label": "Inferior petrosal sinus",
    "category": "veins_sinuses",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2625,6 +2910,8 @@
    "label": "Inferior petrosal sinus",
    "category": "veins_sinuses",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2643,6 +2930,8 @@
    "label": "Inferior sagittal sinus",
    "category": "veins_sinuses",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2661,6 +2950,8 @@
    "label": "Inferior semilunar lobule",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -2679,6 +2970,8 @@
    "label": "Inferior semilunar lobule",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -2697,6 +2990,8 @@
    "label": "Inferior temporal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain",
     "Temporal lobe"
@@ -2720,6 +3015,8 @@
    "label": "Inferior temporal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain",
     "Temporal lobe"
@@ -2743,6 +3040,8 @@
    "label": "Insula (Subcentral gyrus and ant. and post. sulci)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -2766,6 +3065,8 @@
    "label": "Insula (Subcentral gyrus and ant. and post. sulci)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -2789,6 +3090,8 @@
    "label": "Insular branches of middle cerebral artery (M2)",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2807,6 +3110,8 @@
    "label": "Insular branches of middle cerebral artery (M2-segment)",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2825,6 +3130,8 @@
    "label": "Internal carotid artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2843,6 +3150,8 @@
    "label": "Internal carotid artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -2861,6 +3170,8 @@
    "label": "Interpeduncular fossa",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain"
    ],
@@ -2883,6 +3194,8 @@
    "label": "Interpeduncular fossa",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain"
    ],
@@ -2905,6 +3218,8 @@
    "label": "Intralaminar and lateral posterior nuclei",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2922,6 +3237,8 @@
    "label": "Intralaminar and lateral posterior nuclei",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -2939,6 +3256,8 @@
    "label": "Lat Fis-ant-Horizont",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -2962,6 +3281,8 @@
    "label": "Lat Fis-ant-Horizont",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -2985,6 +3306,8 @@
    "label": "Lat Fis-ant-Vertical",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3008,6 +3331,8 @@
    "label": "Lat Fis-ant-Vertical",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3031,6 +3356,8 @@
    "label": "Lat Fis-post",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3054,6 +3381,8 @@
    "label": "Lat Fis-post",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3077,6 +3406,8 @@
    "label": "Lateral geniculate body",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -3095,6 +3426,8 @@
    "label": "Lateral geniculate body",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -3113,6 +3446,8 @@
    "label": "Lateral hypothalamus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3130,6 +3465,8 @@
    "label": "Lateral hypothalamus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3147,6 +3484,8 @@
    "label": "Lateral nucleus",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 amygdala (Tyszka 2016)",
+   "bxParent": "Amygdaloid body",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3164,6 +3503,8 @@
    "label": "Lateral nucleus",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 amygdala (Tyszka 2016)",
+   "bxParent": "Amygdaloid body",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3181,6 +3522,8 @@
    "label": "Lateral occipital gyrus (Middle occipital gyrus)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3204,6 +3547,8 @@
    "label": "Lateral occipital gyrus (Middle occipital gyrus)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3227,6 +3572,8 @@
    "label": "Lateral occipitotemporal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3250,6 +3597,8 @@
    "label": "Lateral occipitotemporal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3273,6 +3622,8 @@
    "label": "Lateral pontine branches of basilar artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -3291,6 +3642,8 @@
    "label": "Lateral pontine branches of basilar artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -3309,6 +3662,8 @@
    "label": "Lateral ventricle",
    "category": "ventricles",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "LCR"
    ],
@@ -3327,6 +3682,8 @@
    "label": "Lateral ventricle",
    "category": "ventricles",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "LCR"
    ],
@@ -3345,6 +3702,8 @@
    "label": "Lingual gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3368,6 +3727,8 @@
    "label": "Lingual gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3391,6 +3752,8 @@
    "label": "Lingual nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -3413,6 +3776,8 @@
    "label": "Lingual nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -3435,6 +3800,8 @@
    "label": "Lingula of cerebellum",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -3453,6 +3820,8 @@
    "label": "Lunate sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3476,6 +3845,8 @@
    "label": "Lunate sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3499,6 +3870,8 @@
    "label": "Mamillary body",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -3517,6 +3890,8 @@
    "label": "Mamillary body",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -3535,6 +3910,8 @@
    "label": "Maxillary nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -3557,6 +3934,8 @@
    "label": "Maxillary nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -3579,6 +3958,8 @@
    "label": "Medial geniculate body",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -3597,6 +3978,8 @@
    "label": "Medial geniculate body",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -3615,6 +3998,8 @@
    "label": "Medial lemniscus",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3630,6 +4015,8 @@
    "label": "Medial lemniscus",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3645,6 +4032,8 @@
    "label": "Medial occipitotemporal gyrus (Parahippocampal)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3668,6 +4057,8 @@
    "label": "Medial occipitotemporal gyrus (Parahippocampal)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -3691,6 +4082,8 @@
    "label": "Medial pontine branches of basilar artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -3709,6 +4102,8 @@
    "label": "Medial pontine branches of basilar artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -3727,6 +4122,8 @@
    "label": "Mediodorsal nucleus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3744,6 +4141,8 @@
    "label": "Mediodorsal nucleus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3761,6 +4160,8 @@
    "label": "Medulla oblongata",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain"
    ],
@@ -3783,6 +4184,8 @@
    "label": "Meningeal branch of maxillary nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -3805,6 +4208,8 @@
    "label": "Meningeal branch of maxillary nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -3827,6 +4232,8 @@
    "label": "Mental nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -3849,6 +4256,8 @@
    "label": "Mental nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -3871,6 +4280,8 @@
    "label": "Midbrain",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Temporal lobe"
    ],
@@ -3892,6 +4303,8 @@
    "label": "Midbrain",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Temporal lobe"
    ],
@@ -3913,6 +4326,8 @@
    "label": "Middle cerebellar peduncle",
    "category": "tracts",
    "side": "median",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -3928,6 +4343,8 @@
    "label": "Middle cerebral artery (M1-segment)",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -3946,6 +4363,8 @@
    "label": "Middle cerebral artery (M1-segment)",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -3964,6 +4383,8 @@
    "label": "Middle cerebral artery (M3 segment)",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -3982,6 +4403,8 @@
    "label": "Middle cerebral artery (M3-segment)",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -4000,6 +4423,8 @@
    "label": "Middle frontal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4023,6 +4448,8 @@
    "label": "Middle frontal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4046,6 +4473,8 @@
    "label": "Middle longitudinal fasciculus",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -4061,6 +4490,8 @@
    "label": "Middle longitudinal fasciculus",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -4076,6 +4507,8 @@
    "label": "Middle temporal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4099,6 +4532,8 @@
    "label": "Middle temporal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4122,6 +4557,8 @@
    "label": "Motor nucleus of facial nerve",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -4140,6 +4577,8 @@
    "label": "Motor nucleus of facial nerve",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -4158,6 +4597,8 @@
    "label": "Motor root of trigeminal nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4180,6 +4621,8 @@
    "label": "Motor root of trigeminal nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4202,6 +4645,8 @@
    "label": "Neurohypophysis",
    "category": "diencephalon",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": "Pituitary gland",
    "materials": [
     "Nucleus"
    ],
@@ -4220,6 +4665,8 @@
    "label": "Nodule of vermis",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -4238,6 +4685,8 @@
    "label": "Nucleus accumbens",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -4253,6 +4702,8 @@
    "label": "Nucleus accumbens",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -4268,6 +4719,8 @@
    "label": "Nucleus of abducens nerve",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -4286,6 +4739,8 @@
    "label": "Nucleus of abducens nerve",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -4304,6 +4759,8 @@
    "label": "Nucleus of oculomotor nerve",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -4322,6 +4779,8 @@
    "label": "Nucleus of oculomotor nerve",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -4340,6 +4799,8 @@
    "label": "Occipital pole",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4363,6 +4824,8 @@
    "label": "Occipital pole",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4386,6 +4849,8 @@
    "label": "Occipital sinus",
    "category": "veins_sinuses",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -4404,6 +4869,8 @@
    "label": "Occipitotemporal sulcus (Lateral part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4427,6 +4894,8 @@
    "label": "Occipitotemporal sulcus (Lateral part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4450,6 +4919,8 @@
    "label": "Oculomotor nerve (III)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4472,6 +4943,8 @@
    "label": "Oculomotor nerve (III)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4494,6 +4967,8 @@
    "label": "Olfactory nerve (I)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4516,6 +4991,8 @@
    "label": "Olfactory nerve (I)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4538,6 +5015,8 @@
    "label": "Olive",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -4556,6 +5035,8 @@
    "label": "Olive",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -4574,6 +5055,8 @@
    "label": "Ophthalmic artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -4592,6 +5075,8 @@
    "label": "Ophthalmic artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -4610,6 +5095,8 @@
    "label": "Ophthalmic nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4632,6 +5119,8 @@
    "label": "Ophthalmic nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4654,6 +5143,8 @@
    "label": "Optic chiasm",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4676,6 +5167,8 @@
    "label": "Optic chiasm",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4698,6 +5191,8 @@
    "label": "Optic nerve (II)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4720,6 +5215,8 @@
    "label": "Optic nerve (II)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4742,6 +5239,8 @@
    "label": "Optic radiation",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -4757,6 +5256,8 @@
    "label": "Optic radiation",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -4772,6 +5273,8 @@
    "label": "Optic tract",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4794,6 +5297,8 @@
    "label": "Optic tract",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -4816,6 +5321,8 @@
    "label": "Orbital gyri (Frontomarginal gyrus and sulcus)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4839,6 +5346,8 @@
    "label": "Orbital gyri (Frontomarginal gyrus and sulcus)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4862,6 +5371,8 @@
    "label": "Orbital gyri",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4885,6 +5396,8 @@
    "label": "Orbital gyri",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4908,6 +5421,8 @@
    "label": "Orbital part of inferior frontal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4931,6 +5446,8 @@
    "label": "Orbital part of inferior frontal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4954,6 +5471,8 @@
    "label": "Orbital sulci (H-shaped orbital sulci)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -4977,6 +5496,8 @@
    "label": "Orbital sulci (H-shaped orbital sulci)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5000,6 +5521,8 @@
    "label": "Orbital sulci (Lateral Orbital sulcus)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5023,6 +5546,8 @@
    "label": "Orbital sulci (Lateral Orbital sulcus)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5046,6 +5571,8 @@
    "label": "Orbitofrontal branches of anterior cerebral artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5064,6 +5591,8 @@
    "label": "Orbitofrontal branches of anterior cerebral artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5082,6 +5611,8 @@
    "label": "Paracentral gyrus and sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5105,6 +5636,8 @@
    "label": "Paracentral gyrus and sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5128,6 +5661,8 @@
    "label": "Parietal branches of middle cerebral artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5146,6 +5681,8 @@
    "label": "Parietal branches of middle cerebral artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5164,6 +5701,8 @@
    "label": "Peduncle of flocculus",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -5182,6 +5721,8 @@
    "label": "Peduncle of flocculus",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -5200,6 +5741,8 @@
    "label": "Pericallosal artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5218,6 +5761,8 @@
    "label": "Pericallosal artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5236,6 +5781,8 @@
    "label": "Postcentral gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5259,6 +5806,8 @@
    "label": "Postcentral gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5282,6 +5831,8 @@
    "label": "Posterior cerebral artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5300,6 +5851,8 @@
    "label": "Posterior cerebral artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5318,6 +5871,8 @@
    "label": "Posterior commissure",
    "category": "diencephalon",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -5340,6 +5895,8 @@
    "label": "Posterior communicating artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5358,6 +5915,8 @@
    "label": "Posterior communicating artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5376,6 +5935,8 @@
    "label": "Posterior division of mandibular nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -5398,6 +5959,8 @@
    "label": "Posterior division of mandibular nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -5420,6 +5983,8 @@
    "label": "Posterior hypothalamus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5437,6 +6002,8 @@
    "label": "Posterior hypothalamus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5454,6 +6021,8 @@
    "label": "Posterior inferior cerebellar artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5472,6 +6041,8 @@
    "label": "Posterior inferior cerebellar artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -5490,6 +6061,8 @@
    "label": "Posterior thalamic radiation",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5505,6 +6078,8 @@
    "label": "Posterior thalamic radiation",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5520,6 +6095,8 @@
    "label": "Precentral gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5543,6 +6120,8 @@
    "label": "Precentral gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5566,6 +6145,8 @@
    "label": "Precuneus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5589,6 +6170,8 @@
    "label": "Precuneus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5612,6 +6195,8 @@
    "label": "Preoptic hypothalamus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5629,6 +6214,8 @@
    "label": "Preoptic hypothalamus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5646,6 +6233,8 @@
    "label": "Pulvinar",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5663,6 +6252,8 @@
    "label": "Pulvinar",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5680,6 +6271,8 @@
    "label": "Red nucleus",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -5698,6 +6291,8 @@
    "label": "Red nucleus",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -5716,6 +6311,8 @@
    "label": "Reticulospinal tract",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5731,6 +6328,8 @@
    "label": "Reticulospinal tract",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -5746,6 +6345,8 @@
    "label": "Septal nuclei",
    "category": "deep_grey",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -5764,6 +6365,8 @@
    "label": "Inferior frontal sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5787,6 +6390,8 @@
    "label": "Inferior frontal sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5810,6 +6415,8 @@
    "label": "Inferior temporal sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5833,6 +6440,8 @@
    "label": "Inferior temporal sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5856,6 +6465,8 @@
    "label": "Intraparietal sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5879,6 +6490,8 @@
    "label": "Intraparietal sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5902,6 +6515,8 @@
    "label": "Olfactory sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5925,6 +6540,8 @@
    "label": "Olfactory sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5948,6 +6565,8 @@
    "label": "Opercular part of inferior frontal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5971,6 +6590,8 @@
    "label": "Opercular part of inferior frontal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -5994,6 +6615,8 @@
    "label": "Paracentral sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6017,6 +6640,8 @@
    "label": "Paracentral sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6040,6 +6665,8 @@
    "label": "Parieto-occipital sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6063,6 +6690,8 @@
    "label": "Parieto-occipital sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6086,6 +6715,8 @@
    "label": "Pineal gland",
    "category": "diencephalon",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -6104,6 +6735,8 @@
    "label": "Pons",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain"
    ],
@@ -6126,6 +6759,8 @@
    "label": "Pons",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain"
    ],
@@ -6148,6 +6783,8 @@
    "label": "Postcentral sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6171,6 +6808,8 @@
    "label": "Postcentral sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6194,6 +6833,8 @@
    "label": "Posterior intercavernous sinus",
    "category": "veins_sinuses",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -6212,6 +6853,8 @@
    "label": "Posterior quadrangular lobule",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -6230,6 +6873,8 @@
    "label": "Posterior quadrangular lobule",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -6248,6 +6893,8 @@
    "label": "Precentral sulcus (inferior part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6271,6 +6918,8 @@
    "label": "Precentral sulcus (inferior part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6294,6 +6943,8 @@
    "label": "Precentral sulcus (Superior part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6317,6 +6968,8 @@
    "label": "Precentral sulcus (Superior part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6340,6 +6993,8 @@
    "label": "Proximal lateral striate branches",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -6358,6 +7013,8 @@
    "label": "Proximal lateral striate branches",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -6376,6 +7033,8 @@
    "label": "Putamen",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -6394,6 +7053,8 @@
    "label": "Putamen",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -6412,6 +7073,8 @@
    "label": "Pyramid of medulla oblongata",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -6430,6 +7093,8 @@
    "label": "Pyramid of medulla oblongata",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
@@ -6448,6 +7113,8 @@
    "label": "Pyramis of vermis",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -6466,6 +7133,8 @@
    "label": "Sensory root of trigeminal nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (afferent fibers)"
    ],
@@ -6484,6 +7153,8 @@
    "label": "Sensory root of trigeminal nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (afferent fibers)"
    ],
@@ -6502,6 +7173,8 @@
    "label": "Septum pellucidum",
    "category": "ventricles",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -6524,6 +7197,8 @@
    "label": "Sigmoid sinus",
    "category": "veins_sinuses",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -6542,6 +7217,8 @@
    "label": "Sigmoid sinus",
    "category": "veins_sinuses",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -6560,6 +7237,8 @@
    "label": "Straight gyrus (Gyrus rectus)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6583,6 +7262,8 @@
    "label": "Straight gyrus (Gyrus rectus)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6606,6 +7287,8 @@
    "label": "Straight sinus",
    "category": "veins_sinuses",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -6624,6 +7307,8 @@
    "label": "Stria medullaris thalami",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -6646,6 +7331,8 @@
    "label": "Stria medullaris thalami",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -6668,6 +7355,8 @@
    "label": "Stria terminalis",
    "category": "white_matter",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -6690,6 +7379,8 @@
    "label": "Stria terminalis",
    "category": "white_matter",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -6712,6 +7403,8 @@
    "label": "Subparietal sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6735,6 +7428,8 @@
    "label": "Subparietal sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6758,6 +7453,8 @@
    "label": "Substantia nigra",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -6773,6 +7470,8 @@
    "label": "Substantia nigra",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -6788,6 +7487,8 @@
    "label": "Subthalamic nucleus",
    "category": "deep_grey",
    "side": "left",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -6803,6 +7504,8 @@
    "label": "Subthalamic nucleus",
    "category": "deep_grey",
    "side": "right",
+   "bxSource": "CIT168 (Pauli 2018)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -6818,6 +7521,8 @@
    "label": "Sulcus interm prim-Jensen",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6841,6 +7546,8 @@
    "label": "Sulcus interm prim-Jensen",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -6864,6 +7571,8 @@
    "label": "Superior cerebellar artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -6882,6 +7591,8 @@
    "label": "Superior cerebellar artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -6900,6 +7611,8 @@
    "label": "Base of peduncle",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain"
    ],
@@ -6922,6 +7635,8 @@
    "label": "Base of peduncle",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain"
    ],
@@ -6944,6 +7659,8 @@
    "label": "Superior cerebellar peduncle",
    "category": "tracts",
    "side": "median",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -6959,6 +7676,8 @@
    "label": "Superior cerebellar peduncle",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -6977,6 +7696,8 @@
    "label": "Superior cerebellar peduncle",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -6995,16 +7716,21 @@
    "label": "Superior colliculus",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
-   "group": "cleared",
+   "group": "held-by-decision",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D's mesh (docs/brain-origin-test.md); source unsettled, held fail-closed (CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -7013,16 +7739,21 @@
    "label": "Superior colliculus",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus"
    ],
-   "group": "cleared",
+   "group": "held-by-decision",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D's mesh (docs/brain-origin-test.md); source unsettled, held fail-closed (CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -7031,6 +7762,8 @@
    "label": "Superior frontal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7054,6 +7787,8 @@
    "label": "Superior frontal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7077,6 +7812,8 @@
    "label": "Superior frontal sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7100,6 +7837,8 @@
    "label": "Superior frontal sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7123,6 +7862,8 @@
    "label": "Superior longitudinal fasciculus I",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -7138,6 +7879,8 @@
    "label": "Superior longitudinal fasciculus I",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -7153,6 +7896,8 @@
    "label": "Superior longitudinal fasciculus II",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -7168,6 +7913,8 @@
    "label": "Superior longitudinal fasciculus II",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -7183,6 +7930,8 @@
    "label": "Superior longitudinal fasciculus III",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -7198,6 +7947,8 @@
    "label": "Superior longitudinal fasciculus III",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -7213,6 +7964,8 @@
    "label": "Superior occipital gyri",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7236,6 +7989,8 @@
    "label": "Superior occipital gyri",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7259,6 +8014,8 @@
    "label": "Superior parietal lobule",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7282,6 +8039,8 @@
    "label": "Superior parietal lobule",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7305,6 +8064,8 @@
    "label": "Superior petrosal sinus",
    "category": "veins_sinuses",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -7323,6 +8084,8 @@
    "label": "Superior petrosal sinus",
    "category": "veins_sinuses",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -7341,6 +8104,8 @@
    "label": "Superior sagittal sinus",
    "category": "veins_sinuses",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -7359,6 +8124,8 @@
    "label": "Superior salivatory nucleus",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -7377,6 +8144,8 @@
    "label": "Superior salivatory nucleus",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (efferent fibers)"
    ],
@@ -7395,6 +8164,8 @@
    "label": "Superior semilunar lobule",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -7413,6 +8184,8 @@
    "label": "Superior semilunar lobule",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -7431,6 +8204,8 @@
    "label": "Superior temporal gyrus (Lateral part)",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7454,6 +8229,8 @@
    "label": "Superior temporal gyrus (Lateral part)",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7477,6 +8254,8 @@
    "label": "Superior temporal sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7500,6 +8279,8 @@
    "label": "Superior temporal sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7523,6 +8304,8 @@
    "label": "Superior thalamic radiation",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -7538,6 +8321,8 @@
    "label": "Superior thalamic radiation",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -7553,6 +8338,8 @@
    "label": "Supramarginal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7576,6 +8363,8 @@
    "label": "Supramarginal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7599,6 +8388,8 @@
    "label": "Temporal branches of middle cerebral artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -7617,6 +8408,8 @@
    "label": "Temporal branches of middle cerebral artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -7635,6 +8428,8 @@
    "label": "Temporal plane",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7658,6 +8453,8 @@
    "label": "Temporal plane",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7681,6 +8478,8 @@
    "label": "Temporal pole",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7704,6 +8503,8 @@
    "label": "Temporal pole",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7727,6 +8528,8 @@
    "label": "Tentorium cerebelli",
    "category": "meninges_dura",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cartilage"
    ],
@@ -7745,6 +8548,8 @@
    "label": "Tentorium cerebelli",
    "category": "meninges_dura",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cartilage"
    ],
@@ -7763,6 +8568,8 @@
    "label": "Third ventricle",
    "category": "ventricles",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "LCR"
    ],
@@ -7781,6 +8588,8 @@
    "label": "Tonsil of cerebellum",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -7799,6 +8608,8 @@
    "label": "Tonsil of cerebellum",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -7817,6 +8628,8 @@
    "label": "Transverse frontopolar gyrus and sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7840,6 +8653,8 @@
    "label": "Transverse frontopolar gyrus and sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7863,6 +8678,8 @@
    "label": "Transverse occipital sulcus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7886,6 +8703,8 @@
    "label": "Transverse occipital sulcus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7909,6 +8728,8 @@
    "label": "Transverse sinus",
    "category": "veins_sinuses",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -7927,6 +8748,8 @@
    "label": "Transverse sinus",
    "category": "veins_sinuses",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -7945,6 +8768,8 @@
    "label": "Transverse temporal gyri",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7968,6 +8793,8 @@
    "label": "Transverse temporal gyri",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -7991,6 +8818,8 @@
    "label": "Triangular part of inferior frontal gyrus",
    "category": "cortex",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -8014,6 +8843,8 @@
    "label": "Triangular part of inferior frontal gyrus",
    "category": "cortex",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Brain-Inner",
     "Temporal lobe"
@@ -8037,6 +8868,8 @@
    "label": "Trigeminal nerve (V)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -8059,6 +8892,8 @@
    "label": "Trigeminal nerve (V)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -8081,6 +8916,8 @@
    "label": "Trochlear nerve (IV)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -8103,6 +8940,8 @@
    "label": "Trochlear nerve (IV)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -8125,6 +8964,8 @@
    "label": "Tuber of vermis",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -8143,6 +8984,8 @@
    "label": "Tuberal hypothalamus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8160,6 +9003,8 @@
    "label": "Tuberal hypothalamus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Neudorfer 2020",
+   "bxParent": "Hypothalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8177,6 +9022,8 @@
    "label": "Uncinate fasciculus",
    "category": "tracts",
    "side": "left",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8192,6 +9039,8 @@
    "label": "Uncinate fasciculus",
    "category": "tracts",
    "side": "right",
+   "bxSource": "HCP1065 (Yeh 2022, CC BY-SA 4.0)",
+   "bxParent": null,
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8207,6 +9056,8 @@
    "label": "Uvula of vermis",
    "category": "cerebellum",
    "side": "median",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -8225,6 +9076,8 @@
    "label": "Vagus nerve (X)",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -8247,6 +9100,8 @@
    "label": "Vagus nerve (X)",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -8269,6 +9124,8 @@
    "label": "Ventral anterior nucleus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8286,6 +9143,8 @@
    "label": "Ventral anterior nucleus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8303,6 +9162,8 @@
    "label": "Ventral laterodorsal nucleus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8320,6 +9181,8 @@
    "label": "Ventral laterodorsal nucleus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8337,6 +9200,8 @@
    "label": "Ventral lateroventral nucleus",
    "category": "diencephalon",
    "side": "left",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8354,6 +9219,8 @@
    "label": "Ventral lateroventral nucleus",
    "category": "diencephalon",
    "side": "right",
+   "bxSource": "Najdenovska 2018",
+   "bxParent": "Thalamus",
    "materials": [],
    "group": "cleared",
    "sources": [
@@ -8371,6 +9238,8 @@
    "label": "Vertebral artery",
    "category": "arteries",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -8389,6 +9258,8 @@
    "label": "Vertebral artery",
    "category": "arteries",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Artery"
    ],
@@ -8407,6 +9278,8 @@
    "label": "Vestibular nerve",
    "category": "cranial_nerves",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -8429,6 +9302,8 @@
    "label": "Vestibular nerve",
    "category": "cranial_nerves",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nerve"
    ],
@@ -8451,6 +9326,8 @@
    "label": "Vestibular nuclei",
    "category": "brainstem",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (afferent fibers)"
    ],
@@ -8469,6 +9346,8 @@
    "label": "Vestibular nuclei",
    "category": "brainstem",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Nucleus (afferent fibers)"
    ],
@@ -8487,6 +9366,8 @@
    "label": "White matter of telencephalon",
    "category": "white_matter",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -8509,6 +9390,8 @@
    "label": "White matter of telencephalon",
    "category": "white_matter",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "White matter"
    ],
@@ -8531,6 +9414,8 @@
    "label": "Wing of central lobule",
    "category": "cerebellum",
    "side": "left",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
@@ -8549,6 +9434,8 @@
    "label": "Wing of central lobule",
    "category": "cerebellum",
    "side": "right",
+   "bxSource": "Z-Anatomy / BodyParts3D",
+   "bxParent": null,
    "materials": [
     "Cerebellum"
    ],
