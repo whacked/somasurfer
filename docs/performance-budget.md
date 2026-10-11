@@ -80,10 +80,11 @@ declared is costed as low-resolution, where it is paid for.
 `fullResBrainAssetGzipBytes` is **5,505,024 B (5.25 MiB), a literal derived
 once** on 2026-10-11 from the first full-tier build, which read 4,972,008 B:
 1.10 × that, rounded up to the next 256 KiB. It is not re-derived at gate time,
-so it cannot ratchet to whatever the next build weighs. The 10% covers
-re-encoding the same structures. It was derived from the 245-structure build,
-before the origin test added the corpus callosum and midbrain, and they
-brought the full tier to 5,320,761 B (97% of the line), still within it.
+so it cannot ratchet to whatever the next build weighs. The 10% was margin for
+re-encoding the set it was derived from, the 245-structure build. The origin
+test then added the corpus callosum and midbrain, about 349 KB, and holding the
+four colliculi took some of that back. The 244 structures that ship now read
+5,309,123 B, about 96.4% of the line and 3.6% under it, not 10%.
 A new clearance group, such as the cortex
 if it ever clears, is a new decision about this line, not headroom inside it.
 At 25 Mbit/s the tier is about 1.8 s of transfer after the low tier has drawn.

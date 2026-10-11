@@ -56,7 +56,11 @@
  *      actually contains must be cleared, and every source that structure
  *      derives from must be cited by the entry that ships the file. An entry
  *      citing only cleared sources while its file carries a held structure is
- *      exactly what rule 9 alone lets through.
+ *      exactly what rule 9 alone lets through. The manifest is re-derived
+ *      first, from the inputs it records, so a hand-edited group or source
+ *      fails here instead of clearing what it labels. No offline check can see
+ *      whether those recorded inputs, or the geometry, really are the glb's:
+ *      this checks what a structure is labelled, not what it is.
  *
  * CI tooling under tools/ is deliberately out of scope: validating assets is
  * exactly what a CI gate is for, and tools/ is not published or linked into
@@ -67,7 +71,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, posix, relative } from 'node:path';
 import { REPO_ROOT, readPackages, sourceFiles, fail, pass, rel } from './lib/repo.mjs';
 import { MAGIC as ATLM_MAGIC, readMeshBin } from './lib/meshbin.mjs';
-import { GROUPS } from './lib/brain-provenance.mjs';
+import { GROUPS, verifyProvenance } from './lib/brain-provenance.mjs';
 import { brainAssetPaths } from './lib/brain-asset-paths.mjs';
 
 const DEP_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
@@ -213,23 +217,55 @@ for (const a of assets) {
  * base64, which a raw slice never matches. So: several windows spread across
  * the file, each also in all three base64 alignments (a window's encoding
  * depends on where it falls relative to the 3-byte groups of the whole).
+ *
+ * Eight windows across a whole file only land inside a handful of the
+ * structures an ATLM file holds (6 of 248 in the low tier, measured), so for a
+ * mesh file every structure's range in every section gets a window of its own
+ * too: one structure's positions, normals or indices copied out is found.
  */
 const PROBE_WINDOWS = 8;
 const PROBE_BYTES = 96;
+const MIN_PROBE_BYTES = 64;
+function windowProbes(window, where) {
+  const out = [{ needle: window, base64: false, where }];
+  for (let phase = 0; phase < 3; phase += 1) {
+    // Drop the first `phase` bytes so the encoded run starts on a group
+    // boundary, and the last partial group, whose encoding depends on what
+    // follows it.
+    const aligned = window.subarray(phase, phase + Math.floor((window.length - phase) / 3) * 3);
+    if (aligned.length >= 48) out.push({ needle: aligned.toString('base64'), base64: true, where });
+  }
+  return out;
+}
 function payloadProbes(bytes) {
-  if (bytes.length < 64) return [];
+  if (bytes.length < MIN_PROBE_BYTES) return [];
   const width = Math.min(PROBE_BYTES, bytes.length);
   const out = [];
   for (let k = 0; k < PROBE_WINDOWS; k += 1) {
     const at = Math.floor(((bytes.length - width) * (k + 0.5)) / PROBE_WINDOWS);
-    const window = bytes.subarray(at, at + width);
-    out.push({ needle: window, base64: false });
-    for (let phase = 0; phase < 3; phase += 1) {
-      // Drop the first `phase` bytes so the encoded run starts on a group
-      // boundary, and the last partial group, whose encoding depends on what
-      // follows it.
-      const aligned = window.subarray(phase, phase + Math.floor((width - phase) / 3) * 3);
-      if (aligned.length >= 48) out.push({ needle: aligned.toString('base64'), base64: true });
+    out.push(...windowProbes(bytes.subarray(at, at + width), null));
+  }
+  if (bytes.subarray(0, 4).toString('latin1') === ATLM_MAGIC) {
+    // A file that claims to be a mesh and does not parse is rule 10's to report;
+    // here it keeps its whole-file windows.
+    let mesh = null;
+    try {
+      mesh = readMeshBin(bytes);
+    } catch {
+      mesh = null;
+    }
+    for (const t of mesh?.table ?? []) {
+      const isz = mesh.index32 ? 4 : 2;
+      for (const [section, start, length] of [
+        ['positions', mesh.positions.byteOffset + t.firstVertex * 6, t.vertexCount * 6],
+        ['normals', mesh.normals.byteOffset + t.firstVertex * 2, t.vertexCount * 2],
+        ['indices', mesh.indices.byteOffset + t.firstIndex * isz, t.indexCount * isz],
+      ]) {
+        const w = Math.min(PROBE_BYTES, length);
+        if (w < MIN_PROBE_BYTES) continue;
+        const at = start + Math.floor((length - w) / 2);
+        out.push(...windowProbes(bytes.subarray(at, at + w), `structure id ${t.id}'s ${section}`));
+      }
     }
   }
   return out;
@@ -304,13 +340,15 @@ if (existsSync(DIST)) {
     }
   }
 
+  for (const payload of payloads) payload.probes = payloadProbes(payload.bytes);
+  const probeCount = payloads.reduce((n, p) => n + p.probes.length, 0);
   for (const bundle of bundleFiles) {
     const text = readFileSync(bundle);
     for (const payload of payloads) {
-      const hit = payloadProbes(payload.bytes).find((probe) => text.includes(probe.needle));
+      const hit = payload.probes.find((probe) => text.includes(probe.needle));
       if (hit) {
         problems.push(
-          `${rel(bundle)}: contains bytes from asset payload ${payload.file}${hit.base64 ? ', base64-encoded' : ''}.`,
+          `${rel(bundle)}: contains bytes from asset payload ${payload.file}${hit.base64 ? ', base64-encoded' : ''}${hit.where ? ` (${hit.where})` : ''}.`,
           `  The asset is embedded in the bundle, so the bundle is a derivative of it.`,
           `  Emit the asset as its own file under dist/assets/ and fetch it at runtime.`,
         );
@@ -319,7 +357,7 @@ if (existsSync(DIST)) {
   }
   report.push(
     `dist/: ${bundleFiles.length} file(s) outside assets/ checked against ${payloads.length} asset payload(s),` +
-      ` ${PROBE_WINDOWS} windows each, raw and base64.`,
+      ` ${PROBE_WINDOWS} windows each plus one per mesh structure per section, ${probeCount} probes raw and base64.`,
   );
 } else {
   report.push(`dist/: not built, artefact rules skipped. Run \`npm run build\` first to check them.`);
@@ -398,6 +436,13 @@ function brainStructuresIn(abs) {
   const manifestPath = join(REPO_ROOT, brainAssetPaths(commit).provenance);
   if (!existsSync(manifestPath)) return { error: `has no provenance manifest at ${rel(manifestPath)}.` };
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  // The manifest is the judge here, so it is judged first: re-derived from the
+  // inputs it records, under §7.3, the committed origin result and the decision
+  // holds. A record hand-edited to `cleared` would otherwise clear its structure.
+  const originPath = join(manifestPath, '..', 'origin-test-bodyparts3d.json');
+  if (!existsSync(originPath)) return { error: `has no origin-test result at ${rel(originPath)} to re-derive its provenance with.` };
+  const drift = verifyProvenance(manifest, JSON.parse(readFileSync(originPath, 'utf8')));
+  if (drift.length > 0) return { error: `has a provenance manifest that does not re-derive:\n    ${drift.join('\n    ')}` };
   return { ids, provenance: new Map(manifest.structures.map((s) => [s.id, s])) };
 }
 for (const a of assets) {

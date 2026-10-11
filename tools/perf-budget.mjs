@@ -45,7 +45,7 @@
 
 import { gzipSync } from 'node:zlib';
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { REPO_ROOT, fail, pass, rel } from './lib/repo.mjs';
 import { buildNameIndex } from '../packages/alc/src/index.ts';
 import { MAGIC as ATLM_MAGIC, readMeshBin } from './lib/meshbin.mjs';
@@ -237,9 +237,18 @@ const allAssetFiles = filesUnder(
  * structures.json) and never by a file name, so the failure is one-sided: a
  * lazy file nobody declared counts as low-resolution, where it is paid for, not
  * the other way round.
+ *
+ * The other direction is a declaration that is wrong, not missing: a lazy
+ * `tiers.*.file` that points out of its own set (a template, a body mesh, the
+ * next set over). Taking it off the low-resolution line would put it on no line
+ * at all. So a set may only declare files in its own directory, and every lazy
+ * file must land on a line that counts it.
  */
+const BRAIN_ASSETS = join(DIST, 'assets', 'brain');
+const inBrain = (p) => p.startsWith(`${BRAIN_ASSETS}/`);
 function lazyAssetFiles() {
   const out = new Set();
+  const wrong = [];
   for (const p of allAssetFiles.filter((f) => f.endsWith('structures.json'))) {
     let doc;
     try {
@@ -248,16 +257,21 @@ function lazyAssetFiles() {
       continue;
     }
     if (doc?.schema !== 'atlas-brain-structures/1') continue;
-    for (const tier of Object.values(doc.tiers ?? {})) {
-      if (tier.loading === 'lazy') out.add(join(DIST, 'assets', tier.file));
+    for (const [name, tier] of Object.entries(doc.tiers ?? {})) {
+      if (tier.loading !== 'lazy') continue;
+      const file = join(DIST, 'assets', String(tier.file));
+      if (dirname(file) !== dirname(p)) wrong.push(`  ${rel(p)} declares tiers.${name} ${tier.file} lazy; a set may only declare files beside its own structures.json.`);
+      else if (!inBrain(file)) wrong.push(`  ${rel(p)} declares ${tier.file} lazy, and no byte line counts a lazy file outside dist/assets/brain/.`);
+      else out.add(file);
     }
+  }
+  if (wrong.length > 0) {
+    fail('performance budget', ['A lazy declaration would take a file off every byte line:', ...wrong]);
   }
   return out;
 }
 const lazyAssets = lazyAssetFiles();
 const assetFiles = allAssetFiles.filter((p) => !lazyAssets.has(p));
-const BRAIN_ASSETS = join(DIST, 'assets', 'brain');
-const inBrain = (p) => p.startsWith(`${BRAIN_ASSETS}/`);
 const lowResBrainFiles = assetFiles.filter(inBrain);
 const fullResBrainFiles = [...lazyAssets].filter(inBrain);
 const missingLazy = [...lazyAssets].filter((p) => !existsSync(p));

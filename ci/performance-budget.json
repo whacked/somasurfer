@@ -55,7 +55,7 @@
     "fullResBrainAssetGzipBytes": {
       "limit": 5505024,
       "covers": "the brain mesh files declared `loading: \"lazy\"` in their structures.json (the full-resolution tier), gzipped",
-      "why": "Derived once, on 2026-10-11, from the first full-tier build (DOG-127, 4,972,008 B gzip): 1.10 x that, rounded up to the next 256 KiB, = 5.25 MiB. It is a committed literal, not re-derived at gate time, so it cannot ratchet to whatever the next build happens to weigh. At 25 Mbit/s it is about 1.8 s of background transfer after the low tier is already drawn. The 10% is for re-encoding the same 245 structures; adding a clearance group (the cortex, if it clears) is a new decision about this line, not headroom inside it."
+      "why": "Derived once, on 2026-10-11, from the first full-tier build (DOG-127, 4,972,008 B gzip): 1.10 x that, rounded up to the next 256 KiB, = 5.25 MiB. It is a committed literal, not re-derived at gate time, so it cannot ratchet to whatever the next build happens to weigh. At 25 Mbit/s it is about 1.8 s of background transfer after the low tier is already drawn. The 10% was margin for re-encoding the set it was derived from. The origin-test moves (midbrain x2 from the glb, the corpus callosum from BodyParts3D) then added about 349 KB, and holding the 4 colliculi took some of it back, so the 244 structures that ship now leave about 3.6%, not 10% (docs/brain-mesh-report.md has the current reading). The literal stays as derived. Adding a clearance group (the cortex, if it clears) is a new decision about this line, not headroom inside it."
     },
     "indexParseMsNormalised": {
       "limit": 40,
