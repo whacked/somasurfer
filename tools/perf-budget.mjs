@@ -48,6 +48,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { REPO_ROOT, fail, pass, rel } from './lib/repo.mjs';
 import { buildNameIndex } from '../packages/alc/src/index.ts';
+import { MAGIC as ATLM_MAGIC, readMeshBin } from './lib/meshbin.mjs';
 import { joinNameIndex } from '../packages/atlas-web/src/viewer/nameindex.js';
 
 /**
@@ -222,23 +223,73 @@ const isNameIndex = (p) => nameIndexPaths.includes(p);
 // consistently. `indexGzipBytes` was written for this — "256 KiB holds the full
 // ALC-1 level and frame tables with room for a label index per frame".
 const indexFiles = [...filesUnder(join(DIST, 'data'), () => true), ...nameIndexPaths];
-const assetFiles = filesUnder(
+const allAssetFiles = filesUnder(
   join(DIST, 'assets'),
   (r) => !r.endsWith('LICENSE') && !r.endsWith('ATTRIBUTION.md'),
 ).filter((p) => !isNameIndex(p));
 
 /**
+ * Asset files a mesh set declares as fetched lazily: its full-resolution tier
+ * (DOG-127). They are not on the path to seeing anything, so they are not
+ * low-resolution assets, and they get a byte line of their own.
+ *
+ * Classified by the set's own declaration (`tiers.*.loading` in its
+ * structures.json) and never by a file name, so the failure is one-sided: a
+ * lazy file nobody declared counts as low-resolution, where it is paid for, not
+ * the other way round.
+ */
+function lazyAssetFiles() {
+  const out = new Set();
+  for (const p of allAssetFiles.filter((f) => f.endsWith('structures.json'))) {
+    let doc;
+    try {
+      doc = JSON.parse(readFileSync(p, 'utf8'));
+    } catch {
+      continue;
+    }
+    if (doc?.schema !== 'atlas-brain-structures/1') continue;
+    for (const tier of Object.values(doc.tiers ?? {})) {
+      if (tier.loading === 'lazy') out.add(join(DIST, 'assets', tier.file));
+    }
+  }
+  return out;
+}
+const lazyAssets = lazyAssetFiles();
+const assetFiles = allAssetFiles.filter((p) => !lazyAssets.has(p));
+const BRAIN_ASSETS = join(DIST, 'assets', 'brain');
+const inBrain = (p) => p.startsWith(`${BRAIN_ASSETS}/`);
+const lowResBrainFiles = assetFiles.filter(inBrain);
+const fullResBrainFiles = [...lazyAssets].filter(inBrain);
+const missingLazy = [...lazyAssets].filter((p) => !existsSync(p));
+if (missingLazy.length > 0) {
+  fail('performance budget', [
+    'A mesh set declares lazily fetched files that are not in the build:',
+    ...missingLazy.map((p) => `  ${rel(p)}`),
+  ]);
+}
+
+/**
  * Parse cost, measured the way the client pays it: parse the JSON, then build
  * the lookup structures. Parsing alone understates it, because a mesh is not
  * useful until it is indexed.
+ *
+ * A binary mesh (DOG-127) is recognised by its magic bytes and read with the
+ * format's own reader, tools/lib/meshbin.mjs, which is the reader the viewer
+ * takes too. Its parse is the header and the typed-array views over it, and its
+ * lookups are the same single walk of positions and indices a JSON mesh gets.
+ * JSON.parse of a binary file is what this used to do, and it threw.
  */
+const isAtlm = (bytes) => bytes.length >= 4 && bytes.subarray(0, 4).toString('latin1') === ATLM_MAGIC;
 function parseMs(paths, buildLookups) {
-  const sources = paths.map((p) => readFileSync(p, 'utf8'));
+  const sources = paths.map((p) => {
+    const bytes = readFileSync(p);
+    return isAtlm(bytes) ? { binary: bytes } : { text: bytes.toString('utf8') };
+  });
   let best = Infinity;
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const t0 = performance.now();
     let sink = 0;
-    for (const text of sources) sink += buildLookups(JSON.parse(text));
+    for (const src of sources) sink += buildLookups(src.binary ? readMeshBin(src.binary) : JSON.parse(src.text));
     const dt = performance.now() - t0;
     if (!Number.isFinite(sink)) throw new Error('parse produced nothing');
     best = Math.min(best, dt);
@@ -351,7 +402,7 @@ const assetParseMs = parseMs(assetFiles, (value) => {
   let sink = 0;
   for (const key of ['positions', 'indices']) {
     const arr = value[key];
-    if (Array.isArray(arr)) for (let i = 0; i < arr.length; i += 1) sink += arr[i];
+    if (Array.isArray(arr) || ArrayBuffer.isView(arr)) for (let i = 0; i < arr.length; i += 1) sink += arr[i];
   }
   return sink + (value.levels?.length ?? 0) + 1;
 });
@@ -367,6 +418,8 @@ const transferMs = (bytes) => bytes / bytesPerMs;
 const bundleGzip = gzipBytes(bundleFiles);
 const indexGzip = gzipBytes(indexFiles);
 const assetGzip = gzipBytes(assetFiles);
+const lowResBrainGzip = gzipBytes(lowResBrainFiles);
+const fullResBrainGzip = gzipBytes(fullResBrainFiles);
 
 /**
  * Every line, as a function of the factor the parse times are scaled by. Called
@@ -393,6 +446,13 @@ function linesScaledBy(parseFactor) {
     bundleGzipBytes: bundleGzip,
     indexGzipBytes: indexGzip,
     lowResAssetGzipBytes: assetGzip,
+    // The brain's share of the line above, agreed with W3 (DOG-128) so the body
+    // has its own room inside the same 2.5 MiB. Inside, not beside: these bytes
+    // are counted in lowResAssetGzipBytes as well.
+    lowResBrainAssetGzipBytes: lowResBrainGzip,
+    // Lazily fetched; not in derivedLowResAssetLoadMs, because nothing waits
+    // for it before the brain can be seen.
+    fullResBrainAssetGzipBytes: fullResBrainGzip,
     indexParseMsNormalised: indexParseNorm,
     nameIndexBuildMsNormalised: nameIndexNorm,
     // The same measurement over the cells it bound. The absolute line is what
@@ -424,7 +484,13 @@ const measurements = linesScaledBy(band === 'in' ? speedFactor : 1);
  * line fails the gate rather than defaulting to one or the other, so adding a
  * line forces whoever adds it to say which kind it is.
  */
-const EXACT_LINES = new Set(['bundleGzipBytes', 'indexGzipBytes', 'lowResAssetGzipBytes']);
+const EXACT_LINES = new Set([
+  'bundleGzipBytes',
+  'indexGzipBytes',
+  'lowResAssetGzipBytes',
+  'lowResBrainAssetGzipBytes',
+  'fullResBrainAssetGzipBytes',
+]);
 const CALIBRATED_LINES = new Set([
   'indexParseMsNormalised',
   // Both DOG-98 lines carry the parse term and are therefore only as good as
@@ -730,7 +796,8 @@ const detail = [
         `  so the gated figure and derivedFirstInteractionMs are optimistic about this`
           + ` term. Not gated: one cold sample is too noisy for a limit.`,
       ]),
-  `files: ${bundleFiles.length} bundle, ${indexFiles.length} index (${nameIndexPaths.length} of them the name index), ${assetFiles.length} asset`,
+  `files: ${bundleFiles.length} bundle, ${indexFiles.length} index (${nameIndexPaths.length} of them the name index), ${assetFiles.length} asset`
+    + ` (${lowResBrainFiles.length} of them the low-resolution brain), ${lazyAssets.size} fetched lazily (${fullResBrainFiles.length} brain, full resolution)`,
   ...(calibrationOverrideMs !== null
     ? [
         ``,

@@ -2,7 +2,7 @@
   "name": "@gstack/atlas-assets",
   "version": "0.1.0",
   "private": true,
-  "description": "Atlas geometry, textures and label sets. Separately licensed from the code \u2014 see ./LICENSE and ./ATTRIBUTION.md.",
+  "description": "Atlas geometry, textures and label sets. Separately licensed from the code — see ./LICENSE and ./ATTRIBUTION.md.",
   "atlas": {
     "licenceClass": "asset",
     "licenceStatus": "settled",
@@ -11,7 +11,8 @@
     "payloadDirs": [
       "geometry",
       "templates",
-      "labels"
+      "labels",
+      "brain"
     ],
     "ncPayloadDirs": [
       "nc"

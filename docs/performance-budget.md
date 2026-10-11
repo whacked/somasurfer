@@ -42,16 +42,54 @@ library added to the page shell.
 | --- | --- | --- |
 | `bundleGzipBytes` | 150 KiB | `index.html` + `app/*.js` + `app/*.css`, gzipped |
 | `indexGzipBytes` | 256 KiB | `data/*.json` **plus the name index**, gzipped |
-| `lowResAssetGzipBytes` | 2.5 MiB | `dist/assets/**`, gzipped, less LICENSE, ATTRIBUTION.md and the name index |
+| `lowResAssetGzipBytes` | 2.5 MiB | `dist/assets/**`, gzipped, less LICENSE, ATTRIBUTION.md, the name index and every file a mesh set declares lazy |
+| `lowResBrainAssetGzipBytes` | 1.00 MiB | the brain's share of the line above (DOG-127), counted in both |
+| `fullResBrainAssetGzipBytes` | 5.25 MiB | the lazily fetched full-resolution brain tier (DOG-127) |
 | `indexParseMsNormalised` | 40 ms | parse `data/*.json` and build the lookup maps |
 | `nameIndexBuildMsNormalised` | 100 ms | build the name index: `joinNameIndex` + `buildNameIndex` over the emitted documents |
 | `nameIndexBuildUsPerCell` | 28 us/cell | the same measurement, per cell the index binds |
-| `lowResAssetParseMsNormalised` | 400 ms | parse the low-resolution asset payloads |
+| `lowResAssetParseMsNormalised` | 400 ms | parse the low-resolution asset payloads: JSON, or the ATLM binary mesh reader |
 
 2.5 MiB at 25 Mbit/s is about 0.84 s of transfer, which fits the 2.5 s budget
 with room for parse. It is also roughly where a 20k-triangle body shell plus
 label sets lands, so it constrains the asset pipeline without being
 unachievable.
+
+### Brain meshes: the shared low-resolution line, and a lazy tier (DOG-127)
+
+The real brain (W2, DOG-127) and the full-body human (W3, DOG-128) share the
+2.5 MiB `lowResAssetGzipBytes` line. The split, agreed in W2 and binding on W3:
+
+| share | gzip | what it holds | today |
+| --- | ---: | --- | ---: |
+| brain, low tier | 1.00 MiB | `assets/brain/**` that is not declared lazy | 759 KiB |
+| body, low tier | 1.25 MiB | W3's equivalent; W3 adds its own line | — |
+| v1 templates and labels | 0.25 MiB | everything else under `assets/` | about 0.13 MiB |
+
+The body gets the larger share because it has more structures in view at once.
+`lowResBrainAssetGzipBytes` holds the brain to its share, so a brain that grows
+cannot spend the body's room. Those bytes are still counted in
+`lowResAssetGzipBytes` too; the share is a line inside it, not beside it.
+
+**The full-resolution tier is fetched lazily**, so it is not a low-resolution
+asset and has no business in `derivedLowResAssetLoadMs`. A file is lazy because
+its mesh set's `structures.json` says so (`tiers.*.loading: "lazy"`), never
+because of its name. That makes the failure one-sided: a lazy file nobody
+declared is costed as low-resolution, where it is paid for.
+
+`fullResBrainAssetGzipBytes` is **5,505,024 B (5.25 MiB), a literal derived
+once** on 2026-10-11 from the first full-tier build, which read 4,972,008 B:
+1.10 × that, rounded up to the next 256 KiB. It is not re-derived at gate time,
+so it cannot ratchet to whatever the next build weighs. The 10% covers
+re-encoding the same 245 structures. A new clearance group, such as the cortex
+if it ever clears, is a new decision about this line, not headroom inside it.
+At 25 Mbit/s the tier is about 1.8 s of transfer after the low tier has drawn.
+
+**Binary meshes are parsed by the format's own reader.** `tools/lib/meshbin.mjs`
+is the single definition of the ATLM format. The gate recognises an ATLM file by
+its magic bytes, reads it with that module, and walks positions and indices
+once, which is the same work a JSON mesh gets. Before this, `JSON.parse` on a
+binary asset threw and took the gate down with it.
 
 ### The name index is an index, not an asset (DOG-80)
 

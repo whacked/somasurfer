@@ -17,6 +17,7 @@ the site, so an asset cannot reach a user without its attribution.
 | BD body template, BodyParts3D 4.0 adult | `templates/bp3d-4.0-adult-body-centroid.body.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); adaptation by GStack | **yes** |
 | BV brain-volume template, ICBM152 2009c | `templates/icbm152-2009c-asym.brain-volume.json` | [MNI-BIC-permissive](https://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009) | Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University; adaptation by GStack | no |
 | ALC-1 name index and structure coverings | `labels/names.json`<br>`labels/coverings.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); UBERON / OBO Foundry; adaptation by GStack | **yes** |
+| Brain meshes, cleared group: 245 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases) | `brain/zanatomy-2929e94/meshes.lowres.bin`<br>`brain/zanatomy-2929e94/meshes.fullres.bin`<br>`brain/zanatomy-2929e94/structures.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack | **yes** |
 
 ## Provenance
 
@@ -64,12 +65,29 @@ the site, so an asset cannot reach a user without its attribution.
 - **derived from** BodyParts3D/Anatomography 4.0 — BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan
 - **derived from** UBERON (basic.obo) — CC-BY-3.0, UBERON / OBO Foundry contributors
 
+### Brain meshes, cleared group: 245 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases)
+
+- **id** `zanatomy-brain-meshes-cleared`
+- **licence** CC-BY-SA-4.0
+- **holder** Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack
+- **source** Derived by tools/build-meshes.mjs from brainproject brain.glb at commit 2929e94f521a8ddceab26bc100a98dc06b0da060 (SHA-256 76a49ea4526a4880613aec7a02756bd7301b0b9d0680d7cae33e197b672c5453): welded, quantised to int16, and decimated per structure for the low tier
+- **note** Only the structures docs/asset-licensing.md 7.3 clears. The 146 undeclared-material structures (126 of 128 cortical) and the 46 Dundee cranial-nerve structures are in neither mesh file; structures.json lists them by name under `excluded`. Licence rule 10 checks every structure id inside these files against packages/atlas-assets/provenance/brain-zanatomy-2929e94.json. Data derived from the Human Connectome Project (CIT168, Najdenovska, Neudorfer, HCP1065): Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).
+- **derived from** BodyParts3D/Anatomography 4.0 — BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan
+- **derived from** brainproject brain model (brain.glb + manifest.json) — CC-BY-SA-4.0, Itay Inbar; Z-Anatomy contributors; BodyParts3D/DBCLS
+- **derived from** CIT168 amygdala atlas v1.0.3 — CIT168 amygdala atlas, Tyszka & Pauli (2016), CC BY-SA 4.0, https://osf.io/hksa6/
+- **derived from** CIT168 subcortical (reinforcement learning) atlas v1.1.0 — CIT168 subcortical atlas, Pauli, Nili & Tyszka (2018), Scientific Data 5:180063, CC BY 4.0, https://osf.io/jkzwp/
+- **derived from** HCP1065 population-averaged tractography atlas (Yeh 2022) — Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).
+- **derived from** In-vivo probabilistic atlas of human thalamic nuclei (Najdenovska et al. 2018) — Najdenovska E, Alemán-Gómez Y et al. (2018), In-vivo probabilistic atlas of human thalamic nuclei based on diffusion weighted magnetic resonance imaging, Scientific Data 5:180270; Copyright (c) University of Lausanne 2018; CC BY-SA 4.0, https://doi.org/10.5281/zenodo.1405484
+- **derived from** High-resolution in vivo MRI atlas of the human hypothalamic region (Neudorfer et al. 2020) — Neudorfer C et al. (2020), A high-resolution in vivo magnetic resonance imaging atlas of the human hypothalamic region, Scientific Data 7:305, CC BY 4.0, https://doi.org/10.5281/zenodo.3942115
+- **derived from** Z-Anatomy, the libre 3D atlas of anatomy — Z-Anatomy - The libre 3D atlas of anatomy - CC-BY-SA 4.0
+
 ## Share-alike obligations
 
 The following assets carry a share-alike obligation:
 
 - BD body template, BodyParts3D 4.0 adult — CC-BY-SA-4.0
 - ALC-1 name index and structure coverings — CC-BY-SA-4.0
+- Brain meshes, cleared group: 245 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases) — CC-BY-SA-4.0
 
 That obligation is confined to this package by the following, checked on
 every push by `tools/check-licence-separation.mjs`:
