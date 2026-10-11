@@ -47,8 +47,30 @@ function requireBuild() {
 
 /** `ci/performance-budget.json` with one budget line's limit replaced. */
 function withBudgetLimit(line, limit) {
+  return withBudgetLimits({ [line]: limit });
+}
+
+/**
+ * Several limits at once, in a single substitution.
+ *
+ * One call per limit would not work: each helper re-reads the file, so the
+ * second would undo the first, and `break` has only one restore function to
+ * give back. A case about a PAIR of verdicts has to stage both sides together.
+ */
+function withBudgetLimits(limits) {
   const budget = JSON.parse(readFileSync(PERF_BUDGET, 'utf8'));
-  budget.budgets[line] = { ...budget.budgets[line], limit };
+  for (const [line, limit] of Object.entries(limits)) {
+    if (budget.budgets[line] === undefined) throw new Error(`no budget line named ${line} to relimit`);
+    budget.budgets[line] = { ...budget.budgets[line], limit };
+  }
+  return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
+}
+
+/** `ci/performance-budget.json` with one budget line deleted outright. */
+function withoutBudgetLine(line) {
+  const budget = JSON.parse(readFileSync(PERF_BUDGET, 'utf8'));
+  if (budget.budgets[line] === undefined) throw new Error(`no budget line named ${line} to delete`);
+  delete budget.budgets[line];
   return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
 }
 
@@ -539,6 +561,18 @@ const CASES = [
         };
         expectNull('indexParseMsNormalised');
         expectNull('lowResAssetParseMsNormalised');
+        // The DOG-98 lines, for the regression this case already caught once.
+        // DOG-80's `unverified` verdict published a raw number under a
+        // `...Normalised` key off-band and this audit is what found it. The two
+        // new lines are the same shape of hazard, and `nameIndexBuildUsPerCell`
+        // is the worse half: it carries the correction without carrying
+        // `Normalised` in its name, so it reads like a pure ratio that could not
+        // be affected by the calibration. Moving either line into EXACT_LINES
+        // would be a one-word diff with no other symptom.
+        if (report.nameIndex?.measured === true) {
+          expectNull('nameIndexBuildMsNormalised');
+          expectNull('nameIndexBuildUsPerCell');
+        }
         if (report.calibration.decisionBasis !== 'one-sided-bound-from-raw') {
           problems.push(`calibration.decisionBasis is ${JSON.stringify(report.calibration.decisionBasis)}.`);
         }
@@ -600,87 +634,128 @@ const CASES = [
   {
     name: 'perf-unverified-declaration-is-load-bearing',
     gate: 'performance budget',
-    criterion: 'the unverified declaration is the only thing stopping that line from gating',
+    criterion: 'a line with no declaration over it gates, and goes red',
     expect: [/indexParseMsNormalised: at least [\d.]+ ms on the reference machine, against a budget of 1 ms/],
-    describe: 'the DOG-80 index parse line with its unverified declaration deleted and a 1 ms budget',
-    // This is what keeps `unverified` from being a suppression. The declaration
-    // stops a line gating, so the thing nobody can afford to get wrong is a
-    // declaration sitting over a line that was going to pass anyway — that reads
-    // as "we know this is over budget and chose not to gate it" when the truth
-    // is "nothing was wrong and the line stopped being checked".
+    describe: 'the index parse line at a 1 ms budget, with no unverified declaration over it',
+    // Half of what keeps `unverified` from being a suppression, and the half that
+    // has to be CONSTRUCTED rather than inherited.
     //
-    // The limit is dropped to 1 ms along with the declaration, deliberately, and
-    // the first draft of this case did not do that. It deleted the declaration
-    // and required red at the real 40 ms, which made the case's colour depend on
-    // whether the runner's raw index parse happened to land above 40 ms — it
-    // wandered between 38 ms and 66 ms on one machine and the case passed and
-    // failed alternately. A must-pass case whose red is a coin flip on a
-    // contended runner is worse than no case, so what is asserted here is the
-    // STRUCTURAL claim, which is deterministic: with the declaration gone the
-    // line gates again and can go red.
+    // This case used to delete the committed declaration on indexParseMsNormalised
+    // and require red. DOG-98 deletes that declaration for good, and it was the
+    // only one in the tree, so the old break degenerated into "set the limit to
+    // 1 ms": still red, still passing, and no longer saying anything about a
+    // declaration. A must-pass case that passes for a reason unrelated to its own
+    // criterion is worse than no case, because it reads as cover.
     //
-    // Whether it is over its REAL limit is a measurement, not a structural
-    // property, so it is checked one-sidedly in `audit` below and in the gate's
-    // own output on every run.
+    // So the pair is staged explicitly instead. Here: no declaration, 1 ms limit,
+    // red. In `perf-unverified-declaration-suppresses-a-red-line`: the same 1 ms
+    // limit WITH a declaration, green and reported UNVERIFIED. Neither half
+    // depends on what the committed budget file happens to contain, which is what
+    // makes the conclusion — the declaration is the only difference — hold.
+    //
+    // 1 ms rather than the real 40 ms, deliberately: the first draft required red
+    // at 40 ms, which made the case's colour depend on whether the runner's raw
+    // parse happened to land above it. It wandered between 38 ms and 66 ms on one
+    // machine and the case passed and failed alternately. The claim asserted here
+    // is the structural one, which is deterministic.
     break: () => {
       requireBuild();
-      return withUnverified('indexParseMsNormalised', null, 1);
+      return withBudgetLimit('indexParseMsNormalised', 1);
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
   },
   {
-    name: 'perf-unverified-line-is-over-its-real-limit',
+    name: 'perf-unverified-declaration-suppresses-a-red-line',
     gate: 'performance budget',
-    criterion: 'the declared line is really over the budget it is declared against',
+    criterion: 'a declaration is what stops a line that would otherwise be red',
     mustPass: true,
     expect: [
       /UNVERIFIED, MEASURED BUT NOT GATED:/,
-      /indexParseMsNormalised: (?:at least |at most )?[\d.]+ ms.*NOT GATED\./,
+      /indexParseMsNormalised: (?:at least |at most )?[\d.]+ ms.*against a budget of 1 ms.*NOT GATED\./,
+      /A green result from this gate is not a statement about the line\(s\) above/,
     ],
-    describe: 'the tree as committed, with nothing broken',
-    // The numeric half of the case above, and it has to be a separate case
-    // because `audit` runs while that one's breakage is still staged — it would
-    // be inspecting a budget file with the declaration already deleted, and the
-    // first draft did exactly that and asserted the verdict it had just removed.
+    describe: 'the same 1 ms budget as the case above, with an unverified declaration over it',
+    // The other half of the constructed pair, and the direction that actually
+    // carries the risk: a declaration has to be able to hold back a line that is
+    // genuinely over, or `unverified` is decoration. Same line, same 1 ms limit,
+    // and the only difference from the case above is the block — so the two cases
+    // together prove the block is load-bearing without either of them depending
+    // on the committed tree carrying one.
     //
-    // Nothing is broken here. The claim is about the tree as committed: the line
-    // really is over the 40 ms it is declared against, so the declaration is
-    // carrying a real failure rather than hiding an absent one.
+    // It is `mustPass` because the gate is required NOT to fail here. That is the
+    // whole claim: the declaration suppressed a red line and said so out loud.
+    break: () => {
+      requireBuild();
+      return withUnverified(
+        'indexParseMsNormalised',
+        {
+          sinceIssue: 'DOG-98',
+          reason: 'Staged by tools/verify-gates.mjs to prove a declaration can hold back a line that is over.',
+          clearedBy: 'Nothing. This block exists only inside this gate case and is restored away after it.',
+        },
+        1,
+      );
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
+  {
+    name: 'perf-no-line-ships-ungated',
+    gate: 'performance budget',
+    criterion: 'the committed budget gates every line it declares, in both directions',
+    mustPass: true,
+    expect: [/✓ performance budget/],
+    describe: 'the tree as committed, with nothing broken',
+    // What replaced `perf-unverified-line-is-over-its-real-limit`.
+    //
+    // That case asserted the committed tree reported indexParseMsNormalised as
+    // UNVERIFIED, which was true while DOG-80's declaration stood and is false
+    // now that DOG-98 has deleted it. Rather than drop the case, it is inverted
+    // into the claim the project actually wants to hold: v1 does not ship with a
+    // budget line that is measured and not gated. A new `unverified` block is a
+    // five-line diff that reads like paperwork, and this is the thing that makes
+    // adding one a decision somebody has to defend here.
+    //
+    // A no-op `break` for the same reason the old case needed one: `audit` runs
+    // while the staged breakage is still in place, so a claim about the COMMITTED
+    // tree cannot be an audit hung off a case that mutates it.
     break: () => {
       requireBuild();
       return () => {};
     },
     audit: () => {
-      const dir = mkdtempSync(join(tmpdir(), 'perf-unverified-'));
+      const dir = mkdtempSync(join(tmpdir(), 'perf-gated-'));
       const path = join(dir, 'perf.json');
       try {
         run('perf-budget.mjs', ['--json', path]);
         const report = JSON.parse(readFileSync(path, 'utf8'));
-        const line = report.verdicts.indexParseMsNormalised;
-        const limit = report.budgets.indexParseMsNormalised;
         const problems = [];
-        if (line?.verdict !== 'unverified') {
-          problems.push(`indexParseMsNormalised reports ${JSON.stringify(line?.verdict)}, expected "unverified".`);
-          problems.push(`  The declaration in ci/performance-budget.json is what puts it there.`);
+
+        const declared = Object.keys(report.unverified ?? {});
+        if (declared.length > 0) {
+          problems.push(`budget line(s) shipped measured-but-not-gated: ${declared.join(', ')}.`);
+          problems.push(`  An unverified declaration is a terminal state for one issue, not a resting`);
+          problems.push(`  state for the budget. Settle the limit and delete the block.`);
         }
-        if (typeof line?.reported !== 'number') {
-          problems.push(`verdicts.indexParseMsNormalised.reported is not a number, so nothing was measured.`);
-        } else if (report.nameIndex?.measured !== true) {
-          // A base whose build declares no name index — `main` today — has
-          // nothing in this line for the declaration to be about, so the numeric
-          // claim below would be a claim about data/*.json alone. Say nothing
-          // rather than something false in either direction.
-        } else if (line.kind === 'normalised' || line.kind === 'exact') {
-          // A normalised figure settles the question in both directions. Off-band
-          // the figure is a one-sided bound and under the limit it proves
-          // nothing, so nothing is claimed — the rule the gate uses on itself.
-          if (!(line.reported > limit)) {
-            problems.push(
-              `indexParseMsNormalised measured ${line.reported.toFixed(1)} ms against its ${limit} ms budget,`
-              + ` which is WITHIN it.`,
-            );
-            problems.push(`  The unverified declaration is then describing a problem that no longer exists:`);
-            problems.push(`  delete the block and let the line gate again.`);
+
+        // The DOG-98 lines specifically: they exist to gate in BOTH directions,
+        // and a line sitting permanently at "not evaluated" would be the DOG-80
+        // defect again — a number printed, nothing able to go red over it.
+        if (report.nameIndex?.measured === true) {
+          for (const key of ['nameIndexBuildMsNormalised', 'nameIndexBuildUsPerCell']) {
+            const line = report.verdicts[key];
+            if (line === undefined) {
+              problems.push(`${key} has no verdict: the line is gone, not merely over or under.`);
+            } else if (line.verdict !== 'within' && line.verdict !== 'over') {
+              problems.push(`${key} reports ${JSON.stringify(line.verdict)} on the committed tree.`);
+              problems.push(`  This build has a name index, so both DOG-98 lines have a subject and`);
+              problems.push(`  are supposed to carry a verdict in both directions.`);
+            }
+          }
+          // The per-cell line divides by the cell count, so a report that gates
+          // on it without saying what it divided by cannot be re-derived.
+          if (!(report.nameIndex.cells > 0)) {
+            problems.push(`nameIndex.cells is ${JSON.stringify(report.nameIndex.cells)}, so the per-cell line`);
+            problems.push(`  cannot be checked against the measurement it came from.`);
           }
         }
         return problems;
@@ -706,6 +781,134 @@ const CASES = [
       return withUnverified('indexParseMsNormalised', { sinceIssue: 'DOG-80', reason: '  ', clearedBy: '' });
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+  },
+
+  // -------------------------------------------------------------------------
+  // The name index's two lines (DOG-98).
+  //
+  // The index build was split off indexParseMsNormalised onto a line for what
+  // the main thread can afford at boot and a line for what the work costs per
+  // cell. That gives the budget two new ways to go quiet: a line can be deleted,
+  // and the pair's one ambiguous verdict can be read as a regression when it is
+  // growth. Both are cases here, because both are cheap mistakes to make under
+  // pressure and neither shows up as a red build.
+  // -------------------------------------------------------------------------
+  {
+    name: 'perf-name-index-absolute-line-cannot-be-deleted',
+    gate: 'performance budget',
+    criterion: 'deleting a budget line fails rather than silently dropping a measurement',
+    expect: [
+      /do not name the same lines/,
+      /Measured with no budget line beside it: nameIndexBuildMsNormalised/,
+      /deleting only the budget entry removes the check/,
+    ],
+    describe: 'ci/performance-budget.json with the nameIndexBuildMsNormalised line deleted',
+    // The cheapest way to make a budget line stop complaining is to delete it,
+    // and before DOG-98 that worked silently: the verdict loop walks the budget
+    // file, so an entry with no reader printed no row, took no verdict and could
+    // not go red, while the gate went on measuring the cost and exiting 0. A
+    // five-line deletion in a JSON file is not a change anyone reviews as a
+    // weakening of the budget, which is exactly why it has to be the gate that
+    // refuses it.
+    break: () => {
+      requireBuild();
+      return withoutBudgetLine('nameIndexBuildMsNormalised');
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120']),
+  },
+  {
+    name: 'perf-name-index-per-cell-line-cannot-be-deleted',
+    gate: 'performance budget',
+    criterion: 'the per-cell line is no more deletable than the absolute one',
+    expect: [
+      /do not name the same lines/,
+      /Measured with no budget line beside it: nameIndexBuildUsPerCell/,
+    ],
+    describe: 'ci/performance-budget.json with the nameIndexBuildUsPerCell line deleted',
+    // Both lines, separately, and not one case covering "a line": the per-cell
+    // line is the one with a motive. It is the only limit growth cannot consume,
+    // so it is the one that reds when the index gets bigger and the one somebody
+    // under deadline would reach for. A single case on the absolute line would
+    // have left that unproven while looking like coverage.
+    break: () => {
+      requireBuild();
+      return withoutBudgetLine('nameIndexBuildUsPerCell');
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120']),
+  },
+  {
+    name: 'perf-name-index-absent-is-not-a-failure',
+    gate: 'performance budget',
+    criterion: 'a build that declares no name index is reported, not failed',
+    mustPass: true,
+    expect: [
+      /NAME INDEX NOT IN THIS BUILD/,
+      /nameIndexBuildMsNormalised\s+not in this build.*not evaluated/,
+      /nameIndexBuildUsPerCell\s+not in this build.*not evaluated/,
+      /not in this build at all: nameIndexBuildMsNormalised, nameIndexBuildUsPerCell/,
+      /A different runner will not change that/,
+    ],
+    describe: 'the built atlas index with its nameIndex descriptor removed, as on a base without one',
+    // `origin/main` is exactly this build: no app.js step 1, no assets/labels, no
+    // `nameIndex` descriptor. Two new budget lines that have no subject there
+    // could fail it, or print NaN, or quietly report 0% — and the first version
+    // of DOG-80's gate did fail it, which would have reddened main's CI for a
+    // reason unrelated to the integration. So absence is loud and not fatal.
+    //
+    // It is the sibling of DOG-29's fast-runner case and it is `mustPass` for the
+    // same reason: a gate that goes red on something that is not a defect costs
+    // more than one that passes a defect, because it spends the credibility that
+    // makes a red build worth stopping for.
+    //
+    // DOG-98 verified this by hand, which is how DOG-80 verified it too. By hand
+    // is not a gate: the two lines that make it breakable did not exist when the
+    // hazard was last checked, and the next person to touch them will not know to
+    // re-check it.
+    //
+    // The DESCRIPTOR is removed rather than the files, deliberately. Removing the
+    // documents while leaving the descriptor pointing at them is a different
+    // condition — the build has a name index and the gate cannot find it — and
+    // that one is still required to fail.
+    break: () => {
+      requireBuild();
+      const indexPath = join(WEB, 'dist', 'data', 'atlas-index.json');
+      const index = JSON.parse(readFileSync(indexPath, 'utf8'));
+      delete index.nameIndex;
+      return substitute(indexPath, JSON.stringify(index, null, 2) + '\n');
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120']),
+  },
+  {
+    name: 'perf-name-index-growth-is-not-a-regression',
+    gate: 'performance budget',
+    criterion: 'over on the absolute line while within per-cell says the remedy is a worker, not a bigger limit',
+    expect: [
+      /nameIndexBuildMsNormalised: [\d.]+ ms against a budget of 10 ms/,
+      /THIS IS NOT A REGRESSION, AND RAISING THE LINE IS THE WRONG FIX/,
+      /so the cost of binding one/,
+      /move the name index build off the critical path/,
+      /in a worker, or after first interaction — not to raise this limit/,
+    ],
+    describe: 'the absolute name index line busted while the per-cell line is still comfortably within',
+    // DOG-97 §2.4 is a decision about what to do when this pair of verdicts
+    // comes up, and a decision that lives only in a document is a decision the
+    // next person re-derives from two numbers or gets wrong. The remedy it names
+    // — move the build off the critical path — is the one thing the obvious
+    // reading of a red absolute line does not suggest, so the gate says it in
+    // its own voice at the moment it is needed.
+    //
+    // Staged as the verdict PAIR rather than by growing the index: what the
+    // message keys on is "absolute over, per-cell within", and fabricating a
+    // bigger coverings.json would also move the byte lines and the cell count
+    // and prove less about the branch. Both limits are moved in one
+    // substitution, deliberately — the per-cell limit is raised far clear of any
+    // reading so that half of the pair cannot flip on a contended runner and
+    // turn a real assertion into a confusing red.
+    break: () => {
+      requireBuild();
+      return withBudgetLimits({ nameIndexBuildMsNormalised: 10, nameIndexBuildUsPerCell: 1000 });
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120']),
   },
 ];
 
