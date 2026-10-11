@@ -3,7 +3,7 @@
  *
  * A harness nobody has watched fail is decoration. The repo already works this
  * way — `tools/verify-gates.mjs` breaks each CI gate on purpose and requires it
- * to be caught — and this is the same argument applied to §7: sixteen builds,
+ * to be caught — and this is the same argument applied to §7: seventeen builds,
  * each breaking exactly ONE guarantee, each declaring which case is supposed to
  * notice.
  *
@@ -209,6 +209,31 @@ export const MUTANTS: readonly Mutant[] = [
           this.views.body = freshView('body');
           this.atlas = 'body';
           return super.state();
+        }
+      })(o)),
+  },
+  {
+    id: 'labels-shared-across-atlases',
+    breaks: 'one label flag serves both atlases, so turning labels on in the brain turns them on in the body view the user will return to',
+    caughtBy: ['return-to-body-with-previous-view-intact'],
+    caughtAs: 'fail',
+    exercises: ['cross-atlas-restore'],
+    build: mutantOf('labels-shared-across-atlases', (o) =>
+      new (class extends ReferenceViewer {
+        // The design DOG-71 replaced: `ui.labels`, one boolean on the shell,
+        // outside every per-atlas view — so no restore can bring it back.
+        // Caught only because the journey sets labels to opposite values in
+        // the two atlases; compared at the default, it passed.
+        private sharedLabels = false;
+
+        async setLabels(visible: boolean): Promise<ViewState> {
+          this.sharedLabels = visible;
+          return this.state();
+        }
+
+        async state(): Promise<ViewState> {
+          const s = await super.state();
+          return Object.freeze({ ...s, labelsVisible: this.sharedLabels }) as ViewState;
         }
       })(o)),
   },

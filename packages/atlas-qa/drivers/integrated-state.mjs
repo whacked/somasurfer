@@ -38,6 +38,7 @@ import { flyToCell, rotate, zoom } from '../../atlas-web/src/viewer/camera.js';
 import { meshBounds } from '../../atlas-web/src/viewer/template.js';
 import { QA_URL_PARAMS } from '../src/matrix.ts';
 import { templateSet } from '../src/templates.ts';
+import { anatomyIndexInput } from '../src/fixture.ts';
 import { decodeView, encodeView, viewHref } from '../../atlas-web/src/viewer/deeplink.js';
 import { comparePapers, papersOverlapping, researchModel, revealPaper }
   from '../../atlas-web/src/viewer/research.js';
@@ -204,10 +205,9 @@ export default async function createDriver(options = {}) {
    */
   const indexFor = (c) => {
     if (c === 'real-assets' || !fixture) return realNameIndex;
-    return buildNameIndex({
-      version: fixture.nameIndexVersion ?? 'qa-fixture',
-      structures: fixture.structures ?? [],
-    });
+    // The ANATOMICAL index, as the harness checks it: the real asset index when
+    // a curated fixture carries one, never the research dataset's own list.
+    return buildNameIndex(anatomyIndexInput(fixture));
   };
   // A curated document carries structure ids, not cells; `app.js` resolves it
   // with `curatedModel()` against the bound index and templates, so this does.
@@ -448,8 +448,12 @@ export default async function createDriver(options = {}) {
       'body-atlas', 'brain-atlas', 'layers', 'opacity', 'isolate',
       'structure-search', 'camera-controls', 'click-select', 'paste-address',
       'deep-link', 'ranked-names', 'cross-atlas-navigation', 'view-restore',
-      'browse-by-anatomy', 'browse-by-research', 'multi-paper-selection',
-      'overlap-hatching', 'asset-failure-reporting', 'qa-template-override',
+      'browse-by-anatomy', 'browse-by-research',
+      // 'multi-paper-selection' and 'overlap-hatching' withheld: the page
+      // reveals ONE paper (`ui.revealed`) and draws only its cells, coloured
+      // per finding; `comparePapers()` is rendered as text. `highlightsOf()`
+      // below composes per-paper colours and hatching the page never draws.
+      'asset-failure-reporting', 'qa-template-override',
       'labels',
     ]),
 
@@ -512,18 +516,12 @@ export default async function createDriver(options = {}) {
       const enc = viewer.atlas === 'body'
         ? encodeBody(templates.body, pointMm, digits)
         : encodeBrainVolume(templates.brainVolume, pointMm, digits);
+      // Exactly what `app.js` `pick()` does with a hit: select the encoded
+      // ADDRESS. The encoder's clamp flag is not carried — the page drops it,
+      // and an address replayed is not a clamp — so no `clamped` notice is
+      // composed here. An earlier version merged one in from `enc.flags`, and
+      // the clamp rows passed on the driver's work rather than the page's.
       selectAndFly(enc.address);
-      // The clamp finding is raised turning millimetres into an address, so it
-      // is not on the selection model and has to be merged in here.
-      const sel = viewer.state.selection;
-      if (sel?.ok && enc.flags?.clamped) {
-        sel.notices = [...(sel.notices ?? []), {
-          code: 'clamped', severity: 'warning',
-          title: 'Pulled back to the template boundary',
-          detail: 'The requested location lies beyond the extent this template models.',
-          notes: enc.flags.notes ?? [],
-        }];
-      }
       return state();
     },
     async pasteAddress(text) {

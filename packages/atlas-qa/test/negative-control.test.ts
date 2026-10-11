@@ -1,7 +1,7 @@
 /**
  * The negative-control run, as a gate rather than an anecdote.
  *
- * "We saw it go red once" decays. This runs all sixteen deliberately broken
+ * "We saw it go red once" decays. This runs all seventeen deliberately broken
  * builds on every CI run and requires each to be caught BY THE CASE THAT
  * DECLARES IT OWNS IT — so a mutant failing for an unrelated reason does not
  * count, and a case that stops doing its job is reported against that case

@@ -665,7 +665,9 @@ export const JOURNEY: readonly JourneyStep[] = [
     id: 'compare-two-papers',
     clause: 'a user can compare papers through the agreed display modes',
     mustPass: true,
-    requires: ['multi-paper-selection'],
+    // `overlap-hatching` too: the step asserts the hatched cells, so without
+    // the capability that assertion would read the driver's own composition.
+    requires: ['multi-paper-selection', 'overlap-hatching'],
     dependsOn: ['paper-reveals-all-its-regions'],
     observable:
       'Adding a second paper keeps the first selected, gives each paper its own colour, and hatches '
