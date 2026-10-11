@@ -369,7 +369,7 @@ brainproject does not say which Z-Anatomy commit its `.blend` came from. That is
 one more reason to read provenance from the glb itself (§7.3) and not from
 anyone's description of it.
 
-### 7.3 The finding that changes W2: 143 of 437 brain structures are not cleared
+### 7.3 The finding that changes W2: 146 of 437 brain structures are not cleared
 
 Z-Anatomy's licence names five third-party models it "used as reference/included
 and adapted". Two of them ("Brainder" and "White matter" from the University of
@@ -388,8 +388,20 @@ primitives' materials in the glTF JSON chunk:
 | `Brain` (± `Temporal lobe`) | 9 | 2 cortex, 5 brainstem (pons, medulla, interpeduncular fossa), 2 cerebellum (base of peduncle) | **undeclared** |
 | `White matter` | 10 | 6 white matter, 3 diencephalon, 1 ventricles (commissures, fornix, septum pellucidum, stria medullaris) | **undeclared**, no candidate source |
 | `Nerve` | 46 | 44 cranial nerves + 2 | Dundee CAHID per Z-Anatomy: **unverified** |
-| `Artery`, `Cerebellum`, `Nucleus*`, `LCR`, `Cartilage`, `Bone-4`, `Temporal lobe` alone | 152 | arteries, cerebellum, nuclei, ventricles, … | Z-Anatomy / BodyParts3D: cleared |
+| `Temporal lobe` alone | 3 | corpus callosum (white matter), midbrain ×2 (brainstem) | **undeclared**, held fail-closed |
+| `Artery`, `Cerebellum`, `Nucleus*`, `LCR`, `Cartilage`, `Bone-4` | 149 | arteries, cerebellum, nuclei, ventricles, … | Z-Anatomy / BodyParts3D: cleared, **by inference** |
 | none (imaging-registered) | 96 | 54 tracts (HCP1065), 14 thalamic (Najdenovska), 10 hypothalamic (Neudorfer), 10 CIT168, 8 amygdala | cleared |
+
+**Material names are a negative filter, not a positive one.** A structure
+carrying an undeclared material is held. A structure is *not* cleared merely for
+carrying none of them. That is why the three `Temporal lobe`-only structures are
+held. That material appears otherwise only on the undeclared cortex. Nothing
+ties it to Z-Anatomy's own work or to BodyParts3D, and the corpus callosum is
+exactly what a "White matter" model would supply. Even the 149 "cleared"
+structures clear by an inference from material names (`Artery`, `Nucleus`,
+`Cerebellum` and so on read as Z-Anatomy's own BodyParts3D-derived systems), not
+by a record of provenance. W2's manifest (below) is what turns that inference
+into a checked fact.
 
 **126 of the 128 cortical structures are in the undeclared group.** These are
 the gyri and sulci that §1 of the v2 plan relies on to give `BV` names. So the
@@ -406,17 +418,28 @@ plan's premise holds only if this group clears.
    clears on a published number, never on a resemblance.
 2. **Ask upstream.** Add to Z-Anatomy#10 rather than open a duplicate. An answer
    naming a compatible licence clears whatever it names.
-3. **Ship without it.** W2 ships the 248 cleared structures (437 less these 143
+3. **Ship without it.** W2 ships the 245 cleared structures (437 less these 146
    and the 46 unverified nerves) and lists the excluded ones by name.
 
 Even if (1) succeeds, the 10 `White matter` structures have **no candidate
 source**, and nothing short of (2) clears them.
 
-**How the gate holds this.** An entry that cites
-`zanatomy-undeclared-brain-materials` or `dundee-cranial-nerves` fails rule 9.
-W2 should therefore emit one file per clearance group, not one `meshes.bin`. A
-later clearance then adds a file instead of re-cutting a shipped one, and the
-uncleared group can never ride along inside a cleared file.
+**How the gate holds this, and what it cannot yet see.**
+- An entry that cites `zanatomy-undeclared-brain-materials` or
+  `dundee-cranial-nerves` fails rule 9.
+- An entry that is not first-party and cites **nothing** also fails rule 9.
+  Citing is mandatory, so an entry cannot avoid the refusal by leaving the
+  failing source out (staged as `licence-third-party-entry-cites-nothing`).
+- W2 should emit one file per clearance group, not one `meshes.bin`. A later
+  clearance then adds a file instead of re-cutting a shipped one, and the
+  uncleared group can never ride along inside a cleared file.
+
+**The residual:** the citation is still self-declared. An entry that cites only
+cleared sources while its file contains held structures is green today. Closing
+that is **a W2 acceptance criterion**, not this issue's. W2 commits a
+structure → material → source manifest generated from the pinned glb, and the
+gate cross-checks every entry's `sources` against the structures its file
+actually contains.
 
 **The cranial nerves** are unverified for a different reason:
 - Z-Anatomy says the Dundee model is CC BY 4.0.
@@ -461,8 +484,8 @@ commercial use. D3's three conditions are now structural:
 | (and its inputs travel) | an entry citing a non-commercial source must be asset-nc; one citing a share-alike source must be share-alike; one citing an uncleared source fails | rule 9 |
 
 `tools/verify-gates.mjs` stages each failure: `licence-nc-in-default-build`,
-`licence-nc-merged-into-share-alike`, `licence-nc-in-dist` and
-`licence-uncleared-source`. A `mustPass` baseline,
+`licence-nc-merged-into-share-alike`, `licence-nc-in-dist`,
+`licence-uncleared-source` and `licence-third-party-entry-cites-nothing`. A `mustPass` baseline,
 `licence-nc-segregated-is-not-a-failure`, proves that a correctly segregated NC
 layer is let through. The committed tree has no asset-nc entry, so a green run
 on the tree alone would say nothing about rule 8.
@@ -476,9 +499,9 @@ one CI makes and deploys, still fails rule 8 if that directory appears.
 
 | work item | ships | cites |
 | --- | --- | --- |
-| W2, brain, cleared group | the 248 structures outside §7.3's undeclared and unverified groups, as BY-SA 4.0 | `brainproject-brain-glb`, `zanatomy`, `bodyparts3d`, and per structure `cit168-subcortical`, `cit168-amygdala`, `najdenovska-thalamus`, `neudorfer-hypothalamus`, `hcp1065-yeh2022` |
+| W2, brain, cleared group | the 245 structures outside §7.3's undeclared and unverified groups, as BY-SA 4.0 | `brainproject-brain-glb`, `zanatomy`, `bodyparts3d`, and per structure `cit168-subcortical`, `cit168-amygdala`, `najdenovska-thalamus`, `neudorfer-hypothalamus`, `hcp1065-yeh2022` |
 | W2, brain, cortex group | the 133 `Brain`/`Brain-Inner` structures, **only after** they move to `brainder-brain-for-blender` by measurement or upstream answer | as above, plus `brainder-brain-for-blender` |
-| W2, brain, held | the 10 `White matter` structures and the 46 `Nerve` structures | cannot ship: rule 9 refuses `zanatomy-undeclared-brain-materials` and `dundee-cranial-nerves` |
+| W2, brain, held | the 10 `White matter` structures, the 3 `Temporal lobe`-only structures and the 46 `Nerve` structures | cannot ship: rule 9 refuses `zanatomy-undeclared-brain-materials` and `dundee-cranial-nerves` |
 | W3, body | Z-Anatomy/BodyParts3D whole-body meshes as BY-SA 4.0, **excluding** the inner ear (`dundee-inner-ear`), the kidney (`cowley-kidney`, so take BodyParts3D's own kidney), and every object with the `Brain`, `Brain-Inner`, `White matter` or `Nerve` materials until §7.3 clears them | `zanatomy`, `bodyparts3d` |
 
 "Excluded" must be measured, not asserted. W3 should publish the object names it
@@ -492,6 +515,6 @@ for provenance, not a record of it; Z-Anatomy#10 asks that very question about
 | --- | --- |
 | every upstream licence verified at its primary source | **done**: §7.1. Three items are not cleared or unverified and are recorded as such, not rounded up |
 | brainproject commit pinned, archive SHA-256 recorded | **done**: §7.2, plus per-file digests, which are the durable pin |
-| `attribution.json` records for everything W2/W3 will ship | **done**: 14 `upstreamSources` with verdict, evidence and attribution wording. Entries cite them by id when their files land |
-| `asset-nc` class and gate rule | **done**: rules 8 and 9 of `tools/check-licence-separation.mjs`, red on four staged leaks and green on the tree and on a segregated NC layer |
-| the v2 plan's §1 premise that the gyral mesh gives `BV` names | **at risk**: 126 of 128 cortical structures are in the undeclared group. Measurement route in §7.3; escalated to the CTO on DOG-123 |
+| `attribution.json` records for everything W2/W3 will ship | **done**: 16 `upstreamSources` with verdict, evidence and attribution wording. Every third-party entry must cite them by id (rule 9); the three existing ones now do |
+| `asset-nc` class and gate rule | **done**: rules 8 and 9 of `tools/check-licence-separation.mjs`, red on five staged breakages and green on the tree and on a segregated NC layer |
+| the v2 plan's §1 premise that the gyral mesh gives `BV` names | **at risk**: 146 of 437 structures held, including 126 of 128 cortical are in the undeclared group. Measurement route in §7.3; escalated to the CTO on DOG-123 |
