@@ -96,3 +96,60 @@ negative-control figure for the same structure. The aggregate report states:
 
 A structure moves out of `zanatomy-undeclared-brain-materials` only on a pass
 **and**, for the cortex, a "permits" verdict on condition (b).
+
+---
+
+## Results (added after the run; nothing above this line was changed)
+
+### Cortex against Brainder: not run, because it cannot clear anything
+
+Condition (b) came back **not established** (`docs/asset-licensing.md` §7.8). The
+same reading also corrected a premise in the table above. Brain for Blender is
+not FreeSurfer `fsaverage`: it is one individual's brain, reconstructed with
+FreeSurfer 5.2.0. The test design does not depend on which brain it is, but no
+cortical structure can clear while (b) stands, so the matching was deferred
+rather than run.
+
+### Corpus callosum and midbrain against BodyParts3D 4.0, run 2026-10-11
+
+`tools/test-bp3d-origin.mjs`. The full figures are in
+`packages/atlas-assets/provenance/origin-test-bodyparts3d.json`.
+
+- **Inputs:** brain.glb at the pinned SHA-256, and `isa_BP3D_4.0_obj_99.zip`,
+  SHA-256 `40665852…409e`, which is the digest §2 of the licence memo records.
+- **Fit:** 14 cleared structures with sided BodyParts3D counterparts:
+  - caudate, putamen, hippocampus, lateral ventricle, superior colliculus and inferior colliculus, each left and right;
+  - the third and fourth ventricles.
+- **Transform:** one similarity for all of them, scale 1024.5 mm per mesh metre.
+  ICP converged to a 0.31 mm mean in 26 iterations.
+- **Held out:** the three structures under test. BodyParts3D's midbrain is two
+  element files, one per side, and each half was matched to the element on its own side.
+
+| held out | mean symmetric | p95 | label agreement | verdict | control (nearest other) |
+| --- | ---: | ---: | ---: | --- | --- |
+| Midbrain.l | 0.060 mm | 0.139 mm | 0.989 | **pass** | fails against the superior colliculus |
+| Midbrain.r | 0.061 mm | 0.142 mm | 0.990 | **pass** | fails against the inferior colliculus |
+| Corpus callosum | 0.227 mm | 0.378 mm | **0.769** | **fail** (label agreement) | fails against the third ventricle |
+
+**Negative control:** 0 of 17 mismatched pairs pass, so the test discriminates.
+
+**What this decides:**
+- **Midbrain L and R clear.** They are BodyParts3D's own meshes, scaled by 1.0245,
+  to within 0.14 mm at p95. They ship from brain.glb and cite `bodyparts3d`.
+- **The corpus callosum does not clear by this test.** Its surface matches to
+  0.23 mm on average. But 23% of its vertices lie nearer another reference
+  surface, mostly the ventricles it is pressed against, than its own. The rule
+  needs all three criteria, and the threshold stays where it was committed.
+- **The corpus callosum ships from BodyParts3D instead,** under the CTO's route
+  of 2026-10-11 18:32: BodyParts3D's FMA86464 mesh, placed into the brain-mesh
+  frame by the inverse of the transform above. Its registration residual is the
+  fit's 0.31 mm ICP mean. Its deviation from the Z-Anatomy surface it replaces is
+  0.227 mm mean.
+
+**One finding outside the question asked.** The four colliculi were in the fit
+as "cleared by inference" (material `Nucleus`). They do **not** match
+BodyParts3D: p95 about 9.6 mm, label agreement about 0.64. So they are not
+BodyParts3D's own colliculi. They may still be Z-Anatomy's own modelling, which
+Z-Anatomy's licence covers, so this does not by itself un-clear them. It does
+show that the material-name inference can be wrong about *which* cleared source
+a structure came from. That is reported to the CTO on DOG-123, not resolved here.
