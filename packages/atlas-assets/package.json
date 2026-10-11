@@ -12,6 +12,9 @@
       "geometry",
       "templates",
       "labels"
+    ],
+    "ncPayloadDirs": [
+      "nc"
     ]
   },
   "license": "SEE LICENSE IN LICENSE",

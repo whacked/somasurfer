@@ -17,6 +17,7 @@ import { REPO_ROOT } from './lib/repo.mjs';
 const ASSETS = join(REPO_ROOT, 'packages', 'atlas-assets');
 const data = JSON.parse(readFileSync(join(ASSETS, 'attribution.json'), 'utf8'));
 
+const sources = new Map((data.upstreamSources ?? []).map((s) => [s.id, s]));
 const out = [];
 const line = (s = '') => out.push(s);
 
@@ -56,7 +57,14 @@ for (const e of data.entries) {
   line(`- **licence** ${e.licence}`);
   line(`- **holder** ${e.holder}`);
   line(`- **source** ${e.source}`);
+  if (e.licenceClass === 'asset-nc') line('- **class** asset-nc: non-commercial, absent from default builds');
   if (e.note) line(`- **note** ${e.note}`);
+  // Upstream sources are recorded before anything ships from them, so only the
+  // ones an entry cites are rendered: their attribution travels with that entry.
+  for (const id of e.sources ?? []) {
+    const s = sources.get(id);
+    line(`- **derived from** ${s ? `${s.title} — ${s.attributionStatement ?? `${s.licence}, ${s.holder}`}` : id}`);
+  }
   line();
 }
 
