@@ -233,11 +233,11 @@
       "source": "https://brainder.org/research/brain-for-blender/",
       "shareAlike": true,
       "nonCommercial": false,
-      "verdict": "cleared",
+      "verdict": "not-established",
       "verifiedAt": "2026-10-11",
       "attributionStatement": "Brain for Blender, by Anderson Winkler, licensed under CC BY-SA 3.0 Unported, https://brainder.org/brain-for-blender",
-      "conditions": "The licence is cleared, and BY-SA 3.0 permits adaptations under BY-SA 4.0. That Z-Anatomy's 'Brainder' is this work is inferred from the name and the Destrieux/DKT-split cortex, not measured, so nothing may cite this source in place of zanatomy-undeclared-brain-materials until the geometry is matched.",
-      "evidence": "brainder.org page, 'License' section: 'The models in this page are by Anderson Winkler and are licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.'"
+      "conditions": "Not cleared. Winkler's own grant is CC BY-SA 3.0, but the CTO's condition (b) on DOG-127 requires the upstream title behind it, and that is NOT ESTABLISHED (docs/asset-licensing.md 7.8). The meshes are one individual's brain reconstructed with FreeSurfer 5.2.0 (not fsaverage), and their parcel delineations come from FreeSurfer's classifier atlases. The FreeSurfer Software License (Version 1.0, February 2011) covers 'software and/or data', and B.1(b) requires all of its terms to 'appear in and apply to' any copy or sublicense of any portion, which a bare CC BY-SA grant does not carry. FreeSurfer's own README-DKT40.txt states the DKT source data are CC BY-NC-SA 3.0. Until a licensor says otherwise, nothing may cite this source, and the origin test (docs/brain-origin-test.md) cannot clear any structure to it.",
+      "evidence": "brainder.org page, 'License' section: 'The models in this page are by Anderson Winkler and are licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.' Upstream title read 2026-10-11: FreeSurfer LICENSE.txt (github.com/freesurfer/freesurfer, dev, 'Version 1.0 (February 2011)'), B.1(b), B.2(iii), B.3, B.5, B.7; fswiki CorticalParcellation, DestrieuxAtlasChanges and FsAverage (Wayback snapshots; no terms of their own); README-DKT40.txt (fswiki attachment, Wayback): 'Copyright 2012, Mindboggle team ... by-nc-sa/3.0'. brainder.org states 'constructed from 12 volumes' and 'FreeSurfer 5.2.0', with no statement of upstream permission."
     },
     {
       "id": "zanatomy-undeclared-brain-materials",
