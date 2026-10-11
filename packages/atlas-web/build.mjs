@@ -468,7 +468,7 @@ emit('data/atlas-index.json', JSON.stringify(atlasIndex) + '\n');
  * `src/atlas-research.js` re-exports all 24 of `@gstack/atlas-research`, which
  * is what Node and the suite get. The browser gets
  * `dist/atlas-research.viewer.js`, built from `src/index.viewer.ts`, which
- * exports the three names `src/viewer/corpus.js` imports — 9 KiB of gzip
+ * exports the four names `src/viewer/corpus.js` imports — 9 KiB of gzip
  * against a `bundleGzipBytes` line that was reading 98%. DOG-84; read
  * `packages/atlas-research/src/index.viewer.ts` for the reasoning and
  * `packages/atlas-research/scripts/build.mjs` note 4 for what that package now

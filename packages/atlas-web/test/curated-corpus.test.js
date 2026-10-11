@@ -69,6 +69,22 @@ describe('the curated corpus resolves against the index the page binds', () => {
     assert.equal(model.nameIndexVersion, NAME_INDEX_VERSION);
   });
 
+  it('gives every paper a citation and a source, linked or saying why not (DOG-117)', () => {
+    const papers = corpus().papers;
+    const byId = new Map(papers.map((p) => [p.id, p]));
+    const bp3d = byId.get('paper:mitsuhashi-2009-bodyparts3d');
+    assert.equal(bp3d.source.href, 'https://doi.org/10.1093/nar/gkn613');
+    assert.equal(bp3d.source.text, bp3d.citation);
+    assert.equal(bp3d.source.rel, 'noopener noreferrer');
+    // The two papers the seed records with no link. Said, not left blank.
+    const unlinked = papers.filter((p) => p.source.href === null).map((p) => p.id).sort();
+    assert.deepEqual(unlinked, ['paper:bogduk-2012-lumbar-anatomy', 'paper:brodmann-1909-localisation']);
+    for (const id of unlinked) {
+      assert.equal(byId.get(id).source.unlinkedReason, 'no source URL recorded');
+      assert.match(byId.get(id).citation, /no persistent identifier recorded/);
+    }
+  });
+
   it('places 31 of 170 mappings, across 10 of 30 papers and 24 of 120 findings', () => {
     const { resolution } = corpus();
     assert.deepEqual(resolution.mappings, { resolved: 31, total: 170 });

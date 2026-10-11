@@ -90,9 +90,18 @@
  */
 
 import { parse } from '../alc.js';
-import { buildResearchIndex, formatCitation, loadDataset } from '../atlas-research.js';
+import { buildResearchIndex, formatCitation, loadDataset, sourceLink } from '../atlas-research.js';
 import { ResearchError } from './research.js';
 import { atlasForFrame } from './state.js';
+
+/**
+ * A paper's source link, for either corpus. A curated paper carries one; a
+ * fixture paper is checked here under its title, so the panel never builds an
+ * href itself and never imports the research layer to do it.
+ */
+export function paperSource(paper) {
+  return paper.source ?? sourceLink(paper.title, paper.url ?? null);
+}
 
 /**
  * A mapping's cause, as something a panel can render without re-deriving it.
@@ -277,6 +286,7 @@ export function curatedModel(doc, { names, templates } = {}) {
 
     const cells = findings.flatMap((f) => f.cells);
     const mappings = findings.flatMap((f) => f.mappings);
+    const citation = formatCitation(paper);
     return Object.freeze({
       id: paper.id,
       title: paper.title,
@@ -289,7 +299,14 @@ export function curatedModel(doc, { names, templates } = {}) {
       // mappings at all would otherwise lose its citation, and a corpus where
       // two thirds of the papers have no geometry is not the place to make a
       // citation depend on having some.
-      citation: formatCitation(paper),
+      citation,
+      /**
+       * The citation with its href, or with the reason it has none. Built by
+       * the library's `sourceLink`, which re-checks the URL at render as well
+       * as at load, so a paper with no recorded link says so instead of
+       * looking like one whose link was never drawn (DOG-117).
+       */
+      source: sourceLink(citation, paper.sourceUrl),
       findings: Object.freeze(findings),
       cells: Object.freeze(cells),
       atlases: Object.freeze([...new Set(cells.map((c) => c.atlas))].sort()),

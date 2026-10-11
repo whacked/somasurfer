@@ -19,7 +19,7 @@
 
 export { loadDataset } from './validate.ts';
 export { buildResearchIndex } from './dataset.ts';
-export { formatCitation } from './links.ts';
+export { formatCitation, sourceLink } from './links.ts';
 
 // Type-only, so these edges are stripped before the graph is walked and cost
 // the bundle nothing.
