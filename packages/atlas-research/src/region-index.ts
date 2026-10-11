@@ -297,7 +297,7 @@ export function validateCrosswalk(
     if (!COMPLETENESS.includes(e.completeness)) problems.push(`${at}: completeness is ${JSON.stringify(e.completeness)}.`);
     if (CROSSWALK_ONLY_SCHEMES.includes(schemeOf(e.term)) && e.how !== 'crosswalk') {
       problems.push(
-        `${at}: claims ${e.how}. A ${schemeOf(e.term)} area is never the structure it is projected onto,`,
+        `${at}: claims ${e.how}. ${schemeOf(e.term)} areas are never the structures they are projected onto,`,
         `  so its links must be "crosswalk" and approximate.`,
       );
     }

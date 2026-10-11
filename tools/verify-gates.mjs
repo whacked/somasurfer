@@ -366,6 +366,15 @@ const BRAIN_REGISTRATION = join(ASSETS, 'registration', `mni-to-${BRAIN.id}.json
 const BRAIN_QA_SAMPLE = join(REPO_ROOT, 'packages', 'atlas-qa', 'fixtures', 'brain-structure-sample.json');
 const BRAIN_PROVENANCE = join(REPO_ROOT, BRAIN.provenance);
 const BRAIN_ORIGIN_RESULT = join(ASSETS, 'provenance', 'origin-test-bodyparts3d.json');
+const CROSSWALK = join(ASSETS, 'crosswalk', 'crosswalk.json');
+const REGION_INDEX = join(ASSETS, 'crosswalk', `region-index-${BRAIN.id}.json`);
+
+/** `crosswalk.json` with one entry changed, in a single substitution. */
+function withCrosswalk(mutate) {
+  const doc = JSON.parse(readFileSync(CROSSWALK, 'utf8'));
+  mutate(doc);
+  return substitute(CROSSWALK, `${JSON.stringify(doc, null, 1)}\n`);
+}
 
 /** The structure records of a committed brain file, by name, for staging against. */
 function brainStructure(name) {
@@ -1626,6 +1635,73 @@ const CASES = [
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS), '--dist', rel(BASE_BUILD_DIST)]),
   },
+
+  // -------------------------------------------------------------------------
+  // Crosswalk and region index (DOG-130).
+  // -------------------------------------------------------------------------
+  {
+    name: 'crosswalk-gate-reads-the-committed-files',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate resolves the whole seed on the committed tree and finds the index matching',
+    mustPass: true,
+    expect: [/coverage: \d+ of 170 mappings reach a named structure, covering \d+ of 30 papers/, /index: .*region-index-zanatomy-2929e94\.json matches its inputs/],
+    describe: 'the committed crosswalk, seed and brain assets, unchanged',
+    // A gate that resolved nothing would also pass. This pins that it resolved the seed.
+    break: () => () => {},
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-index-hand-edited',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when the committed region index is not what its inputs produce',
+    expect: [/region-index-zanatomy-2929e94\.json does not match what its inputs produce/],
+    describe: 'the committed region index claiming every paper is non-empty',
+    // The figure W8a reads. Inflating it is the edit that matters, so it is the one staged.
+    break: () => {
+      const doc = JSON.parse(readFileSync(REGION_INDEX, 'utf8'));
+      doc.coverage.papers.nonEmpty = doc.coverage.papers.total;
+      return substitute(REGION_INDEX, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-hcp-entry-claims-exact',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when an HCP-MMP1 area claims to be the gyrus it is projected onto',
+    expect: [/crosswalk HCP-MMP1:V1: claims exact-term/],
+    describe: 'crosswalk.json filing HCP-MMP1 V1 as exact-term',
+    break: () =>
+      withCrosswalk((doc) => {
+        const v1 = doc.entries.find((e) => e.term === 'HCP-MMP1:V1');
+        if (!v1) throw new Error('HCP-MMP1:V1 is no longer in the crosswalk to stage this against');
+        v1.how = 'exact-term';
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-target-misspelt',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when a target names no structure, shipped or held',
+    expect: [/crosswalk ATLAS-LABEL:putamen: target "Putamen nucleus" is not a structure of zanatomy-gross-anatomy/],
+    describe: 'crosswalk.json naming the putamen "Putamen nucleus"',
+    // A misspelt target resolves to nothing, and nothing reads like a hold.
+    break: () =>
+      withCrosswalk((doc) => {
+        const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:putamen');
+        if (!e) throw new Error('ATLAS-LABEL:putamen is no longer in the crosswalk to stage this against');
+        e.targets[0].label = 'Putamen nucleus';
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-seed-term-unmapped',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when a term the seed uses has no entry',
+    expect: [/term ATLAS-LABEL:thalamus has no crosswalk entry/],
+    describe: 'crosswalk.json with the thalamus entry deleted',
+    break: () => withCrosswalk((doc) => (doc.entries = doc.entries.filter((e) => e.term !== 'ATLAS-LABEL:thalamus'))),
+    check: () => run('check-crosswalk.mjs'),
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -1670,6 +1746,8 @@ const touched = [
   rel(BRAIN_QA_SAMPLE),
   rel(BRAIN_PROVENANCE),
   rel(BRAIN_ORIGIN_RESULT),
+  rel(CROSSWALK),
+  rel(REGION_INDEX),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {

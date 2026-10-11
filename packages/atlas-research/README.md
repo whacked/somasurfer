@@ -97,6 +97,40 @@ person reading the sources. A citation can resolve perfectly while the claim
 attached to it is not what the paper found, and that is the failure this
 package cannot detect for you.
 
+## Region links: mappings onto named structures (DOG-130)
+
+`buildRegionIndex` resolves every mapping onto the named structures of each
+registered representation (`src/representations.ts`): the Z-Anatomy brain
+meshes, MNI coordinates, and v1's BodyParts3D name index. It provides
+`resolve(finding)`, `regionsFor(paper)` and `papersFor(structureKey)`. Every
+link records **how** it was made and its **precision**:
+
+| how | when | precision |
+| --- | --- | --- |
+| `exact-term` | the term is the structure's own id, or the crosswalk says it is the same concept (or its complete set of parts) | `exact` |
+| `crosswalk` | the crosswalk places the term on structures whose boundaries differ, e.g. every HCP-MMP1 area | `approximate`, with the entry's reason, and the term's own name kept |
+| `coordinate` | a published point, or a BV cell's centre, lies inside a structure's closed surface after the registration | millimetres, never below the registration's measured held-out error, with its basis |
+
+Two rules are worth knowing before you consume it:
+
+- **Containing, never nearest.** A point inside no shipped structure is
+  reported with its nearest structure and distance, and is **not** linked to
+  it. While the cortex is held, the nearest shipped structure to a cortical
+  point is the confident wrong answer. On the real seed, the fusiform face
+  coordinate lands 0.54 mm from a cerebellar lobule.
+- **Nothing vanishes.** A mapping with no link carries a stated reason
+  (`structure-held`, `not-in-representation`, `coordinate-outside-shipped-structures`, …).
+  A paper with no region carries the reasons of its mappings.
+
+The assets stay in `packages/atlas-assets` and are passed in as data. The
+crosswalk (`packages/atlas-assets/crosswalk/crosswalk.json`) is hand-authored.
+The committed index beside it is generated, and `tools/check-crosswalk.mjs`
+gates both: the crosswalk's targets, the acceptance invariants
+(`checkRegionIndex`), the locator on known points, and drift. Swapping the
+cortex, whether to a cleared gyral cortex or a lobe-labelled one, means
+changing data: a registry entry and crosswalk targets. The resolver code
+stays the same.
+
 ## Tests
 
 ```
@@ -111,6 +145,7 @@ node --test --experimental-strip-types 'test/*.test.ts'
 | `trust.test.ts` | the URL allow-list, the no-network-client source scan, parameterised scans |
 | `seed.test.ts` | the curated seed set, and the stage-B resolution gate |
 | `citations.test.ts` | every identifier traces to a named source, with a must-pass case |
+| `region-index.test.ts` | region links: how and precision, containing not nearest, held targets, the cortex swap as data, the round trip |
 
 ## Stage A and stage B
 
