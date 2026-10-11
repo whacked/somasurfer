@@ -1,0 +1,215 @@
+{
+ "summary": {
+  "pass": 7,
+  "fail": 2,
+  "unverified": 0
+ },
+ "results": [
+  {
+   "id": "matrix/clamped-cranial [real click]",
+   "status": "fail",
+   "detail": [
+    "a click above the body selected nothing and showed nothing: no clamp is reported, and the matrix row expects the point addressed at the cranial end with a notice naming it"
+   ],
+   "evidence": {
+    "model": {
+     "width": 900,
+     "height": 615,
+     "changed": 32264,
+     "bbox": {
+      "minX": 362,
+      "minY": 149,
+      "maxX": 536,
+      "maxY": 457
+     },
+     "centroid": {
+      "x": 451.30405405405406,
+      "y": 307.5756880733945
+     },
+     "box": {
+      "x": 0,
+      "y": 155.5,
+      "width": 900,
+      "height": 614
+     }
+    },
+    "picked": null,
+    "shown": []
+   }
+  },
+  {
+   "id": "matrix/clamped-caudal [real click]",
+   "status": "fail",
+   "detail": [
+    "a click below the body selected nothing and showed nothing: no clamp is reported, and the matrix row expects the point addressed at the caudal end with a notice naming it"
+   ],
+   "evidence": {
+    "model": {
+     "width": 900,
+     "height": 615,
+     "changed": 32264,
+     "bbox": {
+      "minX": 362,
+      "minY": 149,
+      "maxX": 536,
+      "maxY": 457
+     },
+     "centroid": {
+      "x": 451.30405405405406,
+      "y": 307.5756880733945
+     },
+     "box": {
+      "x": 0,
+      "y": 155.5,
+      "width": 900,
+      "height": 614
+     }
+    },
+    "picked": null,
+    "shown": []
+   }
+  },
+  {
+   "id": "degrade/fail=index",
+   "status": "pass",
+   "detail": "degrades as documented",
+   "evidence": {
+    "errors": [
+     "pageerror: atlas index unavailable"
+    ],
+    "unexpected": [
+     "pageerror: atlas index unavailable"
+    ]
+   }
+  },
+  {
+   "id": "degrade/fail=names",
+   "status": "pass",
+   "detail": "degrades as documented",
+   "evidence": {
+    "errors": [],
+    "unexpected": []
+   }
+  },
+  {
+   "id": "degrade/fail=templates",
+   "status": "pass",
+   "detail": "degrades as documented",
+   "evidence": {
+    "errors": [],
+    "unexpected": []
+   }
+  },
+  {
+   "id": "degrade/fail=renderer",
+   "status": "pass",
+   "detail": "degrades as documented",
+   "evidence": {
+    "errors": [],
+    "unexpected": []
+   }
+  },
+  {
+   "id": "degrade/fail=research",
+   "status": "pass",
+   "detail": "degrades as documented",
+   "evidence": {
+    "errors": [],
+    "unexpected": []
+   }
+  },
+  {
+   "id": "renderer/cell-drawn-on-the-real-template",
+   "status": "pass",
+   "detail": "BD-T07-03O-531 on bp3d-4.0-adult-body-centroid: 338266 px repainted, extent Cell extent6.51 × 28.79 × 29.33 mmCell centre218.8, 68.5, 1217.9 mmTemplatebp3d-4.0-adult-body-centroid",
+   "evidence": {
+    "diff": {
+     "width": 900,
+     "height": 701,
+     "changed": 338266,
+     "bbox": {
+      "minX": 0,
+      "minY": 1,
+      "maxX": 597,
+      "maxY": 700
+     },
+     "centroid": {
+      "x": 282.6561847776602,
+      "y": 351.83681481437685
+     }
+    },
+    "extent": "Cell extent6.51 × 28.79 × 29.33 mmCell centre218.8, 68.5, 1217.9 mmTemplatebp3d-4.0-adult-body-centroid",
+    "unpinnedCanvasHeight": {
+     "beforeSelect": 614,
+     "afterSelect": 1016
+    },
+    "pinnedForMeasurement": "700px"
+   }
+  },
+  {
+   "id": "perf/derivedFirstInteractionMs [measured]",
+   "status": "pass",
+   "detail": "measured navigation start → first click handled: median 1188 ms, worst 1655 ms of 5 cold loads at 25 Mbit/s / 40 ms RTT, against a 3500 ms limit. One-sided: a software-GL runner reading under the limit is within. Boot work after the last byte (index build + template parse + first paint) median 103 ms, against the 600 ms render allowance the budget assumed",
+   "evidence": {
+    "limit": 3500,
+    "runs": [
+     {
+      "readyMs": 1113.7000000476837,
+      "clickHandledMs": 261.5,
+      "selected": "BD-C01-11O-13",
+      "lastResourceEndMs": 971.4000000357628,
+      "afterLastByteMs": 142.30000001192093,
+      "transferKB": 806,
+      "domContentLoadedMs": 423,
+      "resources": 22,
+      "firstInteractionMs": 1375.2000000476837
+     },
+     {
+      "readyMs": 1235.1000000238419,
+      "clickHandledMs": 419.5999999642372,
+      "selected": "BD-C01-11O-13",
+      "lastResourceEndMs": 1013.7000000476837,
+      "afterLastByteMs": 221.39999997615814,
+      "transferKB": 806,
+      "domContentLoadedMs": 426.60000002384186,
+      "resources": 22,
+      "firstInteractionMs": 1654.699999988079
+     },
+     {
+      "readyMs": 982.1999999880791,
+      "clickHandledMs": 193.10000002384186,
+      "selected": "BD-C01-11O-13",
+      "lastResourceEndMs": 897.8000000119209,
+      "afterLastByteMs": 84.39999997615814,
+      "transferKB": 806,
+      "domContentLoadedMs": 366.69999998807907,
+      "resources": 22,
+      "firstInteractionMs": 1175.300000011921
+     },
+     {
+      "readyMs": 958.5999999642372,
+      "clickHandledMs": 156.69999998807907,
+      "selected": "BD-C01-11O-13",
+      "lastResourceEndMs": 882.5,
+      "afterLastByteMs": 76.09999996423721,
+      "transferKB": 806,
+      "domContentLoadedMs": 352.39999997615814,
+      "resources": 22,
+      "firstInteractionMs": 1115.2999999523163
+     },
+     {
+      "readyMs": 985.6000000238419,
+      "clickHandledMs": 201.9000000357628,
+      "selected": "BD-C01-11O-13",
+      "lastResourceEndMs": 882.5,
+      "afterLastByteMs": 103.10000002384186,
+      "transferKB": 806,
+      "domContentLoadedMs": 385.80000001192093,
+      "resources": 22,
+      "firstInteractionMs": 1187.5000000596046
+     }
+    ]
+   }
+  }
+ ]
+}

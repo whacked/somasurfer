@@ -1,0 +1,465 @@
+{
+ "summary": {
+  "pass": 6,
+  "fail": 4,
+  "unverified": 0
+ },
+ "results": [
+  {
+   "id": "journey/default-body-view",
+   "status": "fail",
+   "detail": [
+    "at 1280x900 the body is below the fold: the model spans page rows 755–1975 but the viewport ends at 900, so 12% of it is visible on arrival. The canvas is 900x2448 CSS px — taller than the window"
+   ],
+   "evidence": {
+    "atlas": "body",
+    "renderer": true,
+    "template": "bp3d-4.0-adult-body-centroid",
+    "labelsVisible": true,
+    "labelsDrawn": 25,
+    "heading": "Body atlas",
+    "url": "http://127.0.0.1:8933/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+    "canvas": {
+     "width": 900,
+     "height": 2449,
+     "background": [
+      43,
+      50,
+      60
+     ],
+     "painted": 2198339,
+     "paintedFraction": 0.9973862347443401,
+     "colours": 2659,
+     "bbox": {
+      "minX": 0,
+      "minY": 1,
+      "maxX": 899,
+      "maxY": 2448
+     },
+     "centroid": {
+      "x": 449.5317996905846,
+      "y": 1225.0635925578358
+     },
+     "box": {
+      "x": 0,
+      "y": 155.5,
+      "width": 900,
+      "height": 2448
+     }
+    },
+    "framing": {
+     "model": {
+      "width": 900,
+      "height": 2449,
+      "changed": 515224,
+      "bbox": {
+       "minX": 102,
+       "minY": 599,
+       "maxX": 795,
+       "maxY": 1819
+      },
+      "centroid": {
+       "x": 458.43012359672684,
+       "y": 1219.6787669052683
+      }
+     },
+     "canvasBox": {
+      "x": 0,
+      "y": 155.5,
+      "width": 900,
+      "height": 2448
+     },
+     "viewport": {
+      "width": 1280,
+      "height": 900
+     },
+     "modelPageRows": [
+      754.5,
+      1974.5
+     ],
+     "visibleFraction": 0.11926229508196722
+    },
+    "view": {
+     "atlas": "body",
+     "address": null,
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 1840.7768875960319,
+      "target": [
+       -0.6458282470703125,
+       84.60879898071289,
+       1102.1782531738281
+      ]
+     },
+     "layers": {
+      "hidden": [],
+      "isolated": null,
+      "opacity": {}
+     },
+     "labels": true,
+     "atlasExplicit": false
+    },
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/01-default-body-view.png"
+   }
+  },
+  {
+   "id": "journey/change-layers",
+   "status": "pass",
+   "detail": "hid thoracic, dimmed lumbar to 0.5 through the controls; camera and selection unchanged; canvas repainted",
+   "evidence": {
+    "toggles": [
+     "layer-toggle-cervical",
+     "layer-toggle-thoracic",
+     "layer-toggle-lumbar",
+     "layer-toggle-sacral",
+     "layer-toggle-spine"
+    ],
+    "layers": {
+     "hidden": [
+      "thoracic"
+     ],
+     "isolated": null,
+     "opacity": {
+      "lumbar": 0.5
+     }
+    },
+    "url": "http://127.0.0.1:8933/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18&hide=thoracic&op=lumbar%3A0.5",
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/02-change-layers.png"
+   }
+  },
+  {
+   "id": "journey/select-structure-without-leaving-atlas",
+   "status": "pass",
+   "detail": "click-select at the model centroid → BD-T10-05O-15; pasted BD-T05-01I-4 → ranked names with fractions and the index version, extent shown, URL carries the address, atlas still body, layers intact",
+   "evidence": {
+    "click": {
+     "ok": true,
+     "address": "BD-T10-05O-15",
+     "atlas": "body"
+    },
+    "pasted": {
+     "ok": true,
+     "address": "BD-T05-01I-4",
+     "atlas": "body",
+     "names": [
+      {
+       "fraction": 1
+      },
+      {
+       "fraction": 1
+      }
+     ],
+     "indexVersion": "bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da"
+    },
+    "namesPanel": {
+     "covered": "true",
+     "text": "Names bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da100.0%heart100.0%esophagusContained by: heart › esophagusFractions are dimensionless frame measure: exact, and independent of any template."
+    },
+    "extent": "Cell extent12.94 × 5.18 × 39.57 mmCell centre7.0, 70.1, 1265.2 mmTemplatebp3d-4.0-adult-body-centroid",
+    "url": "http://127.0.0.1:8933/?a=BD-T05-01I-4&cam=0.6%2C0.18%2C132.78%2C9.72%2C70.17%2C1265.41&hide=thoracic&op=lumbar%3A0.5",
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/03-select.png"
+   }
+  },
+  {
+   "id": "journey/explicit-brain-navigation",
+   "status": "pass",
+   "detail": "Open brain atlas switched to the brain, URL says atlas=brain, brain painted; drag orbited; a hemisphere hidden and labels turned on in the brain",
+   "evidence": {
+    "after": {
+     "atlas": "brain",
+     "url": "http://127.0.0.1:8933/?atlas=brain&cam=0.6%2C0.18%2C540%2C0%2C-17.5%2C5",
+     "template": "icbm152-2009c-asym",
+     "available": true
+    },
+    "cam0": {
+     "yaw": 0.6,
+     "pitch": 0.18,
+     "distance": 540.0038293493311,
+     "target": [
+      0,
+      -17.5,
+      5
+     ]
+    },
+    "cam1": {
+     "yaw": 1.7999999999999996,
+     "pitch": 0.18,
+     "distance": 540.0038293493311,
+     "target": [
+      0,
+      -17.5,
+      5
+     ]
+    },
+    "brainPainted": 2202499,
+    "bodyPainted": 2203200,
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/04-brain.png"
+   }
+  },
+  {
+   "id": "journey/region-research",
+   "status": "pass",
+   "detail": "BV BV-L-0001: 1 of 30 curated papers listed (paper:amunts-1999-broca); frame-unnamed info notice, \"Location only\"; nothing highlighted yet",
+   "evidence": {
+    "bv": {
+     "paper": "paper:amunts-1999-broca",
+     "address": "BV-L-0001"
+    },
+    "prov": {
+     "role": "curated",
+     "version": "research-seed-2026.10.1"
+    },
+    "listed": [
+     "paper:amunts-1999-broca"
+    ],
+    "scope": "1 of 30 papers mapped something overlapping BV-L-0001. Selecting one shows all of its mappings, including any outside this region.",
+    "notices": [
+     {
+      "code": "frame-unnamed",
+      "visible": true,
+      "text": "This frame ships without namesNo name index covers frame BV in v1, so this selection is a location rather than a named structure. The address and its millimetres are exact — what is missing is a parce"
+     }
+    ],
+    "namesPanel": {
+     "covered": "false",
+     "text": "Location onlyFrame BV ships without a name index in v1, so this selection is a place rather than a named structure. The address and the millimetres above are exact.No brain parcellation cleared licensing for redistribution, so \"unnamed\" is the shipping state here, not a gap waiting to close."
+    },
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/05-region-research-bv.png"
+   }
+  },
+  {
+   "id": "journey/paper-reveals-all-its-regions [brodmann 6/6 unresolved]",
+   "status": "pass",
+   "detail": "Brodmann 1909: 6 of 6 mappings listed, every one unresolved with its recorded reason, nothing painted",
+   "evidence": {
+    "summary": "All 6 mapping(s) of this paper are listed; 0 could be placed against this name index and 6 could not, each saying why. 0 of the placed region(s) are outside the current selection. A filter narrows the list of papers, never a paper’s own mappings.",
+    "rows": [
+     {
+      "s": "HCP-MMP1:44",
+      "placed": "false",
+      "reason": "placeholder-partition",
+      "partition": "brain-parcellation",
+      "headline": "Not placed, and not a mistake: HCP-MMP1:44 belongs to the declared placeholder partition \"brain-parcellation\", authored against seed-names-2026.10.2 rather than the index this page loaded (bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da). No cleared index names it, so there is no extent to show."
+     },
+     {
+      "s": "HCP-MMP1:45",
+      "placed": "false",
+      "reason": "placeholder-partition",
+      "partition": "brain-parcellation",
+      "headline": "Not placed, and not a mistake: HCP-MMP1:45 belongs to the declared placeholder partition \"brain-parcellation\", authored against seed-names-2026.10.2 rather than the index this page loaded (bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da). No cleared index names it, so there is no extent to show."
+     },
+     {
+      "s": "HCP-MMP1:V1",
+      "placed": "false",
+      "reason": "placeholder-partition",
+      "partition": "brain-parcellation",
+      "headline": "Not placed, and not a mistake: HCP-MMP1:V1 belongs to the declared placeholder partition \"brain-parcellation\", authored against seed-names-2026.10.2 rather than the index this page loaded (bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da). No cleared index names it, so there is no extent to show."
+     },
+     {
+      "s": "ATLAS-LABEL:occipital-lobe",
+      "placed": "false",
+      "reason": "placeholder-partition",
+      "partition": "brain-parcellation",
+      "headline": "Not placed, and not a mistake: ATLAS-LABEL:occipital-lobe belongs to the declared placeholder partition \"brain-parcellation\", authored against seed-names-2026.10.2 rather than the index this page loaded (bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da). No cleared index names it, so there is no extent to show."
+     },
+     {
+      "s": "HCP-MMP1:4",
+      "placed": "false",
+      "reason": "placeholder-partition",
+      "partition": "brain-parcellation",
+      "headline": "Not placed, and not a mistake: HCP-MMP1:4 belongs to the declared placeholder partition \"brain-parcellation\", authored against seed-names-2026.10.2 rather than the index this page loaded (bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da). No cleared index names it, so there is no extent to show."
+     },
+     {
+      "s": "ATLAS-LABEL:precentral-gyrus",
+      "placed": "false",
+      "reason": "placeholder-partition",
+      "partition": "brain-parcellation",
+      "headline": "Not placed, and not a mistake: ATLAS-LABEL:precentral-gyrus belongs to the declared placeholder partition \"brain-parcellation\", authored against seed-names-2026.10.2 rather than the index this page loaded (bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da). No cleared index names it, so there is no extent to show."
+     }
+    ],
+    "highlights": 0,
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/06a-brodmann.png"
+   }
+  },
+  {
+   "id": "journey/return-to-body-with-previous-view-intact",
+   "status": "pass",
+   "detail": "Return restored camera, layers, labels (off, 0 tags drawn) and selection exactly; the controls show the restored state; URL carries the address",
+   "evidence": {
+    "before": {
+     "atlas": "body",
+     "address": "BD-T05-01I-4",
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 132.78174593052023,
+      "target": [
+       9.716839969158173,
+       70.17383766174316,
+       1265.4146728515625
+      ]
+     },
+     "layers": {
+      "hidden": [
+       "thoracic"
+      ],
+      "isolated": null,
+      "opacity": {}
+     },
+     "labels": false,
+     "atlasExplicit": false
+    },
+    "after": {
+     "atlas": "body",
+     "address": "BD-T05-01I-4",
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 132.78174593052023,
+      "target": [
+       9.716839969158173,
+       70.17383766174316,
+       1265.4146728515625
+      ]
+     },
+     "layers": {
+      "hidden": [
+       "thoracic"
+      ],
+      "isolated": null,
+      "opacity": {}
+     },
+     "labels": false,
+     "atlasExplicit": false
+    },
+    "labelsDrawnBefore": 0,
+    "labelsDrawnAfter": 0,
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/08-return.png"
+   }
+  },
+  {
+   "id": "journey/paper-reveals-all-its-regions [mitsuhashi 9 listed / 7 placed under a filter]",
+   "status": "fail",
+   "detail": [
+    "revealing the paper resized the 3D view from 946 to 30105 CSS px tall (the canvas takes the side panel's height), so at 1280x900 the model and its highlights are no longer in the visible part of the page. With the canvas height pinned (diagnostic only) the same reveal does paint: see diag-pinned-*.png"
+   ],
+   "evidence": {
+    "listed": [
+     "paper:mitsuhashi-2009-bodyparts3d",
+     "paper:rosse-2003-fma"
+    ],
+    "summary": "All 9 mapping(s) of this paper are listed; 7 could be placed against this name index and 2 could not, each saying why. 668 of the placed region(s) are outside the current selection. A filter narrows the list of papers, never a paper’s own mappings.",
+    "rows": [
+     {
+      "s": "FMA7310",
+      "placed": "true",
+      "partition": null
+     },
+     {
+      "s": "FMA7088",
+      "placed": "true",
+      "partition": null
+     },
+     {
+      "s": "FMA7197",
+      "placed": "true",
+      "partition": null
+     },
+     {
+      "s": "ATLAS-LABEL:rib-7",
+      "placed": "false",
+      "partition": "body-not-in-index"
+     },
+     {
+      "s": "FMA9968",
+      "placed": "true",
+      "partition": null
+     },
+     {
+      "s": "FMA7204",
+      "placed": "true",
+      "partition": null
+     },
+     {
+      "s": "FMA7205",
+      "placed": "true",
+      "partition": null
+     },
+     {
+      "s": "FMA13295",
+      "placed": "true",
+      "partition": null
+     },
+     {
+      "s": "ATLAS-LABEL:quadratus-lumborum",
+      "placed": "false",
+      "partition": "body-not-in-index"
+     }
+    ],
+    "outside": 668,
+    "highlights": 669,
+    "expectCells": 669,
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/06b-mitsuhashi.png"
+   }
+  },
+  {
+   "id": "journey/compare-two-papers",
+   "status": "fail",
+   "detail": [
+    "comparing against paper:rosse-2003-fma painted nothing new: 669 highlight volumes before, 669 after. The second paper (404 placed body cells) is not drawn, so there is no per-paper colour and no hatched overlap — the comparison is text only (\"402 overlapping pair(s) of regions, 291 only in paper:mitsuhashi-2009-bodyparts3d, 109 only in paper:rosse-2003-fma.BD-T05-01O-6 ↔ BD-T05-01O-6BD-T06-02I-1 ↔ BD\")"
+   ],
+   "evidence": {
+    "buttonLabel": "Compare with A reference ontology for biomedical informatics: the Foundational Model of Anatomy",
+    "against": "paper:rosse-2003-fma",
+    "comparison": "402 overlapping pair(s) of regions, 291 only in paper:mitsuhashi-2009-bodyparts3d, 109 only in paper:rosse-2003-fma.BD-T05-01O-6 ↔ BD-T05-01O-6BD-T06-02I-1 ↔ BD-T06-02I-1BD-T07-02I-3 ↔ BD-T07-02I-3BD-T08-01O-6 ↔ BD-T08-01O-6BD-T08-02O-0 ↔ BD-T08-02O-0BD-T09-01O-2 ↔ BD-T09-01O-2BD-T05-01I-4 ↔ BD-T05-01I-4BD-T05-01I-5 ↔ BD-T05-01I-5",
+    "model": {
+     "shared": 402,
+     "onlyA": 291,
+     "onlyB": 109,
+     "disjoint": false
+    },
+    "highlightsBefore": 669,
+    "highlightsAfter": 669,
+    "otherCells": 404,
+    "comparePixelsChanged": {
+     "error": "size 900x30106 vs 900x30463"
+    },
+    "compareControls": 1,
+    "screenshot": "/paperclip/instances/default/projects/1a43a613-e176-4f32-afc6-b1f0ceca1f5a/ac73721d-81ee-49a6-8554-eb1cf56d04a5/wt-dog-39-v2/qa-evidence/07-compare.png"
+   }
+  },
+  {
+   "id": "research/source-link",
+   "status": "fail",
+   "detail": [
+    "Mitsuhashi 2009 has url https://doi.org/10.1093/nar/gkn613 and the research panel renders no link to it (links: [])",
+    "Brodmann 1909 has no source link and the panel does not say so (\"no source link recorded\")"
+   ],
+   "evidence": {
+    "brodmann": {
+     "links": [],
+     "saysNone": false
+    },
+    "mitsuhashi": {
+     "url": "https://doi.org/10.1093/nar/gkn613",
+     "links": []
+    }
+   }
+  }
+ ],
+ "pairs": [
+  {
+   "a": "paper:mitsuhashi-2009-bodyparts3d",
+   "b": "paper:rosse-2003-fma",
+   "shared": 402,
+   "disjoint": false
+  },
+  {
+   "a": "paper:rosse-2003-fma",
+   "b": "paper:bogduk-2012-lumbar-anatomy",
+   "shared": 1,
+   "disjoint": false
+  }
+ ]
+}
