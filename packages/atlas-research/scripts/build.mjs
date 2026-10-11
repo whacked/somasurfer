@@ -54,10 +54,10 @@
  *
  * ## 4. Two entries, and what `verify()` now asserts instead of equality
  *
- * The page imports three of the package's 24 exports. Serving it the whole
+ * The page imports four of the package's 24 exports. Serving it the whole
  * package costs 9.0 KiB of gzip against a 150 KiB `bundleGzipBytes` budget
  * that was reading 98%, so the bundle the page loads is built from
- * `src/index.viewer.ts` instead — see that file for the three names and for
+ * `src/index.viewer.ts` instead — see that file for the four names and for
  * the failure mode this introduces.
  *
  * `moduleOrder()` below already walks reachability from whatever entry it is
@@ -100,7 +100,7 @@ const ENTRY = join(SRC, 'index.ts');
 const BUNDLE = join(DIST, 'atlas-research.js');
 const ESM_ENTRY = join(ESM, 'index.js');
 
-/** The viewer's three names, and the bundle built from them. See note 4. */
+/** The viewer's four names, and the bundle built from them. See note 4. */
 const VIEWER_ENTRY = join(SRC, 'index.viewer.ts');
 const VIEWER_BUNDLE = join(DIST, 'atlas-research.viewer.js');
 

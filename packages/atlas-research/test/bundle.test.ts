@@ -28,7 +28,7 @@
  * ## Two entries, and so two different right answers about exports
  *
  * Since DOG-84 the build emits a third output: `dist/atlas-research.viewer.js`,
- * built from `src/index.viewer.ts`, which exports the three names the page
+ * built from `src/index.viewer.ts`, which exports the four names the page
  * imports. It is what `packages/atlas-web` serves, and it is 8.7 KiB of gzip
  * smaller than the package — `bundleGzipBytes` was reading 98% of 150 KiB.
  *
@@ -42,7 +42,7 @@
  * bundle that had drifted from its own entry.
  *
  * The behavioural comparisons split the same way, and deliberately do not
- * skip the viewer bundle: its three names are compared against the source like
+ * skip the viewer bundle: its four names are compared against the source like
  * everything else, and only the cases that NAME `browse.ts` or `layers.ts`
  * exports are restricted to the full-surface outputs. A viewer bundle that is
  * merely smaller and also wrong would pass a size check and fail these.
@@ -178,11 +178,11 @@ test('bundle: the viewer entry is a proper subset of the package, binding for bi
   const full = Object.keys(source).sort();
   const viewer = Object.keys(viewerSource).sort();
 
-  // The three names `packages/atlas-web/src/viewer/corpus.js` imports, stated
+  // The four names `packages/atlas-web/src/viewer/corpus.js` imports, stated
   // as literals. The subset relation below would be satisfied by any subset at
   // all, including one missing a name the page needs — which is a build
   // failure in atlas-web and a blank panel if that check were ever removed.
-  assert.deepEqual(viewer, ['buildResearchIndex', 'formatCitation', 'loadDataset']);
+  assert.deepEqual(viewer, ['buildResearchIndex', 'formatCitation', 'loadDataset', 'sourceLink']);
 
   assert.deepEqual(viewer.filter((n) => !full.includes(n)), [], 'the viewer entry exports a name the package does not');
 
@@ -412,16 +412,21 @@ function compare(outputs: typeof built, cases: Case[], index: source.ResearchInd
   }
 }
 
-test('bundle: the three exports the viewer gets behave identically in every output', () => {
+test('bundle: the four exports the viewer gets behave identically in every output', () => {
   // The viewer bundle's whole surface, over all three outputs including it.
   // `loadDataset` and `buildResearchIndex` are already compared mapping by
-  // mapping above; this is where `formatCitation` is, and it would otherwise be
-  // the one name the page uses that no comparison in this file touches.
+  // mapping above; this is where `formatCitation` and `sourceLink` are, and
+  // they would otherwise be the names the page uses that no comparison in this
+  // file touches.
   const { index, papers } = behaviourFixture();
-  assert.deepEqual(Object.keys(viewerSource).sort(), ['buildResearchIndex', 'formatCitation', 'loadDataset']);
+  assert.deepEqual(Object.keys(viewerSource).sort(), ['buildResearchIndex', 'formatCitation', 'loadDataset', 'sourceLink']);
   compare(built, [
     ['formatCitation', (m, i) => m.formatCitation(i.papers[0])],
     ['formatCitation (second paper)', (m, i) => m.formatCitation(i.papers[1])],
+    // DOG-117: the panel's source link. Linked, unlinked, and refused.
+    ['sourceLink (doi)', (m) => m.sourceLink('c', 'https://doi.org/10.1093/nar/gkn613')],
+    ['sourceLink (none recorded)', (m) => m.sourceLink('c', null)],
+    ['sourceLink (rejected)', (m) => m.sourceLink('c', 'javascript:alert(1)')],
     ['buildResearchIndex: papers', (m, i) => i.papers.map((p) => p.id)],
     ['buildResearchIndex: cellKeys', (m, i) => i.cellKeys],
   ], index);

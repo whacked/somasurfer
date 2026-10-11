@@ -41,7 +41,7 @@ import { fitCamera, flyToCell, pan, rayThrough, rotate, zoom } from './viewer/ca
 import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
 import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flags.js';
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
-import { curatedModel } from './viewer/corpus.js';
+import { curatedModel, paperSource } from './viewer/corpus.js';
 import { comparePapers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
 import { nameIndexFrames, selectAddress } from './viewer/select.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity } from './viewer/state.js';
@@ -643,6 +643,27 @@ function renderResearch() {
     className: 'muted',
     textContent: [revealed.paper.venue, revealed.paper.year].filter(Boolean).join(', '),
   }));
+
+  // Where to read the paper, or the sentence saying there is nowhere. The
+  // provenance line tells the reader to open a paper to read it, so a missing
+  // link and a link that was never drawn must not look the same (DOG-117). A
+  // fixture paper has no citation; it gets the same check under its title.
+  const source = paperSource(revealed.paper);
+  const cite = el('p', { className: 'citation' });
+  cite.dataset.testid = 'research-source';
+  if (revealed.paper.citation) cite.append(revealed.paper.citation, ' ');
+  if (source.href) {
+    const link = el('a', {
+      href: source.href, rel: source.rel, target: source.target, textContent: source.href,
+    });
+    link.dataset.testid = 'research-source-link';
+    cite.append(link);
+  } else {
+    const none = el('span', { className: 'muted', textContent: `No source link: ${source.unlinkedReason}.` });
+    none.dataset.testid = 'research-source-missing';
+    cite.append(none);
+  }
+  reveal.append(cite);
 
   // Said before the list, because a reader scanning a list of regions needs to
   // know up front that it is the paper's whole set and not a filtered view.
