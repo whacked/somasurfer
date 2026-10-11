@@ -63,8 +63,14 @@ async function modelBox(page) {
       else {
         if (!shown.includes('clamped')) problems.push(`click ${side} the body → ${picked.address}, visible notices ${JSON.stringify(shown)}; expected a visible clamped notice`);
         if (shown.includes('folded')) problems.push('a clamp reported as folded');
-        const end = side === 'above' ? /cranial|top|above|C01|upper/i : /caudal|bottom|below|S01|lower/i;
-        const said = JSON.stringify(picked.notices);
+        const end = side === 'above' ? /cranial/i : /caudal/i;
+        // What the reader sees: the visible clamped card, title + detail +
+        // notes. The end is named in the notes; an earlier version read only
+        // the title and reported a correct build as not naming it.
+        const said = (await page.$$eval('[data-notice="clamped"]', (ns) => ns
+          .filter((n) => n.offsetWidth || n.offsetHeight).map((n) => n.textContent))).join(' ');
+        const wrongEnd = side === 'above' ? /caudal|below/i : /cranial|above/i;
+        if (shown.includes('clamped') && wrongEnd.test(said)) problems.push(`the clamp names the wrong end: ${said}`);
         if (shown.includes('clamped') && !end.test(said)) problems.push(`the clamp does not say which end: ${said}`);
       }
     }
