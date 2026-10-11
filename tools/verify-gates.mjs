@@ -363,6 +363,7 @@ const BRAIN_LOW = join(ASSETS, BRAIN.lowFile);
 const BRAIN_FULL = join(ASSETS, BRAIN.fullFile);
 const BRAIN_STRUCTURES = join(ASSETS, BRAIN.structuresFile);
 const BRAIN_REGISTRATION = join(ASSETS, 'registration', `mni-to-${BRAIN.id}.json`);
+const BRAIN_QA_SAMPLE = join(REPO_ROOT, 'packages', 'atlas-qa', 'fixtures', 'brain-structure-sample.json');
 
 /** The structure records of a committed brain file, by name, for staging against. */
 function brainStructure(name) {
@@ -1285,7 +1286,7 @@ const CASES = [
     gate: 'mesh assets',
     criterion: 'the mesh gate checks every shippable structure on the committed tree, not none',
     mustPass: true,
-    expect: [/245 of 245 shippable structures in both tiers/, /Published error re-measured for all 245/],
+    expect: [/245 of 245 shippable structures in both tiers/, /Published error re-measured for all 245/, /QA sample 40 structures, 2 withheld control/],
     describe: 'the committed brain mesh files, unchanged',
     // A gate that found no files would also pass. This pins that it found them.
     break: () => () => {},
@@ -1376,6 +1377,19 @@ const CASES = [
       if (!rn) throw new Error('red-nucleus.l is no longer a held-out pair to stage this against');
       rn.errorMm = 2;
       return substitute(BRAIN_REGISTRATION, `${JSON.stringify(reg, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-qa-sample-drops-a-required-nucleus',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when the QA sample loses a required nucleus or one side of a pair',
+    expect: [/QA sample: the sample has 39 structures, not 40/, /QA sample: required Subthalamic nucleus\.r is not in the sample/],
+    describe: 'the committed QA sample with the right subthalamic nucleus dropped',
+    break: () => {
+      const fixture = JSON.parse(readFileSync(BRAIN_QA_SAMPLE, 'utf8'));
+      fixture.sample = fixture.sample.filter((x) => x.name !== 'Subthalamic nucleus.r');
+      return substitute(BRAIN_QA_SAMPLE, `${JSON.stringify(fixture, null, 1)}\n`);
     },
     check: () => run('check-mesh-assets.mjs'),
   },
@@ -1561,6 +1575,7 @@ const touched = [
   rel(BRAIN_FULL),
   rel(BRAIN_STRUCTURES),
   rel(BRAIN_REGISTRATION),
+  rel(BRAIN_QA_SAMPLE),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {

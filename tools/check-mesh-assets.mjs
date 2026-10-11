@@ -37,6 +37,7 @@ import { bounds, degenerateTriangles, surfaceArea, surfaceDeviation } from './li
 import { GROUPS } from './lib/brain-provenance.mjs';
 import { BRAIN_MESH_BUILD, brainAssetPaths } from './lib/brain-asset-paths.mjs';
 import { HELD_OUT, LANDMARKS, MAX_OPEN_EDGE_SHARE, evaluate, meshGeometries, volumeCentroid } from './lib/brain-registration.mjs';
+import { checkSample } from './lib/brain-qa-sample.mjs';
 
 const GATE = 'mesh assets';
 const MIN_AXIS_SHARE = 0.5;
@@ -193,6 +194,16 @@ if (!existsSync(REG_FILE)) {
   }
 }
 
+// --- The QA sample: checked against its rules and against what ships ----------
+const SAMPLE_FIXTURE = join(REPO_ROOT, 'packages', 'atlas-qa', 'fixtures', 'brain-structure-sample.json');
+let sample = null;
+if (!existsSync(SAMPLE_FIXTURE)) {
+  problems.push('packages/atlas-qa/fixtures/brain-structure-sample.json is missing. Draw it once with tools/draw-brain-qa-sample.mjs.');
+} else {
+  sample = JSON.parse(readFileSync(SAMPLE_FIXTURE, 'utf8'));
+  for (const p of checkSample(sample, doc)) problems.push(`QA sample: ${p}`);
+}
+
 // --- The published report ----------------------------------------------------
 const fmt = (x, d = 2) => x.toFixed(d);
 const sorted = (xs) => [...xs].sort((a, b) => a - b);
@@ -269,4 +280,6 @@ pass(GATE, [
   `${paths.id}: ${rows.length} of ${shippable.length} shippable structures in both tiers; ${doc.excluded.length} held structures in neither.`,
   `Floor ${BRAIN_MESH_BUILD.floorTriangles} met by all; no degenerate triangle; no sliver; area low/full ${fmt(Math.min(...rows.map((r) => r.ratio)))}-${fmt(Math.max(...rows.map((r) => r.ratio)))}.`,
   `Published error re-measured for all ${rows.length}: Hausdorff median ${fmt(pct(hs, 0.5))} mm, max ${fmt(Math.max(...hs))} mm.`,
+  `Registration re-derived: held-out ${reg.summary.heldOut.maxMm} mm; QA sample ${sample.sample.length} structures,`
+    + ` ${sample.withheldControls.length} withheld control(s), every rule met.`,
 ]);
