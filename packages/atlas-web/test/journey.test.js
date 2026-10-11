@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { fitCamera, flyToCell, pan, rotate, zoom } from '../src/viewer/camera.js';
-import { ATLASES, decodeView, encodeView, viewHref } from '../src/viewer/deeplink.js';
+import { ATLASES, DEFAULT_LABELS, decodeView, encodeView, viewHref } from '../src/viewer/deeplink.js';
 import {
   atlasForAddress,
   atlasForFrame,
@@ -71,6 +71,169 @@ describe('selection never switches the atlas', () => {
   });
 });
 
+/**
+ * The other half of that rule: not switching is not enough.
+ *
+ * DOG-75. The viewer reported `elsewhere` and left `state.atlas` alone, and
+ * then handed the shell a mesh and a set of millimetres from the other
+ * template anyway — so the brain cell was drawn in the body scene and the body
+ * camera flew to brain coordinates, under a panel saying the view had not
+ * changed. The selection was also unlinkable, which is the one thing that
+ * could have argued for switching instead.
+ *
+ * These are state-machine tests on purpose. The draw and the fly both key off
+ * `model.cell`, so the guard has to be in the object the §7 journey measures,
+ * not in the shell where only a browser could see it.
+ */
+describe('a cross-atlas selection is shown, but never drawn here', () => {
+  it('withholds the geometry of an address that lives in the other atlas', () => {
+    const v = viewer();
+    const model = v.select('BV-L-471');
+
+    assert.ok(model.ok, 'it still resolves');
+    assert.equal(model.elsewhere, 'brain');
+    assert.equal(model.cell, null, 'there is no mesh to put in the body scene');
+    assert.equal(model.extentMm, null);
+    assert.equal(model.pointMm, null);
+    assert.equal(model.templateId, null, 'the body view is not drawn by the brain template');
+
+    // Withheld from the view, not discarded: the panel reports it as the
+    // brain atlas's answer, and the address and its names stand.
+    assert.equal(model.elsewhereCell.atlas, 'brain');
+    assert.ok(model.elsewhereCell.extentMm.every((n) => Number.isFinite(n) && n > 0));
+    assert.ok(model.elsewhereCell.pointMm.every(Number.isFinite));
+    assert.ok(model.elsewhereCell.cell, 'the brain atlas can still draw it');
+    assert.equal(model.address, 'BV-L-471');
+    assert.ok(model.names, 'and it is still named, or says why it is not');
+  });
+
+  it('keeps an in-atlas selection fully placed, so the guard is not blanket', () => {
+    // Without this, withholding everything from every selection would pass the
+    // test above and break the viewer.
+    const v = viewer();
+    const model = v.select('BD-T07-03O');
+    assert.equal(model.elsewhere, null);
+    assert.equal(model.elsewhereCell, null);
+    assert.ok(model.cell);
+    assert.ok(model.extentMm.every(Number.isFinite));
+    assert.ok(model.templateId);
+  });
+
+  it('does not move the camera, because there is nothing to fly to', () => {
+    const v = viewer();
+    v.setCamera({ yaw: 0.2, pitch: -0.1, distance: 640, target: [4, 5, 6] });
+    const before = JSON.parse(JSON.stringify(v.cameraOf('body')));
+
+    const model = v.select('BV-L-471');
+    // The shell flies with `if (fly && model.cell)`; this is that condition.
+    assert.equal(model.cell, null, 'the shell would fly if a cell came back');
+    assert.deepEqual(v.cameraOf('body'), before, 'the body camera must not move');
+  });
+
+  it('is in the URL, with the atlas it was selected under', () => {
+    const v = viewer();
+    v.setCamera({ yaw: 0, pitch: 0, distance: 500, target: [0, 0, 0] });
+    v.select('BV-L-471');
+
+    const view = v.toView();
+    assert.equal(view.atlas, 'body');
+    assert.equal(view.address, 'BV-L-471', 'the view is showing it, so the view carries it');
+    const params = new URLSearchParams(encodeView(view));
+    assert.equal(params.get('a'), 'BV-L-471');
+    // Stated rather than implied: `atlas` is the default here, and a bare
+    // `?a=BV-…` would leave which atlas it reopens in up to a rule.
+    assert.equal(params.get('atlas'), 'body');
+  });
+
+  it('says nothing about the atlas when the address implies it', () => {
+    // The anti-vacuity half of the line above: `atlas=` is emitted for the
+    // view that needs it, not pinned onto every link.
+    const v = viewer();
+    v.select('BD-T07-03O');
+    assert.equal(v.toView().atlasExplicit, false);
+    assert.equal(new URLSearchParams(encodeView(v.toView())).get('atlas'), null);
+  });
+
+  it('restores from its own link, offer and all', () => {
+    const v = viewer();
+    v.setCamera({ yaw: 0.3, pitch: 0.1, distance: 500, target: [1, 2, 3] });
+    v.setLayerHidden('cervical', true);
+    v.select('BV-L-471');
+    const link = encodeView(v.toView());
+
+    const other = viewer();
+    const decoded = decodeView(link);
+    assert.deepEqual(decoded.problems, []);
+    other.applyView(decoded.view, decoded.problems);
+
+    assert.equal(other.atlas, 'body', 'the link said body, so it opens in the body atlas');
+    assert.equal(other.state.selection.address, 'BV-L-471');
+    assert.equal(other.state.selection.elsewhere, 'brain', 'and it still offers the move');
+    assert.equal(other.state.selection.cell, null, 'and still draws nothing here');
+    assert.deepEqual(other.toView(), v.toView());
+    assert.equal(encodeView(other.toView()), link, 'and the link it then shows is the same link');
+  });
+
+  it('hands the address to the other atlas only when the offer is accepted', () => {
+    const v = viewer();
+    v.select('BV-L-471');
+    // Not filed under the brain atlas yet: it is the body atlas that is
+    // showing this address, and the brain atlas may have a view of its own.
+    assert.equal(v.state.address.brain, null);
+    assert.equal(v.state.address.body, 'BV-L-471');
+
+    v.openAtlas('brain');
+    assert.equal(v.atlas, 'brain');
+    const model = v.state.selection;
+    assert.equal(model.address, 'BV-L-471', 'accepting the offer lands on the cell it offered');
+    assert.equal(model.elsewhere, null, 'which is no longer elsewhere');
+    assert.ok(model.cell, 'and is drawn, here, where the geometry is');
+    assert.ok(model.extentMm.every(Number.isFinite));
+  });
+
+  it('does not lose the brain atlas"s own view to an unaccepted offer', () => {
+    const v = viewer();
+    v.openAtlas('brain');
+    v.select('BV-R-205');
+    v.returnToPrevious();
+
+    v.select('BV-L-471');
+    assert.equal(v.atlas, 'body');
+    assert.equal(v.state.address.brain, 'BV-R-205', 'the brain atlas still remembers its own');
+  });
+
+  it('brings the cross-atlas view back on the return trip', () => {
+    const v = viewer();
+    v.setCamera({ yaw: 0.4, pitch: -0.2, distance: 720, target: [7, 8, 9] });
+    v.select('BV-L-471');
+    const left = JSON.parse(JSON.stringify(v.toView()));
+
+    v.openAtlas('brain');
+    assert.equal(v.returnToPrevious(), 'body');
+
+    assert.deepEqual(v.toView(), left, 'the body atlas was showing that address when we left it');
+    assert.equal(v.state.selection.elsewhere, 'brain', 'and says so again');
+    assert.equal(v.state.selection.cell, null);
+  });
+
+  it('is the same rule mirrored: a body address in the brain atlas', () => {
+    const v = viewer();
+    v.openAtlas('brain');
+    v.setCamera({ yaw: 0, pitch: 0, distance: 300, target: [0, 0, 0] });
+    const before = JSON.parse(JSON.stringify(v.cameraOf('brain')));
+
+    const model = v.select('BD-T07-03O');
+    assert.equal(v.atlas, 'brain');
+    assert.equal(model.elsewhere, 'body');
+    assert.equal(model.cell, null);
+    assert.deepEqual(v.cameraOf('brain'), before);
+
+    const params = new URLSearchParams(encodeView(v.toView()));
+    assert.equal(params.get('a'), 'BD-T07-03O');
+    assert.equal(params.get('atlas'), 'brain');
+  });
+});
+
 describe('the §7 journey', () => {
   it('runs end to end and comes back with the previous view intact', () => {
     const v = viewer();
@@ -97,6 +260,13 @@ describe('the §7 journey', () => {
     assert.equal(isLayerVisible(v.layersOf(), 'lumbar'), true);
     assert.equal(isLayerVisible(v.layersOf(), 'cervical'), false);
 
+    // Labels are part of "what is visible", and off is the state worth
+    // carrying: the default is on, so a view that restored the default would
+    // pass this step without restoring anything.
+    assert.equal(v.labelsOf(), true, 'labels start on');
+    assert.equal(v.toggleLabels(), false);
+    assert.equal(v.labelsOf(), false);
+
     // 3. Select a structure WITHOUT leaving the atlas.
     const selected = v.select('BD-T07-03O');
     assert.ok(selected.ok);
@@ -113,20 +283,65 @@ describe('the §7 journey', () => {
     assert.equal(v.canReturn, true);
     assert.equal(v.returnTarget, 'body');
 
-    // 5. Work in the brain atlas: its own camera and its own layers.
+    // 5. Work in the brain atlas: its own camera, its own layers, its own
+    // labels. The brain atlas opens with labels on even though we just turned
+    // them off in the body — one shared flag would have brought the body's off
+    // state here, and then carried this atlas's state home on the way back.
     v.select('BV-L-471');
     v.setCamera({ yaw: -0.9, pitch: 0.4, distance: 310, target: [0, 0, 0] });
     v.setLayerHidden('right', true);
     assert.equal(isLayerVisible(v.layersOf(), 'right'), false);
+    assert.equal(v.labelsOf(), true, 'the brain atlas has its own label state');
+    v.setLabels(false);
 
     // 6. Return to the body with the previous view intact.
     assert.equal(v.returnToPrevious(), 'body');
     assert.equal(v.atlas, 'body');
     assert.deepEqual(v.toView(), bodyView, 'the return must restore what we left');
+    assert.equal(v.labelsOf(), false, 'label visibility is restored with the rest of the view');
     assert.equal(v.canReturn, false);
 
     // The brain atlas still remembers its own state for next time.
     assert.equal(isLayerVisible(v.layersOf('brain'), 'right'), false);
+    assert.equal(v.labelsOf('brain'), false);
+  });
+
+  it('restores labels that were ON when the view was left', () => {
+    // The mirror of the step above. Restoring the default always looks right,
+    // so the facet has to be checked from both sides: here the body is left
+    // with labels on and the brain is the atlas whose labels go off.
+    const v = viewer();
+    assert.equal(v.labelsOf('body'), true);
+    v.openAtlas('brain');
+    v.setLabels(false);
+    assert.equal(v.returnToPrevious(), 'body');
+    assert.equal(v.labelsOf(), true, 'the body atlas was left with labels on');
+    assert.equal(v.toView().labels, true);
+  });
+
+  it('toggling labels changes nothing else about the view', () => {
+    const v = viewer();
+    v.setCamera({ yaw: 0.3, pitch: -0.2, distance: 700, target: [1, 2, 3] });
+    v.setLayerHidden('sacral', true);
+    v.setLayerOpacity('spine', 0.4);
+    const selected = v.select('BD-T07-03O');
+    const before = JSON.parse(JSON.stringify(v.toView()));
+
+    v.setLabels(false);
+    const after = v.toView();
+    assert.equal(after.labels, false);
+    // Annotation, not navigation and not selection.
+    assert.deepEqual(after.camera, before.camera);
+    assert.deepEqual(after.layers, before.layers);
+    assert.equal(after.atlas, before.atlas);
+    assert.equal(after.address, before.address);
+    assert.equal(v.state.selection, selected, 'the selection object itself must be untouched');
+  });
+
+  it('refuses to set labels on an atlas that does not exist', () => {
+    const v = viewer();
+    assert.throws(() => v.setLabels(false, 'liver'), /unknown atlas/);
+    assert.equal(v.labelsOf('body'), true, 'and changes nothing on the way out');
   });
 
   it('restores the view we left, not the atlas"s current state', () => {
@@ -162,6 +377,47 @@ describe('deep links round-trip every view', () => {
   it('omits defaults, so the entry view is a bare URL', () => {
     assert.equal(encodeView({ atlas: 'body', address: null }), '');
     assert.equal(viewHref({ atlas: 'body', address: null }, '/atlas/'), '/atlas/');
+  });
+
+  it('carries label visibility, and only when it is not the default', () => {
+    assert.equal(DEFAULT_LABELS, true, 'the rest of this test is written against on-by-default');
+    // Unstated is the default, not off: a view object built before labels were
+    // a facet must not encode as a request to hide them.
+    assert.equal(encodeView({ atlas: 'body', address: null }), '');
+    assert.equal(encodeView({ atlas: 'body', address: null, labels: true }), '');
+    assert.equal(encodeView({ atlas: 'body', address: null, labels: false }), 'labels=0');
+
+    assert.equal(decodeView('').view.labels, true);
+    assert.equal(decodeView('labels=0').view.labels, false);
+    assert.equal(decodeView('labels=false').view.labels, false);
+    assert.equal(decodeView('labels=1').view.labels, true);
+    assert.equal(decodeView('labels=true').view.labels, true);
+  });
+
+  it('says what it rejected in labels=, and keeps the rest of the link', () => {
+    // "0" is truthy as a string, so a decoder written on truthiness would read
+    // labels=0 as ON. That is the one spelling a hand-written link will use.
+    const { view, problems } = decodeView('a=BD-T07-03O&labels=maybe');
+    assert.equal(view.address, 'BD-T07-03O');
+    assert.equal(view.labels, DEFAULT_LABELS, 'an unusable value falls back to the default');
+    assert.equal(problems.length, 1);
+    assert.match(problems[0], /labels=/);
+  });
+
+  it('round-trips labels off through the state machine, per atlas', () => {
+    const v = viewer();
+    v.setLabels(false);
+    const link = encodeView(v.toView());
+    assert.match(link, /labels=0/);
+
+    const restored = viewer();
+    const decoded = decodeView(link);
+    restored.applyView(decoded.view, decoded.problems);
+    assert.equal(restored.labelsOf(), false, 'the link has to restore the facet it carries');
+    assert.deepEqual(restored.toView(), v.toView());
+    // The atlas the link did not name is untouched, so following a body link
+    // does not reach into the brain atlas's state.
+    assert.equal(restored.labelsOf('brain'), true);
   });
 
   it('restores the same view through the state machine, across the atlas round trip', () => {
@@ -221,10 +477,13 @@ describe('deep links round-trip every view', () => {
       '', '?', 'a=', 'a=' + 'x'.repeat(200), 'cam=1,2,3', 'cam=NaN,NaN,NaN,NaN,NaN,NaN',
       'atlas=../../etc', 'hide=a,,b,<script>', 'iso=' + 'y'.repeat(80), 'op=left:9',
       'op=:0.5', 'op=left:', 'cam=0,0,-5,0,0,0', '%%%',
+      'labels=', 'labels=0,1', 'labels=' + 'z'.repeat(200), 'labels=2', 'labels=TRUE',
+      'labels=null', 'labels=undefined', 'labels=-0',
     ];
     for (const search of hostile) {
       const { view, problems } = decodeView(search);
       assert.ok(ATLASES.includes(view.atlas), `${search} must yield a known atlas`);
+      assert.equal(typeof view.labels, 'boolean', `${search} produced a non-boolean labels`);
       for (const n of [view.camera.yaw, view.camera.pitch, view.camera.distance]) {
         assert.ok(Number.isFinite(n), `${search} produced a non-finite camera`);
       }

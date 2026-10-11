@@ -9,7 +9,7 @@
  * happens to emit as a typed array.
  */
 
-import { readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,6 +22,8 @@ import {
 import { validateBodyTemplate, validateBrainVolumeTemplate } from '../src/viewer/template.js';
 
 const asJson = (value) => JSON.parse(JSON.stringify(value));
+
+const PACKAGE_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 const DEFINITIONS = buildTemplates();
 
@@ -58,9 +60,23 @@ export function nameIndex() {
 
 export const research = () => asJson(buildResearchFixture());
 
-export { DEFINITIONS };
+/**
+ * The curated 30-paper dataset, as `dist/data/research.json` serves it.
+ *
+ * Read off disk and given the `role` the build adds, so a test sees the same
+ * bytes the browser fetches rather than an object assembled in process. The
+ * dataset is `research/1` TEXT: structure ids and provenance, no geometry. The
+ * geometry is decided by `curatedModel()` against the real name index, which is
+ * the thing worth testing.
+ */
+export const curatedSeed = () => ({
+  ...JSON.parse(
+    readFileSync(join(PACKAGE_ROOT, '..', 'atlas-research', 'data', 'research-seed.json'), 'utf8'),
+  ),
+  role: 'curated',
+});
 
-const PACKAGE_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+export { DEFINITIONS };
 
 /**
  * Every `.js` file under a directory of this package, recursively.

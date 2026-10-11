@@ -36,10 +36,33 @@
  *
  * ## A finding that was never placed is shown, not dropped
  *
- * `FXP-5` reports "thoracic spine" with no level and no side, so it has no
- * cells at all. Silently omitting it would let the atlas imply the literature
- * is more spatially precise than it is. It carries `placed: false` and its own
- * `regionOnly` sentence, and it is counted in the paper's finding total.
+ * A finding whose mappings could not be placed has no cells at all. Silently
+ * omitting it would let the atlas imply the literature is more spatially
+ * precise than it is. It carries `placed: false` and its own `regionOnly`
+ * sentence, and it is counted in the paper's finding total either way.
+ *
+ * On the curated corpus this is the common case, not the edge one: 96 of the
+ * 120 findings have no placed geometry, because the brain parcellation that
+ * would locate them is not licence-cleared. `viewer/corpus.js` is where that
+ * residue acquires its explanation.
+ *
+ * ## A corpus that does not say what it is does not load
+ *
+ * Every resolution result in this viewer carries the name-index version it came
+ * from, and the UI shows it beside every name list, because a name with no
+ * stated provenance is a claim the reader cannot check. A *paper* with no
+ * stated provenance is the same claim and a worse one: a titled, dated, venued
+ * entry reads as literature whether or not it is.
+ *
+ * So `role` is required and validated here, at load, alongside the addresses —
+ * `'fixture'` for an invented corpus, `'curated'` for one whose papers are real
+ * — and `researchModel` throws without it. Required rather than defaulted
+ * because every available default is a lie about something: defaulting to
+ * `fixture` would label the curated corpus invented, and defaulting to
+ * `curated` would present invented papers as literature. The shell turns the
+ * throw into the degraded-research notice, which costs the research panel and
+ * nothing else; that is the correct price for a document that will not say
+ * whether its papers exist.
  */
 
 import { overlaps, parse } from '../alc.js';
@@ -55,6 +78,15 @@ export class ResearchError extends Error {
 }
 
 const isObject = (v) => Boolean(v) && typeof v === 'object' && !Array.isArray(v);
+
+/**
+ * The two things a research corpus may be. There is no third.
+ *
+ * `fixture`  the papers are invented. Nothing here may be cited.
+ * `curated`  the papers are real and the mappings were asserted by a curator.
+ *            The provenance on each mapping is then the thing worth reading.
+ */
+export const RESEARCH_ROLES = Object.freeze(['fixture', 'curated']);
 
 function requireString(value, what) {
   if (typeof value !== 'string' || value.trim() === '') {
@@ -75,6 +107,23 @@ function requireString(value, what) {
 export function researchModel(doc) {
   if (!isObject(doc)) throw new ResearchError('the research document is not an object');
   const version = requireString(doc.version, 'research `version`');
+  // Before the papers, because the papers are what the role is about.
+  const role = requireString(doc.role, 'research `role`');
+  if (!RESEARCH_ROLES.includes(role)) {
+    throw new ResearchError(
+      `research \`role\` must be one of ${RESEARCH_ROLES.join(' or ')}, got ${JSON.stringify(role)}. `
+      + 'A corpus the viewer cannot label as invented or as real would be shown as literature '
+      + 'either way, so it is not shown at all.',
+    );
+  }
+  const caveat = typeof doc.caveat === 'string' && doc.caveat.trim() !== '' ? doc.caveat : null;
+  if (role === 'fixture' && caveat === null) {
+    throw new ResearchError(
+      `research document ${JSON.stringify(version)} declares role \`fixture\` and gives no `
+      + '`caveat`. An invented corpus has to carry the sentence that says so, because the panel '
+      + 'has nothing else to show a reader who is looking at five titled, dated papers.',
+    );
+  }
   if (!Array.isArray(doc.papers)) throw new ResearchError('research `papers` must be an array');
 
   const seen = new Set();
@@ -144,7 +193,7 @@ export function researchModel(doc) {
     });
   });
 
-  return Object.freeze({ version, papers: Object.freeze(papers) });
+  return Object.freeze({ version, role, caveat, papers: Object.freeze(papers) });
 }
 
 /**
@@ -206,20 +255,49 @@ export function revealPaper(model, paperId, activeFilter = null) {
   }
   const within = (address) => (filter === null ? null : overlaps(address, filter));
 
+  const annotate = (cell) => ({ ...cell, withinFilter: within(cell.address) });
+
   const findings = paper.findings.map((finding) => ({
     ...finding,
-    cells: finding.cells.map((cell) => ({ ...cell, withinFilter: within(cell.address) })),
+    cells: finding.cells.map(annotate),
+    /**
+     * The curated corpus's mapping level, annotated and otherwise untouched.
+     *
+     * `mappings` is absent from a fixture finding, which has no structure ids
+     * at all, so it stays absent rather than becoming an empty array: "this
+     * corpus has no mapping level" and "this finding mapped nothing" are
+     * different facts and must not print alike.
+     *
+     * Every mapping is here, placed or not, which is the rule at the top of
+     * this file applied one level down: annotating a mapping with
+     * `withinFilter` is allowed, dropping one is not. An unresolved mapping has
+     * no cells, so it never acquires a `withinFilter` of its own — it is listed
+     * because the paper mapped it, not because it can be drawn.
+     */
+    ...(finding.mappings
+      ? { mappings: finding.mappings.map((m) => ({ ...m, cells: m.cells.map(annotate) })) }
+      : {}),
   }));
   const cells = findings.flatMap((f) => f.cells);
+  const mappings = findings.flatMap((f) => f.mappings ?? []);
 
   return {
     paper,
     findings,
     cells,
+    /** Every mapping of the paper, in document order. Empty for a fixture. */
+    mappings,
     /** Atlases these mappings span. More than one is the cross-atlas case. */
     atlases: [...new Set(cells.map((c) => c.atlas))].sort(),
     outsideFilter: filter === null ? 0 : cells.filter((c) => c.withinFilter === false).length,
     unplaced: findings.filter((f) => !f.placed).length,
+    /**
+     * Mappings with no extent. Reported beside `mappings.length` so a panel can
+     * say "6 of 6 could not be placed", which is the honest headline for a
+     * paper like Brodmann 1909 and reads nothing like a panel that merely came
+     * up empty.
+     */
+    unresolvedMappings: mappings.filter((m) => !m.placed).length,
   };
 }
 

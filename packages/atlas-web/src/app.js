@@ -41,6 +41,7 @@ import { fitCamera, flyToCell, pan, rayThrough, rotate, zoom } from './viewer/ca
 import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
 import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flags.js';
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
+import { curatedModel } from './viewer/corpus.js';
 import { comparePapers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
 import { nameIndexFrames, selectAddress } from './viewer/select.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity } from './viewer/state.js';
@@ -85,9 +86,16 @@ async function loadJson(path, what) {
 /** Index paths are absolute (they carry the deploy base); fetch them as given. */
 const relative = (path) => String(path).replace(BASE, '');
 
+/**
+ * Shell-only state: the things that are not part of the view.
+ *
+ * Label visibility used to be here, as `ui.labels`. It is in the viewer now —
+ * it is one of the facets a link restores, so it has to be somewhere the state
+ * machine and the URL can both see. Anything left in here is either a loaded
+ * asset or a transient of the DOM, and nothing in here belongs in a deep link.
+ */
 const ui = {
   notices: [],
-  labels: true,
   renderer: null,
   regionColour: {},
   meshes: {},
@@ -230,18 +238,75 @@ if (nameIndex && nameIndexSource && templates.body && templates.body.id !== name
   ui.notices.push(nameIndexProvenanceNotice(nameIndexSource, templates.body.id));
 }
 
-// --- 3. the research fixture: the highlight seam, not a stage-A criterion ---
+// --- 3. the research corpus, RESOLVED HERE against the real name index ------
+//
 // Validated at load, like every other fetched document: a malformed mapped
 // address must surface here rather than inside a render loop. A failure costs
 // the research panel and nothing else.
+//
+// Two shapes arrive through this one slot, and `role` is the discriminator:
+//
+//   curated   a `research/1` dataset — papers, findings, structure ids, no
+//             geometry. The geometry is decided HERE, by `curatedModel()`,
+//             against the name index joined above and both bound templates.
+//             It cannot be decided in the build: resolving a structure id
+//             means reading the index, the index is an asset payload, and rule
+//             6 holds `dist/data/` to deriving nothing from asset content.
+//   fixture   a pre-resolved document, carrying cells. Still what the viewer's
+//             own suite drives, no longer what the page serves.
+//
+// The templates are passed deliberately and it is worth 3 mappings and 2
+// papers: without a BV template the three `coordinates` mappings resolve
+// `no-template`, and a locus we cannot place is not the same claim as a region.
 try {
-  ui.research = researchModel(
-    await loadJson(relative(index.research?.path ?? 'data/research.json'), 'research'),
-  );
+  const doc = await loadJson(relative(index.research?.path ?? 'data/research.json'), 'research');
+  ui.research = doc?.role === 'curated'
+    ? curatedModel(doc, { names: nameIndex, templates })
+    : researchModel(doc);
 } catch (error) {
   ui.research = null;
   ui.researchError = `The research index could not be loaded (${error.message}). `
     + 'Addresses, names and geometry are unaffected.';
+}
+
+/**
+ * What the page resolved, against what the build said it would.
+ *
+ * This comparison is the only thing that can tell a broken join from an honest
+ * one. 20 of the 30 curated papers have no placed geometry at all, so a paper
+ * list with nothing painted is the CORRECT rendering for two thirds of the
+ * corpus — and is pixel-for-pixel what a join that silently resolved nothing
+ * would produce. Without a number, the two are indistinguishable; with one,
+ * the disagreement is a notice instead of a shrug.
+ *
+ * Reported, not enforced. A mismatch means the declaration is stale or the join
+ * changed, and neither is a reason to withhold the research panel from a reader
+ * — but it is a reason not to let a §7 row report pass on it.
+ */
+if (ui.research?.role === 'curated') {
+  const declared = index.research?.expectedResolution ?? null;
+  const measured = ui.research.resolution;
+  if (declared && declared.againstNameIndexVersion !== ui.research.nameIndexVersion) {
+    ui.notices.push({
+      code: 'research-index-mismatch',
+      severity: 'warning',
+      title: 'The research counts were measured against a different index',
+      detail: `This build declares its expected resolution against `
+        + `${declared.againstNameIndexVersion}, but the index actually loaded is `
+        + `${ui.research.nameIndexVersion}. The mappings below are resolved against the loaded `
+        + 'index; the declared counts describe a different one and should not be compared.',
+    });
+  } else if (declared && declared.resolvedMappings !== measured.mappings.resolved) {
+    ui.notices.push({
+      code: 'research-resolution-drift',
+      severity: 'warning',
+      title: 'Fewer mappings resolved than this build expected',
+      detail: `The build declares ${declared.resolvedMappings} of ${measured.mappings.total} `
+        + `mappings resolvable against this index; ${measured.mappings.resolved} actually did. `
+        + 'Papers with no geometry are expected here — most of this corpus has none — so this is '
+        + 'reported as a count rather than inferred from an empty panel.',
+    });
+  }
 }
 
 viewer = createViewer({ templates, nameIndex });
@@ -372,26 +437,36 @@ function renderAddressPanel() {
 
   const facts = el('dl', { className: 'facts' });
   facts.dataset.testid = 'cell-extent';
-  const extent = selection.extentMm ?? [NaN, NaN, NaN];
+  /**
+   * An address that lives in the other atlas has no millimetres HERE.
+   *
+   * The viewer withholds them, so these read from `elsewhereCell` and say
+   * whose answer they are. "not placed in this template" would be the wrong
+   * sentence twice over: a template did place this cell, and the reason the
+   * numbers are not this view's is not the reason that sentence reports.
+   */
+  const away = selection.elsewhere ? ` in the ${selection.elsewhere} atlas` : '';
+  const placed = selection.elsewhereCell ?? selection;
+  const extent = placed.extentMm ?? [NaN, NaN, NaN];
   facts.append(el('dt', { textContent: 'Cell extent' }));
   facts.append(el('dd', {
-    textContent: selection.extentMm && Number.isFinite(extent[0])
-      ? `${fmt(extent[0], 2)} × ${fmt(extent[1], 2)} × ${fmt(extent[2], 2)} mm`
+    textContent: placed.extentMm && Number.isFinite(extent[0])
+      ? `${fmt(extent[0], 2)} × ${fmt(extent[1], 2)} × ${fmt(extent[2], 2)} mm${away}`
       : 'not placed in this template',
   }));
   // The millimetre centre, always. On a named frame it is corroboration; on an
   // unnamed one it is the whole answer, so it is not conditional on names.
-  const centre = selection.pointMm ?? [NaN, NaN, NaN];
+  const centre = placed.pointMm ?? [NaN, NaN, NaN];
   facts.append(el('dt', { textContent: 'Cell centre' }));
   const centreDd = el('dd', {
     textContent: Number.isFinite(centre[0])
-      ? `${fmt(centre[0], 1)}, ${fmt(centre[1], 1)}, ${fmt(centre[2], 1)} mm`
+      ? `${fmt(centre[0], 1)}, ${fmt(centre[1], 1)}, ${fmt(centre[2], 1)} mm${away}`
       : 'not placed in this template',
   });
   centreDd.dataset.testid = 'cell-centre';
   facts.append(centreDd);
   facts.append(el('dt', { textContent: 'Template' }));
-  facts.append(el('dd', { textContent: selection.templateId ?? 'none bound' }));
+  facts.append(el('dd', { textContent: placed.templateId ?? 'none bound' }));
   panel.append(facts);
 
   if (selection.elsewhere) {
@@ -511,16 +586,34 @@ function renderNames(selection) {
  */
 function renderResearch() {
   const scope = $('research-scope');
+  const provenance = $('research-provenance');
   const list = $('research-list');
   const reveal = $('research-reveal');
   list.replaceChildren();
   reveal.replaceChildren();
 
   if (!ui.research) {
+    provenance.textContent = '';
+    provenance.dataset.role = 'none';
     scope.textContent = ui.researchError
       ?? 'No research index is loaded, so no papers can be shown.';
     return;
   }
+
+  // The corpus, named. Written before the counts for the same reason the name
+  // index version is written beside a name list rather than under it: the
+  // reader needs to know what they are reading before they read it, and a
+  // fixture paper is indistinguishable from a real one row by row.
+  //
+  // `dataset.role` carries the machine-readable half, so the §7 harness can
+  // assert which corpus a row measured instead of inferring it from a paper
+  // id — the false green DOG-68 exists to close.
+  provenance.dataset.role = ui.research.role;
+  provenance.dataset.version = ui.research.version;
+  provenance.textContent = ui.research.role === 'fixture'
+    ? `${ui.research.version} — ${ui.research.caveat}`
+    : `${ui.research.version} — curated corpus. Every mapping carries its own provenance; `
+      + 'open a paper to read it.';
 
   const selection = viewer.state.selection;
   const filter = selection?.ok ? selection.displayAddress : null;
@@ -565,30 +658,25 @@ function renderResearch() {
   // know up front that it is the paper's whole set and not a filtered view.
   const summary = el('p', { className: 'reveal-summary' });
   summary.dataset.testid = 'reveal-summary';
-  summary.textContent = `All ${revealed.cells.length} mapped region(s) of this paper are listed, `
-    + `including ${revealed.outsideFilter} outside the current selection`
-    + `${revealed.atlases.length > 1 ? ' and mappings in both atlases' : ''}. `
-    + 'A filter narrows the list of papers, never a paper’s own mappings.';
+  summary.textContent = revealed.mappings.length > 0
+    // Curated: the mapping count is the paper's claim, and the placed count is
+    // what this index could locate. Said as two numbers, because collapsing
+    // them would present a paper as having mapped only what we can draw.
+    ? `All ${revealed.mappings.length} mapping(s) of this paper are listed; `
+      + `${revealed.mappings.length - revealed.unresolvedMappings} could be placed against this `
+      + `name index and ${revealed.unresolvedMappings} could not, each saying why. `
+      + `${revealed.outsideFilter} of the placed region(s) are outside the current selection`
+      + `${revealed.atlases.length > 1 ? ', and this paper maps in both atlases' : ''}. `
+      + 'A filter narrows the list of papers, never a paper’s own mappings.'
+    : `All ${revealed.cells.length} mapped region(s) of this paper are listed, `
+      + `including ${revealed.outsideFilter} outside the current selection`
+      + `${revealed.atlases.length > 1 ? ' and mappings in both atlases' : ''}. `
+      + 'A filter narrows the list of papers, never a paper’s own mappings.';
   reveal.append(summary);
 
-  const findings = el('ul', { className: 'findings' });
-  for (const finding of revealed.findings) {
-    const item = el('li');
-    item.dataset.finding = finding.id;
-    item.append(el('span', { className: 'finding-label', textContent: finding.label }));
-
-    if (!finding.placed) {
-      // An unplaceable report is shown as one. Dropping it would let the atlas
-      // imply the literature is more spatially precise than it is.
-      const why = el('p', { className: 'region-only', textContent: finding.regionOnly });
-      why.dataset.testid = 'region-only';
-      item.append(why);
-      findings.append(item);
-      continue;
-    }
-
+  const cellList = (cellsOf) => {
     const cells = el('ul', { className: 'cells' });
-    for (const cell of finding.cells) {
+    for (const cell of cellsOf) {
       const cellRow = el('li');
       cellRow.dataset.cell = cell.address;
       if (cell.withinFilter === false) cellRow.dataset.outsideFilter = 'true';
@@ -609,7 +697,87 @@ function renderResearch() {
       }
       cells.append(cellRow);
     }
-    item.append(cells);
+    return cells;
+  };
+
+  /**
+   * One curated mapping: what it claims, and either where it is or why not.
+   *
+   * An unresolved mapping is a row like any other. It is listed, it is
+   * described, and it has no cell list — nothing is placed that the index did
+   * not place, so there is nothing here to click and nothing to paint. The
+   * reason comes from the dataset's own partition and never says "unknown
+   * structure"; `viewer/corpus.js` has the argument.
+   */
+  const mappingRow = (mapping) => {
+    const row = el('li', { className: mapping.placed ? 'mapping' : 'mapping unresolved' });
+    row.dataset.mapping = mapping.id;
+    row.dataset.structure = mapping.structureId;
+    row.dataset.placed = String(mapping.placed);
+
+    row.append(el('span', { className: 'structure-label', textContent: mapping.structureLabel }));
+    row.append(el('span', { className: 'muted', textContent: ` ${mapping.structureId}` }));
+    if (!mapping.labelFromIndex) {
+      // A curated label rendered identically to an index name is a quiet
+      // upgrade of one to the other. Five of the placed mappings are in this
+      // state: real extent, a name no cleared index carries.
+      const curated = el('span', {
+        className: 'muted',
+        textContent: ' — name from the curator, not from the index',
+      });
+      curated.dataset.testid = 'label-not-from-index';
+      row.append(curated);
+    }
+
+    if (mapping.placed) {
+      row.append(cellList(mapping.cells));
+      return row;
+    }
+
+    row.dataset.unresolvedReason = mapping.unresolved.reason;
+    if (mapping.unresolved.partitionId) row.dataset.partition = mapping.unresolved.partitionId;
+    const why = el('p', { className: 'region-only', textContent: mapping.unresolved.headline });
+    why.dataset.testid = 'mapping-unresolved';
+    row.append(why);
+    if (mapping.unresolved.detail) {
+      // The partition's recorded reason, verbatim and in full. In a `details`
+      // because it is a paragraph — the licence position is a paragraph — but
+      // present on the page rather than linked away to a document.
+      const more = el('details');
+      more.append(el('summary', { textContent: 'Why this cannot be placed in v1' }));
+      more.append(el('p', { className: 'muted', textContent: mapping.unresolved.detail }));
+      row.append(more);
+    }
+    return row;
+  };
+
+  const findings = el('ul', { className: 'findings' });
+  for (const finding of revealed.findings) {
+    const item = el('li');
+    item.dataset.finding = finding.id;
+    item.append(el('span', { className: 'finding-label', textContent: finding.label }));
+
+    // A curated finding is rendered at its mapping level, so a paper with no
+    // geometry at all still shows every structure it claimed.
+    if (finding.mappings) {
+      const mappings = el('ul', { className: 'mappings' });
+      for (const mapping of finding.mappings) mappings.append(mappingRow(mapping));
+      item.append(mappings);
+      findings.append(item);
+      continue;
+    }
+
+    if (!finding.placed) {
+      // An unplaceable report is shown as one. Dropping it would let the atlas
+      // imply the literature is more spatially precise than it is.
+      const why = el('p', { className: 'region-only', textContent: finding.regionOnly });
+      why.dataset.testid = 'region-only';
+      item.append(why);
+      findings.append(item);
+      continue;
+    }
+
+    item.append(cellList(finding.cells));
     findings.append(item);
   }
   reveal.append(findings);
@@ -783,7 +951,10 @@ function renderChrome() {
     $('precision-note').textContent = 'No template is bound, so no precision is justified.';
   }
   $('precision-value').textContent = precision.value;
-  $('labels-toggle').checked = ui.labels;
+  // Read off the viewer, not off the checkbox's own last value: arriving by
+  // deep link, or returning from the brain atlas, can both change this without
+  // anyone having clicked it.
+  $('labels-toggle').checked = viewer.labelsOf();
 
   // Structure search spans every indexed frame, which on the brain atlas means
   // it finds body structures and nothing local. Said plainly, because a search
@@ -888,16 +1059,27 @@ function showCanvasMessage(text, code) {
  * Labels as a DOM overlay rather than in GL.
  *
  * Text in a WebGL scene means a glyph atlas and a pile of code; text in the DOM
- * is selectable, visible to a screen reader and styleable for free. The cost is
- * that labels are not occluded by geometry — which for level markers along a
- * spine is what you want anyway, since the point of the label is to find the
- * level you cannot currently see.
+ * is selectable and styleable for free. The cost is that labels are not
+ * occluded by geometry — which for level markers along a spine is what you want
+ * anyway, since the point of the label is to find the level you cannot
+ * currently see.
+ *
+ * The overlay stays `aria-hidden`, and that is not an oversight to fix later. A
+ * label here carries its meaning in where it sits on a canvas nobody reading by
+ * screen reader can see; flattened into the accessibility tree it is 29
+ * context-free level codes between the canvas and the address panel. The
+ * non-visual route to the same information is the address panel's ranked names
+ * and the structure search, which are real DOM with real text.
+ *
+ * Visibility is `viewer.labelsOf()`, per atlas and in the URL — see the header
+ * of `viewer/state.js` for why it is not a field on `ui`.
  */
 function renderLabels() {
   const box = $('labels');
   box.replaceChildren();
-  box.hidden = !ui.labels;
-  if (!ui.labels || !ui.renderer) return;
+  const showing = viewer.labelsOf();
+  box.hidden = !showing;
+  if (!showing || !ui.renderer) return;
 
   const canvas = $('canvas');
   const width = Math.max(1, canvas.clientWidth);
@@ -954,6 +1136,12 @@ function select(input, { fly = false, push = true } = {}) {
     uploadSelectedCell();
     // The filter moved, so the faint/bright split on the highlights moved.
     uploadHighlights();
+    // There is deliberately no `elsewhere` branch here: an address living in
+    // the other atlas comes back from the viewer with no `cell`, so there is
+    // nothing to upload and nothing to fly to. Keeping the rule in the viewer
+    // instead of copying it into the shell is the point — a second copy is how
+    // this panel came to say "the view has not been changed" while the camera
+    // was already at the other atlas's coordinates (DOG-75).
     if (fly && model.cell) {
       viewer.setCamera(flyToCell(viewer.cameraOf(), meshBounds(model.cell)));
     }
@@ -1093,8 +1281,11 @@ function wireControls() {
     commit({ push: true });
   });
   $('labels-toggle').addEventListener('change', (event) => {
-    ui.labels = event.target.checked;
-    renderLabels();
+    viewer.setLabels(event.target.checked);
+    // Through the one funnel, so the URL gains or loses `labels=0` with the
+    // toggle. Pushed rather than replaced: it is a deliberate change to the
+    // view, so Back should undo it, the same as hiding a layer.
+    commit({ push: true });
   });
   $('precision').addEventListener('input', () => {
     $('precision-value').textContent = $('precision').value;
@@ -1193,6 +1384,21 @@ window.__atlas = {
     if (ui.bounds[viewer.atlas]) viewer.setCamera(fitCamera(ui.bounds[viewer.atlas]));
     commit({ push: false });
   },
+  /**
+   * Labels, through the same path the checkbox takes.
+   *
+   * Deliberately not `viewer.setLabels` straight: a hook that skipped `commit`
+   * would report the new state while the overlay and the URL still showed the
+   * old one, and a QA pass on that proves nothing about the page.
+   */
+  setLabels: (visible) => {
+    viewer.setLabels(visible);
+    commit({ push: true });
+    return viewer.labelsOf();
+  },
+  labelsVisible: (atlas) => viewer.labelsOf(atlas),
+  /** How many label tags the overlay is actually showing, so "on" is checkable. */
+  labelsDrawn: () => document.getElementById('labels').childElementCount,
   view: () => viewer.toView(),
   href: () => viewHref(viewer.toView(), location.pathname),
   encodeView,
@@ -1208,6 +1414,40 @@ window.__atlas = {
   rendererAvailable: () => Boolean(ui.renderer),
   atlasAvailable: (atlas) => viewer.isAvailable(atlas),
   research: () => ui.research,
+  /**
+   * Which corpus the page is actually serving — one call, no inference.
+   *
+   * DOG-68: a §7 row that drove the page, found a fixture paper and reported
+   * **pass** would be measuring the invented corpus while the Node-side oracle
+   * measured the curated seed set, and nothing in the surface made the two
+   * distinguishable without recognising a paper id. A row can now name its
+   * dataset, and a row that forgot to is visibly a row that did not ask.
+   *
+   * `null` rather than a guess when the document failed to load: "no corpus"
+   * and "the fixture corpus" are different results and must not print alike.
+   *
+   * On a curated corpus the counts alone are not enough to judge a row by.
+   * Twenty of the thirty papers have no placed geometry, so `resolution` —
+   * measured from the join that just ran, not declared — is what tells an
+   * honestly empty panel from a broken one. `nameIndexVersion` is carried for
+   * the same reason it is carried beside every name list: a resolution is only
+   * true relative to the index it came from.
+   */
+  researchCorpus: () => (ui.research
+    ? {
+      version: ui.research.version,
+      role: ui.research.role,
+      caveat: ui.research.caveat,
+      paperCount: ui.research.papers.length,
+      findingCount: ui.research.papers.reduce((n, p) => n + p.findings.length, 0),
+      /** Curated only; `null` on a pre-resolved fixture, which has no join. */
+      nameIndexVersion: ui.research.nameIndexVersion ?? null,
+      resolution: ui.research.resolution ?? null,
+      partitions: ui.research.partitions ?? null,
+    }
+    : null),
+  /** What the build said it was going to serve, for comparison with the above. */
+  researchDeclared: () => index.research ?? null,
   /** Stage B: the research panel, so QA can drive the paper journey. */
   revealPaper: (paperId) => {
     ui.revealed = paperId;
