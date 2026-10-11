@@ -364,6 +364,8 @@ const BRAIN_FULL = join(ASSETS, BRAIN.fullFile);
 const BRAIN_STRUCTURES = join(ASSETS, BRAIN.structuresFile);
 const BRAIN_REGISTRATION = join(ASSETS, 'registration', `mni-to-${BRAIN.id}.json`);
 const BRAIN_QA_SAMPLE = join(REPO_ROOT, 'packages', 'atlas-qa', 'fixtures', 'brain-structure-sample.json');
+const BRAIN_PROVENANCE = join(REPO_ROOT, BRAIN.provenance);
+const BRAIN_ORIGIN_RESULT = join(ASSETS, 'provenance', 'origin-test-bodyparts3d.json');
 
 /** The structure records of a committed brain file, by name, for staging against. */
 function brainStructure(name) {
@@ -1286,7 +1288,7 @@ const CASES = [
     gate: 'mesh assets',
     criterion: 'the mesh gate checks every shippable structure on the committed tree, not none',
     mustPass: true,
-    expect: [/248 of 248 shippable structures in both tiers/, /Published error re-measured for all 248/, /QA sample 40 structures, 1 withheld control/],
+    expect: [/provenance re-derived for all 437 structures; 244 of 244 shippable structures in both tiers/, /Published error re-measured for all 244/, /QA sample 40 structures, 1 withheld control/],
     describe: 'the committed brain mesh files, unchanged',
     // A gate that found no files would also pass. This pins that it found them.
     break: () => () => {},
@@ -1398,7 +1400,7 @@ const CASES = [
     gate: 'licence separation',
     criterion: 'rule 10 checks every structure slot of the committed brain files, not none',
     mustPass: true,
-    expect: [/rule 10: 3 brain file\(s\), 744 structure slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\)/],
     describe: 'the committed brain mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),
@@ -1422,6 +1424,75 @@ const CASES = [
         swapped = true;
         return { ...r, id: held.id };
       }));
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-manifest-record-hand-cleared',
+    gate: 'licence separation',
+    criterion: 'rule 10 fails when a provenance record is hand-edited to cleared and the structure added to a tier',
+    expect: [
+      /has a provenance manifest that does not re-derive/,
+      /Precentral gyrus\.l \(id \d+\): the manifest records group "cleared"/,
+    ],
+    describe: 'the manifest record for the left precentral gyrus edited to `cleared`, and one low-tier slot relabelled as it',
+    // DOG-143 F2: rule 10 took each record's group from the committed JSON as
+    // given, so one edited record plus one relabelled slot was green on both gates.
+    break: () => {
+      const held = heldStructure('Precentral gyrus.l');
+      const manifest = JSON.parse(readFileSync(BRAIN_PROVENANCE, 'utf8'));
+      const rec = manifest.structures.find((x) => x.id === held.id);
+      rec.group = 'cleared';
+      rec.sources = rec.sources.filter((x) => x !== 'zanatomy-undeclared-brain-materials');
+      delete rec.heldBecause;
+      const restoreManifest = substitute(BRAIN_PROVENANCE, `${JSON.stringify(manifest, null, 1)}\n`);
+      let swapped = false;
+      const restoreMesh = rewriteMesh(BRAIN_LOW, (records) => records.map((r) => {
+        if (swapped) return r;
+        swapped = true;
+        return { ...r, id: held.id };
+      }));
+      return () => {
+        restoreMesh();
+        restoreManifest();
+      };
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'mesh-origin-result-clears-a-failure',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when the committed origin result clears a structure its own figures fail',
+    expect: [/provenance: the provenance manifest does not re-derive: the origin result clears \["Corpus callosum","Midbrain\.l","Midbrain\.r"\]/],
+    describe: 'the origin-test result with the corpus callosum added to `clears`, its figures untouched',
+    // DOG-143 F2: applyOriginResult cleared whatever `clears` listed, without
+    // re-judging the row against the pre-registered thresholds.
+    break: () => {
+      const result = JSON.parse(readFileSync(BRAIN_ORIGIN_RESULT, 'utf8'));
+      if (result.result.clears.includes('Corpus callosum')) throw new Error('the corpus callosum already clears; nothing to stage');
+      result.result.clears = [...result.result.clears, 'Corpus callosum'].sort();
+      return substitute(BRAIN_ORIGIN_RESULT, `${JSON.stringify(result, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'licence-one-structure-inlined-as-base64',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when one small structure\'s range of a mesh file is embedded in the bundle',
+    expect: [/contains bytes from asset payload brain\/zanatomy-2929e94\/meshes\.lowres\.bin, base64-encoded \(structure id \d+'s positions\)/],
+    describe: 'a build that inlines only the left subthalamic nucleus\'s low-tier positions into app.js as base64',
+    // DOG-143 F3: eight windows over the whole file land inside 6 of 248
+    // structures, so a single structure copied out went unseen.
+    break: () => {
+      requireBuild();
+      const stn = brainStructure('Subthalamic nucleus.l');
+      const bytes = readFileSync(BRAIN_LOW);
+      const mesh = readMeshBin(bytes);
+      const t = mesh.table.find((x) => x.id === stn.id);
+      const start = mesh.positions.byteOffset + t.firstVertex * 6;
+      const range = bytes.subarray(start, start + t.vertexCount * 6).toString('base64');
+      const app = join(WEB, 'dist', 'app', 'app.js');
+      return substitute(app, `${readFileSync(app, 'utf8')}\nexport const INLINED_STN = '${range}';\n`);
     },
     check: () => run('check-licence-separation.mjs'),
   },
@@ -1466,6 +1537,27 @@ const CASES = [
       const shipped = join(WEB, 'dist', 'assets', BRAIN.structuresFile);
       const doc = JSON.parse(readFileSync(shipped, 'utf8'));
       delete doc.tiers.full.loading;
+      return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+  {
+    name: 'perf-non-brain-asset-declared-lazy',
+    gate: 'performance budget',
+    criterion: 'a lazy declaration pointing outside its own mesh set fails instead of taking the file off every byte line',
+    expect: [/A lazy declaration would take a file off every byte line/, /declares tiers\.x templates\/bp3d-4\.0-adult-body-centroid\.body\.json lazy; a set may only declare files beside its own structures\.json/],
+    describe: 'a built brain structures.json that also declares the body template as a lazy tier',
+    // DOG-143 F4, the opposite direction to the case above: declaring a file
+    // wrongly, rather than forgetting to, removed it from the low-res line and
+    // put it on no other.
+    break: () => {
+      requireBuild();
+      const shipped = join(WEB, 'dist', 'assets', BRAIN.structuresFile);
+      if (!existsSync(join(WEB, 'dist', 'assets', 'templates', 'bp3d-4.0-adult-body-centroid.body.json'))) {
+        throw new Error('the body template is no longer in the build to stage this against');
+      }
+      const doc = JSON.parse(readFileSync(shipped, 'utf8'));
+      doc.tiers.x = { file: 'templates/bp3d-4.0-adult-body-centroid.body.json', loading: 'lazy' };
       return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
@@ -1576,6 +1668,8 @@ const touched = [
   rel(BRAIN_STRUCTURES),
   rel(BRAIN_REGISTRATION),
   rel(BRAIN_QA_SAMPLE),
+  rel(BRAIN_PROVENANCE),
+  rel(BRAIN_ORIGIN_RESULT),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
