@@ -62,7 +62,7 @@ The real brain (W2, DOG-127) and the full-body human (W3, DOG-128) share the
 
 | share | gzip | what it holds | today |
 | --- | ---: | --- | ---: |
-| brain, low tier | 1.00 MiB | `assets/brain/**` that is not declared lazy | 812 KiB |
+| brain, low tier | 1.00 MiB | `assets/brain/**` that is not declared lazy: the low mesh file and its `structures.json` | 810.4 KiB |
 | body, low tier | 1.25 MiB | W3's equivalent; W3 adds its own line | — |
 | v1 templates and labels | 0.25 MiB | everything else under `assets/` | about 0.13 MiB |
 

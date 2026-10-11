@@ -130,9 +130,12 @@ The low tier was mapped through `mniToMesh`, whose held-out error is 8.55 mm:
 2. An attribution entry for the derived surface citing `icbm152-2009c`. Unlike the `BV` template, this one
    redistributes image-derived geometry.
 3. A clearance-group file of its own under §7.3. It must not be cut into the cleared Z-Anatomy file.
-4. A place under the budget. The low-res brain share is 1.00 MiB (1,048,576 B), and the committed low tier is
-   760,620 B gzip, which leaves 287,956 B. This low tier is 275,214 B, leaving 12,742 B. That is before a structures
-   document of its own, so it fits but leaves almost nothing. The 350 KB first suggested for the prototype would
-   overrun the share by about 62 KB, which is why the build targets 280,000 B. Separately, the full tier is
-   8,579,546 B gzip, against 4,972,008 B for the whole committed full tier. It is lazy-loaded, but it would be a
-   budget decision of its own.
+4. A place under the budget. **It does not fit as prototyped.** The low-res brain share is 1.00 MiB
+   (1,048,576 B). `lowResBrainAssetGzipBytes` counts everything under `assets/brain/` that is not lazy, so the
+   committed low tier *and* its `structures.json`. Since the origin test added the corpus callosum and midbrain,
+   that reads 829,850 B, which leaves 218,726 B. This low tier is 275,214 B, so it would overrun by about 56 KB,
+   before a structures document of its own. Shipping it needs a smaller cortex tier (the recommendation), a lower
+   ratio for the rest, or a re-split of the 2.5 MiB line with W3. (The prototype was sized at 280,000 B against
+   an earlier reading that counted the mesh file alone; that reading was wrong.) Separately, the full tier is
+   8,579,546 B gzip, against 5,320,761 B for the whole committed full tier and the 5,505,024 B line. It is
+   lazy-loaded, but it would be a budget decision of its own.
