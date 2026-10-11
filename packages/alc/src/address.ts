@@ -159,23 +159,44 @@ export function format(input: string, options: { check?: boolean } = {}): string
 }
 
 /**
+ * The parent's address string, for an address already parsed, without parsing
+ * the result.
+ *
+ * `parent()` is the public form and returns a parsed `Address`. This exists
+ * because `normalizeCovering` groups cells by their parent and then needs the
+ * parent itself for only a few of those groups, so parsing every parent to
+ * build the grouping key was most of a pass's cost. `parent()` is defined in
+ * terms of this, so the string this builds and the address `parent()` returns
+ * cannot drift apart.
+ *
+ * Grouping by this is sound whether or not the string is canonical, because
+ * `parse()` of it is single-valued: distinct parents cannot collide on one key.
+ * `covering.test.ts` asserts it IS canonical, which is the stronger claim, so
+ * that a frame whose parent form stops round-tripping is caught here.
+ */
+export function parentKey(a: Address): string | null {
+  if (a.frame === 'BR') {
+    const p = brParentDigits(a.digits);
+    return p === null ? null : `BR-${a.anchors[0]}-${p}`;
+  }
+  if (a.digits.length > 0) {
+    const d = a.digits.slice(0, -1);
+    const stem = `${a.frame}-${a.anchors.join('-')}`;
+    return d ? `${stem}-${d}` : stem;
+  }
+  if (a.frame === 'BD' && a.anchors.length === 2) return `BD-${a.anchors[0]}`;
+  return null;
+}
+
+/**
  * The next coarser address, or null at the frame root.
  *
  * This is the property the whole scheme is built on: dropping refinement always
  * yields a valid address whose cell strictly contains the original.
  */
 export function parent(input: string): Address | null {
-  const a = parse(input);
-  if (a.frame === 'BR') {
-    const p = brParentDigits(a.digits);
-    return p === null ? null : parse(`BR-${a.anchors[0]}-${p}`);
-  }
-  if (a.digits.length > 0) {
-    const d = a.digits.slice(0, -1);
-    return parse(d ? `${a.frame}-${a.anchors.join('-')}-${d}` : `${a.frame}-${a.anchors.join('-')}`);
-  }
-  if (a.frame === 'BD' && a.anchors.length === 2) return parse(`BD-${a.anchors[0]}`);
-  return null;
+  const key = parentKey(parse(input));
+  return key === null ? null : parse(key);
 }
 
 /** Every ancestor from the frame root down to, but excluding, this address. */
@@ -224,47 +245,153 @@ export function contains(outer: string, inner: string): boolean {
 }
 
 /**
+ * How many children a cell at this frame and rung has, memoised per frame and
+ * rung.
+ *
+ * Derived from `children()` rather than tabulated, so it cannot drift from the
+ * hierarchy it is supposed to describe — `BD` branches 24 ways at the azimuth
+ * rung and 8 ways per octree digit, `BV` 8, `BR` 16, and this reads those
+ * numbers off the real implementation. `test/covering.test.ts` asserts the
+ * agreement for every frame and rung.
+ *
+ * Memoised because the only thing any caller wants is the COUNT, and
+ * `children()` builds and PARSES every child to produce it. The rollup below
+ * asked for it once per distinct parent per pass, which is 24 parses per parent
+ * per pass to learn a number that depends on nothing but the frame and the rung.
+ */
+const BRANCHING = new Map<string, number>();
+
+/**
+ * A lower bound on how many children any cell with children has, in any frame.
+ *
+ * `normalizeCovering`'s rollup uses it to decide which sibling groups are even
+ * worth parsing a parent for: a group of fewer than this can never be complete.
+ * Derived from the frame descriptors rather than written down as 8, so adding a
+ * frame cannot leave a stale constant behind — and `covering.test.ts` asserts it
+ * against `children()` for every frame and rung, because the bound being WRONG
+ * would not fail loudly. It would silently stop rolling up one frame's sibling
+ * groups, which is a quietly larger covering rather than an error.
+ *
+ * `BD`'s azimuth rung branches 24 ways and `BR` 16, both comfortably above the
+ * octree alphabets this minimises over; the test is what keeps that true.
+ */
+export const MIN_BRANCHING: number = Math.min(
+  ...Object.values(FRAMES).map((f) => f.digitAlphabet.length),
+);
+
+export function branchingBelow(p: Address): number {
+  const key = `${p.frame}:${p.level}`;
+  const hit = BRANCHING.get(key);
+  if (hit !== undefined) return hit;
+  const n = children(p.canonical).length;
+  BRANCHING.set(key, n);
+  return n;
+}
+
+/**
+ * Every address `contains()` would report as containing `a`, `a` itself
+ * included, as canonical strings.
+ *
+ * This is the whole reason the prune below is linear. `contains(outer, inner)`
+ * is true exactly when the two share a frame, `outer`'s anchor segments match
+ * `inner`'s elementwise, and `outer`'s digits are a string prefix of `inner`'s.
+ * Nothing in that depends on the rest of the set, so the containing addresses
+ * are enumerable from `a` alone: truncate the anchor list, or truncate the
+ * digits. There are `anchors + digits + 1` of them — at most fourteen in any
+ * frame v1 defines — where asking the set directly costs one `contains()` per
+ * member, and `contains()` parses both of its arguments.
+ *
+ * Enumerated from `contains()`'s predicate and not from `parent()`, so the two
+ * cannot drift: whatever `parent()` does per frame — and `BR` does not simply
+ * drop a digit — this enumerates what `contains()` answers. `covering.test.ts`
+ * asserts the agreement against `contains()` itself.
+ *
+ * The strings are never parsed, so an enumerated form that is not a legal
+ * address standing alone — `BR-L`, which the parser requires digits for — is
+ * harmless. It cannot be a member of a set of parsed addresses, so the lookup
+ * simply misses.
+ */
+export function containingKeys(a: Address): string[] {
+  const out: string[] = [];
+  for (let k = 1; k < a.anchors.length; k += 1) {
+    out.push(`${a.frame}-${a.anchors.slice(0, k).join('-')}`);
+  }
+  const full = `${a.frame}-${a.anchors.join('-')}`;
+  out.push(full);
+  for (let d = 1; d <= a.digits.length; d += 1) out.push(`${full}-${a.digits.slice(0, d)}`);
+  return out;
+}
+
+/**
  * Reduce a set of addresses to the smallest equivalent set: drop any address
  * contained in another, and roll a complete sibling group up to its parent.
  * This is what makes a named structure's covering small enough to ship.
+ *
+ * Linear in the number of cells, times the fixed depth of a frame. It was
+ * quadratic until DOG-80: the prune asked `kept.some(contains)` per cell, so
+ * normalising the 412-cell covering of FMA7574 made 84,666 `contains()` calls
+ * and 169,332 `parse()` calls, and the page paid ~2.6 s building the 57
+ * structures of the real name index on the critical path at load. The cells are
+ * a hierarchy, so containment never needed a search: see `containingKeys`.
  */
 export function normalizeCovering(inputs: readonly string[]): string[] {
-  let current = [...new Set(inputs.map((s) => parse(s).canonical))];
+  // Parse each distinct input once and carry the `Address` through every pass.
+  // Re-parsing a canonical string this function had just produced was the rest
+  // of its cost once the prune stopped being quadratic: three passes each
+  // re-derived from strings what the pass before it already knew.
+  const distinct = new Map<string, Address>();
+  for (const s of inputs) {
+    const a = parse(s);
+    if (!distinct.has(a.canonical)) distinct.set(a.canonical, a);
+  }
+  let current = [...distinct.values()];
 
   for (;;) {
-    // Roll up complete sibling groups.
-    const byParent = new Map<string, Set<string>>();
-    for (const c of current) {
-      const p = parent(c);
-      if (!p) continue;
-      const key = p.canonical;
-      if (!byParent.has(key)) byParent.set(key, new Set());
-      byParent.get(key)!.add(c);
+    // Roll up complete sibling groups. Grouped by `parentKey`, which builds the
+    // key without parsing it; a group can only be complete if it holds at least
+    // `MIN_BRANCHING` cells, so a parent is parsed only for a group that could
+    // possibly be complete. Nothing the asset pipeline ships rolls up at all,
+    // and on that input this pass now parses nothing.
+    const byParent = new Map<string, Address[]>();
+    for (const a of current) {
+      const key = parentKey(a);
+      if (key === null) continue;
+      const group = byParent.get(key);
+      if (group) group.push(a);
+      else byParent.set(key, [a]);
     }
     let rolled = false;
-    const promoted = new Set<string>();
-    for (const [parentKey, group] of byParent) {
-      const expected = children(parentKey).length;
-      if (expected > 0 && group.size === expected) {
-        promoted.add(parentKey);
-        for (const g of group) promoted.add(`!${g}`);
-        rolled = true;
-      }
+    const removed = new Set<string>();
+    const added: Address[] = [];
+    for (const [key, group] of byParent) {
+      if (group.length < MIN_BRANCHING) continue;
+      const p = parse(key);
+      const expected = branchingBelow(p);
+      if (expected <= 0 || group.length !== expected) continue;
+      added.push(p);
+      for (const g of group) removed.add(g.canonical);
+      rolled = true;
     }
     if (rolled) {
-      const removed = new Set([...promoted].filter((x) => x.startsWith('!')).map((x) => x.slice(1)));
-      const added = [...promoted].filter((x) => !x.startsWith('!'));
-      current = [...new Set([...current.filter((c) => !removed.has(c)), ...added])];
+      const next = new Map<string, Address>();
+      for (const a of current) if (!removed.has(a.canonical)) next.set(a.canonical, a);
+      for (const a of added) next.set(a.canonical, a);
+      current = [...next.values()];
       continue;
     }
 
-    // Drop anything already covered by a coarser member.
-    const sorted = [...current].sort((x, y) => parse(x).level - parse(y).level);
-    const kept: string[] = [];
-    for (const c of sorted) {
-      if (!kept.some((k) => contains(k, c))) kept.push(c);
+    // Drop anything already covered by a coarser member. Coarsest first, so a
+    // cell is dropped exactly when a coarser cell that survived contains it —
+    // and `kept` holds canonical strings, so "does anything coarser contain
+    // this" is a handful of set lookups rather than a scan.
+    current.sort((x, y) => x.level - y.level);
+    const kept = new Set<string>();
+    for (const a of current) {
+      // `containingKeys` includes `a` itself, which cannot be in `kept` yet.
+      if (containingKeys(a).some((k) => kept.has(k))) continue;
+      kept.add(a.canonical);
     }
-    return kept.sort();
+    return [...kept].sort();
   }
 }
 

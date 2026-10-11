@@ -43,8 +43,13 @@
     },
     "indexParseMsNormalised": {
       "limit": 40,
-      "covers": "JSON.parse of data/*.json plus building the lookup maps, normalised to the reference machine",
-      "why": "Main-thread work before the page can respond. 40 ms keeps it inside one frame budget's worth of slack on a 60 Hz display even after layout."
+      "covers": "JSON.parse of data/*.json plus building the lookup maps, AND the name index app.js builds in step 1 — assets/labels/names.json joined with coverings.json through joinNameIndex() and buildNameIndex(), which calls covering() once per structure. Normalised to the reference machine.",
+      "why": "Main-thread work before the page can respond. 40 ms keeps it inside one frame budget's worth of slack on a 60 Hz display even after layout.",
+      "unverified": {
+        "sinceIssue": "DOG-80",
+        "reason": "The 40 ms was set for data/*.json alone. Until DOG-80 this gate partitioned the build by DIRECTORY, so the name index — served out of assets/ for licence reasons, but awaited on the critical path before the page can answer a click — fell into the asset lines, and covering() was measured by no line at all: the asset parse term only walks `positions` and `indices`. The row reported 0.9 ms raw, 4% utilisation, for a row whose stated subject is building the lookup maps. The gate now measures the real thing, and the real thing does not fit. The 57-structure, 3478-cell index costs between about 55 ms and 85 ms on the reference machine depending on how warm the measurement is — this gate's own best-of-three reads at the top of that range, a hand-held best-of-five after warming reads at the bottom — and the row is over 40 ms either way, which is why the conclusion does not depend on pinning the number down. About 24 ms of it is the irreducible cost of parsing and validating 3478 address strings, so no further work inside covering() reaches 40 ms either. The measurement is sound and the limit is the open question, which is a product decision about first-interaction work rather than something this gate can settle. Reporting `within` would be the false green DOG-80 was filed about; reporting `over` would assert that 40 ms is still the right number for a row that now covers more than it was written for.",
+        "clearedBy": "An owner decision on one of: (a) keep 40 ms and take the name index off the critical path — build it in a worker or after first interaction — at which point it leaves this row; (b) keep 40 ms and have the asset pipeline emit a form the page does not validate address-by-address, which is the only remaining route under the 24 ms parse floor; (c) restate the limit for what the row now covers, with the 60 Hz frame-slack rationale redone against first interaction rather than against one frame. Whichever it is, delete this block in the same change and the line gates again in both directions."
+      }
     },
     "lowResAssetParseMsNormalised": {
       "limit": 400,

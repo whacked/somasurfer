@@ -41,15 +41,36 @@ library added to the page shell.
 | line | budget | covers |
 | --- | --- | --- |
 | `bundleGzipBytes` | 150 KiB | `index.html` + `app/*.js` + `app/*.css`, gzipped |
-| `indexGzipBytes` | 256 KiB | `data/*.json`, gzipped |
-| `lowResAssetGzipBytes` | 2.5 MiB | `dist/assets/**`, gzipped, less LICENSE and ATTRIBUTION.md |
-| `indexParseMsNormalised` | 40 ms | parse the indexes and build the lookup maps |
+| `indexGzipBytes` | 256 KiB | `data/*.json` **plus the name index**, gzipped |
+| `lowResAssetGzipBytes` | 2.5 MiB | `dist/assets/**`, gzipped, less LICENSE, ATTRIBUTION.md and the name index |
+| `indexParseMsNormalised` | 40 ms | parse the indexes and build the lookup maps, **including the name index** — `UNVERIFIED`, see below |
 | `lowResAssetParseMsNormalised` | 400 ms | parse the low-resolution asset payloads |
 
 2.5 MiB at 25 Mbit/s is about 0.84 s of transfer, which fits the 2.5 s budget
 with room for parse. It is also roughly where a 20k-triangle body shell plus
 label sets lands, so it constrains the asset pipeline without being
 unachievable.
+
+### The name index is an index, not an asset (DOG-80)
+
+`assets/labels/names.json` and `assets/labels/coverings.json` are served out of
+the assets tree for licence and attribution reasons, but `app.js` awaits them in
+step 1, before templates and before the page can answer a click. They are an
+index on the critical path that happens to live in the assets directory.
+
+This gate used to partition the build by **directory**, so both files fell into
+the asset lines. That mattered more than a misfiled byte count: the asset parse
+term only walks `positions` and `indices`, so `covering()` — which
+`buildNameIndex` calls once per structure — was measured by no line at all.
+`indexParseMsNormalised` reported 0.9 ms raw and 4% utilisation for a row whose
+stated subject is building the lookup maps, while the real build took seconds.
+That is the defect DOG-80 was filed about, and the quadratic `covering()`
+underneath it was invisible for the same reason.
+
+The gate now classifies by **role**: the name index counts as index on the byte
+line and on the parse line both, so the critical path is costed once and
+consistently. `indexGzipBytes` was written for this — "256 KiB holds the full
+ALC-1 level and frame tables with room for a label index per frame".
 
 ## How the two felt numbers are derived
 
@@ -123,6 +144,62 @@ did not move the ratio. It would also invalidate `referenceMs`, which is stated
 for the workload as it is and cannot be re-measured without the reference
 machine. The 4.8× reading is mostly real hardware difference, not timer noise.
 
+## When the measurement is sound and the limit is not
+
+`not evaluated` above is for a line the runner cannot measure. There is a second
+and quite different situation: the gate measures the line perfectly well, and
+the number beside it was written for something narrower than what the line now
+covers. Gating either way would be inventing an answer.
+
+A line in that state carries an `unverified` block in
+`ci/performance-budget.json` and is reported `UNVERIFIED`: its measurement and
+utilisation are printed on every run, and it gates in neither direction.
+
+Today exactly one line is in that state, `indexParseMsNormalised`, for the
+reason in the section above. Its 40 ms was set for `data/*.json` alone; the row
+now also costs the name index, which is 55–85 ms on the reference machine
+depending on how warm the measurement is. About 24 ms of that is the
+irreducible cost of parsing and validating 3478 address strings, so no further
+work inside `covering()` brings the row under 40 ms either. What to do about it
+is a product decision — see `clearedBy` in the budget file for the three
+options — and not something this gate can settle.
+
+**This is not a suppression, and three cases in `tools/verify-gates.mjs` are
+what make that true rather than merely claimed:**
+
+- `perf-unverified-declaration-is-load-bearing` deletes the declaration, drops
+  the limit to 1 ms, and requires the line to go **red** — so with the
+  declaration gone the line demonstrably gates again. A declaration sitting over
+  a line that would have passed anyway is the dangerous case: it reads as "we
+  know this is over and chose not to gate it" when the truth is "nothing was
+  wrong and the line stopped being checked".
+
+  The limit is dropped on purpose. Requiring red at the real 40 ms made the
+  case's colour depend on whether the runner's raw index parse happened to land
+  above 40 ms, which wandered between 38 ms and 66 ms on one machine and made
+  the case pass and fail alternately. A must-pass case whose red is a coin flip
+  is worse than no case, so the deterministic structural claim is asserted here
+  and the measurement is asserted separately below.
+- `perf-unverified-line-is-over-its-real-limit` breaks **nothing** and asserts
+  against the tree as committed: the line reports `UNVERIFIED`, and it really is
+  over the 40 ms it is declared against. The numeric half is **one-sided** — it
+  requires over-budget whenever the run produced a normalised figure, and claims
+  nothing when the runner is off-band and the figure is only a bound, or when
+  the build declares no name index at all. This is the check that goes red the
+  day somebody takes the name index off the critical path and forgets to delete
+  the declaration with it.
+
+  It is a separate case rather than the previous one's `audit` for a reason worth
+  knowing if you extend this file: **`audit` runs while that case's breakage is
+  still staged**, so an audit there inspects a budget file with the declaration
+  already deleted. The first draft asserted the verdict it had just removed.
+- `perf-unverified-needs-a-stated-reason` empties the `reason` and requires the
+  gate to **fail naming the line**. Without it, `"unverified": {}` would be a
+  one-line way to turn any budget line off with no sentence attached.
+
+So an `unverified` line is louder than it was when it was green, not quieter,
+and it cannot be added without saying why and how it ends.
+
 ### What `--json` promises
 
 The console output is for a human reading a failed build. `perf-measurement.json`
@@ -186,6 +263,16 @@ node tools/perf-budget.mjs --json perf-measurement.json
 | `lowResAssetParseMsNormalised` | 5–29 ms | 400 ms | 1–7% |
 | `derivedLowResAssetLoadMs` | **158–183 ms** | 2500 ms | 6–7% |
 | `derivedFirstInteractionMs` | **682 ms** | 3500 ms | 19% |
+
+> **Stale as of DOG-80, deliberately not re-measured here.** The
+> `indexParseMsNormalised` row above is the 0.2 ms this gate reported when the
+> name index was not in that line — it is a measurement of a different line than
+> the one that key names today, which is the whole point of DOG-80. The byte
+> rows are from a base with no viewer in the bundle and read 3% where an
+> integrated build reads 74%, so re-measuring one row of this table against a
+> different base would make the table less comparable, not more. Re-measure it
+> whole, on one base, and date it; until then read the live gate output, which
+> prints the name index's structure and cell count on every run.
 
 Byte lines are exact and reproduce identically on every run. Parse lines are
 given as the range over three consecutive runs on a contended machine, where

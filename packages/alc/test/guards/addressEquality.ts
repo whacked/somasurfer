@@ -196,6 +196,28 @@ export const REVIEWED: ReadonlyArray<{ file: string; code: string; reason: strin
       + 'so both addresses are in one frame, and the result is a dimensionless frame measure rather than '
       + 'millimetres in anybody\'s body.',
   },
+  {
+    file: 'src/address.ts',
+    code: 'if (!distinct.has(a.canonical)) distinct.set(a.canonical, a);',
+    reason:
+      'normalizeCovering(): de-duplicating ONE covering\'s own input list, keyed by the canonical string '
+      + 'parse() produced one expression earlier in the same loop. The question it answers is "is this '
+      + 'literally the same string twice in this one array", which is set bookkeeping; there is no second '
+      + 'subject in scope for either operand to have come from. Worth noting for the next reader that the '
+      + 'pre-DOG-80 code made exactly this comparison as `new Set(inputs.map((s) => parse(s).canonical))`, '
+      + 'where the membership test sat inside Set() and so out of the scanner\'s scope. The comparison did '
+      + 'not become less safe when it became visible.',
+  },
+  {
+    file: 'src/address.ts',
+    code: 'for (const a of current) if (!removed.has(a.canonical)) next.set(a.canonical, a);',
+    reason:
+      'normalizeCovering(): dropping the cells a complete sibling group just rolled up into their parent, '
+      + 'from the same list the rollup read them out of. `removed` holds canonical strings this function '
+      + 'put there itself one loop earlier, so both sides of the test are one call\'s own output within one '
+      + 'frame. The identity tested is "is this a cell I decided to remove", which cannot express a '
+      + 'cross-subject claim.',
+  },
 ];
 
 const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist']);

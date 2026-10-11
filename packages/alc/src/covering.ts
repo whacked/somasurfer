@@ -31,7 +31,15 @@
  * volume must integrate against a template and must say which template.
  */
 
-import { children, contains, normalizeCovering, parent, parse, type Address } from './address.ts';
+import {
+  branchingBelow,
+  children,
+  contains,
+  normalizeCovering,
+  parent,
+  parse,
+  type Address,
+} from './address.ts';
 import { AlcError } from './codec.ts';
 import { samePlace, type SamePlaceResult } from './compare.ts';
 import { encodeBody, encodeBrainVolume, locate, type TemplateSet } from './locate.ts';
@@ -167,26 +175,6 @@ export function coveringContains(c: Covering, address: string): boolean {
 // ---------------------------------------------------------------------------
 // Measure
 // ---------------------------------------------------------------------------
-
-/**
- * Children per cell at each rung, memoised per frame and rung.
- *
- * Derived from `children()` rather than tabulated, so it cannot drift from the
- * hierarchy it is supposed to describe — `BD` branches 24 ways at the azimuth
- * rung and 8 ways per octree digit, `BV` 8, `BR` 16, and this reads those
- * numbers off the real implementation. `test/covering.test.ts` asserts the
- * agreement for every frame and rung.
- */
-const BRANCHING = new Map<string, number>();
-
-function branchingBelow(p: Address): number {
-  const key = `${p.frame}:${p.level}`;
-  const hit = BRANCHING.get(key);
-  if (hit !== undefined) return hit;
-  const n = children(p.canonical).length;
-  BRANCHING.set(key, n);
-  return n;
-}
 
 /**
  * Fraction of `outer`'s frame measure occupied by `inner`, exactly.

@@ -33,6 +33,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import * as alcSource from '../../alc/src/index.ts';
 import { buildNameIndex, type NameIndex, type NameIndexInput } from '../../alc/src/index.ts';
 import * as source from '../src/index.ts';
 import { PKG_DIR, readJson } from './helpers.ts';
@@ -164,9 +165,36 @@ test('bundle: alc is external, not inlined, and no copy of it ships', () => {
     'the single-file bundle must import alc and nothing else',
   );
 
-  // Inlining alc would put its own exports in this file. They are not here.
-  assert.equal(/\bfunction buildNameIndex\b/.test(text), false, 'buildNameIndex is defined in the bundle');
-  for (const name of ['buildNameIndex', 'parse', 'covering', 'resolve'] as const) {
+  /**
+   * Inlining alc would put alc's own declarations in this file.
+   *
+   * Scanned against every name alc exports rather than a hand-picked few, so
+   * it cannot rot as alc's API changes — `AlcError` most of all, since all four
+   * import sites take it and it is therefore the likeliest thing to arrive by
+   * accident.
+   *
+   * `class` and `function` declarations only, deliberately. A `const` of an alc
+   * name is not evidence: `overlaps` is a local in `browse.ts:136` and also an
+   * export of alc, so widening this to `const` would redden on a name
+   * collision rather than on an inlined library.
+   */
+  const declarationOf = (name: string) => new RegExp(`^\\s*(?:class|(?:async )?function)\\s+${name}\\b`, 'm');
+  const alcNames = Object.keys(alcSource).filter((n) => n !== 'default');
+  assert.ok(alcNames.includes('AlcError'), 'the scan below has to cover AlcError');
+
+  const declared = alcNames.filter((n) => declarationOf(n).test(text));
+  assert.deepEqual(declared, [], `the bundle declares alc's own ${declared.join(', ')}; alc was inlined`);
+
+  // And the scan is not vacuous: the same one over alc's own browser bundle,
+  // which does contain alc, finds it. Without this, a regex that matched
+  // nothing anywhere would read exactly like a clean result.
+  const alcText = readFileSync(ALC_BUNDLE, 'utf8');
+  const foundInAlc = alcNames.filter((n) => declarationOf(n).test(alcText));
+  assert.ok(foundInAlc.includes('AlcError'), 'the scan does not find AlcError even in alc itself');
+  assert.ok(foundInAlc.length > 50, `the scan found only ${foundInAlc.length} of alc's own declarations`);
+
+  // Nor does the bundle re-export alc.
+  for (const name of ['AlcError', 'buildNameIndex', 'parse', 'covering', 'resolve'] as const) {
     assert.equal((bundle as Record<string, unknown>)[name], undefined, `${name} is re-exported by the bundle`);
   }
 
