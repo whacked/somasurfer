@@ -38,11 +38,13 @@
  *      a share-alike entry, because BY-SA promises downstream users the
  *      commercial use an NC licence withholds; and if dist/ exists, none of it
  *      is there.
- *   9. Every upstream source an entry cites is recorded in `upstreamSources`
- *      with a verdict from docs/asset-licensing.md. An entry cannot ship from a
- *      source that is not cleared, and it inherits the source's terms: a
- *      non-commercial source makes it asset-nc, a share-alike source makes it
- *      share-alike.
+ *   9. Every entry that is not first-party cites its upstream sources, and
+ *      every source it cites is recorded in `upstreamSources` with a verdict
+ *      from docs/asset-licensing.md. An entry cannot ship from a source that is
+ *      not cleared, and it inherits the source's terms: a non-commercial source
+ *      makes it asset-nc, a share-alike source makes it share-alike. Citing is
+ *      mandatory, not opt-in: an entry that simply omits `sources` would
+ *      otherwise skip every one of these checks.
  *
  * CI tooling under tools/ is deliberately out of scope: validating assets is
  * exactly what a CI gate is for, and tools/ is not published or linked into
@@ -50,7 +52,7 @@
  */
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, posix, relative } from 'node:path';
 import { REPO_ROOT, readPackages, sourceFiles, fail, pass, rel } from './lib/repo.mjs';
 
 const DEP_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
@@ -320,6 +322,17 @@ for (const a of assets) {
   const ncDirs = a.manifest.atlas?.ncPayloadDirs ?? [];
 
   for (const e of entries) {
+    // Rule 8 decides by directory, so a path must mean what it says.
+    // `nc/../labels/x.json` sits in a shipped directory while looking like NC.
+    for (const f of e.files ?? []) {
+      const normal = posix.normalize(f);
+      if (normal !== f || normal.startsWith('..') || posix.isAbsolute(normal)) {
+        problems.push(
+          `${where}: entry ${e.id} lists ${JSON.stringify(f)}, which is not a normalised path inside the package.`,
+          `  Write it as ${JSON.stringify(normal)}: the directory checks compare paths literally.`,
+        );
+      }
+    }
     if (!ENTRY_CLASSES.includes(e.licenceClass)) {
       problems.push(
         `${where}: entry ${e.id} has \`licenceClass\` ${JSON.stringify(e.licenceClass)}; must be "asset" or "asset-nc".`,
@@ -439,8 +452,20 @@ for (const a of assets) {
       }
     }
   }
+  // First-party means our own work and nothing else: a GStack holder that is
+  // also not share-alike. "Adaptation by GStack" of someone's mesh is not it.
+  const firstParty = (e) => e.holder === 'GStack' && e.shareAlike !== true;
   for (const e of entries) {
-    if (!e.sources) continue;
+    if (!Array.isArray(e.sources) || e.sources.length === 0) {
+      if (!firstParty(e)) {
+        problems.push(
+          `${where}: entry ${e.id} is not first-party (holder ${JSON.stringify(e.holder)}) but cites no upstream source.`,
+          `  Name every source it derives from in \`sources\`. An entry that omits them would skip`,
+          `  every check on what it inherits, including the refusal of uncleared sources.`,
+        );
+      }
+      continue;
+    }
     citingEntryCount += 1;
     for (const id of e.sources) {
       const s = sources.get(id);

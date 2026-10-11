@@ -71,6 +71,9 @@
       "source": "Derived by tools/build-bd-template.mjs from BodyParts3D/Anatomography 4.0, 99%-polygon-reduced OBJ set (IS-A tree), isa_BP3D_4.0_obj_99.zip, https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html",
       "shareAlike": true,
       "licenceClass": "asset",
+      "sources": [
+        "bodyparts3d"
+      ],
       "attributionStatement": "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan",
       "note": "A spine centreline, per-level frames and per-level skin radii measured from 25 vertebra meshes and the skin mesh. An adaptation of the DBCLS meshes, so it is share-alike: D1 settled the inbound licence as CC BY-SA 2.1 Japan, which is what the OBJ payloads' own header comments state, and this derivative ships under CC BY-SA 4.0, the current version of the same licence with the same elements. The archive's web licence page now states CC BY 4.0 instead; the owner was shown the discrepancy and decided on 2026-10-09 that share-alike is MANDATORY, so this cannot be relicensed by a later release. See docs/asset-licensing.md section 3. No mesh vertices are redistributed here."
     },
@@ -86,6 +89,9 @@
       "source": "Derived by tools/build-bv-template.mjs from the ICBM 152 non-linear 2009c asymmetric distribution, mni_icbm152_nlin_asym_09c_nifti.zip, https://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip",
       "shareAlike": false,
       "licenceClass": "asset",
+      "sources": [
+        "icbm152-2009c"
+      ],
       "attributionStatement": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.",
       "note": "Six distances, one landmark and three unit vectors, measured from the distribution's own brain mask and NIfTI affine. NO IMAGE DATA from that archive is redistributed. The archive's COPYING text is reproduced verbatim inside the template's provenance block and requires only that the copyright notice travel with copies, which this entry and ATTRIBUTION.md do. Not share-alike, so this file carries no obligation onto anything that reads it. The AC-PC distance is recorded UNVERIFIED and unused - see the template's `provenance.landmarks.pc`."
     },
@@ -102,6 +108,10 @@
       "source": "Derived by tools/build-name-index.mjs from BodyParts3D/Anatomography 4.0 (IS-A and PART-OF trees, isa_BP3D_4.0_obj_99.zip) and from UBERON basic.obo, http://purl.obolibrary.org/obo/uberon/basic.obo",
       "shareAlike": true,
       "licenceClass": "asset",
+      "sources": [
+        "bodyparts3d",
+        "uberon"
+      ],
       "attributionStatement": "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan",
       "note": "names.json carries FMA concept ids and the release's own English terms, plus UBERON cross-references read from UBERON's FMA xrefs (UBERON is CC BY 3.0, which BY-SA 4.0 satisfies). coverings.json is computed from the mesh geometry, so it is an adaptation of the DBCLS meshes and share-alike follows. The brain is deliberately absent: it is a BV structure, and the owner decided on 2026-10-09 not to use Harvard-Oxford, AAL or Julich-Brain, so BV ships coordinates without names until a first-party label layer exists - see docs/asset-licensing.md section 4."
     }
@@ -139,7 +149,7 @@
       "nonCommercial": false,
       "verdict": "cleared-with-conditions",
       "verifiedAt": "2026-10-11",
-      "conditions": "Only per structure. The file is a compilation, and its blanket CC BY-SA 4.0 statement is no stronger than its inputs: 143 of its 437 structures carry Z-Anatomy materials whose upstream licence is undeclared (source zanatomy-undeclared-brain-materials), and 44 cranial nerves derive from a model whose primary page declares no licence (source dundee-cranial-nerves). An entry derived from this file must also cite the source of every structure it carries. Its attribution chain omits Brainder; ours must not.",
+      "conditions": "Only per structure. The file is a compilation, and its blanket CC BY-SA 4.0 statement is no stronger than its inputs: 146 of its 437 structures carry Z-Anatomy materials whose upstream licence is undeclared or not positively known (source zanatomy-undeclared-brain-materials), and 44 cranial nerves derive from a model whose primary page declares no licence (source dundee-cranial-nerves). An entry derived from this file must also cite the source of every structure it carries. Its attribution chain omits Brainder; ours must not.",
       "evidence": "LICENSE (dual: Apache-2.0 code; CC BY-SA 4.0 for brain.glb and derived metadata) and README.md 'Attribution & licence', both at the pinned commit. Per-structure materials read from the glTF JSON chunk of brain.glb. The archive digest is of GitHub's generated tarball, which GitHub does not promise is byte-stable; the per-file digests are the durable pin."
     },
     {
@@ -188,6 +198,33 @@
       "evidence": "Unchanged from the D1 memo (section 2): the OBJ headers state CC BY-SA 2.1 Japan, the licence page (re-read 2026-10-11, still 'Last updated 2025/02/27', page SHA-256 84c390a75d873447f148054c5f9cc420e9f1394e1fbe2ab259e3581ef4970f65) states CC BY 4.0, and the owner decided share-alike is mandatory. Not CC BY-SA 4.0 as DOG-126's brief has it; Z-Anatomy and the Dundee model also cite 2.1 Japan."
     },
     {
+      "id": "icbm152-2009c",
+      "title": "ICBM 152 non-linear 2009c asymmetric template",
+      "licence": "MNI-BIC-permissive",
+      "licenceUrl": "https://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009",
+      "holder": "Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University",
+      "source": "https://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip",
+      "shareAlike": false,
+      "nonCommercial": false,
+      "verdict": "cleared",
+      "verifiedAt": "2026-10-09",
+      "attributionStatement": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.",
+      "evidence": "The archive's own COPYING file (archive SHA-256 804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4), quoted in docs/asset-licensing.md section 2. Recorded here in DOG-126 so the BV template can cite it."
+    },
+    {
+      "id": "uberon",
+      "title": "UBERON (basic.obo)",
+      "licence": "CC-BY-3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "holder": "UBERON / OBO Foundry contributors",
+      "source": "http://purl.obolibrary.org/obo/uberon/basic.obo",
+      "shareAlike": false,
+      "nonCommercial": false,
+      "verdict": "cleared",
+      "verifiedAt": "2026-10-11",
+      "evidence": "basic.obo release uberon/releases/2026-10-01 (SHA-256 5e1eff802a4d99f7a072f6cd239f50cffdb70aec2b11e33edf00e66746a0a75b, as recorded in labels/names.json), header line 'property_value: dcterms-license http://creativecommons.org/licenses/by/3.0/'."
+    },
+    {
       "id": "brainder-brain-for-blender",
       "title": "Brain for Blender (cortical and subcortical meshes)",
       "licence": "CC-BY-SA-3.0",
@@ -204,7 +241,7 @@
     },
     {
       "id": "zanatomy-undeclared-brain-materials",
-      "title": "Z-Anatomy 'Brainder' and 'White matter' models (University of Washington), as included in Z-Anatomy",
+      "title": "Z-Anatomy 'Brainder' and 'White matter' models (University of Washington), and any material not positively tied to Z-Anatomy or BodyParts3D",
       "licence": "UNDECLARED",
       "holder": "Unknown; attributed by Z-Anatomy to 'Brainder' and to 'White matter' from the University of Washington",
       "source": "https://github.com/Z-Anatomy/Models-of-human-anatomy/blob/9de5d6912a1b0df9cab739d57f00e036b0496ddc/License.txt",
@@ -212,7 +249,7 @@
       "nonCommercial": false,
       "verdict": "not-cleared",
       "verifiedAt": "2026-10-11",
-      "conditions": "Covers every brain.glb structure whose primitives use the Z-Anatomy materials Brain, Brain-Inner or White matter: 143 of 437, including 126 of the 128 cortical structures. Clears per structure only by (a) a geometric match against the Brainder meshes, which moves it to brainder-brain-for-blender, or (b) Z-Anatomy answering issue #10 with a licence. The White-matter-material structures (10) have no candidate source at all.",
+      "conditions": "Covers every brain.glb structure whose primitives use the Z-Anatomy materials Brain, Brain-Inner or White matter (143), and the 3 whose only material is Temporal lobe (Corpus callosum, Midbrain x2): 146 of 437, including 126 of the 128 cortical structures. Temporal lobe otherwise appears only on the undeclared cortex, and nothing ties it to Z-Anatomy's own work or to BodyParts3D, so it is held fail-closed. Clears per structure only by (a) a geometric match against the Brainder meshes, which moves it to brainder-brain-for-blender, or (b) Z-Anatomy answering issue #10 with a licence. The White-matter-material structures (10) have no candidate source at all.",
       "evidence": "Z-Anatomy License.txt lists both models without a licence. Upstream issue Z-Anatomy/Models-of-human-anatomy#10 (open, 2026-10-06, no reply) asks the same question; its reporter excludes all 174 objects with these materials from their CC BY-SA export."
     },
     {
