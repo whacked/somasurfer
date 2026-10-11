@@ -66,7 +66,9 @@ export function checkBodyMeshes({ writeReport = false } = {}) {
   if (doc.schema !== 'atlas-body-structures/1') problems.push(`body structures.json has schema ${JSON.stringify(doc.schema)}, not "atlas-body-structures/1".`);
   if (doc.source?.archiveSha256 !== archiveSha) problems.push(`body structures.json was built from archive ${doc.source?.archiveSha256}, not the pinned ${archiveSha}.`);
   for (const k of Object.keys(BODY_MESH_BUILD)) {
-    if (doc.build?.[k] !== BODY_MESH_BUILD[k]) problems.push(`body structures.json was built with ${k} = ${doc.build?.[k]}, not ${BODY_MESH_BUILD[k]}.`);
+    if (JSON.stringify(doc.build?.[k]) !== JSON.stringify(BODY_MESH_BUILD[k])) {
+      problems.push(`body structures.json was built with ${k} = ${JSON.stringify(doc.build?.[k])}, not ${JSON.stringify(BODY_MESH_BUILD[k])}.`);
+    }
   }
   if (doc.registration?.frame !== 'BD' || doc.registration?.transform !== 'identity') {
     problems.push('body structures.json does not declare itself registered to BD by the identity; the registration check below measures exactly that claim.');

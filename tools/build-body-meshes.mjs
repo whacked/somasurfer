@@ -4,7 +4,7 @@
  *
  *   (cd tools/mesh-build && npm ci)        # once: the build-only simplifier
  *   node tools/build-body-meshes.mjs --source <dir>
- *   node tools/build-body-meshes.mjs --source <dir> --dry-run [--ratio r] [--floor n] [--full-ratio r] [--full-floor n]
+ *   node tools/build-body-meshes.mjs --source <dir> --dry-run [--report <file>] [--ratio r] [--floor n] [--full-ratio r] [--full-floor n] [--min-component n]
  *
  * `<dir>` holds the seven BodyParts3D files listed in tools/lib/bp3d.mjs. Each
  * is checked against the SHA-256 pinned in packages/atlas-assets/attribution.json
@@ -49,6 +49,7 @@ const overrides = {
   floorTriangles: arg('--floor'),
   fullRatio: arg('--full-ratio'),
   fullFloorTriangles: arg('--full-floor'),
+  minComponentTriangles: arg('--min-component'),
 };
 if (!dryRun && Object.values(overrides).some((v) => v !== undefined)) {
   fail('build-body-meshes', ['Parameter overrides are for --dry-run only. Change BODY_MESH_BUILD in tools/lib/body-asset-paths.mjs to build with other values.']);
@@ -193,6 +194,10 @@ console.log([
   `  ${((performance.now() - t0) / 1000).toFixed(0)} s`,
 ].join('\n'));
 
+if (dryRun && arg('--report')) {
+  writeFileSync(arg('--report'), `${JSON.stringify(structuresDoc, null, 1)}\n`);
+  console.log(`  dry-run structures.json written to ${arg('--report')}`);
+}
 if (!dryRun) {
   mkdirSync(join(REPO_ROOT, paths.dir), { recursive: true });
   writeFileSync(join(REPO_ROOT, paths.dir, 'meshes.lowres.bin'), tiers.low);

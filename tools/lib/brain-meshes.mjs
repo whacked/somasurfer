@@ -127,6 +127,100 @@ function decimate(M, mesh, target) {
   return { positions: mesh.positions, indices: dropDegenerate(indices) };
 }
 
+const decimateWhole = decimate;
+
+/** The connected components of an indexed mesh, each as its own triangle list. */
+export function componentsOf(indices, vertexCount) {
+  const parent = new Uint32Array(vertexCount).map((_, i) => i);
+  const find = (v) => {
+    while (parent[v] !== v) {
+      parent[v] = parent[parent[v]];
+      v = parent[v];
+    }
+    return v;
+  };
+  for (let t = 0; t < indices.length; t += 3) {
+    const a = find(indices[t]);
+    parent[find(indices[t + 1])] = a;
+    parent[find(indices[t + 2])] = a;
+  }
+  const byRoot = new Map();
+  for (let t = 0; t < indices.length; t += 3) {
+    const r = find(indices[t]);
+    if (!byRoot.has(r)) byRoot.set(r, []);
+    byRoot.get(r).push(indices[t], indices[t + 1], indices[t + 2]);
+  }
+  return [...byRoot.values()];
+}
+
+/**
+ * Decimate to `target` triangles, shared across connected components in
+ * proportion to their size, with at least `minComponentTriangles` each (or all
+ * of a component's triangles, if it has fewer). Measured on the body: one
+ * simplifier call over a multi-piece structure spends its budget where the
+ * error is cheapest and collapses small pieces whole. The right inferior
+ * phrenic artery, eight pieces, came out at 0.38 of its area and 112 mm off.
+ */
+function decimateByComponent(M, mesh, target, minComponentTriangles) {
+  const total = mesh.indices.length / 3;
+  if (target >= total) return mesh;
+  const parts = componentsOf(mesh.indices, mesh.positions.length / 3);
+  if (parts.length === 1) return decimate(M, mesh, target);
+  const out = [];
+  for (const part of parts) {
+    const n = part.length / 3;
+    const t = Math.min(n, Math.max(minComponentTriangles, Math.ceil((target * n) / total)));
+    const kept = decimate(M, { positions: mesh.positions, indices: Uint32Array.from(part) }, t).indices;
+    for (let i = 0; i < kept.length; i += 1) out.push(kept[i]);
+  }
+  return { positions: mesh.positions, indices: Uint32Array.from(out) };
+}
+
+/** Area ratio and per-axis extent shares of `indices` over `mesh`'s positions, against `reference`. */
+function shapeAgainst(mesh, indices, reference) {
+  const used = new Set(indices);
+  const p = new Float64Array(used.size * 3);
+  let k = 0;
+  for (const v of used) {
+    p[k++] = mesh.positions[v * 3];
+    p[k++] = mesh.positions[v * 3 + 1];
+    p[k++] = mesh.positions[v * 3 + 2];
+  }
+  const b = bounds(p);
+  return {
+    area: surfaceArea(mesh.positions, indices) / reference.area,
+    axes: [0, 1, 2].map((a) => (reference.extent[a] > 0 ? b.extent[a] / reference.extent[a] : 1)),
+  };
+}
+
+/**
+ * The smallest target at or above `base` whose decimation of `mesh` keeps its
+ * shape inside `margin` (`{ area, axis }`: area within 1 +/- area, every axis
+ * at least `axis` of its extent). This is the floor idea taken from a count to
+ * a shape: a thin vessel needs more of its triangles than a ratio leaves it,
+ * a large smooth surface far fewer, and one ratio cannot serve both. The
+ * margin is the build's and is stricter than the gate's, so what this keeps
+ * passes the gate with room to spare. The result is always one that met the
+ * margin; the whole mesh meets it trivially.
+ */
+function shapeKeepingTarget(M, decimate, mesh, base, margin) {
+  const total = mesh.indices.length / 3;
+  const reference = { area: surfaceArea(mesh.positions, mesh.indices), extent: bounds(mesh.positions).extent };
+  const keeps = (t) => {
+    const s = shapeAgainst(mesh, decimate(M, mesh, t).indices, reference);
+    return s.area >= 1 - margin.area && s.area <= 1 + margin.area && s.axes.every((x) => x >= margin.axis);
+  };
+  if (base >= total || keeps(base)) return Math.min(base, total);
+  let lo = base;
+  let hi = total;
+  while (hi - lo > Math.max(1, Math.floor(lo * 0.05))) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (keeps(mid)) hi = mid;
+    else lo = mid;
+  }
+  return hi;
+}
+
 /**
  * Build both tiers for `structures` (the provenance records of one clearance
  * group) from decoded glb `nodes`.
@@ -157,10 +251,23 @@ export async function buildTiers({ nodes, structures, floorTriangles, ratio, rep
  * with a floor of `fullFloorTriangles`, and the build reports how far it moved
  * from the source (`fullVsSource`). That figure is the build's, not the gate's:
  * the gate has the two tiers and not the source.
+ *
+ * `minComponentTriangles`, if given, decimates each connected component of a
+ * structure separately (`decimateByComponent`), so no piece of it can vanish.
+ * `shapeMargin`, if given (`{ full: { area, axis }, low: { area, axis } }`),
+ * raises each structure's target to the least that keeps its shape inside the
+ * margin (`shapeKeepingTarget`): the full tier against the source, the low tier
+ * against the full tier. The brain sets neither, and is built exactly as it
+ * was reviewed.
  */
-export async function buildMeshTiers({ meshes, floorTriangles, ratio, mmPerUnit, fullRatio = 1, fullFloorTriangles = 0 }) {
+export async function buildMeshTiers({
+  meshes, floorTriangles, ratio, mmPerUnit, fullRatio = 1, fullFloorTriangles = 0, minComponentTriangles = null, shapeMargin = null,
+}) {
   const M = await meshoptimizer();
   const mm2 = mmPerUnit * mmPerUnit;
+  const decimate = minComponentTriangles === null
+    ? decimateWhole
+    : (m, mesh, target) => decimateByComponent(m, mesh, target, minComponentTriangles);
   const welded = meshes.map((m) => ({ record: m, mesh: weld(m.positions, m.indices), sourceTriangles: m.indices.length / 3 }));
   const frame = quantisationFrame(welded.map((w) => w.mesh));
 
@@ -170,9 +277,9 @@ export async function buildMeshTiers({ meshes, floorTriangles, ratio, mmPerUnit,
   for (const w of welded) {
     const sourceMesh = reorder(M, w.mesh);
     const sourceTris = sourceMesh.indices.length / 3;
-    const fullMesh = fullRatio < 1
-      ? reorder(M, decimate(M, sourceMesh, Math.min(sourceTris, Math.max(fullFloorTriangles, Math.ceil(sourceTris * fullRatio)))))
-      : sourceMesh;
+    let fullTarget = Math.min(sourceTris, Math.max(fullFloorTriangles, Math.ceil(sourceTris * fullRatio)));
+    if (fullRatio < 1 && shapeMargin) fullTarget = shapeKeepingTarget(M, decimate, sourceMesh, fullTarget, shapeMargin.full);
+    const fullMesh = fullRatio < 1 ? reorder(M, decimate(M, sourceMesh, fullTarget)) : sourceMesh;
     const fq = quantise(fullMesh, frame);
     const fullTris = fq.indices.length / 3;
     // The floor is a guarantee, not a target: the simplifier may stop short of
@@ -181,6 +288,7 @@ export async function buildMeshTiers({ meshes, floorTriangles, ratio, mmPerUnit,
     // checks exactly this inequality.
     const required = Math.min(fullTris, floorTriangles);
     let target = Math.min(fullTris, Math.max(floorTriangles, Math.ceil(fullTris * ratio)));
+    if (shapeMargin) target = shapeKeepingTarget(M, decimate, fullMesh, target, shapeMargin.low);
     let lq;
     for (;;) {
       lq = quantise(reorder(M, decimate(M, fullMesh, target)), frame);

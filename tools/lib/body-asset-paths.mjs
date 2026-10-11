@@ -14,12 +14,29 @@
  *
  *   fullRatio, fullFloorTriangles   source -> full tier (lazy)
  *   ratio, floorTriangles           full tier -> low tier (eager), as for the brain
+ *   minComponentTriangles           both steps decimate each connected piece of
+ *                                   a structure on its own, keeping at least this
+ *                                   many triangles of it, so no piece vanishes
+ *   shapeMargin                     each step keeps at least the triangles that
+ *                                   hold the structure's area and extents inside
+ *                                   this margin. Stricter than the gate's [0.75,
+ *                                   1.25] and 0.5, so the gate has room to spare
+ *
+ * The ratios set the budget for large smooth surfaces; the shape floor is what
+ * thin vessels and nerves get instead, measured on the first dry run: at a
+ * plain 2% of the source, the right inferior phrenic artery kept 0.38 of its
+ * area and moved 112 mm.
  */
 export const BODY_MESH_BUILD = Object.freeze({
   fullRatio: 0.1,
   fullFloorTriangles: 256,
-  ratio: 0.2,
+  ratio: 0.125,
   floorTriangles: 16,
+  minComponentTriangles: 8,
+  shapeMargin: Object.freeze({
+    full: Object.freeze({ area: 0.05, axis: 0.9 }),
+    low: Object.freeze({ area: 0.15, axis: 0.6 }),
+  }),
 });
 
 /** Paths for a BodyParts3D archive (by its SHA-256), relative to the repository root. */

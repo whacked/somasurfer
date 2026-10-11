@@ -48,6 +48,9 @@ export const BODY_CATEGORIES = Object.freeze([
   ['muscle', 'isa', 'FMA85453', 'head of muscle organ'],
   ['muscle', 'isa', 'FMA10474', 'zone of muscle organ'],
   ['nervous', 'partof', 'FMA7157', 'nervous system'],
+  ['nervous', 'isa', 'FMA65132', 'nerve'],
+  ['nervous', 'isa', 'FMA5913', 'nerve trunk'],
+  ['nervous', 'isa', 'FMA5884', 'ganglion'],
   ['cardiovascular', 'partof', 'FMA7161', 'cardiovascular system'],
   ['cardiovascular', 'isa', 'FMA50722', 'region of vascular tree organ'],
   ['respiratory', 'partof', 'FMA7158', 'respiratory system'],
@@ -133,17 +136,25 @@ export function groupBodyStructures(source, files) {
   return { structures, excluded: excluded.sort((a, b) => a.file.localeCompare(b.file)) };
 }
 
-/** The smallest IS-A concept holding `file` whose other files all name that concept. */
+/**
+ * The smallest IS-A concept holding `file` whose other files all name that
+ * concept or are blank themselves, with at least one of them naming it. Two
+ * blank files can share a concept (FJ1664 and FJ1665 in FMA77439, beside their
+ * named mirrors), and several concepts can hold the same files (FJ1450's set is
+ * held by three); a file naming a different concept rules a candidate out.
+ */
 function resolveBlank(source, file, headerConcept) {
   const candidates = [];
   for (const [concept, members] of source.trees.isa.elements) {
-    if (members.includes(file)) candidates.push({ concept, members });
+    if (members.includes(file) && members.length >= 2) candidates.push({ concept, members });
   }
   candidates.sort((a, b) => a.members.length - b.members.length || a.concept.localeCompare(b.concept));
-  const smallest = candidates[0];
-  if (!smallest || smallest.members.length < 2) return null;
-  const others = smallest.members.filter((m) => m !== file);
-  return others.every((m) => headerConcept.get(m) === smallest.concept) ? smallest.concept : null;
+  for (const { concept, members } of candidates) {
+    const others = members.filter((m) => m !== file);
+    const consistent = others.every((m) => headerConcept.get(m) === concept || !headerConcept.get(m));
+    if (consistent && others.some((m) => headerConcept.get(m) === concept)) return concept;
+  }
+  return null;
 }
 
 function categoriser(source) {
