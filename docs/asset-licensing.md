@@ -388,7 +388,7 @@ primitives' materials in the glTF JSON chunk:
 | `Brain` (± `Temporal lobe`) | 9 | 2 cortex, 5 brainstem (pons, medulla, interpeduncular fossa), 2 cerebellum (base of peduncle) | **undeclared** |
 | `White matter` | 10 | 6 white matter, 3 diencephalon, 1 ventricles (commissures, fornix, septum pellucidum, stria medullaris) | **undeclared**, no candidate source |
 | `Nerve` | 46 | 44 cranial nerves + 2 | Dundee CAHID per Z-Anatomy: **unverified** |
-| `Artery`, `Cerebellum`, `Nucleus*`, `LCR`, `Cartilage`, `Bone-4`, `Temporal lobe` alone | 112 | arteries, cerebellum, nuclei, ventricles, … | Z-Anatomy / BodyParts3D: cleared |
+| `Artery`, `Cerebellum`, `Nucleus*`, `LCR`, `Cartilage`, `Bone-4`, `Temporal lobe` alone | 152 | arteries, cerebellum, nuclei, ventricles, … | Z-Anatomy / BodyParts3D: cleared |
 | none (imaging-registered) | 96 | 54 tracts (HCP1065), 14 thalamic (Najdenovska), 10 hypothalamic (Neudorfer), 10 CIT168, 8 amygdala | cleared |
 
 **126 of the 128 cortical structures are in the undeclared group.** These are
@@ -406,8 +406,8 @@ plan's premise holds only if this group clears.
    clears on a published number, never on a resemblance.
 2. **Ask upstream.** Add to Z-Anatomy#10 rather than open a duplicate. An answer
    naming a compatible licence clears whatever it names.
-3. **Ship without it.** W2 ships the 294 structures outside these 143 and lists
-   the excluded ones by name.
+3. **Ship without it.** W2 ships the 248 cleared structures (437 less these 143
+   and the 46 unverified nerves) and lists the excluded ones by name.
 
 Even if (1) succeeds, the 10 `White matter` structures have **no candidate
 source**, and nothing short of (2) clears them.
@@ -476,7 +476,7 @@ one CI makes and deploys, still fails rule 8 if that directory appears.
 
 | work item | ships | cites |
 | --- | --- | --- |
-| W2, brain, cleared group | the 294 structures outside §7.3's undeclared and unverified groups, as BY-SA 4.0 | `brainproject-brain-glb`, `zanatomy`, `bodyparts3d`, and per structure `cit168-subcortical`, `cit168-amygdala`, `najdenovska-thalamus`, `neudorfer-hypothalamus`, `hcp1065-yeh2022` |
+| W2, brain, cleared group | the 248 structures outside §7.3's undeclared and unverified groups, as BY-SA 4.0 | `brainproject-brain-glb`, `zanatomy`, `bodyparts3d`, and per structure `cit168-subcortical`, `cit168-amygdala`, `najdenovska-thalamus`, `neudorfer-hypothalamus`, `hcp1065-yeh2022` |
 | W2, brain, cortex group | the 133 `Brain`/`Brain-Inner` structures, **only after** they move to `brainder-brain-for-blender` by measurement or upstream answer | as above, plus `brainder-brain-for-blender` |
 | W2, brain, held | the 10 `White matter` structures and the 46 `Nerve` structures | cannot ship: rule 9 refuses `zanatomy-undeclared-brain-materials` and `dundee-cranial-nerves` |
 | W3, body | Z-Anatomy/BodyParts3D whole-body meshes as BY-SA 4.0, **excluding** the inner ear (`dundee-inner-ear`), the kidney (`cowley-kidney`, so take BodyParts3D's own kidney), and every object with the `Brain`, `Brain-Inner`, `White matter` or `Nerve` materials until §7.3 clears them | `zanatomy`, `bodyparts3d` |
