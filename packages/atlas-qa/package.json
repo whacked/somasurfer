@@ -1,0 +1,34 @@
+{
+  "name": "@gstack/atlas-qa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The DOG-1 §7 journey and deep-link matrix: the task-7 QA harness, authored before the viewer.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./src/*": "./src/*",
+    "./fixtures/*": "./fixtures/*"
+  },
+  "files": [
+    "src",
+    "fixtures",
+    "bin"
+  ],
+  "sideEffects": false,
+  "atlas": {
+    "licenceClass": "code"
+  },
+  "scripts": {
+    "test": "node --test 'test/*.test.ts'",
+    "journey": "node bin/qa-journey.mjs",
+    "journey:reference": "node bin/qa-journey.mjs --build reference",
+    "negative-control": "node bin/qa-journey.mjs --negative-control"
+  },
+  "dependencies": {
+    "@gstack/alc": "*"
+  },
+  "license": "Apache-2.0"
+}

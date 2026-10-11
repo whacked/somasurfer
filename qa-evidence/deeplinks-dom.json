@@ -1,0 +1,1918 @@
+{
+ "summary": {
+  "pass": 34,
+  "fail": 0,
+  "unverified": 0,
+  "notUrlRows": [
+   "clamped-cranial (click-point)",
+   "clamped-caudal (click-point)"
+  ]
+ },
+ "results": [
+  {
+   "id": "matrix/default-no-address",
+   "status": "pass",
+   "detail": "shown as decided (no notice); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/",
+    "expected": {
+     "atlas": "body",
+     "selected": null,
+     "notices": [],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/canonical-body",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T07-03O-531",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T07-03O-531",
+      "displayAddress": "BD-T07-03O-53"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T07-03O-531",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/loose-body-same-view",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=bd-t7-3o-531",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T07-03O-531",
+      "displayAddress": "BD-T07-03O-53"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T07-03O-531",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/check-symbol-accepted",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T07-03O-531%7ES",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T07-03O-531",
+      "displayAddress": "BD-T07-03O-53"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T07-03O-531",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/check-symbol-mismatch-rejected",
+   "status": "pass",
+   "detail": "shown as decided (rejected, refused); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T07-03O-531%7ET",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": false,
+      "address": null,
+      "displayAddress": null
+     },
+     "notices": [
+      "rejected"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "rejected"
+     ],
+     "rejection": "check symbol does not match address: BD-T07-03O-531 implies S, got T",
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/over-precise",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T07-03O-531246",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T07-03O-531246",
+      "displayAddress": "BD-T07-03O-53"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T07-03O-531246&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T07-03O-531246",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T07-03O-531246&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T07-03O-531246&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/clamped-address-replayed-is-not-a-clamp",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-C01-12O-300",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-C01-12O-300",
+      "displayAddress": "BD-C01-12O-30"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-C01-12O-300&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-C01-12O-300",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-C01-12O-300&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-C01-12O-300&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/folded-reports-fold-not-clamp",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T06-12O-311",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T06-12O-311",
+      "displayAddress": "BD-T06-12O-31"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T06-12O-311&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T06-12O-311",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T06-12O-311&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T06-12O-311&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/same-address-unfolded-in-a-sound-template",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T06-12O-311",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T06-12O-311",
+      "displayAddress": "BD-T06-12O-31"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T06-12O-311&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T06-12O-311",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T06-12O-311&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T06-12O-311&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/variant-T13",
+   "status": "pass",
+   "detail": "shown as decided (homology-variant); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T13-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T13-03O",
+      "displayAddress": "BD-T13-03O"
+     },
+     "notices": [
+      "homology-variant"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "homology-variant"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T13-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T13-03O",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T13-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T13-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/variant-L06",
+   "status": "pass",
+   "detail": "shown as decided (homology-variant); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-L06-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-L06-03O",
+      "displayAddress": "BD-L06-03O"
+     },
+     "notices": [
+      "homology-variant"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "homology-variant"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-L06-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-L06-03O",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-L06-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-L06-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/variant-S06",
+   "status": "pass",
+   "detail": "shown as decided (homology-variant); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-S06-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-S06-03O",
+      "displayAddress": "BD-S06-03O"
+     },
+     "notices": [
+      "homology-variant"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "homology-variant"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-S06-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-S06-03O",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-S06-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-S06-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/absent-S02",
+   "status": "pass",
+   "detail": "shown as decided (homology-absent); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-S02-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-S02-03O",
+      "displayAddress": "BD-S02-03O"
+     },
+     "notices": [
+      "homology-absent"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "homology-absent"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-S02-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-S02-03O",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-S02-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-S02-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/absent-S03",
+   "status": "pass",
+   "detail": "shown as decided (homology-absent); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-S03-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-S03-03O",
+      "displayAddress": "BD-S03-03O"
+     },
+     "notices": [
+      "homology-absent"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "homology-absent"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-S03-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-S03-03O",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-S03-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-S03-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/absent-S04",
+   "status": "pass",
+   "detail": "shown as decided (homology-absent); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-S04-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-S04-03O",
+      "displayAddress": "BD-S04-03O"
+     },
+     "notices": [
+      "homology-absent"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "homology-absent"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-S04-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-S04-03O",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-S04-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-S04-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/absent-S05",
+   "status": "pass",
+   "detail": "shown as decided (homology-absent); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-S05-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-S05-03O",
+      "displayAddress": "BD-S05-03O"
+     },
+     "notices": [
+      "homology-absent"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "homology-absent"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-S05-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-S05-03O",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-S05-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-S05-03O&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/sacrum-S01-is-not-absent",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-S01-03O-531",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-S01-03O-531",
+      "displayAddress": "BD-S01-03O-53"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-S01-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-S01-03O-531",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-S01-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-S01-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/malformed-bad-digit",
+   "status": "pass",
+   "detail": "shown as decided (rejected, refused); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T07-02O-9",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": false,
+      "address": null,
+      "displayAddress": null
+     },
+     "notices": [
+      "rejected"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "rejected"
+     ],
+     "rejection": "BD refinement digits must come from 01234567, got \"9\"",
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/malformed-unknown-frame",
+   "status": "pass",
+   "detail": "shown as decided (rejected, refused); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=XX-T07-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": false,
+      "address": null,
+      "displayAddress": null
+     },
+     "notices": [
+      "rejected"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "rejected"
+     ],
+     "rejection": "unknown frame \"XX\"; known frames are BD, BV, BR",
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/malformed-empty-address",
+   "status": "pass",
+   "detail": "shown as decided (no notice); link round-trips",
+   "evidence": {
+    "mustPass": false,
+    "url": "/?a=",
+    "expected": {
+     "atlas": "body",
+     "selected": null,
+     "notices": [],
+     "viewProblems": [
+      "the address in the URL is empty"
+     ]
+    },
+    "seen": {
+     "notices": [
+      "link-problem"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/c08-rejected-with-the-correction-named",
+   "status": "pass",
+   "detail": "shown as decided (rejected, refused); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-C08-03O",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": false,
+      "address": null,
+      "displayAddress": null
+     },
+     "notices": [
+      "rejected"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "rejected"
+     ],
+     "rejection": "C08 is not an addressable vertebral level: there is no eighth cervical vertebra. The C8 *nerve root* does exist and exits below C07, which is usually what is meant: address it as C07 or T01. (A supernumerary cervical vertebra is too rare to",
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/length-at-the-64-character-cap",
+   "status": "pass",
+   "detail": "shown as decided (rejected, refused); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T07-03O-55555555555555555555555555555555555555555555555555555",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": false,
+      "address": null,
+      "displayAddress": null
+     },
+     "notices": [
+      "rejected"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "rejected"
+     ],
+     "rejection": "BD supports at most 12 refinement digits, got 53",
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/length-over-the-64-character-cap",
+   "status": "pass",
+   "detail": "shown as decided (no notice); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T07-03O-555555555555555555555555555555555555555555555555555555",
+    "expected": {
+     "atlas": "body",
+     "selected": null,
+     "notices": [],
+     "viewProblems": [
+      "the address in the URL is longer than 64 characters (65)"
+     ]
+    },
+    "seen": {
+     "notices": [
+      "link-problem"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/br-frame-disabled",
+   "status": "pass",
+   "detail": "shown as decided (frame-disabled, frame-unnamed); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BR-L-1",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BR-L-1",
+      "displayAddress": "BR-L-1"
+     },
+     "notices": [
+      "frame-disabled",
+      "frame-unnamed"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "frame-disabled",
+      "frame-unnamed"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BR-L-1&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BR-L-1",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": true
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BR-L-1&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BR-L-1&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/no-template",
+   "status": "pass",
+   "detail": "shown as decided (frame-unnamed); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BV-L-4721",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BV-L-4721",
+      "displayAddress": "BV-L-4721"
+     },
+     "notices": [
+      "frame-unnamed"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "frame-unnamed"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BV-L-4721",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": true
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/br-offer-is-not-fabricated-by-truncation",
+   "status": "pass",
+   "detail": "shown as decided (frame-disabled, frame-unnamed); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BR-L-4710",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BR-L-4710",
+      "displayAddress": "BR-L-4710"
+     },
+     "notices": [
+      "frame-disabled",
+      "frame-unnamed"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "frame-disabled",
+      "frame-unnamed"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BR-L-4710&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BR-L-4710",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": true
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BR-L-4710&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BR-L-4710&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/brain-deep-link-resolves",
+   "status": "pass",
+   "detail": "shown as decided (frame-unnamed); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BV-L-4721",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BV-L-4721",
+      "displayAddress": "BV-L-4721"
+     },
+     "notices": [
+      "frame-unnamed"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "frame-unnamed"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BV-L-4721",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": true
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/brain-deep-link-restores",
+   "status": "pass",
+   "detail": "shown as decided (frame-unnamed); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BV-L-4721&atlas=brain",
+    "expected": {
+     "atlas": "brain",
+     "selected": {
+      "ok": true,
+      "address": "BV-L-4721",
+      "displayAddress": "BV-L-4721"
+     },
+     "notices": [
+      "frame-unnamed"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "frame-unnamed"
+     ],
+     "rejection": null,
+     "atlas": "brain",
+     "href": "/?a=BV-L-4721&atlas=brain&cam=0.6%2C0.18%2C540%2C0%2C-17.5%2C5",
+     "view": {
+      "atlas": "brain",
+      "address": "BV-L-4721",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 540.0038293493311,
+       "target": [
+        0,
+        -17.5,
+        5
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BV-L-4721&atlas=brain&cam=0.6%2C0.18%2C540%2C0%2C-17.5%2C5",
+     "hrefAfter": "/?a=BV-L-4721&atlas=brain&cam=0.6%2C0.18%2C540%2C0%2C-17.5%2C5",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/cross-atlas-link-honours-the-explicit-atlas",
+   "status": "pass",
+   "detail": "shown as decided (frame-unnamed); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BV-L-4721&atlas=body",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BV-L-4721",
+      "displayAddress": "BV-L-4721"
+     },
+     "notices": [
+      "frame-unnamed"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "frame-unnamed"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BV-L-4721",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": true
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BV-L-4721&atlas=body&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/assets-unavailable-addresses-still-resolve",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/?a=BD-T07-03O-531",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T07-03O-531",
+      "displayAddress": "BD-T07-03O-53"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T07-03O-531",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/equality-guard-different-strings-same-place",
+   "status": "pass",
+   "detail": "shown as decided (no notice); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/",
+    "expected": {
+     "atlas": "body",
+     "selected": null,
+     "notices": [],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/equality-guard-same-string-not-asserted-same",
+   "status": "pass",
+   "detail": "shown as decided (no notice); link round-trips",
+   "evidence": {
+    "mustPass": true,
+    "url": "/",
+    "expected": {
+     "atlas": "body",
+     "selected": null,
+     "notices": [],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": null,
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/url-unknown-params",
+   "status": "pass",
+   "detail": "shown as decided (over-precise); link round-trips",
+   "evidence": {
+    "mustPass": false,
+    "url": "/?a=BD-T07-03O-531&utm_source=paper&zoom=9",
+    "expected": {
+     "atlas": "body",
+     "selected": {
+      "ok": true,
+      "address": "BD-T07-03O-531",
+      "displayAddress": "BD-T07-03O-53"
+     },
+     "notices": [
+      "over-precise"
+     ],
+     "viewProblems": []
+    },
+    "seen": {
+     "notices": [
+      "over-precise"
+     ],
+     "rejection": null,
+     "atlas": "body",
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "view": {
+      "atlas": "body",
+      "address": "BD-T07-03O-531",
+      "camera": {
+       "yaw": 0.6,
+       "pitch": 0.18,
+       "distance": 1840.7768875960319,
+       "target": [
+        -0.6458282470703125,
+        84.60879898071289,
+        1102.1782531738281
+       ]
+      },
+      "layers": {
+       "hidden": [],
+       "isolated": null,
+       "opacity": {}
+      },
+      "labels": true,
+      "atlasExplicit": false
+     },
+     "boot": null
+    },
+    "trip": {
+     "href": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "hrefAfter": "/?a=BD-T07-03O-531&cam=0.6%2C0.18%2C1840.78%2C-0.65%2C84.61%2C1102.18",
+     "facetsSame": true,
+     "camOk": true,
+     "fixedPoint": true
+    }
+   }
+  },
+  {
+   "id": "matrix/folded-shown-in-the-page",
+   "status": "pass",
+   "detail": "?template=anat-hyperkyphotic-short-wide&a=BD-T07-12O-111 shows a visible folded notice and no clamped one",
+   "evidence": {
+    "facts": {
+     "bound": "anat-hyperkyphotic-short-wide",
+     "requested": "anat-hyperkyphotic-short-wide",
+     "notices": [
+      "names-other-template"
+     ]
+    },
+    "folded": "BD-T07-12O-111",
+    "shown": [
+     "names-other-template",
+     "folded"
+    ]
+   }
+  }
+ ]
+}

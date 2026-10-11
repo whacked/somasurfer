@@ -56,6 +56,14 @@ jobs:
       - name: Body template admissibility
         run: node tools/audit-real-template.mjs
 
+      # Gate 3b: everything else the shipped templates and the naming layer have
+      # to satisfy for an address to mean what it says — the BV landmarks and
+      # which of them were measured, covering round trips, containment
+      # fractions, the four homology outcomes, and BR still disabled. Needs no
+      # mesh data: the committed JSON plus the library.
+      - name: Asset templates and naming layer
+        run: node --experimental-strip-types tools/verify-asset-templates.mjs
+
       # Gate 4: an asset licence cannot reach the Apache-2.0 code.
       - name: Licence separation
         run: node tools/check-licence-separation.mjs

@@ -1,0 +1,25 @@
+§7 FAIL (harness FAIL against product build qa-integrated-v1@777b68ae state-machine only (app.js/DOM NOT observed; page dataset fixture-research/0.1-5-papers))
+  fixture qa-journey-5papers (synthetic-qa-fixture) sha256 0d968514dd29990a…
+  exercised: structure BODY-STERNUM, region BA44, papers P-02 + P-01
+  37 passed, 3 failed, 0 unverified of 40; must-pass 35/38
+
+  ✗ FAIL [MUST-PASS] matrix/br-frame-disabled
+      covers: frame-disabled
+      expected: A BR cortical-surface address is accepted by the grammar and refused by the viewer: the message explains the frame ships disabled in v1, and OFFERS THE COARSEST RESOLVABLE ANCESTOR rather than leaving the user at a dead end. The camera does not move until they take the offer.
+      - expected the coarsest_ancestor_offered message; got ["frame_disabled"]
+      - selection must be unchanged here, and changed. All changed facets: ["selection"]
+
+  ✗ FAIL [MUST-PASS] matrix/no-template
+      covers: no-template
+      expected: A well-formed BV address with no brain template loaded is explained as a missing template — not as a bad address — and the coarsest resolvable ancestor is offered. The distinction matters: the user's address is correct and the build is incomplete.
+      - expected the coarsest_ancestor_offered message; got ["no_template","name_index_version"]
+      - selection must be unchanged here, and changed. All changed facets: ["selection","names"]
+
+  ✗ FAIL [MUST-PASS] matrix/brain-deep-link-resolves
+      covers: canonical; cross-atlas-restore
+      expected: A BV address deep-links straight into the BRAIN atlas with the cell outlined at its true extent. Arriving by URL is the one way the brain atlas may be entered without the explicit action, because the user named it.
+      - atlas: expected brain, got body
+
+  passed: matrix/default-no-address, matrix/canonical-body, matrix/loose-body-same-view, matrix/check-symbol-accepted, matrix/check-symbol-mismatch-rejected, matrix/over-precise, matrix/clamped-cranial, matrix/clamped-caudal, matrix/clamped-address-replayed-is-not-a-clamp, matrix/folded-reports-fold-not-clamp, matrix/same-address-unfolded-in-a-sound-template, matrix/variant-T13, matrix/variant-L06, matrix/variant-S06, matrix/absent-S02, matrix/absent-S03, matrix/absent-S04, matrix/absent-S05, matrix/sacrum-S01-is-not-absent, matrix/malformed-bad-digit, matrix/malformed-unknown-frame, matrix/malformed-empty-address, matrix/c08-rejected-with-the-correction-named, matrix/length-at-the-64-character-cap, matrix/length-over-the-64-character-cap, matrix/assets-unavailable-addresses-still-resolve, matrix/equality-guard-different-strings-same-place, matrix/equality-guard-same-string-not-asserted-same, matrix/url-unknown-params, journey/default-body-view, journey/change-layers, journey/select-structure-without-leaving-atlas, journey/explicit-brain-navigation, journey/region-research, journey/paper-reveals-all-its-regions, journey/compare-two-papers, journey/return-to-body-with-previous-view-intact
+
+  report written to qa-report.json

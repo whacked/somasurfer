@@ -1,0 +1,301 @@
+{
+ "comment": [
+  "Produced by tools/trial-bd-centrelines.mjs from the BodyParts3D source set,",
+  "which is not in this repository. Committed because the rejected candidates",
+  "do not ship, so their numbers would otherwise be unverifiable, and because",
+  "docs/alc-1-body-template-audit.md is drift-gated against committed inputs.",
+  "Regenerate with: node tools/trial-bd-centrelines.mjs --source <dir>"
+ ],
+ "source": "BodyParts3D 4.0 isa_BP3D_4.0_obj_99",
+ "azimuthKnots": 72,
+ "trials": [
+  {
+   "id": "bp3d-4.0-adult-body-centroid",
+   "ships": true,
+   "why": "vertebral-body centroid (the radiologist's centroid method), S01 along the endplate normal",
+   "options": {
+    "centreline": "body",
+    "bodyFraction": 0.4,
+    "sacralAxisRule": "endplate-normal",
+    "endplatePad": 1.2,
+    "endplateBandMm": 8,
+    "azimuths": 72
+   },
+   "accepted": true,
+   "stages": [
+    {
+     "stage": "STRUCTURE",
+     "passed": true,
+     "problems": 0
+    },
+    {
+     "stage": "AUDIT",
+     "passed": true,
+     "problems": 0
+    },
+    {
+     "stage": "PROBE",
+     "passed": true,
+     "problems": 0
+    },
+    {
+     "stage": "ADMISSIBILITY-CONSISTENCY",
+     "passed": true,
+     "problems": 0
+    }
+   ],
+   "maxUsefulDigits": 2,
+   "audit": {
+    "locallyAdmissible": true,
+    "worstLevel": "T04",
+    "worstUtilisation": 0.7055,
+    "worstMarginMm": 32.02,
+    "worstAzimuthTurns": 0.0528,
+    "violations": []
+   },
+   "probe": {
+    "samples": 5000,
+    "failures": 0,
+    "inadmissibleNotes": 0,
+    "byLevel": []
+   },
+   "scan": {
+    "probed": 162000,
+    "foldedPoints": 0,
+    "sound": "true",
+    "kinds": "none",
+    "levelsFolding": 0,
+    "azimuthsProbed": 720
+   },
+   "lumbosacral": {
+    "kinkDeg": 0.87,
+    "endplateSlopeDeg": 24.69,
+    "endplatePlanarityRatio": 14.68
+   },
+   "unverifiedAzimuths": 0
+  },
+  {
+   "id": "bp3d-4.0-adult-body-centroid-entry-tangent",
+   "ships": false,
+   "why": "same centreline, but S01 takes the direction the column is travelling as it reaches the endplate",
+   "options": {
+    "centreline": "body",
+    "bodyFraction": 0.4,
+    "sacralAxisRule": "entry-tangent",
+    "endplatePad": 1.2,
+    "endplateBandMm": 8,
+    "azimuths": 72
+   },
+   "accepted": true,
+   "stages": [
+    {
+     "stage": "STRUCTURE",
+     "passed": true,
+     "problems": 0
+    },
+    {
+     "stage": "AUDIT",
+     "passed": true,
+     "problems": 0
+    },
+    {
+     "stage": "PROBE",
+     "passed": true,
+     "problems": 0
+    },
+    {
+     "stage": "ADMISSIBILITY-CONSISTENCY",
+     "passed": true,
+     "problems": 0
+    }
+   ],
+   "maxUsefulDigits": 2,
+   "audit": {
+    "locallyAdmissible": true,
+    "worstLevel": "T04",
+    "worstUtilisation": 0.7055,
+    "worstMarginMm": 32.02,
+    "worstAzimuthTurns": 0.0528,
+    "violations": []
+   },
+   "probe": {
+    "samples": 5000,
+    "failures": 0,
+    "inadmissibleNotes": 0,
+    "byLevel": []
+   },
+   "scan": {
+    "probed": 162000,
+    "foldedPoints": 0,
+    "sound": "true",
+    "kinds": "none",
+    "levelsFolding": 0,
+    "azimuthsProbed": 720
+   },
+   "lumbosacral": {
+    "kinkDeg": 2.92,
+    "endplateSlopeDeg": 24.69,
+    "endplatePlanarityRatio": 14.68
+   },
+   "unverifiedAzimuths": 0
+  },
+  {
+   "id": "bp3d-4.0-adult-whole-centroid",
+   "ships": false,
+   "why": "whole-vertebra volume centroid: no parameter, but the laminae and spinous process pull it posterior",
+   "options": {
+    "centreline": "whole",
+    "bodyFraction": null,
+    "sacralAxisRule": "endplate-normal",
+    "endplatePad": 1.2,
+    "endplateBandMm": 8,
+    "azimuths": 72
+   },
+   "accepted": false,
+   "stages": [
+    {
+     "stage": "STRUCTURE",
+     "passed": true,
+     "problems": 0
+    },
+    {
+     "stage": "AUDIT",
+     "passed": false,
+     "problems": 1
+    },
+    {
+     "stage": "PROBE",
+     "passed": false,
+     "problems": 2
+    },
+    {
+     "stage": "ADMISSIBILITY-CONSISTENCY",
+     "passed": false,
+     "problems": 4
+    }
+   ],
+   "maxUsefulDigits": 2,
+   "audit": {
+    "locallyAdmissible": false,
+    "worstLevel": "L05",
+    "worstUtilisation": 1.1368,
+    "worstMarginMm": -21.17,
+    "worstAzimuthTurns": 0.9972,
+    "violations": [
+     {
+      "level": "L05",
+      "azimuthTurns": 0.9972,
+      "marginMm": -21.17,
+      "foldRadiusMm": 154.73,
+      "bodyRadiusMm": 175.9,
+      "utilisation": 1.1368
+     }
+    ]
+   },
+   "probe": {
+    "samples": 5000,
+    "failures": 3,
+    "inadmissibleNotes": 3,
+    "byLevel": [
+     {
+      "level": "L05",
+      "failures": 3
+     }
+    ]
+   },
+   "scan": {
+    "probed": 162000,
+    "foldedPoints": 979,
+    "sound": "false",
+    "kinds": "ambiguous",
+    "levelsFolding": 2,
+    "azimuthsProbed": 720
+   },
+   "lumbosacral": {
+    "kinkDeg": 56.64,
+    "endplateSlopeDeg": 7.04,
+    "endplatePlanarityRatio": 4.74
+   },
+   "unverifiedAzimuths": 0
+  },
+  {
+   "id": "bp3d-4.0-adult-whole-centroid-entry-tangent",
+   "ships": false,
+   "why": "both alternative rules at once, so neither can be blamed for the other's result",
+   "options": {
+    "centreline": "whole",
+    "bodyFraction": null,
+    "sacralAxisRule": "entry-tangent",
+    "endplatePad": 1.2,
+    "endplateBandMm": 8,
+    "azimuths": 72
+   },
+   "accepted": false,
+   "stages": [
+    {
+     "stage": "STRUCTURE",
+     "passed": true,
+     "problems": 0
+    },
+    {
+     "stage": "AUDIT",
+     "passed": false,
+     "problems": 1
+    },
+    {
+     "stage": "PROBE",
+     "passed": false,
+     "problems": 2
+    },
+    {
+     "stage": "ADMISSIBILITY-CONSISTENCY",
+     "passed": false,
+     "problems": 6
+    }
+   ],
+   "maxUsefulDigits": 2,
+   "audit": {
+    "locallyAdmissible": false,
+    "worstLevel": "L05",
+    "worstUtilisation": 1.2193,
+    "worstMarginMm": -16.88,
+    "worstAzimuthTurns": 0.4472,
+    "violations": [
+     {
+      "level": "L05",
+      "azimuthTurns": 0.4472,
+      "marginMm": -16.88,
+      "foldRadiusMm": 76.95,
+      "bodyRadiusMm": 93.83,
+      "utilisation": 1.2193
+     }
+    ]
+   },
+   "probe": {
+    "samples": 5000,
+    "failures": 5,
+    "inadmissibleNotes": 5,
+    "byLevel": [
+     {
+      "level": "L05",
+      "failures": 5
+     }
+    ]
+   },
+   "scan": {
+    "probed": 162000,
+    "foldedPoints": 1301,
+    "sound": "false",
+    "kinds": "ambiguous",
+    "levelsFolding": 3,
+    "azimuthsProbed": 720
+   },
+   "lumbosacral": {
+    "kinkDeg": 19.92,
+    "endplateSlopeDeg": 7.04,
+    "endplatePlanarityRatio": 4.74
+   },
+   "unverifiedAzimuths": 0
+  }
+ ]
+}

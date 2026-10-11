@@ -1,0 +1,22 @@
+✓ performance budget
+  reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+  calibration: 56 ms here vs 120 ms reference → parse times scaled by 2.15
+  raw parse: index 1.8 ms, assets 8.8 ms, name index build 22.8 ms (best of 15) on this machine
+    the name index app.js builds on the critical path, timed on its own lines and still inside the derived critical path: 57 structures, 3478 cells
+    its cold first attempt was 48.3 ms raw, against the 22.8 ms best-of-15 the limit is set against. The browser pays the cold one, once,
+    so the gated figure and derivedFirstInteractionMs are optimistic about this term. Not gated: one cold sample is too noisy for a limit.
+  files: 17 bundle, 8 index (2 of them the name index), 4 asset
+  
+  bundleGzipBytes                         141.5 KiB /    150.0 KiB    94% 
+  indexGzipBytes                           47.2 KiB /    256.0 KiB    18% 
+  lowResAssetGzipBytes                    112.3 KiB /   2560.0 KiB     4% 
+  indexParseMsNormalised                       4 ms /        40 ms    10% 
+  nameIndexBuildMsNormalised                  49 ms /       100 ms    49% 
+  nameIndexBuildUsPerCell              14.1 us/cell / 28.0 us/cell    50% 
+  lowResAssetParseMsNormalised                19 ms /       400 ms     5% 
+  derivedLowResAssetLoadMs                   290 ms /      2500 ms    12% 
+  derivedFirstInteractionMs                  795 ms /      3500 ms    23% 
+  
+  NOT MEASURED: the same two derived numbers in a real browser. That needs the
+  viewer and a headless browser in CI. Until then the 600 ms render allowance
+  in derivedFirstInteractionMs is a stated placeholder, not an observation.
