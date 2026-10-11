@@ -37,7 +37,7 @@ import {
   findStructures,
   parse,
 } from './alc.js';
-import { fitCamera, flyToCell, pan, rayThrough, rotate, zoom } from './viewer/camera.js';
+import { fitCamera, flyToCell, missPoint, pan, rayThrough, rotate, zoom } from './viewer/camera.js';
 import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
 import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flags.js';
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
@@ -1130,8 +1130,8 @@ function uploadSelectedCell() {
   }
 }
 
-function select(input, { fly = false, push = true } = {}) {
-  const model = viewer.select(input);
+function select(input, { fly = false, push = true, encodeFlags } = {}) {
+  const model = viewer.select(input, { encodeFlags });
   if (model.ok) {
     uploadSelectedCell();
     // The filter moved, so the faint/bright split on the highlights moved.
@@ -1206,9 +1206,12 @@ function pick(event) {
   const digits = Math.min(bound.maxUsefulDigits, Number($('precision').value));
 
   if (viewer.atlas === 'body') {
-    const hit = ui.meshes.body && pickMesh(ui.meshes.body, ray.origin, ray.direction);
-    if (!hit) return;
-    select(encodeBody(bound, hit.pointMm, digits).address, { push: true });
+    if (!ui.meshes.body) return;
+    // A miss is not ignored: it is encoded where it points, and the encoder's
+    // flags ride along so the clamp it raises reaches the user (DOG-116).
+    const hit = pickMesh(ui.meshes.body, ray.origin, ray.direction);
+    const enc = encodeBody(bound, hit ? hit.pointMm : missPoint(ray, ui.bounds.body), digits);
+    select(enc.address, { push: true, encodeFlags: enc.flags });
     return;
   }
 
@@ -1219,6 +1222,9 @@ function pick(event) {
     const hit = pickMesh(mesh, ray.origin, ray.direction);
     if (hit && (!best || hit.distanceMm < best.distanceMm)) best = hit;
   }
+  // Address only, unlike the body: the hemisphere mesh's vertices sit on the
+  // template's own boundary, so about half of all on-surface hits encode as
+  // `clamped` by rounding alone, and carrying that would be a false warning.
   if (best) select(encodeBrainVolume(bound, best.pointMm, digits).address, { push: true });
 }
 

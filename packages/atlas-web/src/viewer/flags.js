@@ -60,6 +60,17 @@ export function coarsestResolvable(address, templates) {
   return null;
 }
 
+function mergeFlags(located, encoded) {
+  if (!encoded) return located;
+  const notes = [...(located.notes ?? []), ...(encoded.notes ?? [])];
+  return {
+    ...located,
+    folded: Boolean(located.folded || encoded.folded),
+    clamped: Boolean(located.clamped || encoded.clamped),
+    ...(notes.length ? { notes } : {}),
+  };
+}
+
 const notice = (code, severity, title, detail, extra = {}) => ({
   code,
   severity,
@@ -78,8 +89,13 @@ const notice = (code, severity, title, detail, extra = {}) => ({
  */
 export function locateNotices(located, context = {}) {
   const out = [];
-  const flags = located?.flags ?? {};
   const { address, displayAddress, templateLimitDigits } = context;
+  // A clicked point's encode flags, merged in. They describe the POINT, not the
+  // address it encoded to, so `locate()` on that address cannot recover them:
+  // a click above the head encodes to an ordinary C01 cell. Dropping them is
+  // how no click could ever raise `clamped` (DOG-116). A pasted or linked
+  // address has none, and correctly so — an address replayed is never a clamp.
+  const flags = mergeFlags(located?.flags ?? {}, context.encodeFlags);
 
   // `overPrecise` has to be told, not read back off `located`.
   //

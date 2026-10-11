@@ -12,7 +12,7 @@
  * is derived from the bounds it is given.
  */
 
-import { addScaled, cross, unit } from './vec.js';
+import { addScaled, cross, dot, sub, unit } from './vec.js';
 
 /** Pitch is clamped short of the poles, where yaw becomes meaningless. */
 const PITCH_LIMIT = Math.PI / 2 - 0.02;
@@ -130,4 +130,18 @@ export function rayThrough(camera, px, py, width, height) {
   let direction = addScaled(forward, right, ndcX * tanHalf * aspect);
   direction = addScaled(direction, up, ndcY * tanHalf);
   return { origin: eye, direction: unit(direction) };
+}
+
+/**
+ * Where a ray that hit nothing is taken to point: its closest approach to the
+ * scene's centre.
+ *
+ * A click off the model is still a question about a place, and the honest
+ * answer is the boundary cell with a `clamped` notice naming which end was
+ * passed — not silence. Above the head this lands above C01, below the feet
+ * below S01, beside the trunk outside its surface; the encoder flags all three.
+ */
+export function missPoint(ray, bounds) {
+  const along = Math.max(0, dot(sub(bounds.centre, ray.origin), ray.direction));
+  return addScaled(ray.origin, ray.direction, along);
 }

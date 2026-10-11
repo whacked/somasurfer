@@ -231,7 +231,7 @@ claims, so it produces none of them:
 | --- | --- |
 | `folded` | `?template=anat-hyperkyphotic-short-wide` |
 | `names-other-template` | any `anat-*` or `syn-brain-adult` |
-| `clamped` | a click or paste outside the modelled body — not a template |
+| `clamped` | a click on the body canvas that misses the model (above C01 → cranial, below S01 → caudal, beside the trunk → surface); the end is named in `notes`. Never a paste or link — an address replayed is not a clamp |
 
 `homology-variant` (`BD-T13`, `BD-L06`, `BD-S06`) and `homology-absent`
 (`BD-S02`–`BD-S05`) are reachable on the real template.
