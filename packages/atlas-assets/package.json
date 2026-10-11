@@ -12,7 +12,8 @@
       "geometry",
       "templates",
       "labels",
-      "brain"
+      "brain",
+      "registration"
     ],
     "ncPayloadDirs": [
       "nc"

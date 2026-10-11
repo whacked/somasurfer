@@ -140,6 +140,20 @@
         "zanatomy"
       ],
       "note": "Only the structures docs/asset-licensing.md 7.3 clears. The 146 undeclared-material structures (126 of 128 cortical) and the 46 Dundee cranial-nerve structures are in neither mesh file; structures.json lists them by name under `excluded`. Licence rule 10 checks every structure id inside these files against packages/atlas-assets/provenance/brain-zanatomy-2929e94.json. Data derived from the Human Connectome Project (CIT168, Najdenovska, Neudorfer, HCP1065): Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657)."
+    },
+    {
+      "id": "brain-mni-registration",
+      "title": "MNI (ICBM152 2009c) to brain-mesh affine, with residuals",
+      "files": [
+        "registration/mni-to-zanatomy-2929e94.json"
+      ],
+      "licence": "Apache-2.0",
+      "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+      "holder": "GStack",
+      "source": "First-party. Fitted by tools/fit-brain-registration.mjs.",
+      "shareAlike": false,
+      "licenceClass": "asset",
+      "note": "Our own fit, not brainproject's. It records centroid coordinates as measurements: of Z-Anatomy surfaces in the committed brain mesh, and of the CIT168 atlas (Pauli et al. 2018, CC BY 4.0, credited in the file). No mesh or atlas geometry is in it."
     }
   ],
   "upstreamSources": [

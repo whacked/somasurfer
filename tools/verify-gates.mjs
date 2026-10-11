@@ -362,6 +362,7 @@ const BRAIN = brainAssetPaths(
 const BRAIN_LOW = join(ASSETS, BRAIN.lowFile);
 const BRAIN_FULL = join(ASSETS, BRAIN.fullFile);
 const BRAIN_STRUCTURES = join(ASSETS, BRAIN.structuresFile);
+const BRAIN_REGISTRATION = join(ASSETS, 'registration', `mni-to-${BRAIN.id}.json`);
 
 /** The structure records of a committed brain file, by name, for staging against. */
 function brainStructure(name) {
@@ -1362,6 +1363,23 @@ const CASES = [
     check: () => run('check-mesh-assets.mjs'),
   },
   {
+    name: 'mesh-registration-error-understated',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when the registration publishes a held-out error the fit does not give',
+    expect: [/registration: red-nucleus\.l records errorMm 2; refitting gives [\d.]+/],
+    describe: 'the registration file claiming a 2 mm held-out error at the left red nucleus',
+    // The figure every coordinate-reported finding inherits. Understating it is
+    // the failure that matters, so it is the one staged.
+    break: () => {
+      const reg = JSON.parse(readFileSync(BRAIN_REGISTRATION, 'utf8'));
+      const rn = reg.heldOut.find((x) => x.id === 'red-nucleus.l');
+      if (!rn) throw new Error('red-nucleus.l is no longer a held-out pair to stage this against');
+      rn.errorMm = 2;
+      return substitute(BRAIN_REGISTRATION, `${JSON.stringify(reg, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
     name: 'licence-rule-10-reads-the-brain-files',
     gate: 'licence separation',
     criterion: 'rule 10 checks every structure slot of the committed brain files, not none',
@@ -1542,6 +1560,7 @@ const touched = [
   rel(BRAIN_LOW),
   rel(BRAIN_FULL),
   rel(BRAIN_STRUCTURES),
+  rel(BRAIN_REGISTRATION),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {

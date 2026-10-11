@@ -12,6 +12,20 @@ against them on every CI run. Do not edit; rebuild. Every figure here is re-meas
 Mesh-frame millimetres are the Z-Anatomy model's own, not MNI millimetres. The MNI-to-mesh affine,
 its scale and its residuals are in `packages/atlas-assets/registration/`.
 
+## Registration: MNI to this mesh
+
+Our own 12-parameter affine, fitted on 10 landmark centroids (Z-Anatomy surfaces against CIT168 in ICBM152 2009c) and
+re-derived from the committed full tier on every CI run. Errors are in MNI millimetres.
+
+| measure | mean (mm) | max (mm) |
+| --- | ---: | ---: |
+| in-sample residual | 1.99 | 3.02 |
+| leave-one-out | 3.42 | 5.1 |
+| **held out: red nucleus, L and R** | **8.55** | **8.55** |
+
+Per-axis scale, mesh mm per MNI mm: 1.28, 1.0346, 0.8347. The held-out figure is the honest one: any
+coordinate carried onto this mesh is placed to within about that distance, never exactly.
+
 ## By category
 
 | category | structures | low triangles | Hausdorff median (mm) | Hausdorff max (mm) |

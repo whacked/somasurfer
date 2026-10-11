@@ -36,6 +36,7 @@ import { readMeshBin, structureGeometry } from './lib/meshbin.mjs';
 import { bounds, degenerateTriangles, surfaceArea, surfaceDeviation } from './lib/mesh-geometry.mjs';
 import { GROUPS } from './lib/brain-provenance.mjs';
 import { BRAIN_MESH_BUILD, brainAssetPaths } from './lib/brain-asset-paths.mjs';
+import { HELD_OUT, LANDMARKS, MAX_OPEN_EDGE_SHARE, evaluate, meshGeometries, volumeCentroid } from './lib/brain-registration.mjs';
 
 const GATE = 'mesh assets';
 const MIN_AXIS_SHARE = 0.5;
@@ -143,6 +144,55 @@ for (const [slot, s] of doc.structures.entries()) {
   rows.push({ s, lowTris, fullTris, hausdorff, mean, ratio, extentMm: Math.max(...fb.extent) * 1000 });
 }
 
+// --- The registration: everything but the MNI centroids is re-derived ---------
+// The MNI side needs the CIT168 volume, which is not in the repository; its
+// digest is recorded in the file. Everything else (the mesh centroids, the
+// affine, every residual) is recomputed here from the committed full tier and
+// compared, so the published held-out error is a measurement, not a claim.
+const REG_FILE = join(assets, 'registration', `mni-to-${paths.id}.json`);
+let reg = null;
+if (!existsSync(REG_FILE)) {
+  problems.push(`packages/atlas-assets/registration/mni-to-${paths.id}.json is missing. Fit it with tools/fit-brain-registration.mjs.`);
+} else {
+  reg = JSON.parse(readFileSync(REG_FILE, 'utf8'));
+  const fullBytes = readFileSync(join(assets, paths.fullFile));
+  const expected = [...LANDMARKS.flatMap((l) => ['l', 'r'].map((side) => ({ l, side, held: false }))),
+    ...HELD_OUT.flatMap((l) => ['l', 'r'].map((side) => ({ l, side, held: true })))];
+  const recorded = [...reg.landmarks, ...reg.heldOut];
+  if (recorded.length !== expected.length) problems.push(`registration: ${recorded.length} landmarks recorded, ${expected.length} defined.`);
+  const fit = [];
+  const held = [];
+  for (const { l, side, held: isHeld } of expected) {
+    const id = `${l.key}.${side}`;
+    const rec = (isHeld ? reg.heldOut : reg.landmarks).find((x) => x.id === id);
+    if (!rec) {
+      problems.push(`registration: ${id} is defined as a ${isHeld ? 'held-out pair' : 'landmark'} but not recorded as one.`);
+      continue;
+    }
+    const m = volumeCentroid(meshGeometries(fullBytes, doc, l.mesh[side]));
+    if (m.boundaryEdges > MAX_OPEN_EDGE_SHARE * m.edges) problems.push(`registration: ${id}'s surface is open (${m.boundaryEdges} of ${m.edges} edges).`);
+    if (m.centroid.some((x, k) => Math.abs(x - rec.meshM[k]) > 1e-6)) {
+      problems.push(`registration: ${id}'s mesh centroid is recorded as ${rec.meshM.join(', ')}; the committed mesh gives ${m.centroid.map((x) => x.toFixed(7)).join(', ')}.`);
+    }
+    // Fit from the recorded centroid, just checked against the mesh: the file
+    // fitted from exactly these rounded values.
+    (isHeld ? held : fit).push({ id, mniMm: rec.mniMm, meshM: rec.meshM });
+  }
+  if (fit.length === reg.landmarks.length && held.length === reg.heldOut.length) {
+    const r = evaluate(fit, held);
+    const close = (a, b, tol) => Math.abs(a - b) <= tol;
+    if (!r.mniToMesh.every((row, i) => row.every((x, j) => close(x, reg.mniToMesh[i][j], 1e-8)))) {
+      problems.push('registration: mniToMesh is not the least-squares fit of the recorded landmarks.');
+    }
+    for (const [list, key, got] of [[reg.landmarks, 'residualMm', r.inSample], [reg.landmarks, 'leaveOneOutMm', r.loo], [reg.heldOut, 'errorMm', r.heldOut]]) {
+      for (const g of got) {
+        const rec = list.find((x) => x.id === g.id);
+        if (!close(g.mm, rec[key], 0.006)) problems.push(`registration: ${g.id} records ${key} ${rec[key]}; refitting gives ${g.mm.toFixed(2)}.`);
+      }
+    }
+  }
+}
+
 // --- The published report ----------------------------------------------------
 const fmt = (x, d = 2) => x.toFixed(d);
 const sorted = (xs) => [...xs].sort((a, b) => a - b);
@@ -167,6 +217,24 @@ const reportLines = [
   '',
   'Mesh-frame millimetres are the Z-Anatomy model\'s own, not MNI millimetres. The MNI-to-mesh affine,',
   'its scale and its residuals are in `packages/atlas-assets/registration/`.',
+  ...(reg
+    ? [
+        '',
+        '## Registration: MNI to this mesh',
+        '',
+        `Our own 12-parameter affine, fitted on ${reg.summary.landmarks} landmark centroids (Z-Anatomy surfaces against CIT168 in ICBM152 2009c) and`,
+        're-derived from the committed full tier on every CI run. Errors are in MNI millimetres.',
+        '',
+        '| measure | mean (mm) | max (mm) |',
+        '| --- | ---: | ---: |',
+        `| in-sample residual | ${reg.summary.inSample.meanMm} | ${reg.summary.inSample.maxMm} |`,
+        `| leave-one-out | ${reg.summary.leaveOneOut.meanMm} | ${reg.summary.leaveOneOut.maxMm} |`,
+        `| **held out: red nucleus, L and R** | **${reg.summary.heldOut.meanMm}** | **${reg.summary.heldOut.maxMm}** |`,
+        '',
+        `Per-axis scale, mesh mm per MNI mm: ${reg.axisScaleMeshMmPerMniMm.join(', ')}. The held-out figure is the honest one: any`,
+        'coordinate carried onto this mesh is placed to within about that distance, never exactly.',
+      ]
+    : []),
   '',
   '## By category',
   '',
