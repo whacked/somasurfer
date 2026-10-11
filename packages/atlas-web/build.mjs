@@ -29,10 +29,14 @@
 
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { ENABLED_FRAMES, FRAMES, VERTEBRAL_LEVELS } from '../alc/src/index.ts';
+// The scanner behind the one check the trimmed research bundle makes
+// necessary. A separate module so the suite can plant a violation and prove it
+// still fires, the way address-equality.test.js does with alc's guard.
+import { importSites, surfaceProblems } from './shim-surface.mjs';
 import {
   ASSET_TEMPLATES,
   CURATED_CORPUS_RESOLUTION,
@@ -458,6 +462,28 @@ emit('data/atlas-index.json', JSON.stringify(atlasIndex) + '\n');
  * it. Verifying the source bundle instead would not load at all, because
  * `packages/atlas-research/dist/` has no alc next to it; and verifying it in a
  * way that papered over that would be verifying a layout nobody ships.
+ *
+ * ## The research bundle is a SUBSET of the package, and `source` says which
+ *
+ * `src/atlas-research.js` re-exports all 24 of `@gstack/atlas-research`, which
+ * is what Node and the suite get. The browser gets
+ * `dist/atlas-research.viewer.js`, built from `src/index.viewer.ts`, which
+ * exports the three names `src/viewer/corpus.js` imports — 9 KiB of gzip
+ * against a `bundleGzipBytes` line that was reading 98%. DOG-84; read
+ * `packages/atlas-research/src/index.viewer.ts` for the reasoning and
+ * `packages/atlas-research/scripts/build.mjs` note 4 for what that package now
+ * asserts in place of export equality.
+ *
+ * `source` is therefore the entry each bundle was BUILT from, not the package
+ * entry. The drift check below is unchanged in what it does — it is still
+ * exact equality against a module this build imported itself, so a stale
+ * `dist/` fails here — but the module it compares against is the one that
+ * describes the emitted file. For alc those are the same file; for research
+ * they are not, and pointing this at `src/index.ts` would fail by design.
+ *
+ * What that leaves uncovered is the viewer importing a name the subset does
+ * not have, which typechecks and passes the suite. `checkShimImportSurface()`
+ * below is the gate for it.
  */
 const SHIMS = [
   {
@@ -465,12 +491,15 @@ const SHIMS = [
     bundle: join(REPO_ROOT, 'packages', 'alc', 'dist', 'alc.js'),
     source: join(REPO_ROOT, 'packages', 'alc', 'src', 'index.ts'),
     rebuild: 'node packages/alc/scripts/build.mjs',
+    /** The library is served whole; nothing narrows it, so nothing to check. */
+    checkImportSurface: false,
   },
   {
     shim: 'atlas-research.js',
-    bundle: join(REPO_ROOT, 'packages', 'atlas-research', 'dist', 'atlas-research.js'),
-    source: join(REPO_ROOT, 'packages', 'atlas-research', 'src', 'index.ts'),
+    bundle: join(REPO_ROOT, 'packages', 'atlas-research', 'dist', 'atlas-research.viewer.js'),
+    source: join(REPO_ROOT, 'packages', 'atlas-research', 'src', 'index.viewer.ts'),
     rebuild: 'node packages/atlas-research/scripts/build.mjs',
+    checkImportSurface: true,
   },
 ];
 const SHIM_NAMES = new Set(SHIMS.map((s) => s.shim));
@@ -496,7 +525,57 @@ copyClientTree(join(HERE, 'src'), 'app');
  * so each package's own build script verifies its bundle against its own
  * source, and this re-verifies it against the source THIS build imported.
  */
-for (const { shim, bundle: bundlePath, source: sourcePath, rebuild } of SHIMS) {
+/**
+ * Every emitted app module that imports the shimmed bundle must import names
+ * it really exports.
+ *
+ * This is the gate for the one failure the subset introduces, and it is the
+ * reason the subset is safe to ship. `shim-surface.mjs` carries the reasoning
+ * and the three site kinds; what is here is the part that needs the layout.
+ *
+ * Over `emitted` rather than over `src/`, and against `Object.keys()` of the
+ * module just imported from `dist/app/`, so both halves are the artefact: the
+ * files that shipped, and the names the browser will see.
+ *
+ * `emitted` holds forward-slash paths relative to OUT. `resolve` against OUT
+ * turns a specifier into an absolute path, which is how `'./atlas-research.js'`
+ * from `app/` and `'../atlas-research.js'` from `app/viewer/` are recognised as
+ * the same file.
+ *
+ * One blind spot, stated rather than left implicit: a computed
+ * `import(expr)` resolves at runtime and no static pass can see it. There is
+ * none in `src/`, and `address-equality.test.js`'s scan of this tree would be
+ * the place to notice one appearing.
+ */
+function checkShimImportSurface(shim, exports) {
+  const shimAbs = join(OUT, 'app', shim);
+  const sites = [];
+  for (const { path } of emitted) {
+    if (!path.startsWith('app/') || !path.endsWith('.js')) continue;
+    const abs = join(OUT, path);
+    if (abs === shimAbs) continue; // the bundle itself; its own imports are alc's
+    for (const site of importSites(path, readFileSync(abs, 'utf8'))) {
+      if (resolve(dirname(abs), site.specifier) === shimAbs) sites.push(site);
+    }
+  }
+
+  const problems = surfaceProblems(sites, exports);
+  if (problems.length > 0) {
+    throw new Error(
+      `dist/app/${shim} is the trimmed browser bundle, and ${problems.length} import site(s) ask it for `
+      + 'more than it has.\n'
+      + 'Each of these loads under Node — src/atlas-research.js re-exports the whole package — and\n'
+      + 'throws SyntaxError in the browser, so the suite cannot see it:\n'
+      + problems.map((p) => `  ${p}`).join('\n')
+      + '\n  Fix by adding the name to packages/atlas-research/src/index.viewer.ts and paying what its\n'
+      + '  module graph costs in bundleGzipBytes, or by not importing it in the viewer.',
+    );
+  }
+  return sites;
+}
+
+const surfaceReport = [];
+for (const { shim, bundle: bundlePath, source: sourcePath, rebuild, checkImportSurface } of SHIMS) {
   if (!existsSync(bundlePath)) {
     throw new Error(
       `${relative(REPO_ROOT, bundlePath)} is missing. Run \`${rebuild}\` first: the browser cannot `
@@ -519,6 +598,22 @@ for (const { shim, bundle: bundlePath, source: sourcePath, rebuild } of SHIMS) {
       + `  missing: ${expected.filter((n) => !got.includes(n)).join(', ') || 'none'}\n`
       + `  extra:   ${got.filter((n) => !expected.includes(n)).join(', ') || 'none'}\n`
       + `  Rebuild: ${rebuild}`,
+    );
+  }
+
+  if (checkImportSurface) {
+    const sites = checkShimImportSurface(shim, got);
+    if (sites.length === 0) {
+      throw new Error(
+        `nothing in dist/app/ imports ${shim}, so the surface check above proved nothing.\n`
+        + `  Either the viewer stopped using @gstack/atlas-research — in which case drop the shim and\n`
+        + '  the bundle rather than shipping a module nobody loads — or the scan no longer finds the\n'
+        + '  import site it is meant to guard (see packages/atlas-web/shim-surface.mjs).',
+      );
+    }
+    surfaceReport.push(
+      `${shim}: ${got.length} exports, asked for by ${sites.length} import site(s) in dist/app/ — `
+      + sites.map((s) => `${s.file}:${s.line}`).join(', '),
     );
   }
 }
@@ -576,5 +671,6 @@ const manifest = {
 emit('build-manifest.json', JSON.stringify(manifest, null, 2) + '\n');
 
 console.log(`✓ build → ${relative(REPO_ROOT, OUT)} (base ${BASE})`);
+for (const line of surfaceReport) console.log(`  surface: ${line}`);
 for (const f of manifest.files) console.log(`  ${String(f.bytes).padStart(8)}  ${f.path}`);
 console.log(`  ${String(manifest.totalBytes).padStart(8)}  total`);

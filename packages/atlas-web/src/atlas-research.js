@@ -9,9 +9,33 @@
  *                             directly. Node 24 strips the types, so the
  *                             resolver the suite exercises is the resolver
  *                             `packages/atlas-research/test` is green against.
+ *                             All 24 exports.
  *   Browser (dist/)           `build.mjs` emits `dist/app/atlas-research.js`
- *                             from `packages/atlas-research/dist/atlas-research.js`
- *                             in place of this file.
+ *                             from `packages/atlas-research/dist/atlas-research.viewer.js`
+ *                             in place of this file. THREE exports.
+ *
+ * ## The two surfaces differ, and that is the one thing to know here
+ *
+ * This is where `atlas-research.js` stops being the same arrangement as
+ * `alc.js`. The library is served whole; the research layer is not. The
+ * browser gets the bundle built from `packages/atlas-research/src/index.viewer.ts`
+ * — `loadDataset`, `buildResearchIndex`, `formatCitation`, the three
+ * `viewer/corpus.js` imports — because serving all 24 means serving
+ * `browse.ts` and `layers.ts` too, and that was 8,702 B of gzip against a
+ * `bundleGzipBytes` budget reading 98% of 150 KiB. DOG-84.
+ *
+ * So an import of any OTHER name resolves here under Node, typechecks, passes
+ * the whole suite, and throws `SyntaxError` in the browser on first load. It
+ * is the one failure mode in this package that green CI cannot see, and
+ * `checkShimImportSurface()` in `../build.mjs` is the gate for it: it scans the
+ * emitted `dist/app/` tree and requires every name taken from this specifier
+ * to be one the emitted bundle really exports. `test/shim-surface.test.js`
+ * makes the same check over `src/` in `test:counted`, which runs first.
+ *
+ * To use a fourth name: add it to `index.viewer.ts` and accept whatever its
+ * module graph costs in `bundleGzipBytes`. Do not narrow THIS file to match —
+ * the suite and the QA harness are green against the full surface, and
+ * trimming it would turn a bundling decision into an API change.
  *
  * ## `@gstack/alc` must stay EXTERNAL to that bundle
  *
