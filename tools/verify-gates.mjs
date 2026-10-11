@@ -107,8 +107,16 @@ function perfReport(calibrationMs, extra = []) {
   }
 }
 
+/**
+ * A calibration that puts this gate in the band with every parse line scaled to
+ * a quarter-and-a-bit of its raw time. For cases about WHERE the gate looks, not
+ * about the limits: at 120, normalised equals raw, and a slow or contended runner
+ * could take the name index over its limit and turn a lookup case red.
+ */
+const LOOKUP_CALIBRATION_MS = 400;
+
 /** The same, for a build somewhere other than packages/atlas-web/dist. */
-const perfReportAt = (dist) => perfReport(120, ['--dist', rel(dist)]);
+const perfReportAt = (dist) => perfReport(LOOKUP_CALIBRATION_MS, ['--dist', rel(dist)]);
 
 /**
  * What actions/configure-pages hands the Deploy job for this repository, without
@@ -814,46 +822,47 @@ const CASES = [
       requireBuild();
       return () => {};
     },
+    //
+    // The audit reads the report at a substituted in-band calibration. At the
+    // runner's own, a runner faster than the band puts every calibrated line at
+    // `not evaluated`, which is correct, and this audit then failed on GitHub run
+    // 38122623958 for a property of the runner rather than of the budget
+    // (DOG-120). Whether a line CAN carry a verdict is a question about the
+    // committed tree, so it is asked where the runner cannot answer it instead.
+    // The check below still runs at the runner's real calibration.
     audit: () => {
-      const dir = mkdtempSync(join(tmpdir(), 'perf-gated-'));
-      const path = join(dir, 'perf.json');
-      try {
-        run('perf-budget.mjs', ['--json', path]);
-        const report = JSON.parse(readFileSync(path, 'utf8'));
-        const problems = [];
+      const report = perfReport(120);
+      const problems = [];
 
-        const declared = Object.keys(report.unverified ?? {});
-        if (declared.length > 0) {
-          problems.push(`budget line(s) shipped measured-but-not-gated: ${declared.join(', ')}.`);
-          problems.push(`  An unverified declaration is a terminal state for one issue, not a resting`);
-          problems.push(`  state for the budget. Settle the limit and delete the block.`);
-        }
-
-        // The DOG-98 lines specifically: they exist to gate in BOTH directions,
-        // and a line sitting permanently at "not evaluated" would be the DOG-80
-        // defect again — a number printed, nothing able to go red over it.
-        if (report.nameIndex?.measured === true) {
-          for (const key of ['nameIndexBuildMsNormalised', 'nameIndexBuildUsPerCell']) {
-            const line = report.verdicts[key];
-            if (line === undefined) {
-              problems.push(`${key} has no verdict: the line is gone, not merely over or under.`);
-            } else if (line.verdict !== 'within' && line.verdict !== 'over') {
-              problems.push(`${key} reports ${JSON.stringify(line.verdict)} on the committed tree.`);
-              problems.push(`  This build has a name index, so both DOG-98 lines have a subject and`);
-              problems.push(`  are supposed to carry a verdict in both directions.`);
-            }
-          }
-          // The per-cell line divides by the cell count, so a report that gates
-          // on it without saying what it divided by cannot be re-derived.
-          if (!(report.nameIndex.cells > 0)) {
-            problems.push(`nameIndex.cells is ${JSON.stringify(report.nameIndex.cells)}, so the per-cell line`);
-            problems.push(`  cannot be checked against the measurement it came from.`);
-          }
-        }
-        return problems;
-      } finally {
-        rmSync(dir, { recursive: true, force: true });
+      const declared = Object.keys(report.unverified ?? {});
+      if (declared.length > 0) {
+        problems.push(`budget line(s) shipped measured-but-not-gated: ${declared.join(', ')}.`);
+        problems.push(`  An unverified declaration is a terminal state for one issue, not a resting`);
+        problems.push(`  state for the budget. Settle the limit and delete the block.`);
       }
+
+      // The DOG-98 lines specifically: they exist to gate in BOTH directions,
+      // and a line sitting permanently at "not evaluated" would be the DOG-80
+      // defect again — a number printed, nothing able to go red over it.
+      if (report.nameIndex?.measured === true) {
+        for (const key of ['nameIndexBuildMsNormalised', 'nameIndexBuildUsPerCell']) {
+          const line = report.verdicts[key];
+          if (line === undefined) {
+            problems.push(`${key} has no verdict: the line is gone, not merely over or under.`);
+          } else if (line.verdict !== 'within' && line.verdict !== 'over') {
+            problems.push(`${key} reports ${JSON.stringify(line.verdict)} on the committed tree.`);
+            problems.push(`  This build has a name index, so both DOG-98 lines have a subject and`);
+            problems.push(`  are supposed to carry a verdict in both directions.`);
+          }
+        }
+        // The per-cell line divides by the cell count, so a report that gates
+        // on it without saying what it divided by cannot be re-derived.
+        if (!(report.nameIndex.cells > 0)) {
+          problems.push(`nameIndex.cells is ${JSON.stringify(report.nameIndex.cells)}, so the per-cell line`);
+          problems.push(`  cannot be checked against the measurement it came from.`);
+        }
+      }
+      return problems;
     },
     check: () => run('perf-budget.mjs'),
   },
@@ -1054,7 +1063,7 @@ const CASES = [
       }
       return problems;
     },
-    check: () => run('perf-budget.mjs', ['--calibration-ms', '120', '--dist', rel(BASE_BUILD_DIST)]),
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS), '--dist', rel(BASE_BUILD_DIST)]),
   },
   {
     name: 'perf-non-root-base-still-needs-the-name-index',
@@ -1073,7 +1082,7 @@ const CASES = [
       rmSync(join(BASE_BUILD_DIST, 'assets', 'labels', 'names.json'));
       return restore;
     },
-    check: () => run('perf-budget.mjs', ['--calibration-ms', '120', '--dist', rel(BASE_BUILD_DIST)]),
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS), '--dist', rel(BASE_BUILD_DIST)]),
   },
 ];
 
