@@ -241,8 +241,8 @@ export default async function createDriver(options = {}) {
    * build that does it correctly, which is a false defect and the most
    * expensive kind of driver bug.
    */
-  const selectAndFly = (address, { fly = true } = {}) => {
-    const model = viewer.select(address);
+  const selectAndFly = (address, { fly = true, encodeFlags } = {}) => {
+    const model = viewer.select(address, { encodeFlags });
     // With the geometry gone there is no mesh to look at, so flying would
     // present an empty viewport as a result. Addresses and names still resolve.
     if (fly && model.ok && model.cell && viewer.isAvailable(viewer.atlas)) {
@@ -513,15 +513,18 @@ export default async function createDriver(options = {}) {
       return state();
     },
     async clickPointMm(pointMm, digits) {
-      const enc = viewer.atlas === 'body'
-        ? encodeBody(templates.body, pointMm, digits)
-        : encodeBrainVolume(templates.brainVolume, pointMm, digits);
-      // Exactly what `app.js` `pick()` does with a hit: select the encoded
-      // ADDRESS. The encoder's clamp flag is not carried — the page drops it,
-      // and an address replayed is not a clamp — so no `clamped` notice is
-      // composed here. An earlier version merged one in from `enc.flags`, and
-      // the clamp rows passed on the driver's work rather than the page's.
-      selectAndFly(enc.address);
+      // Exactly what `app.js` `pick()` does (DOG-116): a body click hands the
+      // encoder's flags to `viewer.select`, which raises the clamp itself; a
+      // brain click is address-only. Nothing is composed here — an earlier
+      // version merged a `clamped` notice in from `enc.flags`, and the clamp
+      // rows passed on the driver's work rather than the page's. A build
+      // whose select() ignores `encodeFlags` still reports no clamp.
+      if (viewer.atlas === 'body') {
+        const enc = encodeBody(templates.body, pointMm, digits);
+        selectAndFly(enc.address, { encodeFlags: enc.flags });
+      } else {
+        selectAndFly(encodeBrainVolume(templates.brainVolume, pointMm, digits).address);
+      }
       return state();
     },
     async pasteAddress(text) {
