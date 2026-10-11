@@ -509,6 +509,18 @@ dropped and the material that dropped each one. Z-Anatomy materials are a proxy
 for provenance, not a record of it; Z-Anatomy#10 asks that very question about
 `Pons`, `Medulla oblongata` and the spinal-cord horns.
 
+**W3 as built (DOG-128): BodyParts3D only, citing `bodyparts3d` alone.** Z-Anatomy
+ships its body only as a Blender scene, which nothing in CI can read, so W3 reads
+no Z-Anatomy object at all. It builds from the pinned BodyParts3D 4.0 set
+(`bodyparts3d.pinned`, a SHA-256 per file) under the licence D1 already decided.
+Every exclusion in the W3 row above therefore holds by construction rather than by
+filter. Neither non-commercial model and no undeclared-material object is in
+BodyParts3D, and the kidney and inner ear that ship are DBCLS's own. Because no
+Z-Anatomy object was read, there are no dropped objects to publish. W3 excludes
+one thing on its own account, the brain, which W2 ships. Its element files are
+listed with the reason in the body's `structures.json`. W3 does not fetch
+`Z-Anatomy.zip`, so its SHA-256 in §7.2 stays `null`. See `docs/body-meshes.md`.
+
 ### 7.7 Summary
 
 | criterion (DOG-126) | status |

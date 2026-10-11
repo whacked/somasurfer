@@ -27,6 +27,7 @@ import { join } from 'node:path';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
 import { readMeshBin, writeMeshBin } from './lib/meshbin.mjs';
 import { brainAssetPaths } from './lib/brain-asset-paths.mjs';
+import { bodyAssetPaths } from './lib/body-asset-paths.mjs';
 
 const ALC = join(REPO_ROOT, 'packages', 'alc');
 const WEB = join(REPO_ROOT, 'packages', 'atlas-web');
@@ -398,6 +399,25 @@ function rewriteMesh(path, edit) {
     indices: Uint32Array.from(mesh.indices.subarray(t.firstIndex, t.firstIndex + t.indexCount), (i) => (mesh.index32 ? i - t.firstVertex : i)),
   }));
   return substitute(path, writeMeshBin({ origin: mesh.origin, step: mesh.step, structures: edit(records) }));
+}
+
+// ---------------------------------------------------------------------------
+// Body meshes (DOG-128).
+// ---------------------------------------------------------------------------
+
+const BODY = bodyAssetPaths(
+  JSON.parse(readFileSync(join(ASSETS, 'attribution.json'), 'utf8')).upstreamSources.find((s) => s.id === 'bodyparts3d')
+    .pinned.files['isa_BP3D_4.0_obj_99.zip'].sha256,
+);
+const BODY_LOW = join(ASSETS, BODY.lowFile);
+const BODY_STRUCTURES = join(ASSETS, BODY.structuresFile);
+
+/** A committed body structure, by name, for staging against. */
+function bodyStructure(name) {
+  const doc = JSON.parse(readFileSync(BODY_STRUCTURES, 'utf8'));
+  const s = doc.structures.find((x) => x.name === name);
+  if (!s) throw new Error(`${name} is no longer a shipped body structure to stage this against`);
+  return s;
 }
 
 /** Limits a case staged from the measurement, read back by its expectations. */
@@ -1558,6 +1578,190 @@ const CASES = [
       }
       const doc = JSON.parse(readFileSync(shipped, 'utf8'));
       doc.tiers.x = { file: 'templates/bp3d-4.0-adult-body-centroid.body.json', loading: 'lazy' };
+      return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+
+  // -------------------------------------------------------------------------
+  // Body meshes (DOG-128): the same per-structure gate as the brain's, the
+  // registration to BD, licence rule 10 on body files, and the body's budget.
+  // -------------------------------------------------------------------------
+  {
+    name: 'body-mesh-gate-reads-the-committed-files',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate checks every body structure and all 25 BD levels on the committed tree, not none',
+    mustPass: true,
+    expect: [/bp3d-4066585: __BODY_STRUCTURES__ body structures in both tiers/, /Published error re-measured for all __BODY_STRUCTURES__: Hausdorff/, /Registered to BD: 25 level points re-derived from the shipped vertebrae/],
+    describe: 'the committed body mesh files, unchanged',
+    break: () => () => {},
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-skull-bone-lost-from-low-tier',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a body structure is missing from the low tier',
+    expect: [/body: structures\.json lists __BODY_STRUCTURES__ structures; the tiers hold __BODY_STRUCTURES_LESS_ONE__ \(low\)/],
+    describe: 'a low tier with the frontal bone decimated out of existence',
+    break: () => {
+      const bone = bodyStructure('Frontal bone');
+      return rewriteMesh(BODY_LOW, (records) => records.filter((r) => r.id !== bone.id));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-limb-bone-degenerate',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a body structure is present but degenerate in the low tier',
+    expect: [/body: Left femur \(id 24475\): \d+ degenerate triangle\(s\) in the low tier/],
+    describe: 'the left femur kept in the table, every vertex collapsed onto one point',
+    break: () => {
+      const femur = bodyStructure('Left femur');
+      return rewriteMesh(BODY_LOW, (records) => records.map((r) => {
+        if (r.id !== femur.id) return r;
+        return { ...r, positions: Int16Array.from(r.positions, (_, i) => r.positions[i % 3]) };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-rib-flattened-to-a-sliver',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a body structure keeps its triangles but loses an axis',
+    expect: [/body: Left seventh rib \(id 8256\): the low tier keeps [\d.]+ mm of its [\d.]+ mm [xyz] extent; it has collapsed toward a sliver/],
+    describe: 'the left seventh rib squashed flat onto one plane, triangle count untouched',
+    break: () => {
+      const rib = bodyStructure('Left seventh rib');
+      return rewriteMesh(BODY_LOW, (records) => records.map((r) => {
+        if (r.id !== rib.id) return r;
+        const ext = [0, 1, 2].map((a) => {
+          let lo = Infinity;
+          let hi = -Infinity;
+          for (let v = a; v < r.positions.length; v += 3) {
+            lo = Math.min(lo, r.positions[v]);
+            hi = Math.max(hi, r.positions[v]);
+          }
+          return { a, lo, span: hi - lo };
+        }).sort((x, y) => x.span - y.span)[0];
+        return { ...r, positions: Int16Array.from(r.positions, (q, i) => (i % 3 === ext.a ? ext.lo : q)) };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-not-in-the-bd-frame',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when the body is not in BD\'s frame, though every per-structure check still passes',
+    expect: [/body: registration: BD T07 axis point re-derived from the shipped seventh thoracic vertebra is [\d.]+ mm from the template's, over 1 mm/],
+    describe: 'both body tiers mirrored front to back, as a build that kept the source\'s LPS chart would be',
+    // Mirroring both tiers alike keeps every triangle, area and published error
+    // exactly: only the registration check can see that the body faces the wrong way.
+    break: () => {
+      const flip = (records) => records.map((r) => ({ ...r, positions: Int16Array.from(r.positions, (q, i) => (i % 3 === 1 ? -q : q)) }));
+      const restoreLow = rewriteMesh(BODY_LOW, flip);
+      const restoreFull = rewriteMesh(join(ASSETS, BODY.fullFile), flip);
+      return () => {
+        restoreFull();
+        restoreLow();
+      };
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-limb-given-an-address',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a body structure carries an ALC-1 address',
+    expect: [/body: Left humerus \(id 23131\) carries an ALC-1 address; body meshes are display geometry, named and not addressed/],
+    describe: 'body structures.json giving the left humerus a BD address',
+    // A limb frame is an ALC-1 spec change. A limb with an address in the data
+    // is that change made without the spec.
+    break: () => {
+      const doc = JSON.parse(readFileSync(BODY_STRUCTURES, 'utf8'));
+      const s = doc.structures.find((x) => x.name === 'Left humerus');
+      if (!s) throw new Error('Left humerus is no longer a shipped body structure to stage this against');
+      s.address = 'BD-T03-03O-531';
+      return substitute(BODY_STRUCTURES, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'licence-rule-10-reads-the-body-files',
+    gate: 'licence separation',
+    criterion: 'rule 10 checks every structure slot of the committed body files, not none',
+    mustPass: true,
+    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\)[^\n]*; 3 body file\(s\), __BODY_SLOTS__ structure slot\(s\)/],
+    describe: 'the committed body mesh files and their attribution entry, unchanged',
+    break: () => () => {},
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-brain-carried-inside-the-body-file',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a body file carries a concept the body excludes',
+    expect: [/entry bp3d-body-meshes ships [^\n]* \(id \d+\), which is held as excluded-from-body/],
+    describe: 'the body low tier with one slot relabelled as an excluded brain concept',
+    // The brain is W2's atlas. Shipping it inside the body would be a second
+    // brain, registered differently, under an entry that never cleared it as one.
+    break: () => {
+      const doc = JSON.parse(readFileSync(BODY_STRUCTURES, 'utf8'));
+      const shipped = new Set(doc.structures.map((x) => x.id));
+      const brain = doc.excluded.map((e) => Number(String(e.fma).replace(/^FMA/, ''))).find((id) => Number.isFinite(id) && !shipped.has(id));
+      if (!brain) throw new Error('the body excludes no brain concept to stage this against');
+      let swapped = false;
+      return rewriteMesh(BODY_LOW, (records) => records.map((r) => {
+        if (swapped) return r;
+        swapped = true;
+        return { ...r, id: brain };
+      }));
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-body-entry-cites-the-wrong-source',
+    gate: 'licence separation',
+    criterion: 'rule 10 fails when the body entry does not cite the source its structures derive from',
+    expect: [/entry bp3d-body-meshes does not cite bodyparts3d, which [^\n]* \(id \d+\) derives from/],
+    describe: 'the body attribution entry citing Z-Anatomy in place of BodyParts3D',
+    break: () => {
+      const path = join(ASSETS, 'attribution.json');
+      const doc = JSON.parse(readFileSync(path, 'utf8'));
+      const e = doc.entries.find((x) => x.id === 'bp3d-body-meshes');
+      if (!e) throw new Error('there is no bp3d-body-meshes entry to stage this against');
+      e.sources = ['zanatomy'];
+      return substitute(path, `${JSON.stringify(doc, null, 2)}\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-one-body-structure-inlined-as-base64',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when one body structure\'s range of a mesh file is embedded in the bundle',
+    expect: [/contains bytes from asset payload body\/bp3d-4066585\/meshes\.lowres\.bin, base64-encoded \(structure id 24475's positions\)/],
+    describe: 'a build that inlines only the left femur\'s low-tier positions into app.js as base64',
+    break: () => {
+      requireBuild();
+      const femur = bodyStructure('Left femur');
+      const bytes = readFileSync(BODY_LOW);
+      const mesh = readMeshBin(bytes);
+      const t = mesh.table.find((x) => x.id === femur.id);
+      const start = mesh.positions.byteOffset + t.firstVertex * 6;
+      const range = bytes.subarray(start, start + t.vertexCount * 6).toString('base64');
+      const app = join(WEB, 'dist', 'app', 'app.js');
+      return substitute(app, `${readFileSync(app, 'utf8')}\nexport const INLINED_FEMUR = '${range}';\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'perf-body-full-tier-undeclared-overruns-its-share',
+    gate: 'performance budget',
+    criterion: 'the body\'s full tier, if not declared lazy, is paid for on the body\'s low-resolution share and fails it',
+    expect: [/lowResBodyAssetGzipBytes: [\d.]+ KiB against a budget of 1280\.0 KiB/],
+    describe: 'a built body structures.json whose full tier no longer says `loading: "lazy"`',
+    break: () => {
+      requireBuild();
+      const shipped = join(WEB, 'dist', 'assets', BODY.structuresFile);
+      const doc = JSON.parse(readFileSync(shipped, 'utf8'));
+      delete doc.tiers.full.loading;
       return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),

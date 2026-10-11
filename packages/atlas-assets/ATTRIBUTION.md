@@ -18,6 +18,7 @@ the site, so an asset cannot reach a user without its attribution.
 | BV brain-volume template, ICBM152 2009c | `templates/icbm152-2009c-asym.brain-volume.json` | [MNI-BIC-permissive](https://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009) | Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University; adaptation by GStack | no |
 | ALC-1 name index and structure coverings | `labels/names.json`<br>`labels/coverings.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); UBERON / OBO Foundry; adaptation by GStack | **yes** |
 | Brain meshes, cleared group: 244 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly | `brain/zanatomy-2929e94/meshes.lowres.bin`<br>`brain/zanatomy-2929e94/meshes.fullres.bin`<br>`brain/zanatomy-2929e94/structures.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack | **yes** |
+| Body meshes: the whole BodyParts3D 4.0 body, one structure per FMA concept, the brain excluded | `body/bp3d-4066585/meshes.lowres.bin`<br>`body/bp3d-4066585/meshes.fullres.bin`<br>`body/bp3d-4066585/structures.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); adaptation by GStack | **yes** |
 | MNI (ICBM152 2009c) to brain-mesh affine, with residuals | `registration/mni-to-zanatomy-2929e94.json` | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | GStack | no |
 
 ## Provenance
@@ -82,6 +83,15 @@ the site, so an asset cannot reach a user without its attribution.
 - **derived from** High-resolution in vivo MRI atlas of the human hypothalamic region (Neudorfer et al. 2020) — Neudorfer C et al. (2020), A high-resolution in vivo magnetic resonance imaging atlas of the human hypothalamic region, Scientific Data 7:305, CC BY 4.0, https://doi.org/10.5281/zenodo.3942115
 - **derived from** Z-Anatomy, the libre 3D atlas of anatomy — Z-Anatomy - The libre 3D atlas of anatomy - CC-BY-SA 4.0
 
+### Body meshes: the whole BodyParts3D 4.0 body, one structure per FMA concept, the brain excluded
+
+- **id** `bp3d-body-meshes`
+- **licence** CC-BY-SA-4.0
+- **holder** The Database Center for Life Science (DBCLS); adaptation by GStack
+- **source** Derived by tools/build-body-meshes.mjs from BodyParts3D/Anatomography 4.0, 99%-polygon-reduced OBJ set (IS-A tree), isa_BP3D_4.0_obj_99.zip (SHA-256 40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e), https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html: element meshes grouped by the FMA concept each names in its own header, welded, quantised to int16, and decimated per structure into a lazy full tier and an eager low tier
+- **note** An adaptation of the DBCLS meshes, so share-alike under the D1 decision (docs/asset-licensing.md section 3): the inbound licence is CC BY-SA 2.1 Japan, as the OBJ headers state, and this derivative ships under CC BY-SA 4.0. Mesh vertices ARE redistributed here, decimated, unlike the BD template. BodyParts3D only: none of Z-Anatomy's objects is read, so neither of its non-commercial models (the Dundee inner ear, the Cowley kidney) nor any undeclared-material object is in these files; the kidney and inner ear are DBCLS's own. The brain (PART-OF FMA50801) is excluded, because it is its own atlas; structures.json lists every excluded element file with its reason. Display geometry in the BD template's own chart: no structure here has an ALC-1 address. Licence rule 10 checks every structure id inside these files against structures.json.
+- **derived from** BodyParts3D/Anatomography 4.0 — BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan
+
 ### MNI (ICBM152 2009c) to brain-mesh affine, with residuals
 
 - **id** `brain-mni-registration`
@@ -97,6 +107,7 @@ The following assets carry a share-alike obligation:
 - BD body template, BodyParts3D 4.0 adult — CC-BY-SA-4.0
 - ALC-1 name index and structure coverings — CC-BY-SA-4.0
 - Brain meshes, cleared group: 244 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly — CC-BY-SA-4.0
+- Body meshes: the whole BodyParts3D 4.0 body, one structure per FMA concept, the brain excluded — CC-BY-SA-4.0
 
 That obligation is confined to this package by the following, checked on
 every push by `tools/check-licence-separation.mjs`:

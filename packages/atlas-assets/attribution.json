@@ -142,6 +142,26 @@
       "note": "Only structures that are cleared: by docs/asset-licensing.md 7.3, or by the pre-registered origin test (midbrain L and R, shown to be BodyParts3D's own; the corpus callosum, which failed it, ships from BodyParts3D instead). The 143 undeclared-material structures still held (126 of 128 cortical) and the 46 Dundee cranial-nerve structures are in neither mesh file; structures.json lists them by name under `excluded`, and records per structure which source it ships from (`shipsFrom`). Licence rule 10 checks every structure id inside these files against packages/atlas-assets/provenance/brain-zanatomy-2929e94.json. Data derived from the Human Connectome Project (CIT168, Najdenovska, Neudorfer, HCP1065): Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657)."
     },
     {
+      "id": "bp3d-body-meshes",
+      "title": "Body meshes: the whole BodyParts3D 4.0 body, one structure per FMA concept, the brain excluded",
+      "files": [
+        "body/bp3d-4066585/meshes.lowres.bin",
+        "body/bp3d-4066585/meshes.fullres.bin",
+        "body/bp3d-4066585/structures.json"
+      ],
+      "licence": "CC-BY-SA-4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "holder": "The Database Center for Life Science (DBCLS); adaptation by GStack",
+      "source": "Derived by tools/build-body-meshes.mjs from BodyParts3D/Anatomography 4.0, 99%-polygon-reduced OBJ set (IS-A tree), isa_BP3D_4.0_obj_99.zip (SHA-256 40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e), https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html: element meshes grouped by the FMA concept each names in its own header, welded, quantised to int16, and decimated per structure into a lazy full tier and an eager low tier",
+      "shareAlike": true,
+      "licenceClass": "asset",
+      "sources": [
+        "bodyparts3d"
+      ],
+      "attributionStatement": "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan",
+      "note": "An adaptation of the DBCLS meshes, so share-alike under the D1 decision (docs/asset-licensing.md section 3): the inbound licence is CC BY-SA 2.1 Japan, as the OBJ headers state, and this derivative ships under CC BY-SA 4.0. Mesh vertices ARE redistributed here, decimated, unlike the BD template. BodyParts3D only: none of Z-Anatomy's objects is read, so neither of its non-commercial models (the Dundee inner ear, the Cowley kidney) nor any undeclared-material object is in these files; the kidney and inner ear are DBCLS's own. The brain (PART-OF FMA50801) is excluded, because it is its own atlas; structures.json lists every excluded element file with its reason. Display geometry in the BD template's own chart: no structure here has an ALC-1 address. Licence rule 10 checks every structure id inside these files against structures.json."
+    },
+    {
       "id": "brain-mni-registration",
       "title": "MNI (ICBM152 2009c) to brain-mesh affine, with residuals",
       "files": [
