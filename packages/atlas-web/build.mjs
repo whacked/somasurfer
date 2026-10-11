@@ -29,12 +29,24 @@
 
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { ENABLED_FRAMES, FRAMES, VERTEBRAL_LEVELS } from '../alc/src/index.ts';
-import { ASSET_TEMPLATES, NAME_INDEX_FILES } from './catalogue/asset-templates.mjs';
-import { buildResearchFixture, buildTemplates } from './fixtures/fixtures.mjs';
+// The scanner behind the one check the trimmed research bundle makes
+// necessary. A separate module so the suite can plant a violation and prove it
+// still fires, the way address-equality.test.js does with alc's guard.
+import { importSites, surfaceProblems } from './shim-surface.mjs';
+import {
+  ASSET_TEMPLATES,
+  CURATED_CORPUS_RESOLUTION,
+  NAME_INDEX_FILES,
+} from './catalogue/asset-templates.mjs';
+import { buildTemplates } from './fixtures/fixtures.mjs';
+// The one value the build shares with the client: the roles a research corpus
+// may declare. Imported from the validator that enforces it rather than
+// restated, so the build cannot emit a role the viewer will reject.
+import { RESEARCH_ROLES } from './src/viewer/research.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
@@ -211,8 +223,147 @@ for (const file of Object.values(NAME_INDEX_FILES)) {
   }
 }
 
-const researchFixture = buildResearchFixture();
-emit('data/research.json', JSON.stringify(researchFixture) + '\n');
+/**
+ * The research corpus: the curated one, and where it gets resolved.
+ *
+ * DOG-68 found the page serving the 5-paper fixture while the Node-side QA
+ * oracle read the curated 30-paper seed set, with nothing in the artefact
+ * saying so. Two datasets and one unlabelled slot is how a §7 row drives the
+ * page, finds `FXP-1`, and reports pass. Its fix — `role` required in the
+ * document, a caveat required of a fixture, the provenance line on screen —
+ * stands, and the page still carries all three.
+ *
+ * What has changed is which corpus fills the slot. DOG-68 also concluded that
+ * the fixture was all v1 could honestly serve; DOG-74 re-measured and that
+ * conclusion does not hold. Both of its arguments do, and this build still
+ * obeys both:
+ *
+ *   **The build may not resolve a structure id.** Resolving one means reading
+ *   the name index, the index is an asset payload, and rule 6 of
+ *   `tools/check-licence-separation.mjs` holds `dist/data/` to deriving nothing
+ *   from asset content. So `data/research.json` is emitted as TEXT, verbatim,
+ *   and the join happens in the browser where the client has already fetched
+ *   the index. That is the one structural change R2 makes.
+ *
+ *   **The synthetic name index is still never emitted or joined.**
+ *   `data/names-seed.json` declares `synthetic: true` in its own header, and
+ *   resolving the curated corpus against it would paint invented brain
+ *   placements underneath 30 real citations — Brodmann 1909, Kanwisher 1997,
+ *   Hickok 2007 — which is false precision attached to the names of people who
+ *   did not claim it. It is the decision this build already made a few lines
+ *   above, for the same reason.
+ *
+ * What DOG-68 got wrong was only the cost of the alternative. Against the index
+ * this page actually binds, with BOTH templates bound, 31 of the 170 mappings
+ * resolve across 10 of 30 papers and 24 of 120 findings. DOG-68's figure of 28
+ * was measured with no brain template, which costs the three `coordinates`
+ * mappings and two papers. 139 mappings resolve to nothing, and serving them
+ * unplaced-and-explained is honest in a way that serving invented papers was
+ * not: the residue is listed, described, and painted nowhere.
+ *
+ * ## The slot is still labelled, in three places that cannot disagree
+ *
+ *   the document    carries its own `role`, and the viewer refuses to load one
+ *                   that does not. A fixture must also carry a caveat.
+ *   the index       `research.role` and the counts, read off the dataset, plus
+ *                   `research.expectedResolution` — declared, because this
+ *                   build cannot measure it, and re-measured by the suite.
+ *   the page        renders the role above the paper list, and compares what it
+ *                   actually resolved against what the index declared.
+ *
+ * The counts are read off the dataset rather than hand-written for the reason
+ * `maxUsefulDigits` is absent from the catalogue: a second copy of a number is
+ * a number that goes stale the first time the dataset grows.
+ */
+/**
+ * The curated dataset, emitted VERBATIM as text.
+ *
+ * `research-seed.json` is `research/1`: papers, findings, structure ids,
+ * evidence and provenance. No geometry. Copying it out adds `role: 'curated'`
+ * and nothing else, which is what keeps rule 6 green — the text derives nothing
+ * from asset content, and `atlas-research` is `licenceClass: code`.
+ *
+ * `buildResearchFixture()` is still in `fixtures/fixtures.mjs` and still used
+ * by the viewer's own suite. It has simply stopped being page content.
+ */
+const curatedSeed = JSON.parse(
+  readFileSync(join(REPO_ROOT, 'packages', 'atlas-research', 'data', 'research-seed.json'), 'utf8'),
+);
+const researchDoc = { ...curatedSeed, role: 'curated' };
+
+if (!RESEARCH_ROLES.includes(researchDoc.role)) {
+  throw new Error(
+    `the research document declares role ${JSON.stringify(researchDoc.role)}, which the `
+    + `viewer will refuse to load (it accepts ${RESEARCH_ROLES.join(' or ')}). A corpus that does `
+    + 'not say whether its papers are invented must not be emitted.',
+  );
+}
+// Belt and braces on the one claim a reader is most likely to take on trust.
+// The version string is what `atlas-index.json` has always shown; if it ever
+// says `fixture` while the role says `curated`, or the reverse, the artefact
+// contradicts itself and the build is the place to find out.
+if (/fixture/i.test(researchDoc.version) !== (researchDoc.role === 'fixture')) {
+  throw new Error(
+    `the research document's version ${JSON.stringify(researchDoc.version)} and its role `
+    + `${JSON.stringify(researchDoc.role)} disagree about whether this corpus is invented.`,
+  );
+}
+// The corpus this page serves is the one whose papers are real, so the invented
+// one must not be reachable from `dist/` at all. Checked on the bytes about to
+// be written rather than trusted: `tools/check-licence-separation.mjs` scans
+// dist for asset content, and nothing scans it for the fixture.
+{
+  const text = JSON.stringify(researchDoc);
+  for (const marker of ['FXP-', 'example.invalid']) {
+    if (text.includes(marker)) {
+      throw new Error(
+        `the research document about to be emitted contains ${JSON.stringify(marker)}, which `
+        + 'belongs to the invented fixture corpus. The page serves the curated corpus; a fixture '
+        + 'paper reaching dist/ is how a §7 row reports pass against a paper that does not exist.',
+      );
+    }
+  }
+}
+
+emit('data/research.json', JSON.stringify(researchDoc) + '\n');
+
+/**
+ * What the page says about the corpus it serves.
+ *
+ * Everything here except `resolution` is read straight off the dataset, so it
+ * cannot disagree with the document beside it. `resolution` is the one value
+ * this build is structurally unable to compute: resolving a structure id means
+ * reading the name index, the index is an asset payload, and rule 6 holds
+ * `dist/data/` to deriving nothing from asset content. So the join happens in
+ * the browser and the expected outcome is DECLARED here — see
+ * `CURATED_CORPUS_RESOLUTION` in the catalogue for why that is a declaration
+ * and how `test/curated-corpus.test.js` keeps it from rotting.
+ *
+ * The page compares what it measured against this and says so if they differ.
+ * That comparison is the only thing that can distinguish a broken join from
+ * the 139 mappings that genuinely cannot be placed: both render as a paper
+ * list with nothing painted.
+ */
+const research = {
+  version: researchDoc.version,
+  /** `fixture` or `curated`. The viewer refuses a document without it. */
+  role: researchDoc.role,
+  caveat: researchDoc.caveat ?? null,
+  paperCount: researchDoc.papers.length,
+  findingCount: researchDoc.findings.length,
+  mappingCount: researchDoc.findings.reduce((n, f) => n + f.mappings.length, 0),
+  path: `${BASE}data/research.json`,
+  /** Resolved at load, in the browser, against the real index. Not here. */
+  resolvedAt: 'load',
+  expectedResolution: CURATED_CORPUS_RESOLUTION,
+  /**
+   * The partition declarations, forwarded so the page can explain its own
+   * residue without re-reading the dataset. `reason` is carried verbatim: it is
+   * the licence decision in the words of whoever made it, and a paraphrase of a
+   * licence verdict is a new claim about a licence.
+   */
+  authoredAgainst: researchDoc.authoredAgainst,
+};
 
 const atlasIndex = {
   schema: 'atlas-index/1',
@@ -246,11 +397,7 @@ const atlasIndex = {
     version: null,
     structureCount: null,
   },
-  research: {
-    version: researchFixture.version,
-    paperCount: researchFixture.papers.length,
-    path: `${BASE}data/research.json`,
-  },
+  research,
   assets: assetFiles.map((a) => ({
     path: `${BASE}${a.path}`,
     bytes: a.bytes,
@@ -288,10 +435,74 @@ emit('data/atlas-index.json', JSON.stringify(atlasIndex) + '\n');
  * `src/viewer/*.js` import `'../alc.js'` and have it mean the TypeScript source
  * under Node and the browser bundle under `dist/`.
  *
- * `src/alc.js` is the one file not copied verbatim. See below.
+ * Two files under `src/` are not copied verbatim: the package shims. See below.
  */
-const ALC_SHIM = 'alc.js';
-const ALC_BUNDLE = join(REPO_ROOT, 'packages', 'alc', 'dist', 'alc.js');
+
+/**
+ * The shims, and the browser bundles substituted for them.
+ *
+ * Each entry is a file in `src/` that re-exports a workspace package's
+ * TypeScript source — which Node strips types from directly and a browser
+ * cannot — paired with that package's own single-file ESM build.
+ *
+ * ## Both of them land in `dist/app/`, side by side, and that is load-bearing
+ *
+ * `atlas-research.js` imports alc rather than containing it, as the specifier
+ * `'./alc.js'` — a sibling. That is the whole reason the research bundle may be
+ * substituted at all: `buildNameIndex()` keys its lookup tables in a WeakMap by
+ * index identity, so a second copy of alc is a second WeakMap, and
+ * `buildResearchIndex()` would reject the `NameIndex` the page itself built
+ * through `joinNameIndex()` → `buildNameIndex()` with a message about the value
+ * not being a name index. Emitting both into the same directory is what makes
+ * that sibling specifier resolve to the one alc the page already loads.
+ *
+ * So the order below matters and the verification depends on it: alc is emitted
+ * first, and the research bundle is then verified *as emitted*, by importing
+ * `dist/app/atlas-research.js` — which resolves `'./alc.js'` to the file beside
+ * it. Verifying the source bundle instead would not load at all, because
+ * `packages/atlas-research/dist/` has no alc next to it; and verifying it in a
+ * way that papered over that would be verifying a layout nobody ships.
+ *
+ * ## The research bundle is a SUBSET of the package, and `source` says which
+ *
+ * `src/atlas-research.js` re-exports all 24 of `@gstack/atlas-research`, which
+ * is what Node and the suite get. The browser gets
+ * `dist/atlas-research.viewer.js`, built from `src/index.viewer.ts`, which
+ * exports the three names `src/viewer/corpus.js` imports — 9 KiB of gzip
+ * against a `bundleGzipBytes` line that was reading 98%. DOG-84; read
+ * `packages/atlas-research/src/index.viewer.ts` for the reasoning and
+ * `packages/atlas-research/scripts/build.mjs` note 4 for what that package now
+ * asserts in place of export equality.
+ *
+ * `source` is therefore the entry each bundle was BUILT from, not the package
+ * entry. The drift check below is unchanged in what it does — it is still
+ * exact equality against a module this build imported itself, so a stale
+ * `dist/` fails here — but the module it compares against is the one that
+ * describes the emitted file. For alc those are the same file; for research
+ * they are not, and pointing this at `src/index.ts` would fail by design.
+ *
+ * What that leaves uncovered is the viewer importing a name the subset does
+ * not have, which typechecks and passes the suite. `checkShimImportSurface()`
+ * below is the gate for it.
+ */
+const SHIMS = [
+  {
+    shim: 'alc.js',
+    bundle: join(REPO_ROOT, 'packages', 'alc', 'dist', 'alc.js'),
+    source: join(REPO_ROOT, 'packages', 'alc', 'src', 'index.ts'),
+    rebuild: 'node packages/alc/scripts/build.mjs',
+    /** The library is served whole; nothing narrows it, so nothing to check. */
+    checkImportSurface: false,
+  },
+  {
+    shim: 'atlas-research.js',
+    bundle: join(REPO_ROOT, 'packages', 'atlas-research', 'dist', 'atlas-research.viewer.js'),
+    source: join(REPO_ROOT, 'packages', 'atlas-research', 'src', 'index.viewer.ts'),
+    rebuild: 'node packages/atlas-research/scripts/build.mjs',
+    checkImportSurface: true,
+  },
+];
+const SHIM_NAMES = new Set(SHIMS.map((s) => s.shim));
 
 function copyClientTree(dir, prefix) {
   for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
@@ -299,7 +510,7 @@ function copyClientTree(dir, prefix) {
     const to = join(prefix, entry.name);
     if (entry.isDirectory()) copyClientTree(from, to);
     else if (entry.name.endsWith('.js') || entry.name.endsWith('.css')) {
-      if (prefix === 'app' && entry.name === ALC_SHIM) continue;
+      if (prefix === 'app' && SHIM_NAMES.has(entry.name)) continue;
       emit(to, readFileSync(from));
     }
   }
@@ -307,37 +518,104 @@ function copyClientTree(dir, prefix) {
 copyClientTree(join(HERE, 'src'), 'app');
 
 /**
- * The library, swapped for its browser build — and checked, not assumed.
+ * Each package, swapped for its browser build — and checked, not assumed.
  *
- * `src/alc.js` re-exports `../../alc/src/index.ts`, which Node strips types
- * from directly. A browser cannot, so `dist/app/alc.js` is the library's own
- * single-file ESM bundle instead. The substitution is sound only if both sides
- * export the same names; a silent drift would mean the suite exercises one
- * module graph and users load another. `packages/alc/scripts/build.mjs` already
- * verifies the bundle against its own source, and this re-verifies it against
- * the source THIS build imported.
+ * The substitution is sound only if both sides export the same names. A silent
+ * drift would mean the suite exercises one module graph and users load another,
+ * so each package's own build script verifies its bundle against its own
+ * source, and this re-verifies it against the source THIS build imported.
  */
-if (!existsSync(ALC_BUNDLE)) {
-  throw new Error(
-    'packages/alc/dist/alc.js is missing. Run `node packages/alc/scripts/build.mjs` first: '
-    + 'the browser cannot load the TypeScript source that src/alc.js re-exports.',
-  );
+/**
+ * Every emitted app module that imports the shimmed bundle must import names
+ * it really exports.
+ *
+ * This is the gate for the one failure the subset introduces, and it is the
+ * reason the subset is safe to ship. `shim-surface.mjs` carries the reasoning
+ * and the three site kinds; what is here is the part that needs the layout.
+ *
+ * Over `emitted` rather than over `src/`, and against `Object.keys()` of the
+ * module just imported from `dist/app/`, so both halves are the artefact: the
+ * files that shipped, and the names the browser will see.
+ *
+ * `emitted` holds forward-slash paths relative to OUT. `resolve` against OUT
+ * turns a specifier into an absolute path, which is how `'./atlas-research.js'`
+ * from `app/` and `'../atlas-research.js'` from `app/viewer/` are recognised as
+ * the same file.
+ *
+ * One blind spot, stated rather than left implicit: a computed
+ * `import(expr)` resolves at runtime and no static pass can see it. There is
+ * none in `src/`, and `address-equality.test.js`'s scan of this tree would be
+ * the place to notice one appearing.
+ */
+function checkShimImportSurface(shim, exports) {
+  const shimAbs = join(OUT, 'app', shim);
+  const sites = [];
+  for (const { path } of emitted) {
+    if (!path.startsWith('app/') || !path.endsWith('.js')) continue;
+    const abs = join(OUT, path);
+    if (abs === shimAbs) continue; // the bundle itself; its own imports are alc's
+    for (const site of importSites(path, readFileSync(abs, 'utf8'))) {
+      if (resolve(dirname(abs), site.specifier) === shimAbs) sites.push(site);
+    }
+  }
+
+  const problems = surfaceProblems(sites, exports);
+  if (problems.length > 0) {
+    throw new Error(
+      `dist/app/${shim} is the trimmed browser bundle, and ${problems.length} import site(s) ask it for `
+      + 'more than it has.\n'
+      + 'Each of these loads under Node — src/atlas-research.js re-exports the whole package — and\n'
+      + 'throws SyntaxError in the browser, so the suite cannot see it:\n'
+      + problems.map((p) => `  ${p}`).join('\n')
+      + '\n  Fix by adding the name to packages/atlas-research/src/index.viewer.ts and paying what its\n'
+      + '  module graph costs in bundleGzipBytes, or by not importing it in the viewer.',
+    );
+  }
+  return sites;
 }
-{
-  const bundle = await import(pathToFileURL(ALC_BUNDLE).href);
-  const source = await import(pathToFileURL(join(REPO_ROOT, 'packages', 'alc', 'src', 'index.ts')).href);
+
+const surfaceReport = [];
+for (const { shim, bundle: bundlePath, source: sourcePath, rebuild, checkImportSurface } of SHIMS) {
+  if (!existsSync(bundlePath)) {
+    throw new Error(
+      `${relative(REPO_ROOT, bundlePath)} is missing. Run \`${rebuild}\` first: the browser cannot `
+      + `load the TypeScript source that src/${shim} re-exports.`,
+    );
+  }
+  // Emitted before it is imported, so the import exercises the shipped layout:
+  // a bundle whose sibling specifier does not resolve in `dist/app/` fails here
+  // rather than in a browser.
+  emit(join('app', shim), readFileSync(bundlePath));
+
+  const bundle = await import(pathToFileURL(join(OUT, 'app', shim)).href);
+  const source = await import(pathToFileURL(sourcePath).href);
   const expected = Object.keys(source).filter((n) => n !== 'default').sort();
   const got = Object.keys(bundle).filter((n) => n !== 'default').sort();
   if (got.join(',') !== expected.join(',')) {
     throw new Error(
-      'packages/alc/dist/alc.js has drifted from the TypeScript source, so dist/app/alc.js would not '
-      + 'be the library the suite ran against.\n'
+      `${relative(REPO_ROOT, bundlePath)} has drifted from the TypeScript source, so dist/app/${shim} `
+      + 'would not be the module the suite ran against.\n'
       + `  missing: ${expected.filter((n) => !got.includes(n)).join(', ') || 'none'}\n`
       + `  extra:   ${got.filter((n) => !expected.includes(n)).join(', ') || 'none'}\n`
-      + '  Rebuild the library.',
+      + `  Rebuild: ${rebuild}`,
     );
   }
-  emit(join('app', ALC_SHIM), readFileSync(ALC_BUNDLE));
+
+  if (checkImportSurface) {
+    const sites = checkShimImportSurface(shim, got);
+    if (sites.length === 0) {
+      throw new Error(
+        `nothing in dist/app/ imports ${shim}, so the surface check above proved nothing.\n`
+        + `  Either the viewer stopped using @gstack/atlas-research — in which case drop the shim and\n`
+        + '  the bundle rather than shipping a module nobody loads — or the scan no longer finds the\n'
+        + '  import site it is meant to guard (see packages/atlas-web/shim-surface.mjs).',
+      );
+    }
+    surfaceReport.push(
+      `${shim}: ${got.length} exports, asked for by ${sites.length} import site(s) in dist/app/ — `
+      + sites.map((s) => `${s.file}:${s.line}`).join(', '),
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -393,5 +671,6 @@ const manifest = {
 emit('build-manifest.json', JSON.stringify(manifest, null, 2) + '\n');
 
 console.log(`✓ build → ${relative(REPO_ROOT, OUT)} (base ${BASE})`);
+for (const line of surfaceReport) console.log(`  surface: ${line}`);
 for (const f of manifest.files) console.log(`  ${String(f.bytes).padStart(8)}  ${f.path}`);
 console.log(`  ${String(manifest.totalBytes).padStart(8)}  total`);

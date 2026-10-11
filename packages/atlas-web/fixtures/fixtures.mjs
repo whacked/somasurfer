@@ -55,6 +55,27 @@ import { bodyCellBox, normalizeCovering, parse, turnToClock } from '../../alc/sr
 export const NAME_INDEX_VERSION = 'fixture-names/0.2-synthetic';
 export const RESEARCH_FIXTURE_VERSION = 'fixture-research/0.1-5-papers';
 
+/**
+ * What the fixture corpus says about itself, carried IN the document.
+ *
+ * The version string already contains `fixture`, and that was the whole of the
+ * claim until DOG-68: `atlas-index.json` named the version and the research
+ * panel named neither it nor what it was. A reader looking at five titled,
+ * dated, venued papers had nothing on screen telling them the papers are
+ * invented, which is the same failure as a name list with no index version
+ * beside it — and that one the viewer has always refused to ship.
+ *
+ * It lives in the document rather than only in the catalogue for the reason
+ * the name index's version does: the thing being described has to carry the
+ * description, or a build can serve one dataset under another's label. The
+ * viewer refuses a research document that does not declare a `role`
+ * (`viewer/research.js`), so this is load-bearing, not decoration.
+ */
+export const RESEARCH_FIXTURE_CAVEAT =
+  'Fixture corpus: five invented papers at example.invalid, written to exercise the research '
+  + 'seam — one maps findings in both atlases, one reports a region with no level or side and so '
+  + 'is placed nowhere. Not literature. Cite nothing from here.';
+
 // ---------------------------------------------------------------------------
 // Templates
 // ---------------------------------------------------------------------------
@@ -443,5 +464,10 @@ export function buildResearchFixture() {
     }
   }
 
-  return { version: RESEARCH_FIXTURE_VERSION, papers };
+  return {
+    version: RESEARCH_FIXTURE_VERSION,
+    role: 'fixture',
+    caveat: RESEARCH_FIXTURE_CAVEAT,
+    papers,
+  };
 }

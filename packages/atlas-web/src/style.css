@@ -111,6 +111,15 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 .unclaimed { font-size: 12px; color: var(--warn); }
 .containing { font-size: 12px; color: var(--muted); }
 
+/*
+ * The research corpus provenance line. A fixture corpus is drawn in the same
+ * warning treatment as demoted precision and unclaimed fraction, because it is
+ * the same kind of statement: what is on screen is less than it looks.
+ */
+.research-provenance { font-size: 12px; color: var(--muted); margin: 0 0 6px; }
+.research-provenance[data-role="fixture"] { color: var(--warn); background: #2a2016; border-left: 3px solid var(--warn); padding: 6px 10px; }
+.research-provenance:empty { display: none; }
+
 .search { margin-top: 18px; }
 .search label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
 .search input { width: 100%; }

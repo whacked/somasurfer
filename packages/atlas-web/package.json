@@ -13,6 +13,7 @@
     "serve": "node --run build && node serve.mjs"
   },
   "dependencies": {
-    "@gstack/alc": "*"
+    "@gstack/alc": "*",
+    "@gstack/atlas-research": "*"
   }
 }
