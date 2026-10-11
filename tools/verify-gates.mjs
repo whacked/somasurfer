@@ -21,7 +21,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
@@ -316,8 +316,22 @@ function stageNc(at, entries = []) {
   return () => {
     restoreAttribution();
     restorePayload();
-    if (madeDir) rmSync(NC_DIR, { recursive: true, force: true });
+    if (madeDir) removeIfEmpty(NC_DIR);
   };
+}
+
+/**
+ * Remove a directory only if nothing is left in it. Never recursive: `nc/` is
+ * where a real non-commercial layer will be authored, and an uncommitted one
+ * must survive a gate run. The dirty check on `touched` already refuses to
+ * start while `nc/` holds anything untracked.
+ */
+function removeIfEmpty(dir) {
+  try {
+    rmdirSync(dir);
+  } catch {
+    /* absent, or not empty: leave it alone */
+  }
 }
 
 /** A share-alike entry for MERGED, written with `contents`, citing `sources`. */
@@ -682,7 +696,10 @@ const CASES = [
     gate: 'licence separation',
     criterion: 'licence separation does NOT fail on non-commercial content kept in its own directory',
     mustPass: true,
-    expect: [/1 asset-nc entry, none reachable in a default build/, /1 entry citing upstream sources, all cleared/],
+    // The citing count is the tree's plus one, so it is not pinned here: if the
+    // Allen record stopped being cleared or non-commercial, rule 9 would fail
+    // the run, and a `mustPass` case goes red on that alone.
+    expect: [/1 asset-nc entry, none reachable in a default build/, /\d+ entries citing upstream sources, all cleared/],
     describe: 'an asset-nc entry under ncPayloadDirs, citing the Allen source, merged into nothing',
     // The committed tree has no asset-nc entry, so a green run on it says
     // nothing about rule 8. This is the constructed baseline: the rule must let
@@ -752,6 +769,27 @@ const CASES = [
       attribution.entries.push(
         shareAlikeEntry('gate-verify-uncleared', ['brainproject-brain-glb', 'zanatomy-undeclared-brain-materials']),
       );
+      const restoreAttribution = substitute(ATTRIBUTION, `${JSON.stringify(attribution, null, 2)}\n`);
+      const restoreMerged = substitute(MERGED, '{"stand-in": "a cortex mesh"}\n');
+      return () => {
+        restoreMerged();
+        restoreAttribution();
+      };
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-third-party-entry-cites-nothing',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a third-party entry omits its upstream sources',
+    expect: [/entry gate-verify-unsourced is not first-party .* but cites no upstream source/, /skip\s+every check/],
+    describe: 'a BY-SA brain mesh entry that ships the Z-Anatomy materials and simply cites nothing',
+    // The realistic failure, where `licence-uncleared-source` is the honest
+    // one: an entry cannot dodge rule 9 by leaving out the source that fails it.
+    break: () => {
+      const attribution = JSON.parse(readFileSync(ATTRIBUTION, 'utf8'));
+      const { sources: _omitted, ...unsourced } = shareAlikeEntry('gate-verify-unsourced', []);
+      attribution.entries.push({ ...unsourced, holder: 'Z-Anatomy contributors; adaptation by GStack' });
       const restoreAttribution = substitute(ATTRIBUTION, `${JSON.stringify(attribution, null, 2)}\n`);
       const restoreMerged = substitute(MERGED, '{"stand-in": "a cortex mesh"}\n');
       return () => {
@@ -1266,6 +1304,9 @@ const touched = [
   rel(REAL_COVERINGS),
   rel(ATTRIBUTION),
   rel(NC_STAND_IN),
+  // The whole directory, so an untracked NC layer there stops the run before
+  // any case writes beside it.
+  rel(NC_DIR),
   rel(LEAKED_NC),
   rel(MERGED),
 ];
@@ -1353,10 +1394,9 @@ for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', '
   rmSync(path, { force: true });
   rmSync(`${path}.gate-verify-stash`, { force: true });
 }
-// The non-commercial directory exists in the tree only while a case stages it.
-if (!spawnSync('git', ['ls-files', '--', rel(NC_DIR)], { cwd: REPO_ROOT, encoding: 'utf8' }).stdout.trim()) {
-  rmSync(NC_DIR, { recursive: true, force: true });
-}
+// The stand-in is ours; anything else in `nc/` is somebody's work.
+rmSync(NC_STAND_IN, { force: true });
+removeIfEmpty(NC_DIR);
 // A stray template here would make the next CI run audit a deliberately broken
 // one, so remove the directory too if we were the only reason it existed.
 if (existsSync(TEMPLATES)) {
