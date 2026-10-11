@@ -269,6 +269,72 @@ function standUpRealIndex({ omit = [], alsoName = [], strayFrom = null } = {}) {
   };
 }
 
+const ATTRIBUTION = join(ASSETS, 'attribution.json');
+const NC_DIR = join(ASSETS, 'nc');
+const NC_STAND_IN = join(NC_DIR, 'gate-verify-allen-stand-in.json');
+const LEAKED_NC = join(LABELS, 'gate-verify-nc.json');
+const MERGED = join(LABELS, 'gate-verify-merged.json');
+
+/** Long and distinctive enough for the licence gate's content probe to find. */
+const NC_PAYLOAD = `${JSON.stringify(
+  {
+    comment: 'Written by tools/verify-gates.mjs and deleted by it. Stands in for an Allen-derived layer.',
+    values: Array.from({ length: 48 }, (_, i) => (i * 7919) % 104729),
+  },
+  null,
+  2,
+)}\n`;
+
+/**
+ * Stage a non-commercial payload at `at`, with an asset-nc entry for it citing
+ * the Allen source, plus any further `entries`. Returns one restore function.
+ *
+ * Built from the committed attribution.json, so the cases keep testing the
+ * real source records: the stand-in cites `allen-brain-map` as recorded, and
+ * would stop passing if that record stopped being non-commercial or cleared.
+ */
+function stageNc(at, entries = []) {
+  const madeDir = !existsSync(NC_DIR) && at.startsWith(NC_DIR);
+  mkdirSync(join(at, '..'), { recursive: true });
+  const restorePayload = substitute(at, NC_PAYLOAD);
+  const attribution = JSON.parse(readFileSync(ATTRIBUTION, 'utf8'));
+  attribution.entries.push(
+    {
+      id: 'gate-verify-nc',
+      title: 'Gate-verify stand-in for an Allen-derived layer',
+      files: [rel(at).slice(rel(ASSETS).length + 1)],
+      licence: 'Allen-Institute-ToU',
+      holder: 'Allen Institute',
+      source: 'Staged by tools/verify-gates.mjs',
+      shareAlike: false,
+      licenceClass: 'asset-nc',
+      sources: ['allen-brain-map'],
+    },
+    ...entries,
+  );
+  const restoreAttribution = substitute(ATTRIBUTION, `${JSON.stringify(attribution, null, 2)}\n`);
+  return () => {
+    restoreAttribution();
+    restorePayload();
+    if (madeDir) rmSync(NC_DIR, { recursive: true, force: true });
+  };
+}
+
+/** A share-alike entry for MERGED, written with `contents`, citing `sources`. */
+function shareAlikeEntry(id, sources) {
+  return {
+    id,
+    title: 'Gate-verify stand-in for a BY-SA mesh file',
+    files: [rel(MERGED).slice(rel(ASSETS).length + 1)],
+    licence: 'CC-BY-SA-4.0',
+    holder: 'Staged by tools/verify-gates.mjs',
+    source: 'Staged by tools/verify-gates.mjs',
+    shareAlike: true,
+    licenceClass: 'asset',
+    sources,
+  };
+}
+
 /** Limits a case staged from the measurement, read back by its expectations. */
 const staged = {};
 
@@ -608,6 +674,90 @@ const CASES = [
       const mesh = readFileSync(join(ASSETS, 'geometry', 'placeholder-body-shell.lowres.json'), 'utf8');
       const app = readFileSync(join(dist, 'app', 'app.js'), 'utf8');
       return substitute(join(dist, 'app', 'app.js'), `${app}\nexport const INLINED_MESH = ${mesh};\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-nc-segregated-is-not-a-failure',
+    gate: 'licence separation',
+    criterion: 'licence separation does NOT fail on non-commercial content kept in its own directory',
+    mustPass: true,
+    expect: [/1 asset-nc entry, none reachable in a default build/, /1 entry citing upstream sources, all cleared/],
+    describe: 'an asset-nc entry under ncPayloadDirs, citing the Allen source, merged into nothing',
+    // The committed tree has no asset-nc entry, so a green run on it says
+    // nothing about rule 8. This is the constructed baseline: the rule must let
+    // a correctly segregated NC layer through, or the class it exists to
+    // protect could never be used.
+    break: () => stageNc(NC_STAND_IN),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-nc-in-default-build',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when non-commercial content is reachable in a default build',
+    expect: [/asset-nc entry gate-verify-nc is reachable in a default build/, /off by default/],
+    describe: 'an asset-nc payload filed under labels/, which every default build copies',
+    break: () => stageNc(LEAKED_NC),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-nc-merged-into-share-alike',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when non-commercial bytes are merged into a share-alike file',
+    expect: [
+      /share-alike entry gate-verify-merged contains bytes from asset-nc payload nc\/gate-verify-allen-stand-in\.json/,
+      /merged into a BY-SA file/,
+    ],
+    describe: 'a correctly segregated NC payload whose bytes were also pasted into a BY-SA file',
+    break: () => {
+      const restoreNc = stageNc(NC_STAND_IN, [shareAlikeEntry('gate-verify-merged', ['brainproject-brain-glb'])]);
+      const restoreMerged = substitute(MERGED, `{"merged": ${NC_PAYLOAD}}\n`);
+      return () => {
+        restoreMerged();
+        restoreNc();
+      };
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-nc-in-dist',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when non-commercial content reaches the built artefact',
+    expect: [/dist\/assets\/nc\/ exists/, /contains bytes from asset-nc payload nc\/gate-verify-allen-stand-in\.json/],
+    describe: 'a build that copied the non-commercial directory into dist/assets/',
+    break: () => {
+      requireBuild();
+      const restoreNc = stageNc(NC_STAND_IN);
+      const shipped = join(WEB, 'dist', 'assets', 'nc');
+      mkdirSync(shipped, { recursive: true });
+      writeFileSync(join(shipped, 'gate-verify-allen-stand-in.json'), NC_PAYLOAD);
+      return () => {
+        rmSync(shipped, { recursive: true, force: true });
+        restoreNc();
+      };
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-uncleared-source',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when an entry ships from an upstream source that is not cleared',
+    expect: [
+      /ships from upstream source zanatomy-undeclared-brain-materials, whose verdict is "not-cleared"/,
+      /cannot ship from an uncleared source/,
+    ],
+    describe: 'a BY-SA brain mesh entry citing the Z-Anatomy materials whose licence is undeclared',
+    break: () => {
+      const attribution = JSON.parse(readFileSync(ATTRIBUTION, 'utf8'));
+      attribution.entries.push(
+        shareAlikeEntry('gate-verify-uncleared', ['brainproject-brain-glb', 'zanatomy-undeclared-brain-materials']),
+      );
+      const restoreAttribution = substitute(ATTRIBUTION, `${JSON.stringify(attribution, null, 2)}\n`);
+      const restoreMerged = substitute(MERGED, '{"stand-in": "a cortex mesh"}\n');
+      return () => {
+        restoreMerged();
+        restoreAttribution();
+      };
     },
     check: () => run('check-licence-separation.mjs'),
   },
@@ -1114,6 +1264,10 @@ const touched = [
   rel(CITATION_REPORT),
   rel(REAL_NAMES),
   rel(REAL_COVERINGS),
+  rel(ATTRIBUTION),
+  rel(NC_STAND_IN),
+  rel(LEAKED_NC),
+  rel(MERGED),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
@@ -1195,9 +1349,13 @@ for (const c of selected) {
 
 // A failed restore is worse than a failed case: leave nothing behind.
 rmSync(BASE_BUILD, { recursive: true, force: true });
-for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', 'gate-verify.js'), GATE_TEMPLATE]) {
+for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', 'gate-verify.js'), GATE_TEMPLATE, LEAKED_NC, MERGED]) {
   rmSync(path, { force: true });
   rmSync(`${path}.gate-verify-stash`, { force: true });
+}
+// The non-commercial directory exists in the tree only while a case stages it.
+if (!spawnSync('git', ['ls-files', '--', rel(NC_DIR)], { cwd: REPO_ROOT, encoding: 'utf8' }).stdout.trim()) {
+  rmSync(NC_DIR, { recursive: true, force: true });
 }
 // A stray template here would make the next CI run audit a deliberately broken
 // one, so remove the directory too if we were the only reason it existed.
