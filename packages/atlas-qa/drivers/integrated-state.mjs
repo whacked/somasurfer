@@ -21,11 +21,10 @@
  *
  * ## Capabilities are declared from what the build actually has
  *
- * `labels` is absent: there is no label state in `state.js`, none in
- * `ATLAS_LAYERS`, and `encodeView` has no parameter for it. Rather than
- * no-op `setLabels` and let the label assertions sail through unexamined —
- * precisely the false green `capabilities()` exists to prevent — the
- * capability is withheld and every row needing it reports `unverified`.
+ * `labels` is declared since DOG-71 made label visibility viewer state:
+ * `labelsOf()` / `setLabels()` per atlas, on the return snapshot and in the
+ * deep link. Before that it was withheld, not no-opped — a no-op would have let
+ * the label assertions pass unexamined.
  */
 
 import { readFileSync } from 'node:fs';
@@ -42,6 +41,7 @@ import { templateSet } from '../src/templates.ts';
 import { decodeView, encodeView, viewHref } from '../../atlas-web/src/viewer/deeplink.js';
 import { comparePapers, papersOverlapping, researchModel, revealPaper }
   from '../../atlas-web/src/viewer/research.js';
+import { curatedModel } from '../../atlas-web/src/viewer/corpus.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity }
   from '../../atlas-web/src/viewer/state.js';
 
@@ -157,6 +157,9 @@ function toMessages(notices) {
 function fixtureResearchDoc(fixture) {
   return {
     version: fixture.nameIndexVersion ?? 'qa-fixture',
+    // research.js refuses a corpus that does not say whether it is invented.
+    role: 'fixture',
+    caveat: 'The harness fixture: synthetic papers, for driving the matrix, not literature.',
     papers: (fixture.papers ?? []).map((p) => ({
       id: p.id,
       title: p.citation ?? p.id,
@@ -206,8 +209,14 @@ export default async function createDriver(options = {}) {
       structures: fixture.structures ?? [],
     });
   };
-  const researchFor = (c) =>
-    researchModel(c === 'real-assets' || !fixture ? pageDoc : fixtureResearchDoc(fixture));
+  // A curated document carries structure ids, not cells; `app.js` resolves it
+  // with `curatedModel()` against the bound index and templates, so this does.
+  const researchFor = (c) => {
+    if (c !== 'real-assets' && fixture) return researchModel(fixtureResearchDoc(fixture));
+    return pageDoc?.role === 'curated'
+      ? curatedModel(pageDoc, { names: realNameIndex, templates: realTemplates() })
+      : researchModel(pageDoc);
+  };
 
   let choice = options.templates ?? 'real-assets';
   let templates = setFor(choice);
@@ -403,9 +412,7 @@ export default async function createDriver(options = {}) {
       },
       layers: layersView(),
       isolatedStructureId: viewer.layersOf(atlas).isolated,
-      // No label state exists in this build; `labels` is withheld from
-      // capabilities() so no row reads this as an observation.
-      labelsVisible: false,
+      labelsVisible: viewer.labelsOf(atlas),
       selection: {
         structureId: namesOf(sel)?.[0]?.structureId ?? null,
         address: sel?.ok ? sel.address : null,
@@ -433,7 +440,7 @@ export default async function createDriver(options = {}) {
   };
 
   const driver = {
-    buildId: `qa-integrated-v1@777b68ae state-machine only (app.js/DOM NOT observed; page dataset ${pageDatasetVersion})`,
+    buildId: `qa-integrated-v2@127fbd20 state-machine only (app.js/DOM NOT observed; page dataset ${pageDatasetVersion})`,
     kind: 'product',
     pageDatasetVersion,
 
@@ -443,7 +450,7 @@ export default async function createDriver(options = {}) {
       'deep-link', 'ranked-names', 'cross-atlas-navigation', 'view-restore',
       'browse-by-anatomy', 'browse-by-research', 'multi-paper-selection',
       'overlap-hatching', 'asset-failure-reporting', 'qa-template-override',
-      // 'labels' withheld: absent from the build. See the module header.
+      'labels',
     ]),
 
     async open(url) {
@@ -474,7 +481,7 @@ export default async function createDriver(options = {}) {
       return state();
     },
     async isolate(structureId) { viewer.isolate(structureId); return state(); },
-    async setLabels() { return state(); },
+    async setLabels(visible) { viewer.setLabels(visible); return state(); },
     async orbit(deltaDeg) {
       viewer.setCamera(rotate(viewer.cameraOf(), deltaDeg, 0));
       return state();

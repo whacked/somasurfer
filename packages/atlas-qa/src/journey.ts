@@ -494,6 +494,12 @@ export const JOURNEY: readonly JourneyStep[] = [
       );
       c.equal(selected.selection.structureId, ctx.plan.bodyBrainStructureId, 'selected structure');
 
+      // Labels off in the body BEFORE the snapshot. Labels default to on, so a
+      // snapshot taken at the default compares on against on and the return
+      // row's `labels` facet holds for a build that restores nothing (DOG-71).
+      const withLabels = ctx.driver.capabilities().has('labels');
+      if (withLabels) await ctx.driver.setLabels(false);
+
       const bodyView = await ctx.driver.state();
       ctx.snapshots.set('body-view-before-brain', bodyView);
 
@@ -514,6 +520,9 @@ export const JOURNEY: readonly JourneyStep[] = [
       if (brainLayers.length > 0) {
         await ctx.driver.setLayer(brainLayers[0], { visible: false, opacity: 0.25 });
       }
+      // And turn labels on here: a build holding one label flag for both
+      // atlases now comes back with labels on.
+      if (withLabels) await ctx.driver.setLabels(true);
       const moved = await ctx.driver.state();
       c.must(
         facetKey(moved.camera) !== facetKey(brain.camera),
@@ -741,7 +750,9 @@ export const JOURNEY: readonly JourneyStep[] = [
     id: 'return-to-body-with-previous-view-intact',
     clause: 'a user can return to the body',
     mustPass: true,
-    requires: ['cross-atlas-navigation', 'view-restore'],
+    // `labels` because the facet loop below asserts it: without the capability
+    // the comparison is the driver's constant against itself (DOG-71).
+    requires: ['cross-atlas-navigation', 'view-restore', 'labels'],
     dependsOn: ['explicit-brain-navigation'],
     observable:
       'Returning to the body atlas restores the camera, the layer visibility and opacity, the isolate and '
