@@ -132,22 +132,47 @@ function decimate(M, mesh, target) {
  * group) from decoded glb `nodes`.
  */
 export async function buildTiers({ nodes, structures, floorTriangles, ratio, replacements = new Map() }) {
-  const M = await meshoptimizer();
   const byId = new Map(nodes.map((n) => [n.extras.bx_id, n]));
-
-  const welded = structures.map((s) => {
+  const meshes = structures.map((s) => {
     // A replaced structure's geometry comes from its replacement source, already
     // in the mesh frame; everything else from the glb.
     const merged = replacements.get(s.id) ?? mergeParts(byId.get(s.id).parts);
-    return { record: s, mesh: weld(merged.positions, merged.indices), sourceTriangles: merged.indices.length / 3 };
+    return { id: s.id, positions: merged.positions, indices: merged.indices };
   });
+  // The glb is in metres.
+  return buildMeshTiers({ meshes, floorTriangles, ratio, mmPerUnit: 1000 });
+}
+
+/**
+ * The tier builder itself, for any set of float meshes in one frame. The brain
+ * (from the glb, in metres) and the body (DOG-128, from BodyParts3D, in
+ * millimetres) both come through here, so both are welded, quantised,
+ * decimated and measured by the same code.
+ *
+ * `meshes` is `[{ id, positions, indices }]`, unwelded. `mmPerUnit` converts
+ * the frame's units to the millimetres every reported figure is in.
+ *
+ * The full tier is the source, undecimated, unless `fullRatio` is below 1.
+ * Then it is decimated the way the low tier is, to `fullRatio` of the source
+ * with a floor of `fullFloorTriangles`, and the build reports how far it moved
+ * from the source (`fullVsSource`). That figure is the build's, not the gate's:
+ * the gate has the two tiers and not the source.
+ */
+export async function buildMeshTiers({ meshes, floorTriangles, ratio, mmPerUnit, fullRatio = 1, fullFloorTriangles = 0 }) {
+  const M = await meshoptimizer();
+  const mm2 = mmPerUnit * mmPerUnit;
+  const welded = meshes.map((m) => ({ record: m, mesh: weld(m.positions, m.indices), sourceTriangles: m.indices.length / 3 }));
   const frame = quantisationFrame(welded.map((w) => w.mesh));
 
   const full = [];
   const low = [];
   const report = [];
   for (const w of welded) {
-    const fullMesh = reorder(M, w.mesh);
+    const sourceMesh = reorder(M, w.mesh);
+    const sourceTris = sourceMesh.indices.length / 3;
+    const fullMesh = fullRatio < 1
+      ? reorder(M, decimate(M, sourceMesh, Math.min(sourceTris, Math.max(fullFloorTriangles, Math.ceil(sourceTris * fullRatio)))))
+      : sourceMesh;
     const fq = quantise(fullMesh, frame);
     const fullTris = fq.indices.length / 3;
     // The floor is a guarantee, not a target: the simplifier may stop short of
@@ -169,14 +194,24 @@ export async function buildTiers({ nodes, structures, floorTriangles, ratio, rep
       { positions: lq.dequantised, indices: lq.indices },
       { positions: fq.dequantised, indices: fq.indices },
     );
+    const fullVsSource = fullMesh === sourceMesh
+      ? null
+      : surfaceDeviation({ positions: fq.dequantised, indices: fq.indices }, sourceMesh);
     report.push({
       id: w.record.id,
       sourceTriangles: w.sourceTriangles,
-      full: { triangles: fq.indices.length / 3, vertices: fq.q.length / 3, areaMm2: surfaceArea(fq.dequantised, fq.indices) * 1e6 },
-      low: { triangles: lq.indices.length / 3, vertices: lq.q.length / 3, areaMm2: surfaceArea(lq.dequantised, lq.indices) * 1e6 },
+      full: { triangles: fq.indices.length / 3, vertices: fq.q.length / 3, areaMm2: surfaceArea(fq.dequantised, fq.indices) * mm2 },
+      low: { triangles: lq.indices.length / 3, vertices: lq.q.length / 3, areaMm2: surfaceArea(lq.dequantised, lq.indices) * mm2 },
       targetTriangles: target,
-      hausdorffMm: deviation.hausdorff * 1000,
-      meanDeviationMm: deviation.meanSymmetric * 1000,
+      hausdorffMm: deviation.hausdorff * mmPerUnit,
+      meanDeviationMm: deviation.meanSymmetric * mmPerUnit,
+      ...(fullVsSource && {
+        fullVsSource: {
+          sourceAreaMm2: surfaceArea(sourceMesh.positions, sourceMesh.indices) * mm2,
+          hausdorffMm: fullVsSource.hausdorff * mmPerUnit,
+          meanDeviationMm: fullVsSource.meanSymmetric * mmPerUnit,
+        },
+      }),
     });
   }
 
