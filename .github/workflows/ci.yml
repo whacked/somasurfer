@@ -68,6 +68,12 @@ jobs:
       - name: Licence separation
         run: node tools/check-licence-separation.mjs
 
+      # Gate 4b: every curated mapping resolves onto named structures with how
+      # and precision recorded, every paper has a region or a stated reason,
+      # and the committed region index is what its inputs produce (DOG-130).
+      - name: Crosswalk and region index
+        run: node tools/check-crosswalk.mjs
+
       - name: Static build
         run: node packages/atlas-web/build.mjs
 

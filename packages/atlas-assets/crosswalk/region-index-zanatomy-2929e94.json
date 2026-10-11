@@ -9,6 +9,7 @@
   "A mapping with no link, and a paper with no region, carry the stated reason. `papers` is paper ->",
   "regions, `structures` is region -> papers; tools/check-crosswalk.mjs asserts they agree."
  ],
+ "licence": "CC-BY-SA-4.0: carries brain structure names from structures.json and body names from labels/names.json, both share-alike. Not in payloadDirs, so it does not ship; whoever ships it (W6, under dist/assets/) adds an attribution.json entry citing the sources of those two files, and licence rule 5 refuses it until they do.",
  "inputs": {
   "seed": {
    "file": "packages/atlas-research/data/research-seed.json",
@@ -16,7 +17,7 @@
   },
   "crosswalk": {
    "file": "packages/atlas-assets/crosswalk/crosswalk.json",
-   "sha256": "cf60aa985c37e485a47166471b6e590db06093daeffd608319d9620dffb2c769"
+   "sha256": "4225e6c502acc11ed66c6852cc99a17afc519432239cf6c57482fd3eebf22793"
   },
   "structures": {
    "file": "packages/atlas-assets/brain/zanatomy-2929e94/structures.json",

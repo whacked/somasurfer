@@ -11,6 +11,7 @@
   "later resolves with no edit here. tools/check-crosswalk.mjs refuses a target that is not a",
   "structure of the representation, shipped or held, and a seed term with no entry."
  ],
+ "licence": "Apache-2.0, first-party (GStack). Names Z-Anatomy structures by label, as identifiers, the way registration/mni-to-zanatomy-2929e94.json does; carries no geometry. Not in payloadDirs, so it does not ship; whoever ships it adds an attribution.json entry, and licence rule 5 refuses it until they do.",
  "assertedBy": "Staff Engineer (DOG-130)",
  "assertedOn": "2026-10-11",
  "entries": [

@@ -70,7 +70,6 @@ const json = (p) => JSON.parse(bytes(p).toString('utf8'));
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
 const rep = (id) => REPRESENTATIONS.find((r) => r.id === id);
 const SIDES = { left: 'left', right: 'right', median: 'median' };
-const sideOf = (name) => (/\.l$/.test(name) ? 'left' : /\.r$/.test(name) ? 'right' : null);
 
 // ---------------------------------------------------------------------------
 // Inputs
@@ -303,6 +302,12 @@ const doc = {
     'A mapping with no link, and a paper with no region, carry the stated reason. `papers` is paper ->',
     'regions, `structures` is region -> papers; tools/check-crosswalk.mjs asserts they agree.',
   ],
+  // The CTO's ruling on DOG-123 (16:04): the region index is joined with BY-SA
+  // structure names, so it is derived from asset content and is BY-SA itself.
+  licence:
+    'CC-BY-SA-4.0: carries brain structure names from structures.json and body names from labels/names.json, both share-alike. ' +
+    'Not in payloadDirs, so it does not ship; whoever ships it (W6, under dist/assets/) adds an attribution.json entry citing ' +
+    'the sources of those two files, and licence rule 5 refuses it until they do.',
   inputs: Object.fromEntries(Object.entries(PATHS).map(([k, p]) => [k, { file: p, sha256: sha256(bytes(p)) }])),
   baseline: base,
   ...serialiseRegionIndex(index),
