@@ -137,3 +137,8 @@ footer { padding: 14px 16px; border-top: 1px solid var(--edge); font-size: 12px;
 .licence-status { color: var(--warn); }
 
 .boot-error { margin: 24px; padding: 14px 16px; background: #2b1a18; border: 1px solid #5e2f29; border-radius: 6px; color: var(--bad); }
+
+.compare { display: flex; gap: 6px; margin-top: 8px; }
+.compare select { flex: 1; min-width: 0; background: #222932; color: var(--ink); border: 1px solid var(--edge); border-radius: 6px; }
+.legend { list-style: none; padding: 0; margin: 6px 0; }
+.swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; }

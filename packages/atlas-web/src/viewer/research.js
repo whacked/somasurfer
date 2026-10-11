@@ -65,7 +65,7 @@
  * whether its papers exist.
  */
 
-import { overlaps, parse } from '../alc.js';
+import { EMPTY_COVERING, contains, coveringIntersect, covering, overlaps, parse } from '../alc.js';
 import { hasAddress } from './deeplink.js';
 import { atlasForFrame } from './state.js';
 
@@ -343,4 +343,43 @@ export function comparePapers(model, aId, bId) {
     /** Said plainly, because "no overlap" and "not compared" look alike. */
     disjoint: shared.length === 0,
   };
+}
+
+/**
+ * What to paint when two papers are compared: each paper's cells, and the
+ * exact covering intersection between them.
+ *
+ * `a` and `b` are every placed cell of each paper, unfiltered, each naming the
+ * finding it came from. `overlap` is `coveringIntersect` of the two papers'
+ * coverings — in a hierarchy that is the finer cell of each overlapping pair,
+ * so it is drawn at a true extent neither paper overstates — and each overlap
+ * cell names the findings on BOTH sides that contain it. Nothing here is a
+ * colour; that is the shell's.
+ */
+export function comparisonLayers(model, aId, bId, activeFilter = null) {
+  const a = revealPaper(model, aId, activeFilter);
+  const b = revealPaper(model, bId, activeFilter);
+  if (!a || !b) return null;
+
+  const tagged = (revealed) => revealed.findings.flatMap((finding) => finding.cells.map((cell) => ({
+    ...cell,
+    paperId: revealed.paper.id,
+    findingId: finding.id,
+    findingLabel: finding.label,
+  })));
+  const left = tagged(a);
+  const right = tagged(b);
+  const coverOf = (cells) => (cells.length > 0 ? covering(cells.map((c) => c.address)) : EMPTY_COVERING);
+  const sources = (cells, address) => cells
+    .filter((c) => contains(c.address, address))
+    .map(({ paperId, findingId, findingLabel, address: from }) => ({ paperId, findingId, findingLabel, address: from }));
+
+  const overlap = coveringIntersect(coverOf(left), coverOf(right)).cells.map((address) => ({
+    address,
+    atlas: atlasForFrame(parse(address).frame),
+    a: sources(left, address),
+    b: sources(right, address),
+  }));
+
+  return { a: a.paper, b: b.paper, cells: { a: left, b: right }, overlap };
 }
