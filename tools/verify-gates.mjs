@@ -25,6 +25,8 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmdirSync
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
+import { readMeshBin, writeMeshBin } from './lib/meshbin.mjs';
+import { brainAssetPaths } from './lib/brain-asset-paths.mjs';
 
 const ALC = join(REPO_ROOT, 'packages', 'alc');
 const WEB = join(REPO_ROOT, 'packages', 'atlas-web');
@@ -347,6 +349,51 @@ function shareAlikeEntry(id, sources) {
     licenceClass: 'asset',
     sources,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Brain meshes (DOG-127).
+// ---------------------------------------------------------------------------
+
+const BRAIN = brainAssetPaths(
+  JSON.parse(readFileSync(join(ASSETS, 'attribution.json'), 'utf8')).upstreamSources.find((s) => s.id === 'brainproject-brain-glb')
+    .pinned.commit,
+);
+const BRAIN_LOW = join(ASSETS, BRAIN.lowFile);
+const BRAIN_FULL = join(ASSETS, BRAIN.fullFile);
+const BRAIN_STRUCTURES = join(ASSETS, BRAIN.structuresFile);
+
+/** The structure records of a committed brain file, by name, for staging against. */
+function brainStructure(name) {
+  const doc = JSON.parse(readFileSync(BRAIN_STRUCTURES, 'utf8'));
+  const s = doc.structures.find((x) => x.name === name);
+  if (!s) throw new Error(`${name} is no longer a shipped brain structure to stage this against`);
+  return s;
+}
+
+/** A held structure from the generated provenance manifest, by name. */
+function heldStructure(name) {
+  const manifest = JSON.parse(readFileSync(join(REPO_ROOT, BRAIN.provenance), 'utf8'));
+  const s = manifest.structures.find((x) => x.name.trim() === name);
+  if (!s || s.group === 'cleared') throw new Error(`${name} is no longer a held structure to stage this against`);
+  return s;
+}
+
+/**
+ * Rewrite an ATLM file through `edit`, which receives one record per structure
+ * (positions, normals and structure-local indices, all copies) and returns the
+ * list to write. Goes through the format's own writer, so the staged file is
+ * well-formed and only the defect being staged is wrong with it.
+ */
+function rewriteMesh(path, edit) {
+  const mesh = readMeshBin(readFileSync(path));
+  const records = mesh.table.map((t) => ({
+    id: t.id,
+    positions: mesh.positions.slice(t.firstVertex * 3, (t.firstVertex + t.vertexCount) * 3),
+    normals: mesh.normals.slice(t.firstVertex * 2, (t.firstVertex + t.vertexCount) * 2),
+    indices: Uint32Array.from(mesh.indices.subarray(t.firstIndex, t.firstIndex + t.indexCount), (i) => (mesh.index32 ? i - t.firstVertex : i)),
+  }));
+  return substitute(path, writeMeshBin({ origin: mesh.origin, step: mesh.step, structures: edit(records) }));
 }
 
 /** Limits a case staged from the measurement, read back by its expectations. */
@@ -1229,6 +1276,170 @@ const CASES = [
   },
 
   // -------------------------------------------------------------------------
+  // Brain meshes (DOG-127): the decimation gate, licence rule 10, rule 6 on a
+  // binary payload, and the perf gate's lazy tier.
+  // -------------------------------------------------------------------------
+  {
+    name: 'mesh-gate-reads-the-committed-files',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate checks every shippable structure on the committed tree, not none',
+    mustPass: true,
+    expect: [/245 of 245 shippable structures in both tiers/, /Published error re-measured for all 245/],
+    describe: 'the committed brain mesh files, unchanged',
+    // A gate that found no files would also pass. This pins that it found them.
+    break: () => () => {},
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-structure-lost-to-decimation',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a structure in the source manifest is missing from the low tier',
+    expect: [/Subthalamic nucleus\.l \(id \d+\) is in the source manifest but missing from the low tier/],
+    describe: 'a low tier with the left subthalamic nucleus decimated out of existence',
+    break: () => {
+      const stn = brainStructure('Subthalamic nucleus.l');
+      return rewriteMesh(BRAIN_LOW, (records) => records.filter((r) => r.id !== stn.id));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-structure-degenerate',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a structure is present but degenerate in the low tier',
+    expect: [/Substantia nigra\.r \(id \d+\): \d+ degenerate triangle\(s\) in the low tier/],
+    describe: 'the right substantia nigra kept in the table, every vertex collapsed onto one point',
+    break: () => {
+      const sn = brainStructure('Substantia nigra.r');
+      return rewriteMesh(BRAIN_LOW, (records) => records.map((r) => {
+        if (r.id !== sn.id) return r;
+        const positions = Int16Array.from(r.positions, (_, i) => r.positions[i % 3]);
+        return { ...r, positions };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-tract-flattened-to-a-sliver',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a structure keeps its triangles but loses an axis',
+    expect: [/Corticospinal tract\.l \(id \d+\): the low tier keeps [\d.]+ mm of its [\d.]+ mm [xyz] extent; it has collapsed toward a sliver/],
+    describe: 'the left corticospinal tract squashed flat onto one plane, triangle count untouched',
+    // The decimation failure a triangle floor cannot see: a thin tube simplified
+    // into a ribbon has as many triangles as the floor asks for.
+    break: () => {
+      const cst = brainStructure('Corticospinal tract.l');
+      return rewriteMesh(BRAIN_LOW, (records) => records.map((r) => {
+        if (r.id !== cst.id) return r;
+        // Flatten the axis with the smallest extent, so the length survives.
+        const ext = [0, 1, 2].map((a) => {
+          let lo = Infinity;
+          let hi = -Infinity;
+          for (let v = a; v < r.positions.length; v += 3) {
+            lo = Math.min(lo, r.positions[v]);
+            hi = Math.max(hi, r.positions[v]);
+          }
+          return { a, lo, span: hi - lo };
+        }).sort((x, y) => x.span - y.span)[0];
+        const positions = Int16Array.from(r.positions, (q, i) => (i % 3 === ext.a ? ext.lo : q));
+        return { ...r, positions };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-published-error-drifts',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a published error figure is not what the files measure',
+    expect: [/Nucleus accumbens\.l \(id \d+\): structures\.json publishes Hausdorff 0\.001 mm/],
+    describe: 'structures.json claiming a 0.001 mm error for the left nucleus accumbens',
+    break: () => {
+      const doc = JSON.parse(readFileSync(BRAIN_STRUCTURES, 'utf8'));
+      const s = doc.structures.find((x) => x.name === 'Nucleus accumbens.l');
+      if (!s) throw new Error('Nucleus accumbens.l is no longer a shipped brain structure to stage this against');
+      s.errorMm.hausdorff = 0.001;
+      return substitute(BRAIN_STRUCTURES, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'licence-rule-10-reads-the-brain-files',
+    gate: 'licence separation',
+    criterion: 'rule 10 checks every structure slot of the committed brain files, not none',
+    mustPass: true,
+    expect: [/rule 10: 3 brain file\(s\), 735 structure slot\(s\)/],
+    describe: 'the committed brain mesh files and their attribution entry, unchanged',
+    break: () => () => {},
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-held-structure-in-cleared-file',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a cleared-looking brain file carries one held structure',
+    expect: [
+      /entry zanatomy-brain-meshes-cleared ships Precentral gyrus\.l \(id \d+\), which is held as zanatomy-undeclared-brain-materials/,
+      /A file's citations do not clear what is inside it/,
+    ],
+    describe: 'the low tier with one slot relabelled as the left precentral gyrus, its entry citing only cleared sources',
+    // The residual DOG-126 left open: every citation on the entry is cleared, so
+    // rule 9 is green, and only reading the file can see what it carries.
+    break: () => {
+      const held = heldStructure('Precentral gyrus.l');
+      let swapped = false;
+      return rewriteMesh(BRAIN_LOW, (records) => records.map((r) => {
+        if (swapped) return r;
+        swapped = true;
+        return { ...r, id: held.id };
+      }));
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-mesh-inlined-as-base64',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a binary mesh is embedded in the bundle as base64',
+    expect: [/contains bytes from asset payload brain\/zanatomy-2929e94\/meshes\.lowres\.bin, base64-encoded/],
+    describe: 'a build that inlines the low-tier brain mesh into app.js as a base64 string',
+    break: () => {
+      requireBuild();
+      const app = join(WEB, 'dist', 'app', 'app.js');
+      const mesh = readFileSync(BRAIN_LOW).toString('base64');
+      return substitute(app, `${readFileSync(app, 'utf8')}\nexport const INLINED_BRAIN = '${mesh}';\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-mesh-copied-outside-assets',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a mesh is re-emitted outside dist/assets/ under any extension',
+    expect: [/dist\/app\/brain\.bin: contains bytes from asset payload brain\/zanatomy-2929e94\/meshes\.fullres\.bin\./],
+    describe: 'a build that also writes the full-tier brain mesh to dist/app/brain.bin',
+    // Rule 6 used to read only .js/.css/.html/.json outside the assets tree, so a
+    // binary written next to the bundle was never looked at.
+    break: () => {
+      requireBuild();
+      return substitute(join(WEB, 'dist', 'app', 'brain.bin'), readFileSync(BRAIN_FULL));
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'perf-undeclared-lazy-tier-is-costed-as-low-res',
+    gate: 'performance budget',
+    criterion: 'a full-resolution tier not declared lazy is paid for on the low-resolution lines',
+    expect: [/lowResBrainAssetGzipBytes: [\d.]+ KiB against a budget of 1024\.0 KiB/],
+    describe: 'a built structures.json whose full tier no longer says `loading: "lazy"`',
+    // The lazy classification reads a declaration, so this is its failure mode:
+    // forget the declaration and the bytes land on the line that pays for them.
+    break: () => {
+      requireBuild();
+      const shipped = join(WEB, 'dist', 'assets', BRAIN.structuresFile);
+      const doc = JSON.parse(readFileSync(shipped, 'utf8'));
+      delete doc.tiers.full.loading;
+      return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+
+  // -------------------------------------------------------------------------
   // A non-root base (DOG-120).
   //
   // Pages builds with the base its config hands out, `/somasurfer`, and every
@@ -1328,6 +1539,9 @@ const touched = [
   rel(NC_DIR),
   rel(LEAKED_NC),
   rel(MERGED),
+  rel(BRAIN_LOW),
+  rel(BRAIN_FULL),
+  rel(BRAIN_STRUCTURES),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
