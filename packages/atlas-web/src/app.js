@@ -42,7 +42,7 @@ import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
 import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flags.js';
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
 import { curatedModel, paperSource } from './viewer/corpus.js';
-import { comparePapers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
+import { comparePapers, comparisonLayers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
 import { nameIndexFrames, selectAddress } from './viewer/select.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity } from './viewer/state.js';
 import {
@@ -72,6 +72,7 @@ const pct = (f) => `${(f * 100).toFixed(1)}%`;
 
 /** Set once the renderer module loads; highlights are not drawn before that. */
 let GROUP_COLOURS = [];
+let PAPER_COLOURS = [];
 
 const forcedFailures = (new URLSearchParams(location.search).get('fail') ?? '').split(',');
 const failing = (what) => forcedFailures.includes(what);
@@ -631,6 +632,8 @@ function renderResearch() {
     open.dataset.testid = `research-paper-${paper.id}`;
     open.addEventListener('click', () => {
       ui.revealed = ui.revealed === paper.id ? null : paper.id;
+      // A different paper ends the comparison rather than re-anchoring it.
+      if (!comparing()) ui.comparison = null;
       uploadHighlights();
       commit({ push: false });
     });
@@ -803,44 +806,89 @@ function renderResearch() {
   }
   reveal.append(findings);
 
-  // Compare against the next paper in the narrowed list, which is the cheapest
-  // honest form of "compare papers": one explicit pair, by overlap.
+  // Compare against any other paper in the narrowed list, chosen here. The
+  // pair is drawn — one colour per paper, the overlap hatched in both — and
+  // summarised in words beneath.
   const others = found.map((f) => f.paper.id).filter((id) => id !== ui.revealed);
   if (others.length > 0) {
-    const against = ui.comparedTo && others.includes(ui.comparedTo) ? ui.comparedTo : others[0];
-    const button = el('button', {
-      type: 'button',
-      textContent: `Compare with ${ui.research.papers.find((p) => p.id === against).title}`,
-    });
+    const titleOf = (id) => ui.research.papers.find((p) => p.id === id).title;
+    let against = ui.comparedTo && others.includes(ui.comparedTo) ? ui.comparedTo : others[0];
+    const choose = el('select', { title: 'Paper to compare with' });
+    choose.dataset.testid = 'compare-against';
+    for (const id of others) choose.append(el('option', { value: id, textContent: titleOf(id) }));
+    choose.value = against;
+    const button = el('button', { type: 'button', textContent: `Compare with ${titleOf(against)}` });
     button.dataset.testid = 'compare-papers';
-    button.addEventListener('click', () => {
-      ui.comparedTo = against;
-      ui.comparison = comparePapers(ui.research, ui.revealed, against);
-      commit({ push: false });
+    choose.addEventListener('change', () => {
+      against = choose.value;
+      button.textContent = `Compare with ${titleOf(against)}`;
     });
-    reveal.append(button);
+    button.addEventListener('click', () => compareWith(against));
+    reveal.append(el('div', { className: 'compare' }, [choose, button]));
   }
 
-  if (ui.comparison && ui.comparison.a.id === ui.revealed) {
+  if (comparing()) {
+    const { a, b } = ui.comparison;
     const box = el('div', { className: 'comparison' });
     box.dataset.testid = 'comparison';
+    box.dataset.a = a.id;
+    box.dataset.b = b.id;
+    const swatch = (colour, hatch) => {
+      const rgb = (c) => `rgb(${c.map((v) => Math.round(v * 255)).join(' ')})`;
+      const node = el('span', { className: 'swatch' });
+      node.style.background = hatch
+        ? `repeating-linear-gradient(135deg, ${rgb(colour)} 0 3px, ${rgb(hatch)} 3px 6px)`
+        : rgb(colour);
+      return node;
+    };
+    const [colourA, colourB] = PAPER_COLOURS;
+    const legend = el('ul', { className: 'legend' });
+    legend.dataset.testid = 'comparison-legend';
+    if (colourA) {
+      legend.append(el('li', {}, [swatch(colourA), ` ${a.title}`]));
+      legend.append(el('li', {}, [swatch(colourB), ` ${b.title}`]));
+      legend.append(el('li', {}, [swatch(colourA, colourB), ' Both: the cells where their mappings intersect']));
+    } else {
+      legend.append(el('li', { textContent: 'The 3D view is unavailable, so the comparison is shown in words only.' }));
+    }
+    box.append(legend);
     box.append(el('p', {
       textContent: ui.comparison.disjoint
-        ? `No mapping of ${ui.comparison.a.id} overlaps any mapping of ${ui.comparison.b.id}. `
+        ? `No mapping of ${a.id} overlaps any mapping of ${b.id}. `
           + 'They report different places, rather than not having been compared.'
         : `${ui.comparison.shared.length} overlapping pair(s) of regions, `
-          + `${ui.comparison.onlyA.length} only in ${ui.comparison.a.id}, `
-          + `${ui.comparison.onlyB.length} only in ${ui.comparison.b.id}.`,
+          + `${ui.comparison.onlyA.length} only in ${a.id}, `
+          + `${ui.comparison.onlyB.length} only in ${b.id}.`,
     }));
     for (const pair of ui.comparison.shared.slice(0, 8)) {
       box.append(el('p', { className: 'pair', textContent: `${pair.a.address} ↔ ${pair.b.address}` }));
     }
+    const stop = el('button', { type: 'button', className: 'link', textContent: 'Stop comparing' });
+    stop.dataset.testid = 'stop-comparing';
+    stop.addEventListener('click', () => compareWith(null));
+    box.append(stop);
     reveal.append(box);
   }
 }
 
+/** A comparison is live only while its first paper is the revealed one. */
+const comparing = () => Boolean(ui.comparison && ui.comparison.a.id === ui.revealed);
+
+function compareWith(paperId) {
+  ui.comparedTo = paperId;
+  ui.comparison = paperId === null ? null : comparePapers(ui.research, ui.revealed, paperId);
+  uploadHighlights();
+  commit({ push: false });
+}
+
 /**
- * Upload the revealed paper's cells as highlight volumes.
+ * Upload the revealed paper's cells as highlight volumes — or, while two
+ * papers are compared, both papers' cells in one colour each and their
+ * covering intersection hatched in both.
+ *
+ * Every uploaded highlight names its paper and finding (an overlap cell names
+ * the findings of both papers that contain it), so `__atlas.highlights()` can
+ * trace any volume on screen back to what was reported.
  *
  * Only the cells of the CURRENT atlas are uploaded, because a `BV` cell has no
  * geometry in the body template and there is nothing to draw. That is a
@@ -853,31 +901,56 @@ function uploadHighlights() {
   if (ui.revealed === null || !ui.research || !ui.renderer) return;
 
   const selection = viewer.state.selection;
-  const revealed = revealPaper(ui.research, ui.revealed, selection?.ok ? selection.displayAddress : null);
-  if (!revealed) return;
+  const filter = selection?.ok ? selection.displayAddress : null;
 
+  const add = (cell, highlight) => {
+    if (cell.atlas !== viewer.atlas) return;
+    let mesh = null;
+    try {
+      mesh = cellMeshForHighlight(cell.address);
+    } catch {
+      // A mapping the bound template cannot place is simply not drawn. It is
+      // still in the panel, which is where the user would look for it.
+      return;
+    }
+    if (!mesh) return;
+    ui.uploaded.highlights.push({
+      cell: ui.renderer.uploadCell(mesh),
+      address: cell.address,
+      // Outside the filter is drawn fainter, never hidden.
+      alpha: cell.withinFilter === false ? 0.13 : 0.26,
+      ...highlight,
+    });
+  };
+
+  if (comparing()) {
+    const layers = comparisonLayers(ui.research, ui.revealed, ui.comparedTo, filter);
+    if (!layers) return;
+    const [colourA, colourB] = PAPER_COLOURS;
+    const source = (c) => ({ paperId: c.paperId, findingId: c.findingId, findingLabel: c.findingLabel });
+    for (const cell of layers.cells.a) add(cell, { role: 'a', colour: colourA, sources: [source(cell)] });
+    for (const cell of layers.cells.b) add(cell, { role: 'b', colour: colourB, sources: [source(cell)] });
+    // Drawn last and stronger, so the shared region reads through both fills.
+    for (const cell of layers.overlap) {
+      add(cell, {
+        role: 'overlap',
+        colour: colourA,
+        hatch: colourB,
+        alpha: 0.5,
+        sources: [...cell.a, ...cell.b],
+      });
+    }
+    return;
+  }
+
+  const revealed = revealPaper(ui.research, ui.revealed, filter);
+  if (!revealed) return;
   let group = 0;
   for (const finding of revealed.findings) {
     const colour = GROUP_COLOURS[group % GROUP_COLOURS.length];
     group += 1;
-    for (const cell of finding.cells) {
-      if (cell.atlas !== viewer.atlas) continue;
-      let mesh = null;
-      try {
-        mesh = cellMeshForHighlight(cell.address);
-      } catch {
-        // A mapping the bound template cannot place is simply not drawn. It is
-        // still in the panel, which is where the user would look for it.
-        continue;
-      }
-      if (!mesh) continue;
-      ui.uploaded.highlights.push({
-        cell: ui.renderer.uploadCell(mesh),
-        colour,
-        // Outside the filter is drawn fainter, never hidden.
-        alpha: cell.withinFilter === false ? 0.13 : 0.26,
-      });
-    }
+    const sources = [{ paperId: revealed.paper.id, findingId: finding.id, findingLabel: finding.label }];
+    for (const cell of finding.cells) add(cell, { role: 'reveal', colour, sources });
   }
 }
 
@@ -1378,6 +1451,7 @@ try {
   const module = await import('./viewer/renderer.js');
   ui.regionColour = module.REGION_COLOURS;
   GROUP_COLOURS = module.GROUP_COLOURS;
+  PAPER_COLOURS = module.PAPER_COLOURS;
   ui.renderer = module.createRenderer($('canvas'));
   if (ui.meshes.body) ui.uploaded.body = ui.renderer.uploadSurface(ui.meshes.body);
   if (ui.meshes.spine) ui.uploaded.spine = ui.renderer.uploadPolyline(ui.meshes.spine);
@@ -1487,6 +1561,13 @@ window.__atlas = {
     viewer.state.selection?.ok ? viewer.state.selection.displayAddress : null,
   ).map((f) => f.paper.id),
   comparePapers: (a, b) => comparePapers(ui.research, a, b),
+  /** Compare the revealed paper with `paperId` (null stops), as the button does. */
+  compareWith: (paperId) => {
+    compareWith(paperId);
+    return ui.comparison;
+  },
+  /** What is drawn, each volume with its paper and finding; no GL handles. */
+  highlights: () => (ui.uploaded.highlights ?? []).map(({ cell, ...h }) => h),
   highlightCount: () => (ui.uploaded.highlights ?? []).length,
   selection: viewer.state.selection,
   ready: true,

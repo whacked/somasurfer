@@ -72,6 +72,8 @@ in vec3 vPosition;
 uniform vec3 colour;
 uniform float alpha;
 uniform vec3 eye;
+uniform float hatch;
+uniform vec3 hatchColour;
 out vec4 fragColour;
 void main() {
   vec3 n = normalize(vNormal);
@@ -82,7 +84,10 @@ void main() {
   float key = max(dot(n, normalize(vec3(0.35, -0.8, 0.5))), 0.0);
   float fill = max(dot(n, normalize(vec3(-0.5, 0.4, 0.2))), 0.0);
   float light = 0.42 + 0.44 * key + 0.18 * fill;
-  fragColour = vec4(colour * light, alpha);
+  // Diagonal screen-space stripes in a second colour, one period every hatch pixels.
+  // Zero turns them off; the overlap of two compared papers is the one user.
+  vec3 c = hatch > 0.0 && mod(gl_FragCoord.x + gl_FragCoord.y, hatch) < hatch * 0.5 ? hatchColour : colour;
+  fragColour = vec4(c * light, alpha);
 }`;
 
 const LINE_VERTEX = `#version 300 es
@@ -124,6 +129,12 @@ export const GROUP_COLOURS = [
   [0.94, 0.46, 0.38], [0.46, 0.64, 0.94], [0.96, 0.76, 0.32],
   [0.58, 0.82, 0.50], [0.80, 0.54, 0.88],
 ];
+/**
+ * One colour per paper when two are compared: blue and magenta, far apart in
+ * hue from each other, from the selection's orange and from the body's
+ * blue-green region tones. Their overlap is hatched in both.
+ */
+export const PAPER_COLOURS = [[0.28, 0.52, 1.0], [0.93, 0.30, 0.72]];
 
 function compile(gl, vertexSource, fragmentSource) {
   const program = gl.createProgram();
@@ -175,6 +186,8 @@ export function createRenderer(canvas) {
       colour: gl.getUniformLocation(solid, 'colour'),
       alpha: gl.getUniformLocation(solid, 'alpha'),
       eye: gl.getUniformLocation(solid, 'eye'),
+      hatch: gl.getUniformLocation(solid, 'hatch'),
+      hatchColour: gl.getUniformLocation(solid, 'hatchColour'),
     },
     line: {
       position: gl.getAttribLocation(line, 'position'),
@@ -288,6 +301,7 @@ export function createRenderer(canvas) {
     gl.useProgram(solid);
     gl.uniformMatrix4fv(loc.solid.viewProjection, false, viewProjection);
     gl.uniform3fv(loc.solid.eye, new Float32Array(eye));
+    gl.uniform1f(loc.solid.hatch, 0);
 
     const translucent = [];
     for (const item of scene.solids) {
@@ -341,6 +355,7 @@ export function createRenderer(canvas) {
         fill: h.colour ?? CELL_COLOUR,
         edge: h.colour ?? CELL_EDGE_COLOUR,
         alpha: h.alpha ?? 0.22,
+        hatch: h.hatch ?? null,
       })),
       ...(scene.cell
         ? [{ cell: scene.cell, fill: CELL_COLOUR, edge: CELL_EDGE_COLOUR, alpha: 0.42 }]
@@ -360,6 +375,8 @@ export function createRenderer(canvas) {
         bindSolid(volume.cell);
         gl.uniform3fv(loc.solid.colour, new Float32Array(volume.fill));
         gl.uniform1f(loc.solid.alpha, volume.alpha);
+        gl.uniform1f(loc.solid.hatch, volume.hatch ? 10 * dpr : 0);
+        if (volume.hatch) gl.uniform3fv(loc.solid.hatchColour, new Float32Array(volume.hatch));
         gl.drawElements(gl.TRIANGLES, volume.cell.count, gl.UNSIGNED_INT, 0);
 
         // The outline is what actually communicates the cell's size, so it is
