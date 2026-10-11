@@ -456,7 +456,20 @@ for (const a of assets) {
   // also not share-alike. "Adaptation by GStack" of someone's mesh is not it.
   const firstParty = (e) => e.holder === 'GStack' && e.shareAlike !== true;
   for (const e of entries) {
-    if (!Array.isArray(e.sources) || e.sources.length === 0) {
+    // A malformed `sources` is a mistake, never "cites nothing": `"sources": "x"`
+    // for `["x"]` is a one-character slip, and read as absent it would wave a
+    // first-party entry past every check below.
+    if (
+      e.sources !== undefined &&
+      !(Array.isArray(e.sources) && e.sources.every((id) => typeof id === 'string' && id.length > 0))
+    ) {
+      problems.push(
+        `${where}: entry ${e.id} has \`sources\` ${JSON.stringify(e.sources)}; \`sources\` must be an array of source ids.`,
+        `  Write it as a list, even for one source. A malformed list is not read as citing nothing.`,
+      );
+      continue;
+    }
+    if (e.sources === undefined || e.sources.length === 0) {
       if (!firstParty(e)) {
         problems.push(
           `${where}: entry ${e.id} is not first-party (holder ${JSON.stringify(e.holder)}) but cites no upstream source.`,

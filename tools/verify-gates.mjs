@@ -800,6 +800,25 @@ const CASES = [
     check: () => run('check-licence-separation.mjs'),
   },
   {
+    name: 'licence-first-party-sources-not-an-array',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when an entry\'s sources is not a list of source ids',
+    expect: [/entry alc-1-level-index has `sources` "allen-brain-map"; `sources` must be an array of source ids/],
+    describe: 'a first-party entry citing a non-commercial source as a bare string instead of a list',
+    // First-party entries may cite nothing, so read as absent this slip would
+    // skip every inheritance check: here, the NC source on a plain `asset`.
+    break: () => {
+      const attribution = JSON.parse(readFileSync(ATTRIBUTION, 'utf8'));
+      const entry = attribution.entries.find((e) => e.id === 'alc-1-level-index');
+      if (!entry || entry.holder !== 'GStack' || entry.shareAlike) {
+        throw new Error('alc-1-level-index is no longer a first-party entry to stage this against');
+      }
+      entry.sources = 'allen-brain-map';
+      return substitute(ATTRIBUTION, `${JSON.stringify(attribution, null, 2)}\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
     name: 'perf-fast-runner-is-not-a-failure',
     gate: 'performance budget',
     criterion: 'the performance gate does NOT fail merely because the runner is fast',
