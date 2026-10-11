@@ -209,10 +209,11 @@ export function createViewer(options = {}) {
      *
      * Never changes `state.atlas`. See the module header.
      */
-    select(input) {
+    select(input, { encodeFlags } = {}) {
       const model = selectAddress(input, {
         templates: state.templates,
         nameIndex: state.nameIndex,
+        encodeFlags,
       });
 
       if (!model.ok) {

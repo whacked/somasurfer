@@ -170,6 +170,9 @@ function cellMeshFor(address, templates) {
 /**
  * The full selection model for an address.
  *
+ * `options.encodeFlags` is what the frame's encoder said about a clicked
+ * point. Only a click has them; see `locateNotices`.
+ *
  * `ok: false` means nothing else in the viewer should move. That is the
  * contract the "a rejected address changes nothing else" requirement rests on:
  * this function cannot reach into viewer state, so the only way a rejection can
@@ -244,6 +247,7 @@ export function selectAddress(input, options = {}) {
       displayAddress,
       overPrecise,
       templateLimitDigits: template?.maxUsefulDigits,
+      encodeFlags: options.encodeFlags,
     });
     if (Number.isFinite(located.pointMm[0])) {
       cell = cellMeshFor(displayAddress, templates);
