@@ -1,0 +1,30 @@
+§7 FAIL (harness FAIL against product build qa-integrated-v2@127fbd20 state-machine only (app.js/DOM NOT observed; page dataset research-seed-2026.10.1))
+  fixture qa-journey-5papers (synthetic-qa-fixture) sha256 0d968514dd29990a…
+  exercised: structure BODY-STERNUM, region BA44, papers P-02 + P-01
+  40 passed, 2 failed, 1 unverified of 43; must-pass 38/41
+
+  ✗ FAIL [MUST-PASS] matrix/clamped-cranial
+      covers: clamped-cranial
+      expected: A point 400 mm above the top of the column is addressed at C01 with a notice naming the CRANIAL end specifically. It is never silently projected, and the message is not the caudal one.
+      - expected the clamped_cranial message; got ["name_index_version"]
+      - the message must name "above". Got: " qa-names-0.1.0"
+
+  ✗ FAIL [MUST-PASS] matrix/clamped-caudal
+      covers: clamped-caudal
+      expected: A point 400 mm below the bottom of the column is addressed at S01 with a notice naming the CAUDAL end specifically, and not the cranial one.
+      - expected the clamped_caudal message; got ["name_index_version"]
+      - the message must name "below". Got: " qa-names-0.1.0"
+
+  ? UNVERIFIED [MUST-PASS] journey/compare-two-papers
+      covers: a user can compare papers through the agreed display modes
+      expected: Adding a second paper keeps the first selected, gives each paper its own colour, and hatches exactly the cells both cover. The overlap is the COVERING INTERSECTION of the two papers — not the set of address strings they have in common — and every highlight still names its finding.
+      not evaluated: build qa-integrated-v2@127fbd20 state-machine only (app.js/DOM NOT observed; page dataset research-seed-2026.10.1) lacks multi-paper-selection, overlap-hatching
+
+  passed: matrix/default-no-address, matrix/canonical-body, matrix/loose-body-same-view, matrix/check-symbol-accepted, matrix/check-symbol-mismatch-rejected, matrix/over-precise, matrix/clamped-address-replayed-is-not-a-clamp, matrix/folded-reports-fold-not-clamp, matrix/same-address-unfolded-in-a-sound-template, matrix/variant-T13, matrix/variant-L06, matrix/variant-S06, matrix/absent-S02, matrix/absent-S03, matrix/absent-S04, matrix/absent-S05, matrix/sacrum-S01-is-not-absent, matrix/malformed-bad-digit, matrix/malformed-unknown-frame, matrix/malformed-empty-address, matrix/c08-rejected-with-the-correction-named, matrix/length-at-the-64-character-cap, matrix/length-over-the-64-character-cap, matrix/br-frame-disabled, matrix/no-template, matrix/br-offer-is-not-fabricated-by-truncation, matrix/brain-deep-link-resolves, matrix/brain-deep-link-restores, matrix/cross-atlas-link-honours-the-explicit-atlas, matrix/assets-unavailable-addresses-still-resolve, matrix/equality-guard-different-strings-same-place, matrix/equality-guard-same-string-not-asserted-same, matrix/url-unknown-params, journey/default-body-view, journey/change-layers, journey/select-structure-without-leaving-atlas, journey/explicit-brain-navigation, journey/region-research, journey/paper-reveals-all-its-regions, journey/return-to-body-with-previous-view-intact
+
+  which index answered:
+    · research structures from packages/atlas-qa/fixtures/journey-5papers.json
+    · NO real anatomical index is bound in this tree, so every anatomical name result was checked against the research dataset's own structure list and not against the index the page binds: this fixture carries its own cells and is not resolved against an external index
+    · 10 research structures carry cells the seed script INVENTED (BA44, BA45, BA10, BA13, …). A spatial comparison involving one of them is a comparison against a placeholder, not a measurement. There is no real index for their frame to replace them with.
+
+  report written to qa-state-v2.json

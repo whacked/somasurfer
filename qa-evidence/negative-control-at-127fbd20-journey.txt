@@ -1,0 +1,57 @@
+Negative control: each build below breaks exactly one guarantee.
+
+  control (unmutated)  PASS — 43/43 cases
+  caught   point-rendered-cell
+             breaks: the cell is drawn as a point instead of at its true extent, so borrowed precision looks exact
+             caught by: canonical-body, over-precise, select-structure-without-leaving-atlas (as fail)
+  caught   filter-leaks-into-paper-mappings
+             breaks: the anatomical filter narrows a selected paper's own mappings, hiding its other regions
+             caught by: paper-reveals-all-its-regions (as fail)
+  caught   selection-switches-atlas
+             breaks: selecting a structure navigates to the brain atlas instead of just selecting
+             caught by: select-structure-without-leaving-atlas (as fail)
+  caught   link-switches-atlas
+             breaks: a URL carrying an address from the other atlas switches to it instead of selecting where it stands
+             caught by: brain-deep-link-resolves, cross-atlas-link-honours-the-explicit-atlas (as fail)
+  caught   cross-atlas-offer-is-withheld
+             breaks: an address belonging to the other atlas selects silently, with no offer and no route forward
+             caught by: brain-deep-link-resolves, cross-atlas-link-honours-the-explicit-atlas (as fail)
+  caught   return-loses-the-previous-view
+             breaks: returning from the brain atlas resets the body view instead of restoring it
+             caught by: return-to-body-with-previous-view-intact (as fail)
+  ESCAPED  labels-shared-across-atlases
+             breaks: one label flag serves both atlases, so turning labels on in the brain turns them on in the body view the user will return to
+             caught by: return-to-body-with-previous-view-intact (as fail)
+             MISSED BY: return-to-body-with-previous-view-intact
+  caught   fold-reported-as-clamp
+             breaks: a fold is reported as the point having left the body, which is what it did before DOG-9
+             caught by: folded-reports-fold-not-clamp (as fail)
+  caught   variant-swallowed-as-absent
+             breaks: a recognised count anomaly reports homology 'absent', so a patient needing a level mapping looks like a typo
+             caught by: variant-T13, variant-L06, variant-S06 (as fail)
+  caught   clamp-does-not-name-which-end
+             breaks: both ends of the vertebral column report the same clamp message
+             caught by: clamped-caudal (as fail)
+  caught   c08-rejected-without-the-correction
+             breaks: C08 is refused with a bare range message, so the user never learns the C8 nerve root is what exists
+             caught by: c08-rejected-with-the-correction-named (as fail)
+  caught   over-precise-drawn-at-full-precision
+             breaks: an over-precise address is resolved and drawn at the digits it carried, with no notice
+             caught by: over-precise (as fail)
+  caught   address-string-equality
+             breaks: "same place?" is answered by comparing canonical address strings
+             caught by: equality-guard-different-strings-same-place, equality-guard-same-string-not-asserted-same (as fail)
+  caught   deep-link-drops-the-digits
+             breaks: a deep link restores the anchor cell and discards the refinement digits, so the view is coarser than the link
+             caught by: canonical-body, loose-body-same-view (as fail)
+  caught   single-name-instead-of-a-ranked-list
+             breaks: the panel shows one name instead of a ranked list with containment fractions
+             caught by: select-structure-without-leaving-atlas (as fail)
+  caught   ancestor-offer-fabricated-by-truncation
+             breaks: the coarsest-ancestor offer is computed by truncating the address instead of by checking what resolves, so a refused BR address is answered with a coarser BR address that refuses too
+             caught by: br-offer-is-not-fabricated-by-truncation (as fail)
+  caught   silently-skips-a-must-pass-case
+             breaks: the build declines a capability a must-pass row needs, so the row does not run — nothing errors, nothing is red, and the requirement is simply not tested
+             caught by: folded-reports-fold-not-clamp, no-template (as unverified)
+
+16/17 caught by the case that owns them.
