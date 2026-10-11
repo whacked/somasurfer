@@ -27,7 +27,9 @@ import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
 import { REPO_ROOT, fail, rel } from './lib/repo.mjs';
 import { decodeGlbNodes } from './lib/glb.mjs';
-import { GROUPS, buildProvenance } from './lib/brain-provenance.mjs';
+import { GROUPS, REPLACEMENTS, buildProvenance } from './lib/brain-provenance.mjs';
+import { openSource } from './lib/bp3d.mjs';
+import { weld } from './lib/mesh-geometry.mjs';
 import { buildTiers } from './lib/brain-meshes.mjs';
 import { BRAIN_MESH_BUILD, brainAssetPaths } from './lib/brain-asset-paths.mjs';
 
@@ -60,10 +62,41 @@ const paths = brainAssetPaths(pin.commit);
 const { nodes } = await decodeGlbNodes(inputs['brain.glb']);
 const manifest = JSON.parse(inputs['manifest.json'].toString('utf8'));
 const manifestById = new Map(manifest.nodes.map((n) => [n.id, n]));
-const provenance = buildProvenance(nodes);
+// The committed result of the pre-registered origin test decides which held
+// structures a measurement moved (docs/brain-origin-test.md).
+const ORIGIN_RESULT = join(REPO_ROOT, 'packages', 'atlas-assets', 'provenance', 'origin-test-bodyparts3d.json');
+const originResult = existsSync(ORIGIN_RESULT) ? JSON.parse(readFileSync(ORIGIN_RESULT, 'utf8')) : null;
+const provenance = buildProvenance(nodes, originResult);
 
 const cleared = provenance.structures.filter((s) => s.group === GROUPS.cleared);
-const tiers = await buildTiers({ nodes, structures: cleared, ...BRAIN_MESH_BUILD });
+
+/**
+ * Replacement geometry, from BodyParts3D, placed into the mesh frame by the
+ * INVERSE of the similarity the origin test fitted (mesh -> BodyParts3D LPS mm).
+ * The test's own transform, not a new fit, so the replacement sits exactly
+ * where the 14 fit structures say BodyParts3D's frame lands.
+ */
+const replacements = new Map();
+const replaced = cleared.filter((s) => s.shipsFrom !== 'brain.glb');
+if (replaced.length > 0) {
+  const bp3dAt = args.indexOf('--bp3d');
+  if (bp3dAt < 0) fail('build-meshes', [`${replaced.map((s) => s.name.trim()).join(', ')} ship(s) from BodyParts3D: pass --bp3d <dir>.`]);
+  const bp3d = openSource(args[bp3dAt + 1]);
+  const { scaleMmPerMeshM: sc, R, tMm: t } = originResult.transform;
+  for (const s of replaced) {
+    const spec = REPLACEMENTS[s.name.trim()];
+    const m = bp3d.loadMesh(spec.concept);
+    if (!m) fail('build-meshes', [`BodyParts3D has no mesh for ${spec.concept}`]);
+    const positions = new Float32Array(m.V.length);
+    for (let v = 0; v < m.V.length; v += 3) {
+      // The adapter hands out LAS; the test fitted against LPS.
+      const lps = [m.V[v], -m.V[v + 1], m.V[v + 2]].map((x, k) => x - t[k]);
+      for (let a = 0; a < 3; a += 1) positions[v + a] = (R[0][a] * lps[0] + R[1][a] * lps[1] + R[2][a] * lps[2]) / sc;
+    }
+    replacements.set(s.id, weld(positions, Uint32Array.from(m.F)));
+  }
+}
+const tiers = await buildTiers({ nodes, structures: cleared, replacements, ...BRAIN_MESH_BUILD });
 const reportById = new Map(tiers.report.map((r) => [r.id, r]));
 
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
@@ -113,6 +146,7 @@ const structuresDoc = {
       ta2: m?.ta2 ?? [],
       sources: s.sources,
       basis: s.basis,
+      shipsFrom: s.shipsFrom,
       full: { triangles: r.full.triangles, vertices: r.full.vertices, areaMm2: round(r.full.areaMm2, 1) },
       low: { triangles: r.low.triangles, vertices: r.low.vertices, areaMm2: round(r.low.areaMm2, 1) },
       sourceTriangles: r.sourceTriangles,

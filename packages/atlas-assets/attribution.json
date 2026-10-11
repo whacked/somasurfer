@@ -117,7 +117,7 @@
     },
     {
       "id": "zanatomy-brain-meshes-cleared",
-      "title": "Brain meshes, cleared group: 245 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases)",
+      "title": "Brain meshes, cleared group: 248 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly",
       "files": [
         "brain/zanatomy-2929e94/meshes.lowres.bin",
         "brain/zanatomy-2929e94/meshes.fullres.bin",
@@ -126,7 +126,7 @@
       "licence": "CC-BY-SA-4.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "holder": "Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack",
-      "source": "Derived by tools/build-meshes.mjs from brainproject brain.glb at commit 2929e94f521a8ddceab26bc100a98dc06b0da060 (SHA-256 76a49ea4526a4880613aec7a02756bd7301b0b9d0680d7cae33e197b672c5453): welded, quantised to int16, and decimated per structure for the low tier",
+      "source": "Derived by tools/build-meshes.mjs from brainproject brain.glb at commit 2929e94f521a8ddceab26bc100a98dc06b0da060 (SHA-256 76a49ea4526a4880613aec7a02756bd7301b0b9d0680d7cae33e197b672c5453): welded, quantised to int16, and decimated per structure for the low tier. The corpus callosum is BodyParts3D 4.0 FMA86464 (isa_BP3D_4.0_obj_99.zip), placed in the mesh frame by the transform of the origin test (docs/brain-origin-test.md)",
       "shareAlike": true,
       "licenceClass": "asset",
       "sources": [
@@ -139,7 +139,7 @@
         "neudorfer-hypothalamus",
         "zanatomy"
       ],
-      "note": "Only the structures docs/asset-licensing.md 7.3 clears. The 146 undeclared-material structures (126 of 128 cortical) and the 46 Dundee cranial-nerve structures are in neither mesh file; structures.json lists them by name under `excluded`. Licence rule 10 checks every structure id inside these files against packages/atlas-assets/provenance/brain-zanatomy-2929e94.json. Data derived from the Human Connectome Project (CIT168, Najdenovska, Neudorfer, HCP1065): Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657)."
+      "note": "Only structures that are cleared: by docs/asset-licensing.md 7.3, or by the pre-registered origin test (midbrain L and R, shown to be BodyParts3D's own; the corpus callosum, which failed it, ships from BodyParts3D instead). The 143 undeclared-material structures still held (126 of 128 cortical) and the 46 Dundee cranial-nerve structures are in neither mesh file; structures.json lists them by name under `excluded`, and records per structure which source it ships from (`shipsFrom`). Licence rule 10 checks every structure id inside these files against packages/atlas-assets/provenance/brain-zanatomy-2929e94.json. Data derived from the Human Connectome Project (CIT168, Najdenovska, Neudorfer, HCP1065): Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657)."
     },
     {
       "id": "brain-mni-registration",

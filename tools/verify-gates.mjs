@@ -1286,7 +1286,7 @@ const CASES = [
     gate: 'mesh assets',
     criterion: 'the mesh gate checks every shippable structure on the committed tree, not none',
     mustPass: true,
-    expect: [/245 of 245 shippable structures in both tiers/, /Published error re-measured for all 245/, /QA sample 40 structures, 2 withheld control/],
+    expect: [/248 of 248 shippable structures in both tiers/, /Published error re-measured for all 248/, /QA sample 40 structures, 1 withheld control/],
     describe: 'the committed brain mesh files, unchanged',
     // A gate that found no files would also pass. This pins that it found them.
     break: () => () => {},
@@ -1398,7 +1398,7 @@ const CASES = [
     gate: 'licence separation',
     criterion: 'rule 10 checks every structure slot of the committed brain files, not none',
     mustPass: true,
-    expect: [/rule 10: 3 brain file\(s\), 735 structure slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 744 structure slot\(s\)/],
     describe: 'the committed brain mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),

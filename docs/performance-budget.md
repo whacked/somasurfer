@@ -62,7 +62,7 @@ The real brain (W2, DOG-127) and the full-body human (W3, DOG-128) share the
 
 | share | gzip | what it holds | today |
 | --- | ---: | --- | ---: |
-| brain, low tier | 1.00 MiB | `assets/brain/**` that is not declared lazy | 759 KiB |
+| brain, low tier | 1.00 MiB | `assets/brain/**` that is not declared lazy | 812 KiB |
 | body, low tier | 1.25 MiB | W3's equivalent; W3 adds its own line | — |
 | v1 templates and labels | 0.25 MiB | everything else under `assets/` | about 0.13 MiB |
 
@@ -81,7 +81,10 @@ declared is costed as low-resolution, where it is paid for.
 once** on 2026-10-11 from the first full-tier build, which read 4,972,008 B:
 1.10 × that, rounded up to the next 256 KiB. It is not re-derived at gate time,
 so it cannot ratchet to whatever the next build weighs. The 10% covers
-re-encoding the same 245 structures. A new clearance group, such as the cortex
+re-encoding the same structures. It was derived from the 245-structure build,
+before the origin test added the corpus callosum and midbrain, and they
+brought the full tier to 5,320,761 B (97% of the line), still within it.
+A new clearance group, such as the cortex
 if it ever clears, is a new decision about this line, not headroom inside it.
 At 25 Mbit/s the tier is about 1.8 s of transfer after the low tier has drawn.
 

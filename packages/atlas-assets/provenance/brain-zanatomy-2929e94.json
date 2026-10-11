@@ -14,14 +14,15 @@
   }
  },
  "counts": {
-  "zanatomy-undeclared-brain-materials": 146,
+  "zanatomy-undeclared-brain-materials": 143,
   "dundee-cranial-nerves": 46,
-  "cleared": 245,
+  "cleared": 248,
   "cortical": 128,
   "corticalHeld": 126
  },
  "structures": [
   {
+   "shipsFrom": "brain.glb",
    "id": 0,
    "name": " Posterior transverse collateral sulcus.l",
    "label": "Posterior transverse collateral sulcus",
@@ -44,6 +45,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 1,
    "name": " Posterior transverse collateral sulcus.r",
    "label": "Posterior transverse collateral sulcus",
@@ -66,6 +68,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 2,
    "name": "Abducens nerve (VI).l",
    "label": "Abducens nerve (VI)",
@@ -87,6 +90,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 3,
    "name": "Abducens nerve (VI).r",
    "label": "Abducens nerve (VI)",
@@ -108,6 +112,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 4,
    "name": "Accessory nerve (XI).l",
    "label": "Accessory nerve (XI)",
@@ -129,6 +134,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 5,
    "name": "Accessory nerve (XI).r",
    "label": "Accessory nerve (XI)",
@@ -150,6 +156,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 6,
    "name": "Accessory nucleus of oculomotor nerve.l",
    "label": "Accessory nucleus of oculomotor nerve",
@@ -167,6 +174,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 7,
    "name": "Accessory nucleus of oculomotor nerve.r",
    "label": "Accessory nucleus of oculomotor nerve",
@@ -184,6 +192,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 8,
    "name": "Acoustic radiation.l",
    "label": "Acoustic radiation",
@@ -198,6 +207,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 9,
    "name": "Acoustic radiation.r",
    "label": "Acoustic radiation",
@@ -212,6 +222,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 10,
    "name": "Adenohypophysis",
    "label": "Adenohypophysis",
@@ -229,6 +240,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 11,
    "name": "Angular gyrus.l",
    "label": "Angular gyrus",
@@ -251,6 +263,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 12,
    "name": "Angular gyrus.r",
    "label": "Angular gyrus",
@@ -273,6 +286,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 13,
    "name": "Anterior cerebral artery.l",
    "label": "Anterior cerebral artery",
@@ -290,6 +304,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 14,
    "name": "Anterior cerebral artery.r",
    "label": "Anterior cerebral artery",
@@ -307,6 +322,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 15,
    "name": "Anterior commissure",
    "label": "Anterior commissure",
@@ -328,6 +344,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 16,
    "name": "Anterior communicating artery",
    "label": "Anterior communicating artery",
@@ -345,6 +362,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 17,
    "name": "Anterior division of mandibular nerve.l",
    "label": "Anterior division of mandibular nerve",
@@ -366,6 +384,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 18,
    "name": "Anterior division of mandibular nerve.r",
    "label": "Anterior division of mandibular nerve",
@@ -387,6 +406,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 19,
    "name": "Anterior hypothalamus.l",
    "label": "Anterior hypothalamus",
@@ -403,6 +423,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 20,
    "name": "Anterior hypothalamus.r",
    "label": "Anterior hypothalamus",
@@ -419,6 +440,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 21,
    "name": "Anterior inferior cerebellar artery.l",
    "label": "Anterior inferior cerebellar artery",
@@ -436,6 +458,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 22,
    "name": "Anterior inferior cerebellar artery.r",
    "label": "Anterior inferior cerebellar artery",
@@ -453,6 +476,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 23,
    "name": "Anterior intercavernous sinus",
    "label": "Anterior intercavernous sinus",
@@ -470,6 +494,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 24,
    "name": "Anterior nuclei of thalamus.l",
    "label": "Anterior nuclei of thalamus",
@@ -486,6 +511,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 25,
    "name": "Anterior nuclei of thalamus.r",
    "label": "Anterior nuclei of thalamus",
@@ -502,6 +528,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 26,
    "name": "Anterior occipital sulcus*.l",
    "label": "Anterior occipital sulcus",
@@ -524,6 +551,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 27,
    "name": "Anterior occipital sulcus*.r",
    "label": "Anterior occipital sulcus",
@@ -546,6 +574,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 28,
    "name": "Anterior quadrangular lobule.l",
    "label": "Anterior quadrangular lobule",
@@ -563,6 +592,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 29,
    "name": "Anterior quadrangular lobule.r",
    "label": "Anterior quadrangular lobule",
@@ -580,6 +610,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 30,
    "name": "Anterior spinal artery.l",
    "label": "Anterior spinal artery",
@@ -597,6 +628,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 31,
    "name": "Anterior spinal artery.r",
    "label": "Anterior spinal artery",
@@ -614,6 +646,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 32,
    "name": "Anterior thalamic radiation.l",
    "label": "Anterior thalamic radiation",
@@ -628,6 +661,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 33,
    "name": "Anterior thalamic radiation.r",
    "label": "Anterior thalamic radiation",
@@ -642,6 +676,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 34,
    "name": "Aqueduct of midbrain",
    "label": "Aqueduct of midbrain",
@@ -659,6 +694,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 35,
    "name": "Arcuate fasciculus.l",
    "label": "Arcuate fasciculus",
@@ -673,6 +709,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 36,
    "name": "Arcuate fasciculus.r",
    "label": "Arcuate fasciculus",
@@ -687,6 +724,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 37,
    "name": "Basilar artery",
    "label": "Basilar artery",
@@ -704,6 +742,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 38,
    "name": "Basilar venous plexus",
    "label": "Basilar venous plexus",
@@ -721,6 +760,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 39,
    "name": "Basolateral complex.l",
    "label": "Basolateral complex",
@@ -737,6 +777,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 40,
    "name": "Basolateral complex.r",
    "label": "Basolateral complex",
@@ -753,6 +794,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 41,
    "name": "Biventral lobule.l",
    "label": "Biventral lobule",
@@ -770,6 +812,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 42,
    "name": "Biventral lobule.r",
    "label": "Biventral lobule",
@@ -787,6 +830,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 43,
    "name": "Buccal nerve.l",
    "label": "Buccal nerve",
@@ -808,6 +852,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 44,
    "name": "Buccal nerve.r",
    "label": "Buccal nerve",
@@ -829,6 +874,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 45,
    "name": "Calcarine sulcus.l",
    "label": "Calcarine sulcus",
@@ -851,6 +897,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 46,
    "name": "Calcarine sulcus.r",
    "label": "Calcarine sulcus",
@@ -873,6 +920,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 47,
    "name": "Callosomarginal artery.l",
    "label": "Callosomarginal artery",
@@ -890,6 +938,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 48,
    "name": "Callosomarginal artery.r",
    "label": "Callosomarginal artery",
@@ -907,6 +956,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 49,
    "name": "Caudate nucleus.l",
    "label": "Caudate nucleus",
@@ -924,6 +974,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 50,
    "name": "Caudate nucleus.r",
    "label": "Caudate nucleus",
@@ -941,6 +992,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 51,
    "name": "Cavernous sinus.l",
    "label": "Cavernous sinus",
@@ -958,6 +1010,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 52,
    "name": "Cavernous sinus.r",
    "label": "Cavernous sinus",
@@ -975,6 +1028,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 53,
    "name": "Central lobule",
    "label": "Central lobule",
@@ -992,6 +1046,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 54,
    "name": "Central nucleus.l",
    "label": "Central nucleus",
@@ -1008,6 +1063,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 55,
    "name": "Central nucleus.r",
    "label": "Central nucleus",
@@ -1024,6 +1080,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 56,
    "name": "Central sulcus.l",
    "label": "Central sulcus",
@@ -1046,6 +1103,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 57,
    "name": "Central sulcus.r",
    "label": "Central sulcus",
@@ -1068,6 +1126,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 58,
    "name": "Choroid plexus.l",
    "label": "Choroid plexus",
@@ -1085,6 +1144,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 59,
    "name": "Choroid plexus.r",
    "label": "Choroid plexus",
@@ -1102,6 +1162,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 60,
    "name": "Cingulate gyrus (Posteroventral part*).l",
    "label": "Cingulate gyrus (Posteroventral part)",
@@ -1124,6 +1185,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 61,
    "name": "Cingulate gyrus (Posteroventral part*).r",
    "label": "Cingulate gyrus (Posteroventral part)",
@@ -1146,6 +1208,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 62,
    "name": "Cingulate gyrus and sulcus (Middle anterior part).l",
    "label": "Cingulate gyrus and sulcus (Middle anterior part)",
@@ -1168,6 +1231,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 63,
    "name": "Cingulate gyrus and sulcus (Middle anterior part).r",
    "label": "Cingulate gyrus and sulcus (Middle anterior part)",
@@ -1190,6 +1254,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 64,
    "name": "Cingulate gyrus and sulcus (Middle posterior part).l",
    "label": "Cingulate gyrus and sulcus (Middle posterior part)",
@@ -1212,6 +1277,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 65,
    "name": "Cingulate gyrus and sulcus (Middle posterior part).r",
    "label": "Cingulate gyrus and sulcus (Middle posterior part)",
@@ -1234,6 +1300,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 66,
    "name": "Cingulate gyrus and sulcus (Posterior dorsal part).l",
    "label": "Cingulate gyrus and sulcus (Posterior dorsal part)",
@@ -1256,6 +1323,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 67,
    "name": "Cingulate gyrus and sulcus (Posterior dorsal part).r",
    "label": "Cingulate gyrus and sulcus (Posterior dorsal part)",
@@ -1278,6 +1346,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 68,
    "name": "Cingulate sulcus (Marginal part*).l",
    "label": "Cingulate sulcus (Marginal part)",
@@ -1300,6 +1369,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 69,
    "name": "Cingulate sulcus (Marginal part*).r",
    "label": "Cingulate sulcus (Marginal part)",
@@ -1322,6 +1392,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 70,
    "name": "Circular sulcus of insula.l",
    "label": "Circular sulcus of insula",
@@ -1344,6 +1415,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 71,
    "name": "Circular sulcus of insula.r",
    "label": "Circular sulcus of insula",
@@ -1366,6 +1438,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 72,
    "name": "Collateral sulcus.l",
    "label": "Collateral sulcus",
@@ -1388,6 +1461,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 73,
    "name": "Collateral sulcus.r",
    "label": "Collateral sulcus",
@@ -1410,6 +1484,7 @@
    ]
   },
   {
+   "shipsFrom": "bodyparts3d FMA86464",
    "id": 74,
    "name": "Corpus callosum",
    "label": "Corpus callosum",
@@ -1418,19 +1493,17 @@
    "materials": [
     "Temporal lobe"
    ],
-   "group": "zanatomy-undeclared-brain-materials",
+   "group": "cleared",
    "sources": [
-    "bodyparts3d",
-    "brainproject-brain-glb",
-    "zanatomy",
-    "zanatomy-undeclared-brain-materials"
+    "bodyparts3d"
    ],
-   "basis": "Z-Anatomy",
-   "heldBecause": [
+   "basis": "the glb's version failed the origin test (packages/atlas-assets/provenance/origin-test-bodyparts3d.json: mean 0.227 mm, p95 0.378 mm, label agreement 0.769); replaced by bodyparts3d FMA86464, registered into the mesh frame (CTO decision on DOG-127, 2026-10-11 18:32)",
+   "formerlyHeldBecause": [
     "carries only `Temporal lobe`, which appears otherwise only on the undeclared cortex; held fail-closed"
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 75,
    "name": "Corticobulbar tract.l",
    "label": "Corticobulbar tract",
@@ -1445,6 +1518,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 76,
    "name": "Corticobulbar tract.r",
    "label": "Corticobulbar tract",
@@ -1459,6 +1533,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 77,
    "name": "Corticomedial group.l",
    "label": "Corticomedial group",
@@ -1475,6 +1550,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 78,
    "name": "Corticomedial group.r",
    "label": "Corticomedial group",
@@ -1491,6 +1567,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 79,
    "name": "Corticopontine tract (frontal).l",
    "label": "Corticopontine tract (frontal)",
@@ -1505,6 +1582,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 80,
    "name": "Corticopontine tract (frontal).r",
    "label": "Corticopontine tract (frontal)",
@@ -1519,6 +1597,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 81,
    "name": "Corticopontine tract (occipital).l",
    "label": "Corticopontine tract (occipital)",
@@ -1533,6 +1612,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 82,
    "name": "Corticopontine tract (occipital).r",
    "label": "Corticopontine tract (occipital)",
@@ -1547,6 +1627,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 83,
    "name": "Corticopontine tract (parietal).l",
    "label": "Corticopontine tract (parietal)",
@@ -1561,6 +1642,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 84,
    "name": "Corticopontine tract (parietal).r",
    "label": "Corticopontine tract (parietal)",
@@ -1575,6 +1657,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 85,
    "name": "Corticospinal tract.l",
    "label": "Corticospinal tract",
@@ -1589,6 +1672,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 86,
    "name": "Corticospinal tract.r",
    "label": "Corticospinal tract",
@@ -1603,6 +1687,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 87,
    "name": "Corticostriatal tract (anterior).l",
    "label": "Corticostriatal tract (anterior)",
@@ -1617,6 +1702,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 88,
    "name": "Corticostriatal tract (anterior).r",
    "label": "Corticostriatal tract (anterior)",
@@ -1631,6 +1717,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 89,
    "name": "Corticostriatal tract (posterior).l",
    "label": "Corticostriatal tract (posterior)",
@@ -1645,6 +1732,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 90,
    "name": "Corticostriatal tract (posterior).r",
    "label": "Corticostriatal tract (posterior)",
@@ -1659,6 +1747,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 91,
    "name": "Corticostriatal tract (superior).l",
    "label": "Corticostriatal tract (superior)",
@@ -1673,6 +1762,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 92,
    "name": "Corticostriatal tract (superior).r",
    "label": "Corticostriatal tract (superior)",
@@ -1687,6 +1777,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 93,
    "name": "Culmen",
    "label": "Culmen",
@@ -1704,6 +1795,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 94,
    "name": "Cuneus.l",
    "label": "Cuneus",
@@ -1726,6 +1818,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 95,
    "name": "Cuneus.r",
    "label": "Cuneus",
@@ -1748,6 +1841,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 96,
    "name": "Declive",
    "label": "Declive",
@@ -1765,6 +1859,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 97,
    "name": "Dentatorubrothalamic tract.l",
    "label": "Dentatorubrothalamic tract",
@@ -1779,6 +1874,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 98,
    "name": "Dentatorubrothalamic tract.r",
    "label": "Dentatorubrothalamic tract",
@@ -1793,6 +1889,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 99,
    "name": "Distal lateral striate branches.l",
    "label": "Distal lateral striate branches",
@@ -1810,6 +1907,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 100,
    "name": "Distal lateral striate branches.r",
    "label": "Distal lateral striate branches",
@@ -1827,6 +1925,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 101,
    "name": "Facial nerve (VII).l",
    "label": "Facial nerve (VII)",
@@ -1848,6 +1947,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 102,
    "name": "Facial nerve (VII).r",
    "label": "Facial nerve (VII)",
@@ -1869,6 +1969,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 103,
    "name": "Falx cerebri",
    "label": "Falx cerebri",
@@ -1886,6 +1987,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 104,
    "name": "Flocculus.l",
    "label": "Flocculus",
@@ -1903,6 +2005,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 105,
    "name": "Flocculus.r",
    "label": "Flocculus",
@@ -1920,6 +2023,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 106,
    "name": "Folium of vermis",
    "label": "Folium of vermis",
@@ -1937,6 +2041,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 107,
    "name": "Fornix.l",
    "label": "Fornix",
@@ -1958,6 +2063,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 108,
    "name": "Fornix.r",
    "label": "Fornix",
@@ -1979,6 +2085,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 109,
    "name": "Fourth ventricle",
    "label": "Fourth ventricle",
@@ -1996,6 +2103,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 110,
    "name": "Frontal aslant tract.l",
    "label": "Frontal aslant tract",
@@ -2010,6 +2118,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 111,
    "name": "Frontal aslant tract.r",
    "label": "Frontal aslant tract",
@@ -2024,6 +2133,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 112,
    "name": "Frontal branches of callosomarginal artery.l",
    "label": "Frontal branches of callosomarginal artery",
@@ -2041,6 +2151,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 113,
    "name": "Frontal branches of callosomarginal artery.r",
    "label": "Frontal branches of callosomarginal artery",
@@ -2058,6 +2169,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 114,
    "name": "Globus pallidus external.l",
    "label": "Globus pallidus external",
@@ -2074,6 +2186,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Globus pallidus` mesh by cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 115,
    "name": "Globus pallidus external.r",
    "label": "Globus pallidus external",
@@ -2090,6 +2203,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Globus pallidus` mesh by cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 116,
    "name": "Globus pallidus internal.l",
    "label": "Globus pallidus internal",
@@ -2106,6 +2220,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Globus pallidus` mesh by cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 117,
    "name": "Globus pallidus internal.r",
    "label": "Globus pallidus internal",
@@ -2122,6 +2237,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Globus pallidus` mesh by cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 118,
    "name": "Gracile lobule.l",
    "label": "Gracile lobule",
@@ -2139,6 +2255,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 119,
    "name": "Gracile lobule.r",
    "label": "Gracile lobule",
@@ -2156,6 +2273,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 120,
    "name": "Habenula",
    "label": "Habenula",
@@ -2173,6 +2291,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 121,
    "name": "Hippocampal commissure",
    "label": "Hippocampal commissure",
@@ -2194,6 +2313,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 122,
    "name": "Hippocampus.l",
    "label": "Hippocampus",
@@ -2211,6 +2331,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 123,
    "name": "Hippocampus.r",
    "label": "Hippocampus",
@@ -2228,6 +2349,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 124,
    "name": "Hypoglossal nerve (XII).l",
    "label": "Hypoglossal nerve (XII)",
@@ -2245,6 +2367,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 125,
    "name": "Hypoglossal nerve (XII).r",
    "label": "Hypoglossal nerve (XII)",
@@ -2262,6 +2385,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 126,
    "name": "Inferior alveolar nerve.l",
    "label": "Inferior alveolar nerve",
@@ -2283,6 +2407,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 127,
    "name": "Inferior alveolar nerve.r",
    "label": "Inferior alveolar nerve",
@@ -2304,6 +2429,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 128,
    "name": "Inferior cerebellar peduncle.l",
    "label": "Inferior cerebellar peduncle",
@@ -2318,6 +2444,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 129,
    "name": "Inferior cerebellar peduncle.r",
    "label": "Inferior cerebellar peduncle",
@@ -2332,6 +2459,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 130,
    "name": "Inferior colliculus.l",
    "label": "Inferior colliculus",
@@ -2349,6 +2477,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 131,
    "name": "Inferior colliculus.r",
    "label": "Inferior colliculus",
@@ -2366,6 +2495,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 132,
    "name": "Inferior fronto-occipital fasciculus.l",
    "label": "Inferior fronto-occipital fasciculus",
@@ -2380,6 +2510,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 133,
    "name": "Inferior fronto-occipital fasciculus.r",
    "label": "Inferior fronto-occipital fasciculus",
@@ -2394,6 +2525,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 134,
    "name": "Inferior longitudinal fasciculus.l",
    "label": "Inferior longitudinal fasciculus",
@@ -2408,6 +2540,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 135,
    "name": "Inferior longitudinal fasciculus.r",
    "label": "Inferior longitudinal fasciculus",
@@ -2422,6 +2555,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 136,
    "name": "Inferior occipital gyrus and sulcus*.l",
    "label": "Inferior occipital gyrus and sulcus",
@@ -2444,6 +2578,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 137,
    "name": "Inferior occipital gyrus and sulcus*.r",
    "label": "Inferior occipital gyrus and sulcus",
@@ -2466,6 +2601,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 138,
    "name": "Inferior petrosal sinus.l",
    "label": "Inferior petrosal sinus",
@@ -2483,6 +2619,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 139,
    "name": "Inferior petrosal sinus.r",
    "label": "Inferior petrosal sinus",
@@ -2500,6 +2637,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 140,
    "name": "Inferior sagittal sinus",
    "label": "Inferior sagittal sinus",
@@ -2517,6 +2655,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 141,
    "name": "Inferior semilunar lobule.l",
    "label": "Inferior semilunar lobule",
@@ -2534,6 +2673,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 142,
    "name": "Inferior semilunar lobule.r",
    "label": "Inferior semilunar lobule",
@@ -2551,6 +2691,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 143,
    "name": "Inferior temporal gyrus.l",
    "label": "Inferior temporal gyrus",
@@ -2573,6 +2714,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 144,
    "name": "Inferior temporal gyrus.r",
    "label": "Inferior temporal gyrus",
@@ -2595,6 +2737,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 145,
    "name": "Insula (Subcentral gyrus and ant. and post. sulci*).l",
    "label": "Insula (Subcentral gyrus and ant. and post. sulci)",
@@ -2617,6 +2760,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 146,
    "name": "Insula (Subcentral gyrus and ant. and post. sulci*).r",
    "label": "Insula (Subcentral gyrus and ant. and post. sulci)",
@@ -2639,6 +2783,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 147,
    "name": "Insular branches of middle cerebral artery (M2).r",
    "label": "Insular branches of middle cerebral artery (M2)",
@@ -2656,6 +2801,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 148,
    "name": "Insular branches of middle cerebral artery (M2-segment).l",
    "label": "Insular branches of middle cerebral artery (M2-segment)",
@@ -2673,6 +2819,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 149,
    "name": "Internal carotid artery.l",
    "label": "Internal carotid artery",
@@ -2690,6 +2837,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 150,
    "name": "Internal carotid artery.r",
    "label": "Internal carotid artery",
@@ -2707,6 +2855,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 151,
    "name": "Interpeduncular fossa.l",
    "label": "Interpeduncular fossa",
@@ -2728,6 +2877,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 152,
    "name": "Interpeduncular fossa.r",
    "label": "Interpeduncular fossa",
@@ -2749,6 +2899,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 153,
    "name": "Intralaminar and lateral posterior nuclei.l",
    "label": "Intralaminar and lateral posterior nuclei",
@@ -2765,6 +2916,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 154,
    "name": "Intralaminar and lateral posterior nuclei.r",
    "label": "Intralaminar and lateral posterior nuclei",
@@ -2781,6 +2933,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 155,
    "name": "Lat_Fis-ant-Horizont.l",
    "label": "Lat Fis-ant-Horizont",
@@ -2803,6 +2956,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 156,
    "name": "Lat_Fis-ant-Horizont.r",
    "label": "Lat Fis-ant-Horizont",
@@ -2825,6 +2979,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 157,
    "name": "Lat_Fis-ant-Vertical.l",
    "label": "Lat Fis-ant-Vertical",
@@ -2847,6 +3002,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 158,
    "name": "Lat_Fis-ant-Vertical.r",
    "label": "Lat Fis-ant-Vertical",
@@ -2869,6 +3025,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 159,
    "name": "Lat_Fis-post.l",
    "label": "Lat Fis-post",
@@ -2891,6 +3048,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 160,
    "name": "Lat_Fis-post.r",
    "label": "Lat Fis-post",
@@ -2913,6 +3071,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 161,
    "name": "Lateral geniculate body.l",
    "label": "Lateral geniculate body",
@@ -2930,6 +3089,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 162,
    "name": "Lateral geniculate body.r",
    "label": "Lateral geniculate body",
@@ -2947,6 +3107,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 163,
    "name": "Lateral hypothalamus.l",
    "label": "Lateral hypothalamus",
@@ -2963,6 +3124,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 164,
    "name": "Lateral hypothalamus.r",
    "label": "Lateral hypothalamus",
@@ -2979,6 +3141,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 165,
    "name": "Lateral nucleus.l",
    "label": "Lateral nucleus",
@@ -2995,6 +3158,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 166,
    "name": "Lateral nucleus.r",
    "label": "Lateral nucleus",
@@ -3011,6 +3175,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 167,
    "name": "Lateral occipital gyrus (Middle occipital gyrus*).l",
    "label": "Lateral occipital gyrus (Middle occipital gyrus)",
@@ -3033,6 +3198,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 168,
    "name": "Lateral occipital gyrus (Middle occipital gyrus*).r",
    "label": "Lateral occipital gyrus (Middle occipital gyrus)",
@@ -3055,6 +3221,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 169,
    "name": "Lateral occipitotemporal gyrus.l",
    "label": "Lateral occipitotemporal gyrus",
@@ -3077,6 +3244,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 170,
    "name": "Lateral occipitotemporal gyrus.r",
    "label": "Lateral occipitotemporal gyrus",
@@ -3099,6 +3267,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 171,
    "name": "Lateral pontine branches of basilar artery.l",
    "label": "Lateral pontine branches of basilar artery",
@@ -3116,6 +3285,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 172,
    "name": "Lateral pontine branches of basilar artery.r",
    "label": "Lateral pontine branches of basilar artery",
@@ -3133,6 +3303,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 173,
    "name": "Lateral ventricle.l",
    "label": "Lateral ventricle",
@@ -3150,6 +3321,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 174,
    "name": "Lateral ventricle.r",
    "label": "Lateral ventricle",
@@ -3167,6 +3339,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 175,
    "name": "Lingual gyrus.l",
    "label": "Lingual gyrus",
@@ -3189,6 +3362,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 176,
    "name": "Lingual gyrus.r",
    "label": "Lingual gyrus",
@@ -3211,6 +3385,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 177,
    "name": "Lingual nerve.l",
    "label": "Lingual nerve",
@@ -3232,6 +3407,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 178,
    "name": "Lingual nerve.r",
    "label": "Lingual nerve",
@@ -3253,6 +3429,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 179,
    "name": "Lingula of cerebellum",
    "label": "Lingula of cerebellum",
@@ -3270,6 +3447,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 180,
    "name": "Lunate sulcus.l",
    "label": "Lunate sulcus",
@@ -3292,6 +3470,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 181,
    "name": "Lunate sulcus.r",
    "label": "Lunate sulcus",
@@ -3314,6 +3493,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 182,
    "name": "Mamillary body.l",
    "label": "Mamillary body",
@@ -3331,6 +3511,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 183,
    "name": "Mamillary body.r",
    "label": "Mamillary body",
@@ -3348,6 +3529,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 184,
    "name": "Maxillary nerve.l",
    "label": "Maxillary nerve",
@@ -3369,6 +3551,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 185,
    "name": "Maxillary nerve.r",
    "label": "Maxillary nerve",
@@ -3390,6 +3573,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 186,
    "name": "Medial geniculate body.l",
    "label": "Medial geniculate body",
@@ -3407,6 +3591,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 187,
    "name": "Medial geniculate body.r",
    "label": "Medial geniculate body",
@@ -3424,6 +3609,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 188,
    "name": "Medial lemniscus.l",
    "label": "Medial lemniscus",
@@ -3438,6 +3624,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 189,
    "name": "Medial lemniscus.r",
    "label": "Medial lemniscus",
@@ -3452,6 +3639,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 190,
    "name": "Medial occipitotemporal gyrus (Parahippocampal*).l",
    "label": "Medial occipitotemporal gyrus (Parahippocampal)",
@@ -3474,6 +3662,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 191,
    "name": "Medial occipitotemporal gyrus (Parahippocampal*).r",
    "label": "Medial occipitotemporal gyrus (Parahippocampal)",
@@ -3496,6 +3685,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 192,
    "name": "Medial pontine branches of basilar artery.l",
    "label": "Medial pontine branches of basilar artery",
@@ -3513,6 +3703,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 193,
    "name": "Medial pontine branches of basilar artery.r",
    "label": "Medial pontine branches of basilar artery",
@@ -3530,6 +3721,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 194,
    "name": "Mediodorsal nucleus.l",
    "label": "Mediodorsal nucleus",
@@ -3546,6 +3738,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 195,
    "name": "Mediodorsal nucleus.r",
    "label": "Mediodorsal nucleus",
@@ -3562,6 +3755,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 196,
    "name": "Medulla oblongata.l",
    "label": "Medulla oblongata",
@@ -3583,6 +3777,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 197,
    "name": "Meningeal branch of maxillary nerve.l",
    "label": "Meningeal branch of maxillary nerve",
@@ -3604,6 +3799,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 198,
    "name": "Meningeal branch of maxillary nerve.r",
    "label": "Meningeal branch of maxillary nerve",
@@ -3625,6 +3821,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 199,
    "name": "Mental nerve.l",
    "label": "Mental nerve",
@@ -3646,6 +3843,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 200,
    "name": "Mental nerve.r",
    "label": "Mental nerve",
@@ -3667,6 +3865,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 201,
    "name": "Midbrain.l",
    "label": "Midbrain",
@@ -3675,19 +3874,19 @@
    "materials": [
     "Temporal lobe"
    ],
-   "group": "zanatomy-undeclared-brain-materials",
+   "group": "cleared",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
-    "zanatomy",
-    "zanatomy-undeclared-brain-materials"
+    "zanatomy"
    ],
-   "basis": "Z-Anatomy",
-   "heldBecause": [
+   "basis": "held for its material, then shown by the pre-registered origin test to be BodyParts3D's own mesh (packages/atlas-assets/provenance/origin-test-bodyparts3d.json: mean 0.06 mm, p95 0.139 mm, label agreement 0.989)",
+   "formerlyHeldBecause": [
     "carries only `Temporal lobe`, which appears otherwise only on the undeclared cortex; held fail-closed"
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 202,
    "name": "Midbrain.r",
    "label": "Midbrain",
@@ -3696,19 +3895,19 @@
    "materials": [
     "Temporal lobe"
    ],
-   "group": "zanatomy-undeclared-brain-materials",
+   "group": "cleared",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
-    "zanatomy",
-    "zanatomy-undeclared-brain-materials"
+    "zanatomy"
    ],
-   "basis": "Z-Anatomy",
-   "heldBecause": [
+   "basis": "held for its material, then shown by the pre-registered origin test to be BodyParts3D's own mesh (packages/atlas-assets/provenance/origin-test-bodyparts3d.json: mean 0.061 mm, p95 0.142 mm, label agreement 0.99)",
+   "formerlyHeldBecause": [
     "carries only `Temporal lobe`, which appears otherwise only on the undeclared cortex; held fail-closed"
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 203,
    "name": "Middle cerebellar peduncle",
    "label": "Middle cerebellar peduncle",
@@ -3723,6 +3922,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 204,
    "name": "Middle cerebral artery (M1-segment).l",
    "label": "Middle cerebral artery (M1-segment)",
@@ -3740,6 +3940,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 205,
    "name": "Middle cerebral artery (M1-segment).r",
    "label": "Middle cerebral artery (M1-segment)",
@@ -3757,6 +3958,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 206,
    "name": "Middle cerebral artery (M3 segment).l",
    "label": "Middle cerebral artery (M3 segment)",
@@ -3774,6 +3976,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 207,
    "name": "Middle cerebral artery (M3-segment).r",
    "label": "Middle cerebral artery (M3-segment)",
@@ -3791,6 +3994,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 208,
    "name": "Middle frontal gyrus.l",
    "label": "Middle frontal gyrus",
@@ -3813,6 +4017,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 209,
    "name": "Middle frontal gyrus.r",
    "label": "Middle frontal gyrus",
@@ -3835,6 +4040,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 210,
    "name": "Middle longitudinal fasciculus.l",
    "label": "Middle longitudinal fasciculus",
@@ -3849,6 +4055,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 211,
    "name": "Middle longitudinal fasciculus.r",
    "label": "Middle longitudinal fasciculus",
@@ -3863,6 +4070,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 212,
    "name": "Middle temporal gyrus.l",
    "label": "Middle temporal gyrus",
@@ -3885,6 +4093,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 213,
    "name": "Middle temporal gyrus.r",
    "label": "Middle temporal gyrus",
@@ -3907,6 +4116,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 214,
    "name": "Motor nucleus of facial nerve.l",
    "label": "Motor nucleus of facial nerve",
@@ -3924,6 +4134,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 215,
    "name": "Motor nucleus of facial nerve.r",
    "label": "Motor nucleus of facial nerve",
@@ -3941,6 +4152,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 216,
    "name": "Motor root of trigeminal nerve.l",
    "label": "Motor root of trigeminal nerve",
@@ -3962,6 +4174,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 217,
    "name": "Motor root of trigeminal nerve.r",
    "label": "Motor root of trigeminal nerve",
@@ -3983,6 +4196,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 218,
    "name": "Neurohypophysis",
    "label": "Neurohypophysis",
@@ -4000,6 +4214,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 219,
    "name": "Nodule of vermis",
    "label": "Nodule of vermis",
@@ -4017,6 +4232,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 220,
    "name": "Nucleus accumbens.l",
    "label": "Nucleus accumbens",
@@ -4031,6 +4247,7 @@
    "basis": "imaging-registered: generated from cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 221,
    "name": "Nucleus accumbens.r",
    "label": "Nucleus accumbens",
@@ -4045,6 +4262,7 @@
    "basis": "imaging-registered: generated from cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 222,
    "name": "Nucleus of abducens nerve.l",
    "label": "Nucleus of abducens nerve",
@@ -4062,6 +4280,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 223,
    "name": "Nucleus of abducens nerve.r",
    "label": "Nucleus of abducens nerve",
@@ -4079,6 +4298,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 224,
    "name": "Nucleus of oculomotor nerve.l",
    "label": "Nucleus of oculomotor nerve",
@@ -4096,6 +4316,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 225,
    "name": "Nucleus of oculomotor nerve.r",
    "label": "Nucleus of oculomotor nerve",
@@ -4113,6 +4334,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 226,
    "name": "Occipital pole.l",
    "label": "Occipital pole",
@@ -4135,6 +4357,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 227,
    "name": "Occipital pole.r",
    "label": "Occipital pole",
@@ -4157,6 +4380,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 228,
    "name": "Occipital sinus",
    "label": "Occipital sinus",
@@ -4174,6 +4398,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 229,
    "name": "Occipitotemporal sulcus (Lateral part*).l",
    "label": "Occipitotemporal sulcus (Lateral part)",
@@ -4196,6 +4421,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 230,
    "name": "Occipitotemporal sulcus (Lateral part*).r",
    "label": "Occipitotemporal sulcus (Lateral part)",
@@ -4218,6 +4444,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 231,
    "name": "Oculomotor nerve (III).l",
    "label": "Oculomotor nerve (III)",
@@ -4239,6 +4466,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 232,
    "name": "Oculomotor nerve (III).r",
    "label": "Oculomotor nerve (III)",
@@ -4260,6 +4488,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 233,
    "name": "Olfactory nerve (I).l",
    "label": "Olfactory nerve (I)",
@@ -4281,6 +4510,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 234,
    "name": "Olfactory nerve (I).r",
    "label": "Olfactory nerve (I)",
@@ -4302,6 +4532,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 235,
    "name": "Olive.l",
    "label": "Olive",
@@ -4319,6 +4550,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 236,
    "name": "Olive.r",
    "label": "Olive",
@@ -4336,6 +4568,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 237,
    "name": "Ophthalmic artery.l",
    "label": "Ophthalmic artery",
@@ -4353,6 +4586,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 238,
    "name": "Ophthalmic artery.r",
    "label": "Ophthalmic artery",
@@ -4370,6 +4604,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 239,
    "name": "Ophthalmic nerve.l",
    "label": "Ophthalmic nerve",
@@ -4391,6 +4626,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 240,
    "name": "Ophthalmic nerve.r",
    "label": "Ophthalmic nerve",
@@ -4412,6 +4648,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 241,
    "name": "Optic chiasm.l",
    "label": "Optic chiasm",
@@ -4433,6 +4670,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 242,
    "name": "Optic chiasm.r",
    "label": "Optic chiasm",
@@ -4454,6 +4692,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 243,
    "name": "Optic nerve (II).l",
    "label": "Optic nerve (II)",
@@ -4475,6 +4714,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 244,
    "name": "Optic nerve (II).r",
    "label": "Optic nerve (II)",
@@ -4496,6 +4736,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 245,
    "name": "Optic radiation.l",
    "label": "Optic radiation",
@@ -4510,6 +4751,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 246,
    "name": "Optic radiation.r",
    "label": "Optic radiation",
@@ -4524,6 +4766,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 247,
    "name": "Optic tract.l",
    "label": "Optic tract",
@@ -4545,6 +4788,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 248,
    "name": "Optic tract.r",
    "label": "Optic tract",
@@ -4566,6 +4810,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 249,
    "name": "Orbital gyri (Frontomarginal gyrus and sulcus*).l",
    "label": "Orbital gyri (Frontomarginal gyrus and sulcus)",
@@ -4588,6 +4833,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 250,
    "name": "Orbital gyri (Frontomarginal gyrus and sulcus*).r",
    "label": "Orbital gyri (Frontomarginal gyrus and sulcus)",
@@ -4610,6 +4856,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 251,
    "name": "Orbital gyri.l",
    "label": "Orbital gyri",
@@ -4632,6 +4879,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 252,
    "name": "Orbital gyri.r",
    "label": "Orbital gyri",
@@ -4654,6 +4902,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 253,
    "name": "Orbital part of  inferior frontal gyrus.l",
    "label": "Orbital part of inferior frontal gyrus",
@@ -4676,6 +4925,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 254,
    "name": "Orbital part of  inferior frontal gyrus.r",
    "label": "Orbital part of inferior frontal gyrus",
@@ -4698,6 +4948,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 255,
    "name": "Orbital sulci (H-shaped orbital sulci*).l",
    "label": "Orbital sulci (H-shaped orbital sulci)",
@@ -4720,6 +4971,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 256,
    "name": "Orbital sulci (H-shaped orbital sulci*).r",
    "label": "Orbital sulci (H-shaped orbital sulci)",
@@ -4742,6 +4994,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 257,
    "name": "Orbital sulci (Lateral Orbital sulcus*).l",
    "label": "Orbital sulci (Lateral Orbital sulcus)",
@@ -4764,6 +5017,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 258,
    "name": "Orbital sulci (Lateral Orbital sulcus*).r",
    "label": "Orbital sulci (Lateral Orbital sulcus)",
@@ -4786,6 +5040,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 259,
    "name": "Orbitofrontal branches of anterior cerebral artery.l",
    "label": "Orbitofrontal branches of anterior cerebral artery",
@@ -4803,6 +5058,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 260,
    "name": "Orbitofrontal branches of anterior cerebral artery.r",
    "label": "Orbitofrontal branches of anterior cerebral artery",
@@ -4820,6 +5076,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 261,
    "name": "Paracentral gyrus and sulcus*.l",
    "label": "Paracentral gyrus and sulcus",
@@ -4842,6 +5099,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 262,
    "name": "Paracentral gyrus and sulcus*.r",
    "label": "Paracentral gyrus and sulcus",
@@ -4864,6 +5122,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 263,
    "name": "Parietal branches of middle cerebral artery.l",
    "label": "Parietal branches of middle cerebral artery",
@@ -4881,6 +5140,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 264,
    "name": "Parietal branches of middle cerebral artery.r",
    "label": "Parietal branches of middle cerebral artery",
@@ -4898,6 +5158,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 265,
    "name": "Peduncle of flocculus.l",
    "label": "Peduncle of flocculus",
@@ -4915,6 +5176,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 266,
    "name": "Peduncle of flocculus.r",
    "label": "Peduncle of flocculus",
@@ -4932,6 +5194,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 267,
    "name": "Pericallosal artery.l",
    "label": "Pericallosal artery",
@@ -4949,6 +5212,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 268,
    "name": "Pericallosal artery.r",
    "label": "Pericallosal artery",
@@ -4966,6 +5230,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 269,
    "name": "Postcentral gyrus.l",
    "label": "Postcentral gyrus",
@@ -4988,6 +5253,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 270,
    "name": "Postcentral gyrus.r",
    "label": "Postcentral gyrus",
@@ -5010,6 +5276,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 271,
    "name": "Posterior cerebral artery.l",
    "label": "Posterior cerebral artery",
@@ -5027,6 +5294,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 272,
    "name": "Posterior cerebral artery.r",
    "label": "Posterior cerebral artery",
@@ -5044,6 +5312,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 273,
    "name": "Posterior commissure",
    "label": "Posterior commissure",
@@ -5065,6 +5334,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 274,
    "name": "Posterior communicating artery.l",
    "label": "Posterior communicating artery",
@@ -5082,6 +5352,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 275,
    "name": "Posterior communicating artery.r",
    "label": "Posterior communicating artery",
@@ -5099,6 +5370,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 276,
    "name": "Posterior division of mandibular nerve.l",
    "label": "Posterior division of mandibular nerve",
@@ -5120,6 +5392,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 277,
    "name": "Posterior division of mandibular nerve.r",
    "label": "Posterior division of mandibular nerve",
@@ -5141,6 +5414,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 278,
    "name": "Posterior hypothalamus.l",
    "label": "Posterior hypothalamus",
@@ -5157,6 +5431,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 279,
    "name": "Posterior hypothalamus.r",
    "label": "Posterior hypothalamus",
@@ -5173,6 +5448,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 280,
    "name": "Posterior inferior cerebellar artery.l",
    "label": "Posterior inferior cerebellar artery",
@@ -5190,6 +5466,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 281,
    "name": "Posterior inferior cerebellar artery.r",
    "label": "Posterior inferior cerebellar artery",
@@ -5207,6 +5484,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 282,
    "name": "Posterior thalamic radiation.l",
    "label": "Posterior thalamic radiation",
@@ -5221,6 +5499,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 283,
    "name": "Posterior thalamic radiation.r",
    "label": "Posterior thalamic radiation",
@@ -5235,6 +5514,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 284,
    "name": "Precentral gyrus.l",
    "label": "Precentral gyrus",
@@ -5257,6 +5537,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 285,
    "name": "Precentral gyrus.r",
    "label": "Precentral gyrus",
@@ -5279,6 +5560,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 286,
    "name": "Precuneus.l",
    "label": "Precuneus",
@@ -5301,6 +5583,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 287,
    "name": "Precuneus.r",
    "label": "Precuneus",
@@ -5323,6 +5606,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 288,
    "name": "Preoptic hypothalamus.l",
    "label": "Preoptic hypothalamus",
@@ -5339,6 +5623,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 289,
    "name": "Preoptic hypothalamus.r",
    "label": "Preoptic hypothalamus",
@@ -5355,6 +5640,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 290,
    "name": "Pulvinar.l",
    "label": "Pulvinar",
@@ -5371,6 +5657,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 291,
    "name": "Pulvinar.r",
    "label": "Pulvinar",
@@ -5387,6 +5674,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 292,
    "name": "Red nucleus.l",
    "label": "Red nucleus",
@@ -5404,6 +5692,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 293,
    "name": "Red nucleus.r",
    "label": "Red nucleus",
@@ -5421,6 +5710,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 294,
    "name": "Reticulospinal tract.l",
    "label": "Reticulospinal tract",
@@ -5435,6 +5725,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 295,
    "name": "Reticulospinal tract.r",
    "label": "Reticulospinal tract",
@@ -5449,6 +5740,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 296,
    "name": "Septal nuclei",
    "label": "Septal nuclei",
@@ -5466,6 +5758,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 297,
    "name": "Inferior frontal sulcus.l",
    "label": "Inferior frontal sulcus",
@@ -5488,6 +5781,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 298,
    "name": "Inferior frontal sulcus.r",
    "label": "Inferior frontal sulcus",
@@ -5510,6 +5804,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 299,
    "name": "Inferior temporal sulcus.l",
    "label": "Inferior temporal sulcus",
@@ -5532,6 +5827,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 300,
    "name": "Inferior temporal sulcus.r",
    "label": "Inferior temporal sulcus",
@@ -5554,6 +5850,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 301,
    "name": "Intraparietal sulcus.l",
    "label": "Intraparietal sulcus",
@@ -5576,6 +5873,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 302,
    "name": "Intraparietal sulcus.r",
    "label": "Intraparietal sulcus",
@@ -5598,6 +5896,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 303,
    "name": "Olfactory sulcus.l",
    "label": "Olfactory sulcus",
@@ -5620,6 +5919,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 304,
    "name": "Olfactory sulcus.r",
    "label": "Olfactory sulcus",
@@ -5642,6 +5942,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 305,
    "name": "Opercular part of inferior frontal gyrus.l",
    "label": "Opercular part of inferior frontal gyrus",
@@ -5664,6 +5965,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 306,
    "name": "Opercular part of inferior frontal gyrus.r",
    "label": "Opercular part of inferior frontal gyrus",
@@ -5686,6 +5988,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 307,
    "name": "Paracentral sulcus.l",
    "label": "Paracentral sulcus",
@@ -5708,6 +6011,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 308,
    "name": "Paracentral sulcus.r",
    "label": "Paracentral sulcus",
@@ -5730,6 +6034,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 309,
    "name": "Parieto-occipital sulcus.l",
    "label": "Parieto-occipital sulcus",
@@ -5752,6 +6057,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 310,
    "name": "Parieto-occipital sulcus.r",
    "label": "Parieto-occipital sulcus",
@@ -5774,6 +6080,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 311,
    "name": "Pineal gland",
    "label": "Pineal gland",
@@ -5791,6 +6098,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 312,
    "name": "Pons.l",
    "label": "Pons",
@@ -5812,6 +6120,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 313,
    "name": "Pons.r",
    "label": "Pons",
@@ -5833,6 +6142,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 314,
    "name": "Postcentral sulcus.l",
    "label": "Postcentral sulcus",
@@ -5855,6 +6165,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 315,
    "name": "Postcentral sulcus.r",
    "label": "Postcentral sulcus",
@@ -5877,6 +6188,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 316,
    "name": "Posterior intercavernous sinus",
    "label": "Posterior intercavernous sinus",
@@ -5894,6 +6206,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 317,
    "name": "Posterior quadrangular lobule.l",
    "label": "Posterior quadrangular lobule",
@@ -5911,6 +6224,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 318,
    "name": "Posterior quadrangular lobule.r",
    "label": "Posterior quadrangular lobule",
@@ -5928,6 +6242,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 319,
    "name": "Precentral sulcus (inferior part)*.l",
    "label": "Precentral sulcus (inferior part)",
@@ -5950,6 +6265,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 320,
    "name": "Precentral sulcus (inferior part)*.r",
    "label": "Precentral sulcus (inferior part)",
@@ -5972,6 +6288,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 321,
    "name": "Precentral sulcus (Superior part)*.l",
    "label": "Precentral sulcus (Superior part)",
@@ -5994,6 +6311,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 322,
    "name": "Precentral sulcus (Superior part)*.r",
    "label": "Precentral sulcus (Superior part)",
@@ -6016,6 +6334,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 323,
    "name": "Proximal lateral striate branches.l",
    "label": "Proximal lateral striate branches",
@@ -6033,6 +6352,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 324,
    "name": "Proximal lateral striate branches.r",
    "label": "Proximal lateral striate branches",
@@ -6050,6 +6370,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 325,
    "name": "Putamen.l",
    "label": "Putamen",
@@ -6067,6 +6388,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 326,
    "name": "Putamen.r",
    "label": "Putamen",
@@ -6084,6 +6406,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 327,
    "name": "Pyramid of medulla oblongata.l",
    "label": "Pyramid of medulla oblongata",
@@ -6101,6 +6424,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 328,
    "name": "Pyramid of medulla oblongata.r",
    "label": "Pyramid of medulla oblongata",
@@ -6118,6 +6442,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 329,
    "name": "Pyramis of vermis",
    "label": "Pyramis of vermis",
@@ -6135,6 +6460,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 330,
    "name": "Sensory root of trigeminal nerve.l",
    "label": "Sensory root of trigeminal nerve",
@@ -6152,6 +6478,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 331,
    "name": "Sensory root of trigeminal nerve.r",
    "label": "Sensory root of trigeminal nerve",
@@ -6169,6 +6496,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 332,
    "name": "Septum pellucidum",
    "label": "Septum pellucidum",
@@ -6190,6 +6518,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 333,
    "name": "Sigmoid sinus.l",
    "label": "Sigmoid sinus",
@@ -6207,6 +6536,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 334,
    "name": "Sigmoid sinus.r",
    "label": "Sigmoid sinus",
@@ -6224,6 +6554,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 335,
    "name": "Straight gyrus (Gyrus rectus).l",
    "label": "Straight gyrus (Gyrus rectus)",
@@ -6246,6 +6577,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 336,
    "name": "Straight gyrus (Gyrus rectus).r",
    "label": "Straight gyrus (Gyrus rectus)",
@@ -6268,6 +6600,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 337,
    "name": "Straight sinus",
    "label": "Straight sinus",
@@ -6285,6 +6618,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 338,
    "name": "Stria medullaris thalami.l",
    "label": "Stria medullaris thalami",
@@ -6306,6 +6640,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 339,
    "name": "Stria medullaris thalami.r",
    "label": "Stria medullaris thalami",
@@ -6327,6 +6662,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 340,
    "name": "Stria terminalis.l",
    "label": "Stria terminalis",
@@ -6348,6 +6684,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 341,
    "name": "Stria terminalis.r",
    "label": "Stria terminalis",
@@ -6369,6 +6706,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 342,
    "name": "Subparietal sulcus.l",
    "label": "Subparietal sulcus",
@@ -6391,6 +6729,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 343,
    "name": "Subparietal sulcus.r",
    "label": "Subparietal sulcus",
@@ -6413,6 +6752,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 344,
    "name": "Substantia nigra.l",
    "label": "Substantia nigra",
@@ -6427,6 +6767,7 @@
    "basis": "imaging-registered: generated from cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 345,
    "name": "Substantia nigra.r",
    "label": "Substantia nigra",
@@ -6441,6 +6782,7 @@
    "basis": "imaging-registered: generated from cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 346,
    "name": "Subthalamic nucleus.l",
    "label": "Subthalamic nucleus",
@@ -6455,6 +6797,7 @@
    "basis": "imaging-registered: generated from cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 347,
    "name": "Subthalamic nucleus.r",
    "label": "Subthalamic nucleus",
@@ -6469,6 +6812,7 @@
    "basis": "imaging-registered: generated from cit168-subcortical"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 348,
    "name": "Sulcus interm_prim-Jensen.l",
    "label": "Sulcus interm prim-Jensen",
@@ -6491,6 +6835,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 349,
    "name": "Sulcus interm_prim-Jensen.r",
    "label": "Sulcus interm prim-Jensen",
@@ -6513,6 +6858,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 350,
    "name": "Superior cerebellar artery.l",
    "label": "Superior cerebellar artery",
@@ -6530,6 +6876,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 351,
    "name": "Superior cerebellar artery.r",
    "label": "Superior cerebellar artery",
@@ -6547,6 +6894,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 352,
    "name": "Base of peduncle.l",
    "label": "Base of peduncle",
@@ -6568,6 +6916,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 353,
    "name": "Base of peduncle.r",
    "label": "Base of peduncle",
@@ -6589,6 +6938,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 354,
    "name": "Superior cerebellar peduncle",
    "label": "Superior cerebellar peduncle",
@@ -6603,6 +6953,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 355,
    "name": "Superior cerebellar peduncle.l",
    "label": "Superior cerebellar peduncle",
@@ -6620,6 +6971,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 356,
    "name": "Superior cerebellar peduncle.r",
    "label": "Superior cerebellar peduncle",
@@ -6637,6 +6989,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 357,
    "name": "Superior colliculus.l",
    "label": "Superior colliculus",
@@ -6654,6 +7007,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 358,
    "name": "Superior colliculus.r",
    "label": "Superior colliculus",
@@ -6671,6 +7025,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 359,
    "name": "Superior frontal gyrus.l",
    "label": "Superior frontal gyrus",
@@ -6693,6 +7048,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 360,
    "name": "Superior frontal gyrus.r",
    "label": "Superior frontal gyrus",
@@ -6715,6 +7071,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 361,
    "name": "Superior frontal sulcus.l",
    "label": "Superior frontal sulcus",
@@ -6737,6 +7094,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 362,
    "name": "Superior frontal sulcus.r",
    "label": "Superior frontal sulcus",
@@ -6759,6 +7117,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 363,
    "name": "Superior longitudinal fasciculus I.l",
    "label": "Superior longitudinal fasciculus I",
@@ -6773,6 +7132,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 364,
    "name": "Superior longitudinal fasciculus I.r",
    "label": "Superior longitudinal fasciculus I",
@@ -6787,6 +7147,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 365,
    "name": "Superior longitudinal fasciculus II.l",
    "label": "Superior longitudinal fasciculus II",
@@ -6801,6 +7162,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 366,
    "name": "Superior longitudinal fasciculus II.r",
    "label": "Superior longitudinal fasciculus II",
@@ -6815,6 +7177,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 367,
    "name": "Superior longitudinal fasciculus III.l",
    "label": "Superior longitudinal fasciculus III",
@@ -6829,6 +7192,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 368,
    "name": "Superior longitudinal fasciculus III.r",
    "label": "Superior longitudinal fasciculus III",
@@ -6843,6 +7207,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 369,
    "name": "Superior occipital gyri.l",
    "label": "Superior occipital gyri",
@@ -6865,6 +7230,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 370,
    "name": "Superior occipital gyri.r",
    "label": "Superior occipital gyri",
@@ -6887,6 +7253,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 371,
    "name": "Superior parietal lobule.l",
    "label": "Superior parietal lobule",
@@ -6909,6 +7276,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 372,
    "name": "Superior parietal lobule.r",
    "label": "Superior parietal lobule",
@@ -6931,6 +7299,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 373,
    "name": "Superior petrosal sinus.l",
    "label": "Superior petrosal sinus",
@@ -6948,6 +7317,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 374,
    "name": "Superior petrosal sinus.r",
    "label": "Superior petrosal sinus",
@@ -6965,6 +7335,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 375,
    "name": "Superior sagittal sinus",
    "label": "Superior sagittal sinus",
@@ -6982,6 +7353,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 376,
    "name": "Superior salivatory nucleus.l",
    "label": "Superior salivatory nucleus",
@@ -6999,6 +7371,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 377,
    "name": "Superior salivatory nucleus.r",
    "label": "Superior salivatory nucleus",
@@ -7016,6 +7389,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 378,
    "name": "Superior semilunar lobule.l",
    "label": "Superior semilunar lobule",
@@ -7033,6 +7407,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 379,
    "name": "Superior semilunar lobule.r",
    "label": "Superior semilunar lobule",
@@ -7050,6 +7425,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 380,
    "name": "Superior temporal gyrus (Lateral part).l",
    "label": "Superior temporal gyrus (Lateral part)",
@@ -7072,6 +7448,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 381,
    "name": "Superior temporal gyrus (Lateral part).r",
    "label": "Superior temporal gyrus (Lateral part)",
@@ -7094,6 +7471,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 382,
    "name": "Superior temporal sulcus.l",
    "label": "Superior temporal sulcus",
@@ -7116,6 +7494,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 383,
    "name": "Superior temporal sulcus.r",
    "label": "Superior temporal sulcus",
@@ -7138,6 +7517,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 384,
    "name": "Superior thalamic radiation.l",
    "label": "Superior thalamic radiation",
@@ -7152,6 +7532,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 385,
    "name": "Superior thalamic radiation.r",
    "label": "Superior thalamic radiation",
@@ -7166,6 +7547,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 386,
    "name": "Supramarginal gyrus.l",
    "label": "Supramarginal gyrus",
@@ -7188,6 +7570,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 387,
    "name": "Supramarginal gyrus.r",
    "label": "Supramarginal gyrus",
@@ -7210,6 +7593,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 388,
    "name": "Temporal branches of middle cerebral artery.l",
    "label": "Temporal branches of middle cerebral artery",
@@ -7227,6 +7611,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 389,
    "name": "Temporal branches of middle cerebral artery.r",
    "label": "Temporal branches of middle cerebral artery",
@@ -7244,6 +7629,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 390,
    "name": "Temporal plane.l",
    "label": "Temporal plane",
@@ -7266,6 +7652,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 391,
    "name": "Temporal plane.r",
    "label": "Temporal plane",
@@ -7288,6 +7675,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 392,
    "name": "Temporal pole.l",
    "label": "Temporal pole",
@@ -7310,6 +7698,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 393,
    "name": "Temporal pole.r",
    "label": "Temporal pole",
@@ -7332,6 +7721,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 394,
    "name": "Tentorium cerebelli.l",
    "label": "Tentorium cerebelli",
@@ -7349,6 +7739,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 395,
    "name": "Tentorium cerebelli.r",
    "label": "Tentorium cerebelli",
@@ -7366,6 +7757,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 396,
    "name": "Third ventricle",
    "label": "Third ventricle",
@@ -7383,6 +7775,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 397,
    "name": "Tonsil of cerebellum.l",
    "label": "Tonsil of cerebellum",
@@ -7400,6 +7793,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 398,
    "name": "Tonsil of cerebellum.r",
    "label": "Tonsil of cerebellum",
@@ -7417,6 +7811,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 399,
    "name": "Transverse frontopolar gyrus and sulcus*.l",
    "label": "Transverse frontopolar gyrus and sulcus",
@@ -7439,6 +7834,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 400,
    "name": "Transverse frontopolar gyrus and sulcus*.r",
    "label": "Transverse frontopolar gyrus and sulcus",
@@ -7461,6 +7857,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 401,
    "name": "Transverse occipital sulcus.l",
    "label": "Transverse occipital sulcus",
@@ -7483,6 +7880,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 402,
    "name": "Transverse occipital sulcus.r",
    "label": "Transverse occipital sulcus",
@@ -7505,6 +7903,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 403,
    "name": "Transverse sinus.l",
    "label": "Transverse sinus",
@@ -7522,6 +7921,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 404,
    "name": "Transverse sinus.r",
    "label": "Transverse sinus",
@@ -7539,6 +7939,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 405,
    "name": "Transverse temporal gyri.l",
    "label": "Transverse temporal gyri",
@@ -7561,6 +7962,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 406,
    "name": "Transverse temporal gyri.r",
    "label": "Transverse temporal gyri",
@@ -7583,6 +7985,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 407,
    "name": "Triangular part of inferior frontal gyrus.l",
    "label": "Triangular part of inferior frontal gyrus",
@@ -7605,6 +8008,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 408,
    "name": "Triangular part of inferior frontal gyrus.r",
    "label": "Triangular part of inferior frontal gyrus",
@@ -7627,6 +8031,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 409,
    "name": "Trigeminal nerve (V).l",
    "label": "Trigeminal nerve (V)",
@@ -7648,6 +8053,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 410,
    "name": "Trigeminal nerve (V).r",
    "label": "Trigeminal nerve (V)",
@@ -7669,6 +8075,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 411,
    "name": "Trochlear nerve (IV).l",
    "label": "Trochlear nerve (IV)",
@@ -7690,6 +8097,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 412,
    "name": "Trochlear nerve (IV).r",
    "label": "Trochlear nerve (IV)",
@@ -7711,6 +8119,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 413,
    "name": "Tuber of vermis",
    "label": "Tuber of vermis",
@@ -7728,6 +8137,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 414,
    "name": "Tuberal hypothalamus.l",
    "label": "Tuberal hypothalamus",
@@ -7744,6 +8154,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 415,
    "name": "Tuberal hypothalamus.r",
    "label": "Tuberal hypothalamus",
@@ -7760,6 +8171,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 416,
    "name": "Uncinate fasciculus.l",
    "label": "Uncinate fasciculus",
@@ -7774,6 +8186,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 417,
    "name": "Uncinate fasciculus.r",
    "label": "Uncinate fasciculus",
@@ -7788,6 +8201,7 @@
    "basis": "imaging-registered: generated from hcp1065-yeh2022"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 418,
    "name": "Uvula of vermis",
    "label": "Uvula of vermis",
@@ -7805,6 +8219,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 419,
    "name": "Vagus nerve (X).l",
    "label": "Vagus nerve (X)",
@@ -7826,6 +8241,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 420,
    "name": "Vagus nerve (X).r",
    "label": "Vagus nerve (X)",
@@ -7847,6 +8263,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 421,
    "name": "Ventral anterior nucleus.l",
    "label": "Ventral anterior nucleus",
@@ -7863,6 +8280,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 422,
    "name": "Ventral anterior nucleus.r",
    "label": "Ventral anterior nucleus",
@@ -7879,6 +8297,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 423,
    "name": "Ventral laterodorsal nucleus.l",
    "label": "Ventral laterodorsal nucleus",
@@ -7895,6 +8314,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 424,
    "name": "Ventral laterodorsal nucleus.r",
    "label": "Ventral laterodorsal nucleus",
@@ -7911,6 +8331,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 425,
    "name": "Ventral lateroventral nucleus.l",
    "label": "Ventral lateroventral nucleus",
@@ -7927,6 +8348,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 426,
    "name": "Ventral lateroventral nucleus.r",
    "label": "Ventral lateroventral nucleus",
@@ -7943,6 +8365,7 @@
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 427,
    "name": "Vertebral artery.l",
    "label": "Vertebral artery",
@@ -7960,6 +8383,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 428,
    "name": "Vertebral artery.r",
    "label": "Vertebral artery",
@@ -7977,6 +8401,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 429,
    "name": "Vestibular nerve.l",
    "label": "Vestibular nerve",
@@ -7998,6 +8423,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 430,
    "name": "Vestibular nerve.r",
    "label": "Vestibular nerve",
@@ -8019,6 +8445,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 431,
    "name": "Vestibular nuclei.l",
    "label": "Vestibular nuclei",
@@ -8036,6 +8463,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 432,
    "name": "Vestibular nuclei.r",
    "label": "Vestibular nuclei",
@@ -8053,6 +8481,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 433,
    "name": "White matter of telencephalon.l",
    "label": "White matter of telencephalon",
@@ -8074,6 +8503,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 434,
    "name": "White matter of telencephalon.r",
    "label": "White matter of telencephalon",
@@ -8095,6 +8525,7 @@
    ]
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 435,
    "name": "Wing of central lobule.l",
    "label": "Wing of central lobule",
@@ -8112,6 +8543,7 @@
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
   },
   {
+   "shipsFrom": "brain.glb",
    "id": 436,
    "name": "Wing of central lobule.r",
    "label": "Wing of central lobule",

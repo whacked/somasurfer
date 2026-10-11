@@ -131,13 +131,14 @@ function decimate(M, mesh, target) {
  * Build both tiers for `structures` (the provenance records of one clearance
  * group) from decoded glb `nodes`.
  */
-export async function buildTiers({ nodes, structures, floorTriangles, ratio }) {
+export async function buildTiers({ nodes, structures, floorTriangles, ratio, replacements = new Map() }) {
   const M = await meshoptimizer();
   const byId = new Map(nodes.map((n) => [n.extras.bx_id, n]));
 
   const welded = structures.map((s) => {
-    const node = byId.get(s.id);
-    const merged = mergeParts(node.parts);
+    // A replaced structure's geometry comes from its replacement source, already
+    // in the mesh frame; everything else from the glb.
+    const merged = replacements.get(s.id) ?? mergeParts(byId.get(s.id).parts);
     return { record: s, mesh: weld(merged.positions, merged.indices), sourceTriangles: merged.indices.length / 3 };
   });
   const frame = quantisationFrame(welded.map((w) => w.mesh));

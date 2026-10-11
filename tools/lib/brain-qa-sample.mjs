@@ -5,12 +5,13 @@
  * The rule as handed off, and where the licence forced a change:
  *
  *   - N = 40, stratified over the 12 source categories, at least 2 per category.
- *     The 40 are drawn from the structures that SHIP. `white_matter` has none:
- *     all 9 are held under docs/asset-licensing.md 7.3. So the 40 cover the 11
- *     categories that ship, and `white_matter` contributes WITHHELD CONTROLS
- *     instead: two structures W8a must find absent, with the licence reason. A
- *     sample that put held structures among the 40 would have QA asserting that
- *     pickable things are pickable for 38 of them.
+ *     The 40 are drawn from the structures that SHIP. `white_matter` ships one:
+ *     the corpus callosum, from BodyParts3D; its other 8 are held under
+ *     docs/asset-licensing.md 7.3. A category that ships fewer than 2 has all of
+ *     them sampled, and makes up the difference with WITHHELD CONTROLS:
+ *     structures W8a must find absent, with the licence reason. A sample that
+ *     put held structures among the 40 would have QA asserting that pickable
+ *     things are pickable for fewer than 40 of them.
  *   - Both sides wherever a structure is paired: the sampling unit is a label,
  *     drawn with all its sides.
  *   - Always the subthalamic nucleus, the substantia nigra and the nucleus
@@ -25,7 +26,6 @@ export const SAMPLE_RULES = Object.freeze({
   minPerCategory: 2,
   required: ['Subthalamic nucleus', 'Substantia nigra', 'Nucleus accumbens'],
   seed: 0x0d06127,
-  withheldControlsPerUnshippableCategory: 2,
 });
 
 /** mulberry32: a small, well-known seeded generator, so the draw reproduces anywhere. */
@@ -124,7 +124,8 @@ export function drawSample(doc, rules = SAMPLE_RULES) {
     expect: { pickable: true, name: s.label },
   }))));
 
-  const withheldControls = unshippable.flatMap((c) => {
+  const shortOf = (c) => Math.max(0, rules.minPerCategory - doc.structures.filter((s) => s.category === c).length);
+  const withheldControls = categories.filter((c) => shortOf(c) > 0).flatMap((c) => {
     const pool = unitsOf(doc.excluded.filter((s) => s.category === c).map((s) => ({ ...s, label: s.name.replace(/\.[lr]$/, '') })));
     const out = [];
     for (let i = pool.length - 1; i > 0; i -= 1) {
@@ -132,8 +133,8 @@ export function drawSample(doc, rules = SAMPLE_RULES) {
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
     for (const u of pool) {
-      if (out.length >= rules.withheldControlsPerUnshippableCategory) break;
-      if (out.length + u.members.length <= rules.withheldControlsPerUnshippableCategory) out.push(...u.members);
+      if (out.length >= shortOf(c)) break;
+      if (out.length + u.members.length <= shortOf(c)) out.push(...u.members);
     }
     return out.map((s) => ({
       id: s.id,
@@ -162,12 +163,14 @@ export function checkSample(fixture, doc, rules = SAMPLE_RULES) {
   const categories = [...new Set([...doc.structures, ...doc.excluded].map((s) => s.category))];
   for (const c of categories) {
     const inSample = sample.filter((s) => s.category === c).length;
-    const ships = doc.structures.some((s) => s.category === c);
-    if (ships && inSample < rules.minPerCategory) problems.push(`category ${c} has ${inSample} sampled structure(s), under ${rules.minPerCategory}.`);
-    if (!ships) {
+    const ships = doc.structures.filter((s) => s.category === c).length;
+    const needed = Math.min(rules.minPerCategory, ships);
+    if (inSample < needed) problems.push(`category ${c} has ${inSample} sampled structure(s), under ${needed}.`);
+    const short = rules.minPerCategory - ships;
+    if (short > 0) {
       const controls = (fixture.withheldControls ?? []).filter((s) => s.category === c);
-      if (controls.length < rules.withheldControlsPerUnshippableCategory) {
-        problems.push(`category ${c} ships nothing, and has ${controls.length} withheld control(s), under ${rules.withheldControlsPerUnshippableCategory}.`);
+      if (controls.length < short) {
+        problems.push(`category ${c} ships ${ships}, and has ${controls.length} withheld control(s); it needs ${short} to make ${rules.minPerCategory}.`);
       }
     }
   }

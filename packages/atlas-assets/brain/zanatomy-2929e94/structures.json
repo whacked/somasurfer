@@ -46,25 +46,25 @@
  "tiers": {
   "low": {
    "file": "brain/zanatomy-2929e94/meshes.lowres.bin",
-   "bytes": 1063484,
-   "gzipBytes": 760620,
-   "sha256": "fabdcabc5ef7cfa08342fea6177f02bf225d3b4af6d358f7ffc7822f2f89820e",
+   "bytes": 1127232,
+   "gzipBytes": 812547,
+   "sha256": "92264f7f6df3f9476d5c6a28a1e6652e8cbf1d4f5f97637c7aeb94434c30dcc9",
    "loading": "eager"
   },
   "full": {
    "file": "brain/zanatomy-2929e94/meshes.fullres.bin",
-   "bytes": 6865196,
-   "gzipBytes": 4972008,
-   "sha256": "7f98b7f60e96797bca33584cebbdd0357b1989ffca52a49cad22092df34e31e5",
+   "bytes": 7289480,
+   "gzipBytes": 5320761,
+   "sha256": "2d595c1d948c28f40754d796810c9f60fdfc3e3b58f2d6ec043bdb3682383cec",
    "loading": "lazy"
   }
  },
  "counts": {
-  "structures": 245,
-  "excluded": 192,
-  "zanatomy-undeclared-brain-materials": 146,
+  "structures": 248,
+  "excluded": 189,
+  "zanatomy-undeclared-brain-materials": 143,
   "dundee-cranial-nerves": 46,
-  "cleared": 245
+  "cleared": 248
  },
  "structures": [
   {
@@ -97,6 +97,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -143,6 +144,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -187,6 +189,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -231,6 +234,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -275,6 +279,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 680,
     "vertices": 369,
@@ -316,6 +321,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 588,
     "vertices": 296,
@@ -357,6 +363,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 588,
     "vertices": 296,
@@ -396,6 +403,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 106,
     "vertices": 55,
@@ -440,6 +448,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 997,
     "vertices": 480,
@@ -484,6 +493,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 996,
     "vertices": 487,
@@ -525,6 +535,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3084,
     "vertices": 1544,
@@ -566,6 +577,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3084,
     "vertices": 1544,
@@ -605,6 +617,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 396,
     "vertices": 200,
@@ -649,6 +662,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -693,6 +707,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -734,6 +749,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 6520,
     "vertices": 3262,
@@ -775,6 +791,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 6520,
     "vertices": 3262,
@@ -814,6 +831,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1164,
     "vertices": 584,
@@ -853,6 +871,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1164,
     "vertices": 584,
@@ -897,6 +916,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -941,6 +961,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -984,6 +1005,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 460,
     "vertices": 235,
@@ -1028,6 +1050,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -1072,6 +1095,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -1113,6 +1137,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 588,
     "vertices": 296,
@@ -1149,6 +1174,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 56192,
     "vertices": 28386,
@@ -1195,6 +1221,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 998,
     "vertices": 498,
@@ -1241,6 +1268,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 494,
@@ -1282,6 +1310,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 8902,
     "vertices": 4458,
@@ -1323,6 +1352,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 8902,
     "vertices": 4458,
@@ -1364,6 +1394,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 10056,
     "vertices": 5040,
@@ -1405,6 +1436,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 10056,
     "vertices": 5040,
@@ -1451,6 +1483,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2570,
     "vertices": 1287,
@@ -1497,6 +1530,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2570,
     "vertices": 1287,
@@ -1533,6 +1567,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 9728,
     "vertices": 2756,
@@ -1569,6 +1604,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 9728,
     "vertices": 2774,
@@ -1610,6 +1646,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1006,
     "vertices": 505,
@@ -1656,6 +1693,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 228,
     "vertices": 116,
@@ -1702,6 +1740,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 224,
     "vertices": 114,
@@ -1745,6 +1784,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2647,
     "vertices": 1324,
@@ -1788,6 +1828,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2647,
     "vertices": 1324,
@@ -1805,8 +1846,52 @@
    }
   },
   {
-   "id": 75,
+   "id": 74,
    "slot": 41,
+   "name": "Corpus callosum",
+   "label": "Corpus callosum",
+   "category": "white_matter",
+   "side": "median",
+   "region": "Telencephalon",
+   "ta2": [
+    "Bonus collection",
+    "Brain",
+    "Central nervous system",
+    "Cerebrum",
+    "Commissural fibres of telencephalon",
+    "Corpus callosum",
+    "Head",
+    "Main divisions",
+    "Nervous system",
+    "Regions of human body",
+    "Scene Collection",
+    "Telencephalon",
+    "White matter of telencephalon"
+   ],
+   "sources": [
+    "bodyparts3d"
+   ],
+   "basis": "the glb's version failed the origin test (packages/atlas-assets/provenance/origin-test-bodyparts3d.json: mean 0.227 mm, p95 0.378 mm, label agreement 0.769); replaced by bodyparts3d FMA86464, registered into the mesh frame (CTO decision on DOG-127, 2026-10-11 18:32)",
+   "shipsFrom": "bodyparts3d FMA86464",
+   "full": {
+    "triangles": 30232,
+    "vertices": 15118,
+    "areaMm2": 9715.3
+   },
+   "low": {
+    "triangles": 4534,
+    "vertices": 2269,
+    "areaMm2": 9687.6
+   },
+   "sourceTriangles": 30232,
+   "errorMm": {
+    "hausdorff": 0.217,
+    "mean": 0.033
+   }
+  },
+  {
+   "id": 75,
+   "slot": 42,
    "name": "Corticobulbar tract.l",
    "label": "Corticobulbar tract",
    "category": "tracts",
@@ -1832,6 +1917,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -1850,7 +1936,7 @@
   },
   {
    "id": 76,
-   "slot": 42,
+   "slot": 43,
    "name": "Corticobulbar tract.r",
    "label": "Corticobulbar tract",
    "category": "tracts",
@@ -1876,6 +1962,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -1894,7 +1981,7 @@
   },
   {
    "id": 77,
-   "slot": 43,
+   "slot": 44,
    "name": "Corticomedial group.l",
    "label": "Corticomedial group",
    "category": "deep_grey",
@@ -1922,6 +2009,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 494,
@@ -1940,7 +2028,7 @@
   },
   {
    "id": 78,
-   "slot": 44,
+   "slot": 45,
    "name": "Corticomedial group.r",
    "label": "Corticomedial group",
    "category": "deep_grey",
@@ -1968,6 +2056,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 999,
     "vertices": 494,
@@ -1986,7 +2075,7 @@
   },
   {
    "id": 79,
-   "slot": 45,
+   "slot": 46,
    "name": "Corticopontine tract (frontal).l",
    "label": "Corticopontine tract (frontal)",
    "category": "tracts",
@@ -2012,6 +2101,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2030,7 +2120,7 @@
   },
   {
    "id": 80,
-   "slot": 46,
+   "slot": 47,
    "name": "Corticopontine tract (frontal).r",
    "label": "Corticopontine tract (frontal)",
    "category": "tracts",
@@ -2056,6 +2146,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2074,7 +2165,7 @@
   },
   {
    "id": 81,
-   "slot": 47,
+   "slot": 48,
    "name": "Corticopontine tract (occipital).l",
    "label": "Corticopontine tract (occipital)",
    "category": "tracts",
@@ -2100,6 +2191,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2118,7 +2210,7 @@
   },
   {
    "id": 82,
-   "slot": 48,
+   "slot": 49,
    "name": "Corticopontine tract (occipital).r",
    "label": "Corticopontine tract (occipital)",
    "category": "tracts",
@@ -2144,6 +2236,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2162,7 +2255,7 @@
   },
   {
    "id": 83,
-   "slot": 49,
+   "slot": 50,
    "name": "Corticopontine tract (parietal).l",
    "label": "Corticopontine tract (parietal)",
    "category": "tracts",
@@ -2188,6 +2281,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2206,7 +2300,7 @@
   },
   {
    "id": 84,
-   "slot": 50,
+   "slot": 51,
    "name": "Corticopontine tract (parietal).r",
    "label": "Corticopontine tract (parietal)",
    "category": "tracts",
@@ -2232,6 +2326,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2250,7 +2345,7 @@
   },
   {
    "id": 85,
-   "slot": 51,
+   "slot": 52,
    "name": "Corticospinal tract.l",
    "label": "Corticospinal tract",
    "category": "tracts",
@@ -2276,6 +2371,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2294,7 +2390,7 @@
   },
   {
    "id": 86,
-   "slot": 52,
+   "slot": 53,
    "name": "Corticospinal tract.r",
    "label": "Corticospinal tract",
    "category": "tracts",
@@ -2320,6 +2416,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2338,7 +2435,7 @@
   },
   {
    "id": 87,
-   "slot": 53,
+   "slot": 54,
    "name": "Corticostriatal tract (anterior).l",
    "label": "Corticostriatal tract (anterior)",
    "category": "tracts",
@@ -2364,6 +2461,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2382,7 +2480,7 @@
   },
   {
    "id": 88,
-   "slot": 54,
+   "slot": 55,
    "name": "Corticostriatal tract (anterior).r",
    "label": "Corticostriatal tract (anterior)",
    "category": "tracts",
@@ -2408,6 +2506,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2426,7 +2525,7 @@
   },
   {
    "id": 89,
-   "slot": 55,
+   "slot": 56,
    "name": "Corticostriatal tract (posterior).l",
    "label": "Corticostriatal tract (posterior)",
    "category": "tracts",
@@ -2452,6 +2551,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2470,7 +2570,7 @@
   },
   {
    "id": 90,
-   "slot": 56,
+   "slot": 57,
    "name": "Corticostriatal tract (posterior).r",
    "label": "Corticostriatal tract (posterior)",
    "category": "tracts",
@@ -2496,6 +2596,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2514,7 +2615,7 @@
   },
   {
    "id": 91,
-   "slot": 57,
+   "slot": 58,
    "name": "Corticostriatal tract (superior).l",
    "label": "Corticostriatal tract (superior)",
    "category": "tracts",
@@ -2540,6 +2641,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2558,7 +2660,7 @@
   },
   {
    "id": 92,
-   "slot": 58,
+   "slot": 59,
    "name": "Corticostriatal tract (superior).r",
    "label": "Corticostriatal tract (superior)",
    "category": "tracts",
@@ -2584,6 +2686,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2602,7 +2705,7 @@
   },
   {
    "id": 93,
-   "slot": 59,
+   "slot": 60,
    "name": "Culmen",
    "label": "Culmen",
    "category": "cerebellum",
@@ -2625,6 +2728,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2378,
     "vertices": 1193,
@@ -2643,7 +2747,7 @@
   },
   {
    "id": 96,
-   "slot": 60,
+   "slot": 61,
    "name": "Declive",
    "label": "Declive",
    "category": "cerebellum",
@@ -2666,6 +2770,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2125,
     "vertices": 1067,
@@ -2684,7 +2789,7 @@
   },
   {
    "id": 97,
-   "slot": 61,
+   "slot": 62,
    "name": "Dentatorubrothalamic tract.l",
    "label": "Dentatorubrothalamic tract",
    "category": "tracts",
@@ -2710,6 +2815,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2728,7 +2834,7 @@
   },
   {
    "id": 98,
-   "slot": 62,
+   "slot": 63,
    "name": "Dentatorubrothalamic tract.r",
    "label": "Dentatorubrothalamic tract",
    "category": "tracts",
@@ -2754,6 +2860,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -2772,7 +2879,7 @@
   },
   {
    "id": 99,
-   "slot": 63,
+   "slot": 64,
    "name": "Distal lateral striate branches.l",
    "label": "Distal lateral striate branches",
    "category": "arteries",
@@ -2795,6 +2902,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 6252,
     "vertices": 3144,
@@ -2813,7 +2921,7 @@
   },
   {
    "id": 100,
-   "slot": 64,
+   "slot": 65,
    "name": "Distal lateral striate branches.r",
    "label": "Distal lateral striate branches",
    "category": "arteries",
@@ -2836,6 +2944,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 6252,
     "vertices": 3144,
@@ -2854,7 +2963,7 @@
   },
   {
    "id": 103,
-   "slot": 65,
+   "slot": 66,
    "name": "Falx cerebri",
    "label": "Falx cerebri",
    "category": "meninges_dura",
@@ -2878,6 +2987,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 14708,
     "vertices": 7085,
@@ -2896,7 +3006,7 @@
   },
   {
    "id": 104,
-   "slot": 66,
+   "slot": 67,
    "name": "Flocculus.l",
    "label": "Flocculus",
    "category": "cerebellum",
@@ -2919,6 +3029,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3660,
     "vertices": 1832,
@@ -2937,7 +3048,7 @@
   },
   {
    "id": 105,
-   "slot": 67,
+   "slot": 68,
    "name": "Flocculus.r",
    "label": "Flocculus",
    "category": "cerebellum",
@@ -2960,6 +3071,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3660,
     "vertices": 1832,
@@ -2978,7 +3090,7 @@
   },
   {
    "id": 106,
-   "slot": 68,
+   "slot": 69,
    "name": "Folium of vermis",
    "label": "Folium of vermis",
    "category": "cerebellum",
@@ -3001,6 +3113,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 812,
     "vertices": 408,
@@ -3019,7 +3132,7 @@
   },
   {
    "id": 109,
-   "slot": 69,
+   "slot": 70,
    "name": "Fourth ventricle",
    "label": "Fourth ventricle",
    "category": "ventricles",
@@ -3043,6 +3156,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 5798,
     "vertices": 2915,
@@ -3061,7 +3175,7 @@
   },
   {
    "id": 110,
-   "slot": 70,
+   "slot": 71,
    "name": "Frontal aslant tract.l",
    "label": "Frontal aslant tract",
    "category": "tracts",
@@ -3087,6 +3201,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -3105,7 +3220,7 @@
   },
   {
    "id": 111,
-   "slot": 71,
+   "slot": 72,
    "name": "Frontal aslant tract.r",
    "label": "Frontal aslant tract",
    "category": "tracts",
@@ -3131,6 +3246,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -3149,7 +3265,7 @@
   },
   {
    "id": 112,
-   "slot": 72,
+   "slot": 73,
    "name": "Frontal branches of callosomarginal artery.l",
    "label": "Frontal branches of callosomarginal artery",
    "category": "arteries",
@@ -3172,6 +3288,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1356,
     "vertices": 680,
@@ -3190,7 +3307,7 @@
   },
   {
    "id": 113,
-   "slot": 73,
+   "slot": 74,
    "name": "Frontal branches of callosomarginal artery.r",
    "label": "Frontal branches of callosomarginal artery",
    "category": "arteries",
@@ -3213,6 +3330,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1356,
     "vertices": 680,
@@ -3231,7 +3349,7 @@
   },
   {
    "id": 114,
-   "slot": 74,
+   "slot": 75,
    "name": "Globus pallidus external.l",
    "label": "Globus pallidus external",
    "category": "deep_grey",
@@ -3259,6 +3377,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Globus pallidus` mesh by cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -3277,7 +3396,7 @@
   },
   {
    "id": 115,
-   "slot": 75,
+   "slot": 76,
    "name": "Globus pallidus external.r",
    "label": "Globus pallidus external",
    "category": "deep_grey",
@@ -3305,6 +3424,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Globus pallidus` mesh by cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -3323,7 +3443,7 @@
   },
   {
    "id": 116,
-   "slot": 76,
+   "slot": 77,
    "name": "Globus pallidus internal.l",
    "label": "Globus pallidus internal",
    "category": "deep_grey",
@@ -3351,6 +3471,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Globus pallidus` mesh by cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -3369,7 +3490,7 @@
   },
   {
    "id": 117,
-   "slot": 77,
+   "slot": 78,
    "name": "Globus pallidus internal.r",
    "label": "Globus pallidus internal",
    "category": "deep_grey",
@@ -3397,6 +3518,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Globus pallidus` mesh by cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -3415,7 +3537,7 @@
   },
   {
    "id": 118,
-   "slot": 78,
+   "slot": 79,
    "name": "Gracile lobule.l",
    "label": "Gracile lobule",
    "category": "cerebellum",
@@ -3438,6 +3560,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 6961,
     "vertices": 3485,
@@ -3456,7 +3579,7 @@
   },
   {
    "id": 119,
-   "slot": 79,
+   "slot": 80,
    "name": "Gracile lobule.r",
    "label": "Gracile lobule",
    "category": "cerebellum",
@@ -3479,6 +3602,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 6961,
     "vertices": 3485,
@@ -3497,7 +3621,7 @@
   },
   {
    "id": 120,
-   "slot": 80,
+   "slot": 81,
    "name": "Habenula",
    "label": "Habenula",
    "category": "diencephalon",
@@ -3522,6 +3646,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 400,
     "vertices": 205,
@@ -3540,7 +3665,7 @@
   },
   {
    "id": 122,
-   "slot": 81,
+   "slot": 82,
    "name": "Hippocampus.l",
    "label": "Hippocampus",
    "category": "cortex",
@@ -3567,6 +3692,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1020,
     "vertices": 512,
@@ -3585,7 +3711,7 @@
   },
   {
    "id": 123,
-   "slot": 82,
+   "slot": 83,
    "name": "Hippocampus.r",
    "label": "Hippocampus",
    "category": "cortex",
@@ -3612,6 +3738,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1020,
     "vertices": 512,
@@ -3630,7 +3757,7 @@
   },
   {
    "id": 124,
-   "slot": 83,
+   "slot": 84,
    "name": "Hypoglossal nerve (XII).l",
    "label": "Hypoglossal nerve (XII)",
    "category": "cranial_nerves",
@@ -3654,6 +3781,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 10848,
     "vertices": 5440,
@@ -3672,7 +3800,7 @@
   },
   {
    "id": 125,
-   "slot": 84,
+   "slot": 85,
    "name": "Hypoglossal nerve (XII).r",
    "label": "Hypoglossal nerve (XII)",
    "category": "cranial_nerves",
@@ -3696,6 +3824,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 10848,
     "vertices": 5440,
@@ -3714,7 +3843,7 @@
   },
   {
    "id": 128,
-   "slot": 85,
+   "slot": 86,
    "name": "Inferior cerebellar peduncle.l",
    "label": "Inferior cerebellar peduncle",
    "category": "tracts",
@@ -3740,6 +3869,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -3758,7 +3888,7 @@
   },
   {
    "id": 129,
-   "slot": 86,
+   "slot": 87,
    "name": "Inferior cerebellar peduncle.r",
    "label": "Inferior cerebellar peduncle",
    "category": "tracts",
@@ -3784,6 +3914,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -3802,7 +3933,7 @@
   },
   {
    "id": 130,
-   "slot": 87,
+   "slot": 88,
    "name": "Inferior colliculus.l",
    "label": "Inferior colliculus",
    "category": "brainstem",
@@ -3828,6 +3959,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 464,
     "vertices": 236,
@@ -3846,7 +3978,7 @@
   },
   {
    "id": 131,
-   "slot": 88,
+   "slot": 89,
    "name": "Inferior colliculus.r",
    "label": "Inferior colliculus",
    "category": "brainstem",
@@ -3872,6 +4004,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 464,
     "vertices": 236,
@@ -3890,7 +4023,7 @@
   },
   {
    "id": 132,
-   "slot": 89,
+   "slot": 90,
    "name": "Inferior fronto-occipital fasciculus.l",
    "label": "Inferior fronto-occipital fasciculus",
    "category": "tracts",
@@ -3916,6 +4049,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -3934,7 +4068,7 @@
   },
   {
    "id": 133,
-   "slot": 90,
+   "slot": 91,
    "name": "Inferior fronto-occipital fasciculus.r",
    "label": "Inferior fronto-occipital fasciculus",
    "category": "tracts",
@@ -3960,6 +4094,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -3978,7 +4113,7 @@
   },
   {
    "id": 134,
-   "slot": 91,
+   "slot": 92,
    "name": "Inferior longitudinal fasciculus.l",
    "label": "Inferior longitudinal fasciculus",
    "category": "tracts",
@@ -4004,6 +4139,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -4022,7 +4158,7 @@
   },
   {
    "id": 135,
-   "slot": 92,
+   "slot": 93,
    "name": "Inferior longitudinal fasciculus.r",
    "label": "Inferior longitudinal fasciculus",
    "category": "tracts",
@@ -4048,6 +4184,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -4066,7 +4203,7 @@
   },
   {
    "id": 138,
-   "slot": 93,
+   "slot": 94,
    "name": "Inferior petrosal sinus.l",
    "label": "Inferior petrosal sinus",
    "category": "veins_sinuses",
@@ -4087,6 +4224,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1164,
     "vertices": 584,
@@ -4105,7 +4243,7 @@
   },
   {
    "id": 139,
-   "slot": 94,
+   "slot": 95,
    "name": "Inferior petrosal sinus.r",
    "label": "Inferior petrosal sinus",
    "category": "veins_sinuses",
@@ -4126,6 +4264,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1164,
     "vertices": 584,
@@ -4144,7 +4283,7 @@
   },
   {
    "id": 140,
-   "slot": 95,
+   "slot": 96,
    "name": "Inferior sagittal sinus",
    "label": "Inferior sagittal sinus",
    "category": "veins_sinuses",
@@ -4165,6 +4304,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2316,
     "vertices": 1160,
@@ -4183,7 +4323,7 @@
   },
   {
    "id": 141,
-   "slot": 96,
+   "slot": 97,
    "name": "Inferior semilunar lobule.l",
    "label": "Inferior semilunar lobule",
    "category": "cerebellum",
@@ -4206,6 +4346,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 7787,
     "vertices": 3898,
@@ -4224,7 +4365,7 @@
   },
   {
    "id": 142,
-   "slot": 97,
+   "slot": 98,
    "name": "Inferior semilunar lobule.r",
    "label": "Inferior semilunar lobule",
    "category": "cerebellum",
@@ -4247,6 +4388,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 7787,
     "vertices": 3898,
@@ -4265,7 +4407,7 @@
   },
   {
    "id": 147,
-   "slot": 98,
+   "slot": 99,
    "name": "Insular branches of middle cerebral artery (M2).r",
    "label": "Insular branches of middle cerebral artery (M2)",
    "category": "arteries",
@@ -4288,6 +4430,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1176,
     "vertices": 592,
@@ -4306,7 +4449,7 @@
   },
   {
    "id": 148,
-   "slot": 99,
+   "slot": 100,
    "name": "Insular branches of middle cerebral artery (M2-segment).l",
    "label": "Insular branches of middle cerebral artery (M2-segment)",
    "category": "arteries",
@@ -4329,6 +4472,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1176,
     "vertices": 592,
@@ -4347,7 +4491,7 @@
   },
   {
    "id": 149,
-   "slot": 100,
+   "slot": 101,
    "name": "Internal carotid artery.l",
    "label": "Internal carotid artery",
    "category": "arteries",
@@ -4371,6 +4515,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1932,
     "vertices": 968,
@@ -4389,7 +4534,7 @@
   },
   {
    "id": 150,
-   "slot": 101,
+   "slot": 102,
    "name": "Internal carotid artery.r",
    "label": "Internal carotid artery",
    "category": "arteries",
@@ -4413,6 +4558,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1932,
     "vertices": 968,
@@ -4431,7 +4577,7 @@
   },
   {
    "id": 153,
-   "slot": 102,
+   "slot": 103,
    "name": "Intralaminar and lateral posterior nuclei.l",
    "label": "Intralaminar and lateral posterior nuclei",
    "category": "diencephalon",
@@ -4457,6 +4603,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -4475,7 +4622,7 @@
   },
   {
    "id": 154,
-   "slot": 103,
+   "slot": 104,
    "name": "Intralaminar and lateral posterior nuclei.r",
    "label": "Intralaminar and lateral posterior nuclei",
    "category": "diencephalon",
@@ -4501,6 +4648,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -4519,7 +4667,7 @@
   },
   {
    "id": 161,
-   "slot": 104,
+   "slot": 105,
    "name": "Lateral geniculate body.l",
    "label": "Lateral geniculate body",
    "category": "diencephalon",
@@ -4543,6 +4691,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 604,
     "vertices": 304,
@@ -4561,7 +4710,7 @@
   },
   {
    "id": 162,
-   "slot": 105,
+   "slot": 106,
    "name": "Lateral geniculate body.r",
    "label": "Lateral geniculate body",
    "category": "diencephalon",
@@ -4585,6 +4734,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 604,
     "vertices": 304,
@@ -4603,7 +4753,7 @@
   },
   {
    "id": 163,
-   "slot": 106,
+   "slot": 107,
    "name": "Lateral hypothalamus.l",
    "label": "Lateral hypothalamus",
    "category": "diencephalon",
@@ -4629,6 +4779,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 995,
     "vertices": 495,
@@ -4647,7 +4798,7 @@
   },
   {
    "id": 164,
-   "slot": 107,
+   "slot": 108,
    "name": "Lateral hypothalamus.r",
    "label": "Lateral hypothalamus",
    "category": "diencephalon",
@@ -4673,6 +4824,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 994,
     "vertices": 494,
@@ -4691,7 +4843,7 @@
   },
   {
    "id": 165,
-   "slot": 108,
+   "slot": 109,
    "name": "Lateral nucleus.l",
    "label": "Lateral nucleus",
    "category": "deep_grey",
@@ -4719,6 +4871,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 500,
@@ -4737,7 +4890,7 @@
   },
   {
    "id": 166,
-   "slot": 109,
+   "slot": 110,
    "name": "Lateral nucleus.r",
    "label": "Lateral nucleus",
    "category": "deep_grey",
@@ -4765,6 +4918,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Amygdaloid body` mesh by cit168-amygdala",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 500,
@@ -4783,7 +4937,7 @@
   },
   {
    "id": 171,
-   "slot": 110,
+   "slot": 111,
    "name": "Lateral pontine branches of basilar artery.l",
    "label": "Lateral pontine branches of basilar artery",
    "category": "arteries",
@@ -4806,6 +4960,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2328,
     "vertices": 1168,
@@ -4824,7 +4979,7 @@
   },
   {
    "id": 172,
-   "slot": 111,
+   "slot": 112,
    "name": "Lateral pontine branches of basilar artery.r",
    "label": "Lateral pontine branches of basilar artery",
    "category": "arteries",
@@ -4847,6 +5002,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2328,
     "vertices": 1168,
@@ -4865,7 +5021,7 @@
   },
   {
    "id": 173,
-   "slot": 112,
+   "slot": 113,
    "name": "Lateral ventricle.l",
    "label": "Lateral ventricle",
    "category": "ventricles",
@@ -4891,6 +5047,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2898,
     "vertices": 1451,
@@ -4909,7 +5066,7 @@
   },
   {
    "id": 174,
-   "slot": 113,
+   "slot": 114,
    "name": "Lateral ventricle.r",
    "label": "Lateral ventricle",
    "category": "ventricles",
@@ -4935,6 +5092,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2898,
     "vertices": 1451,
@@ -4953,7 +5111,7 @@
   },
   {
    "id": 179,
-   "slot": 114,
+   "slot": 115,
    "name": "Lingula of cerebellum",
    "label": "Lingula of cerebellum",
    "category": "cerebellum",
@@ -4976,6 +5134,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1028,
     "vertices": 516,
@@ -4994,7 +5153,7 @@
   },
   {
    "id": 182,
-   "slot": 115,
+   "slot": 116,
    "name": "Mamillary body.l",
    "label": "Mamillary body",
    "category": "diencephalon",
@@ -5018,6 +5177,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 220,
     "vertices": 112,
@@ -5036,7 +5196,7 @@
   },
   {
    "id": 183,
-   "slot": 116,
+   "slot": 117,
    "name": "Mamillary body.r",
    "label": "Mamillary body",
    "category": "diencephalon",
@@ -5060,6 +5220,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 220,
     "vertices": 112,
@@ -5078,7 +5239,7 @@
   },
   {
    "id": 186,
-   "slot": 117,
+   "slot": 118,
    "name": "Medial geniculate body.l",
    "label": "Medial geniculate body",
    "category": "diencephalon",
@@ -5102,6 +5263,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 198,
     "vertices": 101,
@@ -5120,7 +5282,7 @@
   },
   {
    "id": 187,
-   "slot": 118,
+   "slot": 119,
    "name": "Medial geniculate body.r",
    "label": "Medial geniculate body",
    "category": "diencephalon",
@@ -5144,6 +5306,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 198,
     "vertices": 101,
@@ -5162,7 +5325,7 @@
   },
   {
    "id": 188,
-   "slot": 119,
+   "slot": 120,
    "name": "Medial lemniscus.l",
    "label": "Medial lemniscus",
    "category": "tracts",
@@ -5188,6 +5351,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -5206,7 +5370,7 @@
   },
   {
    "id": 189,
-   "slot": 120,
+   "slot": 121,
    "name": "Medial lemniscus.r",
    "label": "Medial lemniscus",
    "category": "tracts",
@@ -5232,6 +5396,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -5250,7 +5415,7 @@
   },
   {
    "id": 192,
-   "slot": 121,
+   "slot": 122,
    "name": "Medial pontine branches of basilar artery.l",
    "label": "Medial pontine branches of basilar artery",
    "category": "arteries",
@@ -5273,6 +5438,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1560,
     "vertices": 784,
@@ -5291,7 +5457,7 @@
   },
   {
    "id": 193,
-   "slot": 122,
+   "slot": 123,
    "name": "Medial pontine branches of basilar artery.r",
    "label": "Medial pontine branches of basilar artery",
    "category": "arteries",
@@ -5314,6 +5480,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1560,
     "vertices": 784,
@@ -5332,7 +5499,7 @@
   },
   {
    "id": 194,
-   "slot": 123,
+   "slot": 124,
    "name": "Mediodorsal nucleus.l",
    "label": "Mediodorsal nucleus",
    "category": "diencephalon",
@@ -5358,6 +5525,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -5376,7 +5544,7 @@
   },
   {
    "id": 195,
-   "slot": 124,
+   "slot": 125,
    "name": "Mediodorsal nucleus.r",
    "label": "Mediodorsal nucleus",
    "category": "diencephalon",
@@ -5402,6 +5570,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -5419,8 +5588,94 @@
    }
   },
   {
+   "id": 201,
+   "slot": 126,
+   "name": "Midbrain.l",
+   "label": "Midbrain",
+   "category": "brainstem",
+   "side": "left",
+   "region": "Brainstem",
+   "ta2": [
+    "Bonus collection",
+    "Brain",
+    "Brainstem",
+    "Central nervous system",
+    "Head",
+    "Main divisions",
+    "Midbrain",
+    "Nervous system",
+    "Regions of human body",
+    "Scene Collection"
+   ],
+   "sources": [
+    "bodyparts3d",
+    "brainproject-brain-glb",
+    "zanatomy"
+   ],
+   "basis": "held for its material, then shown by the pre-registered origin test to be BodyParts3D's own mesh (packages/atlas-assets/provenance/origin-test-bodyparts3d.json: mean 0.06 mm, p95 0.139 mm, label agreement 0.989)",
+   "shipsFrom": "brain.glb",
+   "full": {
+    "triangles": 6092,
+    "vertices": 3049,
+    "areaMm2": 1513
+   },
+   "low": {
+    "triangles": 914,
+    "vertices": 460,
+    "areaMm2": 1512.7
+   },
+   "sourceTriangles": 6092,
+   "errorMm": {
+    "hausdorff": 0.113,
+    "mean": 0.022
+   }
+  },
+  {
+   "id": 202,
+   "slot": 127,
+   "name": "Midbrain.r",
+   "label": "Midbrain",
+   "category": "brainstem",
+   "side": "right",
+   "region": "Brainstem",
+   "ta2": [
+    "Bonus collection",
+    "Brain",
+    "Brainstem",
+    "Central nervous system",
+    "Head",
+    "Main divisions",
+    "Midbrain",
+    "Nervous system",
+    "Regions of human body",
+    "Scene Collection"
+   ],
+   "sources": [
+    "bodyparts3d",
+    "brainproject-brain-glb",
+    "zanatomy"
+   ],
+   "basis": "held for its material, then shown by the pre-registered origin test to be BodyParts3D's own mesh (packages/atlas-assets/provenance/origin-test-bodyparts3d.json: mean 0.061 mm, p95 0.142 mm, label agreement 0.99)",
+   "shipsFrom": "brain.glb",
+   "full": {
+    "triangles": 6092,
+    "vertices": 3049,
+    "areaMm2": 1513
+   },
+   "low": {
+    "triangles": 914,
+    "vertices": 460,
+    "areaMm2": 1513.2
+   },
+   "sourceTriangles": 6092,
+   "errorMm": {
+    "hausdorff": 0.163,
+    "mean": 0.023
+   }
+  },
+  {
    "id": 203,
-   "slot": 125,
+   "slot": 128,
    "name": "Middle cerebellar peduncle",
    "label": "Middle cerebellar peduncle",
    "category": "tracts",
@@ -5446,6 +5701,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -5464,7 +5720,7 @@
   },
   {
    "id": 204,
-   "slot": 126,
+   "slot": 129,
    "name": "Middle cerebral artery (M1-segment).l",
    "label": "Middle cerebral artery (M1-segment)",
    "category": "arteries",
@@ -5487,6 +5743,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 972,
     "vertices": 488,
@@ -5505,7 +5762,7 @@
   },
   {
    "id": 205,
-   "slot": 127,
+   "slot": 130,
    "name": "Middle cerebral artery (M1-segment).r",
    "label": "Middle cerebral artery (M1-segment)",
    "category": "arteries",
@@ -5528,6 +5785,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 972,
     "vertices": 488,
@@ -5546,7 +5804,7 @@
   },
   {
    "id": 206,
-   "slot": 128,
+   "slot": 131,
    "name": "Middle cerebral artery (M3 segment).l",
    "label": "Middle cerebral artery (M3 segment)",
    "category": "arteries",
@@ -5569,6 +5827,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2508,
     "vertices": 1256,
@@ -5587,7 +5846,7 @@
   },
   {
    "id": 207,
-   "slot": 129,
+   "slot": 132,
    "name": "Middle cerebral artery (M3-segment).r",
    "label": "Middle cerebral artery (M3-segment)",
    "category": "arteries",
@@ -5610,6 +5869,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2508,
     "vertices": 1256,
@@ -5628,7 +5888,7 @@
   },
   {
    "id": 210,
-   "slot": 130,
+   "slot": 133,
    "name": "Middle longitudinal fasciculus.l",
    "label": "Middle longitudinal fasciculus",
    "category": "tracts",
@@ -5654,6 +5914,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -5672,7 +5933,7 @@
   },
   {
    "id": 211,
-   "slot": 131,
+   "slot": 134,
    "name": "Middle longitudinal fasciculus.r",
    "label": "Middle longitudinal fasciculus",
    "category": "tracts",
@@ -5698,6 +5959,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -5716,7 +5978,7 @@
   },
   {
    "id": 214,
-   "slot": 132,
+   "slot": 135,
    "name": "Motor nucleus of facial nerve.l",
    "label": "Motor nucleus of facial nerve",
    "category": "brainstem",
@@ -5742,6 +6004,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -5760,7 +6023,7 @@
   },
   {
    "id": 215,
-   "slot": 133,
+   "slot": 136,
    "name": "Motor nucleus of facial nerve.r",
    "label": "Motor nucleus of facial nerve",
    "category": "brainstem",
@@ -5786,6 +6049,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -5804,7 +6068,7 @@
   },
   {
    "id": 218,
-   "slot": 134,
+   "slot": 137,
    "name": "Neurohypophysis",
    "label": "Neurohypophysis",
    "category": "diencephalon",
@@ -5830,6 +6094,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 592,
     "vertices": 325,
@@ -5848,7 +6113,7 @@
   },
   {
    "id": 219,
-   "slot": 135,
+   "slot": 138,
    "name": "Nodule of vermis",
    "label": "Nodule of vermis",
    "category": "cerebellum",
@@ -5871,6 +6136,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1012,
     "vertices": 508,
@@ -5889,7 +6155,7 @@
   },
   {
    "id": 220,
-   "slot": 136,
+   "slot": 139,
    "name": "Nucleus accumbens.l",
    "label": "Nucleus accumbens",
    "category": "deep_grey",
@@ -5915,6 +6181,7 @@
     "cit168-subcortical"
    ],
    "basis": "imaging-registered: generated from cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 980,
     "vertices": 492,
@@ -5933,7 +6200,7 @@
   },
   {
    "id": 221,
-   "slot": 137,
+   "slot": 140,
    "name": "Nucleus accumbens.r",
    "label": "Nucleus accumbens",
    "category": "deep_grey",
@@ -5959,6 +6226,7 @@
     "cit168-subcortical"
    ],
    "basis": "imaging-registered: generated from cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 968,
     "vertices": 486,
@@ -5977,7 +6245,7 @@
   },
   {
    "id": 222,
-   "slot": 138,
+   "slot": 141,
    "name": "Nucleus of abducens nerve.l",
    "label": "Nucleus of abducens nerve",
    "category": "brainstem",
@@ -6003,6 +6271,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -6021,7 +6290,7 @@
   },
   {
    "id": 223,
-   "slot": 139,
+   "slot": 142,
    "name": "Nucleus of abducens nerve.r",
    "label": "Nucleus of abducens nerve",
    "category": "brainstem",
@@ -6047,6 +6316,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -6065,7 +6335,7 @@
   },
   {
    "id": 224,
-   "slot": 140,
+   "slot": 143,
    "name": "Nucleus of oculomotor nerve.l",
    "label": "Nucleus of oculomotor nerve",
    "category": "brainstem",
@@ -6093,6 +6363,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -6111,7 +6382,7 @@
   },
   {
    "id": 225,
-   "slot": 141,
+   "slot": 144,
    "name": "Nucleus of oculomotor nerve.r",
    "label": "Nucleus of oculomotor nerve",
    "category": "brainstem",
@@ -6139,6 +6410,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -6157,7 +6429,7 @@
   },
   {
    "id": 228,
-   "slot": 142,
+   "slot": 145,
    "name": "Occipital sinus",
    "label": "Occipital sinus",
    "category": "veins_sinuses",
@@ -6178,6 +6450,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 780,
     "vertices": 392,
@@ -6196,7 +6469,7 @@
   },
   {
    "id": 235,
-   "slot": 143,
+   "slot": 146,
    "name": "Olive.l",
    "label": "Olive",
    "category": "brainstem",
@@ -6220,6 +6493,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 960,
     "vertices": 482,
@@ -6238,7 +6512,7 @@
   },
   {
    "id": 236,
-   "slot": 144,
+   "slot": 147,
    "name": "Olive.r",
    "label": "Olive",
    "category": "brainstem",
@@ -6262,6 +6536,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 960,
     "vertices": 482,
@@ -6280,7 +6555,7 @@
   },
   {
    "id": 237,
-   "slot": 145,
+   "slot": 148,
    "name": "Ophthalmic artery.l",
    "label": "Ophthalmic artery",
    "category": "arteries",
@@ -6303,6 +6578,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1164,
     "vertices": 584,
@@ -6321,7 +6597,7 @@
   },
   {
    "id": 238,
-   "slot": 146,
+   "slot": 149,
    "name": "Ophthalmic artery.r",
    "label": "Ophthalmic artery",
    "category": "arteries",
@@ -6344,6 +6620,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1164,
     "vertices": 584,
@@ -6362,7 +6639,7 @@
   },
   {
    "id": 245,
-   "slot": 147,
+   "slot": 150,
    "name": "Optic radiation.l",
    "label": "Optic radiation",
    "category": "tracts",
@@ -6388,6 +6665,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -6406,7 +6684,7 @@
   },
   {
    "id": 246,
-   "slot": 148,
+   "slot": 151,
    "name": "Optic radiation.r",
    "label": "Optic radiation",
    "category": "tracts",
@@ -6432,6 +6710,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -6450,7 +6729,7 @@
   },
   {
    "id": 259,
-   "slot": 149,
+   "slot": 152,
    "name": "Orbitofrontal branches of anterior cerebral artery.l",
    "label": "Orbitofrontal branches of anterior cerebral artery",
    "category": "arteries",
@@ -6473,6 +6752,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3096,
     "vertices": 1552,
@@ -6491,7 +6771,7 @@
   },
   {
    "id": 260,
-   "slot": 150,
+   "slot": 153,
    "name": "Orbitofrontal branches of anterior cerebral artery.r",
    "label": "Orbitofrontal branches of anterior cerebral artery",
    "category": "arteries",
@@ -6514,6 +6794,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3096,
     "vertices": 1552,
@@ -6532,7 +6813,7 @@
   },
   {
    "id": 263,
-   "slot": 151,
+   "slot": 154,
    "name": "Parietal branches of middle cerebral artery.l",
    "label": "Parietal branches of middle cerebral artery",
    "category": "arteries",
@@ -6555,6 +6836,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2712,
     "vertices": 1360,
@@ -6573,7 +6855,7 @@
   },
   {
    "id": 264,
-   "slot": 152,
+   "slot": 155,
    "name": "Parietal branches of middle cerebral artery.r",
    "label": "Parietal branches of middle cerebral artery",
    "category": "arteries",
@@ -6596,6 +6878,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2712,
     "vertices": 1360,
@@ -6614,7 +6897,7 @@
   },
   {
    "id": 265,
-   "slot": 153,
+   "slot": 156,
    "name": "Peduncle of flocculus.l",
    "label": "Peduncle of flocculus",
    "category": "cerebellum",
@@ -6637,6 +6920,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2368,
     "vertices": 1186,
@@ -6655,7 +6939,7 @@
   },
   {
    "id": 266,
-   "slot": 154,
+   "slot": 157,
    "name": "Peduncle of flocculus.r",
    "label": "Peduncle of flocculus",
    "category": "cerebellum",
@@ -6678,6 +6962,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2368,
     "vertices": 1186,
@@ -6696,7 +6981,7 @@
   },
   {
    "id": 267,
-   "slot": 155,
+   "slot": 158,
    "name": "Pericallosal artery.l",
    "label": "Pericallosal artery",
    "category": "arteries",
@@ -6719,6 +7004,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 21636,
     "vertices": 10840,
@@ -6737,7 +7023,7 @@
   },
   {
    "id": 268,
-   "slot": 156,
+   "slot": 159,
    "name": "Pericallosal artery.r",
    "label": "Pericallosal artery",
    "category": "arteries",
@@ -6760,6 +7046,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 21636,
     "vertices": 10840,
@@ -6778,7 +7065,7 @@
   },
   {
    "id": 271,
-   "slot": 157,
+   "slot": 160,
    "name": "Posterior cerebral artery.l",
    "label": "Posterior cerebral artery",
    "category": "arteries",
@@ -6801,6 +7088,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 22608,
     "vertices": 11328,
@@ -6819,7 +7107,7 @@
   },
   {
    "id": 272,
-   "slot": 158,
+   "slot": 161,
    "name": "Posterior cerebral artery.r",
    "label": "Posterior cerebral artery",
    "category": "arteries",
@@ -6842,6 +7130,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 22608,
     "vertices": 11328,
@@ -6860,7 +7149,7 @@
   },
   {
    "id": 274,
-   "slot": 159,
+   "slot": 162,
    "name": "Posterior communicating artery.l",
    "label": "Posterior communicating artery",
    "category": "arteries",
@@ -6881,6 +7170,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 588,
     "vertices": 296,
@@ -6899,7 +7189,7 @@
   },
   {
    "id": 275,
-   "slot": 160,
+   "slot": 163,
    "name": "Posterior communicating artery.r",
    "label": "Posterior communicating artery",
    "category": "arteries",
@@ -6920,6 +7210,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 588,
     "vertices": 296,
@@ -6938,7 +7229,7 @@
   },
   {
    "id": 278,
-   "slot": 161,
+   "slot": 164,
    "name": "Posterior hypothalamus.l",
    "label": "Posterior hypothalamus",
    "category": "diencephalon",
@@ -6964,6 +7255,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 752,
     "vertices": 378,
@@ -6982,7 +7274,7 @@
   },
   {
    "id": 279,
-   "slot": 162,
+   "slot": 165,
    "name": "Posterior hypothalamus.r",
    "label": "Posterior hypothalamus",
    "category": "diencephalon",
@@ -7008,6 +7300,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 680,
     "vertices": 342,
@@ -7026,7 +7319,7 @@
   },
   {
    "id": 280,
-   "slot": 163,
+   "slot": 166,
    "name": "Posterior inferior cerebellar artery.l",
    "label": "Posterior inferior cerebellar artery",
    "category": "arteries",
@@ -7049,6 +7342,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 25308,
     "vertices": 12680,
@@ -7067,7 +7361,7 @@
   },
   {
    "id": 281,
-   "slot": 164,
+   "slot": 167,
    "name": "Posterior inferior cerebellar artery.r",
    "label": "Posterior inferior cerebellar artery",
    "category": "arteries",
@@ -7090,6 +7384,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 25308,
     "vertices": 12680,
@@ -7108,7 +7403,7 @@
   },
   {
    "id": 282,
-   "slot": 165,
+   "slot": 168,
    "name": "Posterior thalamic radiation.l",
    "label": "Posterior thalamic radiation",
    "category": "tracts",
@@ -7134,6 +7429,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -7152,7 +7448,7 @@
   },
   {
    "id": 283,
-   "slot": 166,
+   "slot": 169,
    "name": "Posterior thalamic radiation.r",
    "label": "Posterior thalamic radiation",
    "category": "tracts",
@@ -7178,6 +7474,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -7196,7 +7493,7 @@
   },
   {
    "id": 288,
-   "slot": 167,
+   "slot": 170,
    "name": "Preoptic hypothalamus.l",
    "label": "Preoptic hypothalamus",
    "category": "diencephalon",
@@ -7222,6 +7519,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 478,
     "vertices": 239,
@@ -7240,7 +7538,7 @@
   },
   {
    "id": 289,
-   "slot": 168,
+   "slot": 171,
    "name": "Preoptic hypothalamus.r",
    "label": "Preoptic hypothalamus",
    "category": "diencephalon",
@@ -7266,6 +7564,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 402,
     "vertices": 201,
@@ -7284,7 +7583,7 @@
   },
   {
    "id": 290,
-   "slot": 169,
+   "slot": 172,
    "name": "Pulvinar.l",
    "label": "Pulvinar",
    "category": "diencephalon",
@@ -7310,6 +7609,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -7328,7 +7628,7 @@
   },
   {
    "id": 291,
-   "slot": 170,
+   "slot": 173,
    "name": "Pulvinar.r",
    "label": "Pulvinar",
    "category": "diencephalon",
@@ -7354,6 +7654,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -7372,7 +7673,7 @@
   },
   {
    "id": 292,
-   "slot": 171,
+   "slot": 174,
    "name": "Red nucleus.l",
    "label": "Red nucleus",
    "category": "brainstem",
@@ -7399,6 +7700,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 704,
     "vertices": 354,
@@ -7417,7 +7719,7 @@
   },
   {
    "id": 293,
-   "slot": 172,
+   "slot": 175,
    "name": "Red nucleus.r",
    "label": "Red nucleus",
    "category": "brainstem",
@@ -7444,6 +7746,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 704,
     "vertices": 354,
@@ -7462,7 +7765,7 @@
   },
   {
    "id": 294,
-   "slot": 173,
+   "slot": 176,
    "name": "Reticulospinal tract.l",
    "label": "Reticulospinal tract",
    "category": "tracts",
@@ -7488,6 +7791,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -7506,7 +7810,7 @@
   },
   {
    "id": 295,
-   "slot": 174,
+   "slot": 177,
    "name": "Reticulospinal tract.r",
    "label": "Reticulospinal tract",
    "category": "tracts",
@@ -7532,6 +7836,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -7550,7 +7855,7 @@
   },
   {
    "id": 296,
-   "slot": 175,
+   "slot": 178,
    "name": "Septal nuclei",
    "label": "Septal nuclei",
    "category": "deep_grey",
@@ -7575,6 +7880,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 548,
     "vertices": 278,
@@ -7593,7 +7899,7 @@
   },
   {
    "id": 311,
-   "slot": 176,
+   "slot": 179,
    "name": "Pineal gland",
    "label": "Pineal gland",
    "category": "diencephalon",
@@ -7619,6 +7925,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 634,
     "vertices": 319,
@@ -7637,7 +7944,7 @@
   },
   {
    "id": 316,
-   "slot": 177,
+   "slot": 180,
    "name": "Posterior intercavernous sinus",
    "label": "Posterior intercavernous sinus",
    "category": "veins_sinuses",
@@ -7658,6 +7965,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 972,
     "vertices": 488,
@@ -7676,7 +7984,7 @@
   },
   {
    "id": 317,
-   "slot": 178,
+   "slot": 181,
    "name": "Posterior quadrangular lobule.l",
    "label": "Posterior quadrangular lobule",
    "category": "cerebellum",
@@ -7699,6 +8007,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3618,
     "vertices": 1811,
@@ -7717,7 +8026,7 @@
   },
   {
    "id": 318,
-   "slot": 179,
+   "slot": 182,
    "name": "Posterior quadrangular lobule.r",
    "label": "Posterior quadrangular lobule",
    "category": "cerebellum",
@@ -7740,6 +8049,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3618,
     "vertices": 1811,
@@ -7758,7 +8068,7 @@
   },
   {
    "id": 323,
-   "slot": 180,
+   "slot": 183,
    "name": "Proximal lateral striate branches.l",
    "label": "Proximal lateral striate branches",
    "category": "arteries",
@@ -7781,6 +8091,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 5256,
     "vertices": 2640,
@@ -7799,7 +8110,7 @@
   },
   {
    "id": 324,
-   "slot": 181,
+   "slot": 184,
    "name": "Proximal lateral striate branches.r",
    "label": "Proximal lateral striate branches",
    "category": "arteries",
@@ -7822,6 +8133,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 5256,
     "vertices": 2640,
@@ -7840,7 +8152,7 @@
   },
   {
    "id": 325,
-   "slot": 182,
+   "slot": 185,
    "name": "Putamen.l",
    "label": "Putamen",
    "category": "deep_grey",
@@ -7867,6 +8179,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1150,
     "vertices": 577,
@@ -7885,7 +8198,7 @@
   },
   {
    "id": 326,
-   "slot": 183,
+   "slot": 186,
    "name": "Putamen.r",
    "label": "Putamen",
    "category": "deep_grey",
@@ -7912,6 +8225,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1150,
     "vertices": 577,
@@ -7930,7 +8244,7 @@
   },
   {
    "id": 327,
-   "slot": 184,
+   "slot": 187,
    "name": "Pyramid of medulla oblongata.l",
    "label": "Pyramid of medulla oblongata",
    "category": "brainstem",
@@ -7954,6 +8268,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 960,
     "vertices": 482,
@@ -7972,7 +8287,7 @@
   },
   {
    "id": 328,
-   "slot": 185,
+   "slot": 188,
    "name": "Pyramid of medulla oblongata.r",
    "label": "Pyramid of medulla oblongata",
    "category": "brainstem",
@@ -7996,6 +8311,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 960,
     "vertices": 482,
@@ -8014,7 +8330,7 @@
   },
   {
    "id": 329,
-   "slot": 186,
+   "slot": 189,
    "name": "Pyramis of vermis",
    "label": "Pyramis of vermis",
    "category": "cerebellum",
@@ -8037,6 +8353,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1182,
     "vertices": 593,
@@ -8055,7 +8372,7 @@
   },
   {
    "id": 330,
-   "slot": 187,
+   "slot": 190,
    "name": "Sensory root of trigeminal nerve.l",
    "label": "Sensory root of trigeminal nerve",
    "category": "cranial_nerves",
@@ -8079,6 +8396,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2752,
     "vertices": 1378,
@@ -8097,7 +8415,7 @@
   },
   {
    "id": 331,
-   "slot": 188,
+   "slot": 191,
    "name": "Sensory root of trigeminal nerve.r",
    "label": "Sensory root of trigeminal nerve",
    "category": "cranial_nerves",
@@ -8121,6 +8439,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2752,
     "vertices": 1378,
@@ -8139,7 +8458,7 @@
   },
   {
    "id": 333,
-   "slot": 189,
+   "slot": 192,
    "name": "Sigmoid sinus.l",
    "label": "Sigmoid sinus",
    "category": "veins_sinuses",
@@ -8160,6 +8479,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 588,
     "vertices": 296,
@@ -8178,7 +8498,7 @@
   },
   {
    "id": 334,
-   "slot": 190,
+   "slot": 193,
    "name": "Sigmoid sinus.r",
    "label": "Sigmoid sinus",
    "category": "veins_sinuses",
@@ -8199,6 +8519,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 588,
     "vertices": 296,
@@ -8217,7 +8538,7 @@
   },
   {
    "id": 337,
-   "slot": 191,
+   "slot": 194,
    "name": "Straight sinus",
    "label": "Straight sinus",
    "category": "veins_sinuses",
@@ -8238,6 +8559,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1548,
     "vertices": 776,
@@ -8256,7 +8578,7 @@
   },
   {
    "id": 344,
-   "slot": 192,
+   "slot": 195,
    "name": "Substantia nigra.l",
    "label": "Substantia nigra",
    "category": "deep_grey",
@@ -8282,6 +8604,7 @@
     "cit168-subcortical"
    ],
    "basis": "imaging-registered: generated from cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -8300,7 +8623,7 @@
   },
   {
    "id": 345,
-   "slot": 193,
+   "slot": 196,
    "name": "Substantia nigra.r",
    "label": "Substantia nigra",
    "category": "deep_grey",
@@ -8326,6 +8649,7 @@
     "cit168-subcortical"
    ],
    "basis": "imaging-registered: generated from cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -8344,7 +8668,7 @@
   },
   {
    "id": 346,
-   "slot": 194,
+   "slot": 197,
    "name": "Subthalamic nucleus.l",
    "label": "Subthalamic nucleus",
    "category": "deep_grey",
@@ -8370,6 +8694,7 @@
     "cit168-subcortical"
    ],
    "basis": "imaging-registered: generated from cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 616,
     "vertices": 310,
@@ -8388,7 +8713,7 @@
   },
   {
    "id": 347,
-   "slot": 195,
+   "slot": 198,
    "name": "Subthalamic nucleus.r",
    "label": "Subthalamic nucleus",
    "category": "deep_grey",
@@ -8414,6 +8739,7 @@
     "cit168-subcortical"
    ],
    "basis": "imaging-registered: generated from cit168-subcortical",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 544,
     "vertices": 274,
@@ -8432,7 +8758,7 @@
   },
   {
    "id": 350,
-   "slot": 196,
+   "slot": 199,
    "name": "Superior cerebellar artery.l",
    "label": "Superior cerebellar artery",
    "category": "arteries",
@@ -8455,6 +8781,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 7344,
     "vertices": 3680,
@@ -8473,7 +8800,7 @@
   },
   {
    "id": 351,
-   "slot": 197,
+   "slot": 200,
    "name": "Superior cerebellar artery.r",
    "label": "Superior cerebellar artery",
    "category": "arteries",
@@ -8496,6 +8823,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 7344,
     "vertices": 3680,
@@ -8514,7 +8842,7 @@
   },
   {
    "id": 354,
-   "slot": 198,
+   "slot": 201,
    "name": "Superior cerebellar peduncle",
    "label": "Superior cerebellar peduncle",
    "category": "tracts",
@@ -8540,6 +8868,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -8558,7 +8887,7 @@
   },
   {
    "id": 355,
-   "slot": 199,
+   "slot": 202,
    "name": "Superior cerebellar peduncle.l",
    "label": "Superior cerebellar peduncle",
    "category": "cerebellum",
@@ -8581,6 +8910,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 8474,
     "vertices": 4239,
@@ -8599,7 +8929,7 @@
   },
   {
    "id": 356,
-   "slot": 200,
+   "slot": 203,
    "name": "Superior cerebellar peduncle.r",
    "label": "Superior cerebellar peduncle",
    "category": "cerebellum",
@@ -8622,6 +8952,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 8474,
     "vertices": 4239,
@@ -8640,7 +8971,7 @@
   },
   {
    "id": 357,
-   "slot": 201,
+   "slot": 204,
    "name": "Superior colliculus.l",
    "label": "Superior colliculus",
    "category": "brainstem",
@@ -8666,6 +8997,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 458,
     "vertices": 233,
@@ -8684,7 +9016,7 @@
   },
   {
    "id": 358,
-   "slot": 202,
+   "slot": 205,
    "name": "Superior colliculus.r",
    "label": "Superior colliculus",
    "category": "brainstem",
@@ -8710,6 +9042,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 458,
     "vertices": 233,
@@ -8728,7 +9061,7 @@
   },
   {
    "id": 363,
-   "slot": 203,
+   "slot": 206,
    "name": "Superior longitudinal fasciculus I.l",
    "label": "Superior longitudinal fasciculus I",
    "category": "tracts",
@@ -8754,6 +9087,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -8772,7 +9106,7 @@
   },
   {
    "id": 364,
-   "slot": 204,
+   "slot": 207,
    "name": "Superior longitudinal fasciculus I.r",
    "label": "Superior longitudinal fasciculus I",
    "category": "tracts",
@@ -8798,6 +9132,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -8816,7 +9151,7 @@
   },
   {
    "id": 365,
-   "slot": 205,
+   "slot": 208,
    "name": "Superior longitudinal fasciculus II.l",
    "label": "Superior longitudinal fasciculus II",
    "category": "tracts",
@@ -8842,6 +9177,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -8860,7 +9196,7 @@
   },
   {
    "id": 366,
-   "slot": 206,
+   "slot": 209,
    "name": "Superior longitudinal fasciculus II.r",
    "label": "Superior longitudinal fasciculus II",
    "category": "tracts",
@@ -8886,6 +9222,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -8904,7 +9241,7 @@
   },
   {
    "id": 367,
-   "slot": 207,
+   "slot": 210,
    "name": "Superior longitudinal fasciculus III.l",
    "label": "Superior longitudinal fasciculus III",
    "category": "tracts",
@@ -8930,6 +9267,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -8948,7 +9286,7 @@
   },
   {
    "id": 368,
-   "slot": 208,
+   "slot": 211,
    "name": "Superior longitudinal fasciculus III.r",
    "label": "Superior longitudinal fasciculus III",
    "category": "tracts",
@@ -8974,6 +9312,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -8992,7 +9331,7 @@
   },
   {
    "id": 373,
-   "slot": 209,
+   "slot": 212,
    "name": "Superior petrosal sinus.l",
    "label": "Superior petrosal sinus",
    "category": "veins_sinuses",
@@ -9013,6 +9352,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1164,
     "vertices": 584,
@@ -9031,7 +9371,7 @@
   },
   {
    "id": 374,
-   "slot": 210,
+   "slot": 213,
    "name": "Superior petrosal sinus.r",
    "label": "Superior petrosal sinus",
    "category": "veins_sinuses",
@@ -9052,6 +9392,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1164,
     "vertices": 584,
@@ -9070,7 +9411,7 @@
   },
   {
    "id": 375,
-   "slot": 211,
+   "slot": 214,
    "name": "Superior sagittal sinus",
    "label": "Superior sagittal sinus",
    "category": "veins_sinuses",
@@ -9091,6 +9432,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 4236,
     "vertices": 2120,
@@ -9109,7 +9451,7 @@
   },
   {
    "id": 376,
-   "slot": 212,
+   "slot": 215,
    "name": "Superior salivatory nucleus.l",
    "label": "Superior salivatory nucleus",
    "category": "brainstem",
@@ -9135,6 +9477,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -9153,7 +9496,7 @@
   },
   {
    "id": 377,
-   "slot": 213,
+   "slot": 216,
    "name": "Superior salivatory nucleus.r",
    "label": "Superior salivatory nucleus",
    "category": "brainstem",
@@ -9179,6 +9522,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 768,
     "vertices": 386,
@@ -9197,7 +9541,7 @@
   },
   {
    "id": 378,
-   "slot": 214,
+   "slot": 217,
    "name": "Superior semilunar lobule.l",
    "label": "Superior semilunar lobule",
    "category": "cerebellum",
@@ -9220,6 +9564,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 8688,
     "vertices": 4356,
@@ -9238,7 +9583,7 @@
   },
   {
    "id": 379,
-   "slot": 215,
+   "slot": 218,
    "name": "Superior semilunar lobule.r",
    "label": "Superior semilunar lobule",
    "category": "cerebellum",
@@ -9261,6 +9606,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 8688,
     "vertices": 4356,
@@ -9279,7 +9625,7 @@
   },
   {
    "id": 384,
-   "slot": 216,
+   "slot": 219,
    "name": "Superior thalamic radiation.l",
    "label": "Superior thalamic radiation",
    "category": "tracts",
@@ -9305,6 +9651,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -9323,7 +9670,7 @@
   },
   {
    "id": 385,
-   "slot": 217,
+   "slot": 220,
    "name": "Superior thalamic radiation.r",
    "label": "Superior thalamic radiation",
    "category": "tracts",
@@ -9349,6 +9696,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -9367,7 +9715,7 @@
   },
   {
    "id": 388,
-   "slot": 218,
+   "slot": 221,
    "name": "Temporal branches of middle cerebral artery.l",
    "label": "Temporal branches of middle cerebral artery",
    "category": "arteries",
@@ -9390,6 +9738,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3480,
     "vertices": 1744,
@@ -9408,7 +9757,7 @@
   },
   {
    "id": 389,
-   "slot": 219,
+   "slot": 222,
    "name": "Temporal branches of middle cerebral artery.r",
    "label": "Temporal branches of middle cerebral artery",
    "category": "arteries",
@@ -9431,6 +9780,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3480,
     "vertices": 1744,
@@ -9449,7 +9799,7 @@
   },
   {
    "id": 394,
-   "slot": 220,
+   "slot": 223,
    "name": "Tentorium cerebelli.l",
    "label": "Tentorium cerebelli",
    "category": "meninges_dura",
@@ -9474,6 +9824,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 4480,
     "vertices": 2242,
@@ -9492,7 +9843,7 @@
   },
   {
    "id": 395,
-   "slot": 221,
+   "slot": 224,
    "name": "Tentorium cerebelli.r",
    "label": "Tentorium cerebelli",
    "category": "meninges_dura",
@@ -9517,6 +9868,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 4480,
     "vertices": 2242,
@@ -9535,7 +9887,7 @@
   },
   {
    "id": 396,
-   "slot": 222,
+   "slot": 225,
    "name": "Third ventricle",
    "label": "Third ventricle",
    "category": "ventricles",
@@ -9560,6 +9912,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 4313,
     "vertices": 2157,
@@ -9578,7 +9931,7 @@
   },
   {
    "id": 397,
-   "slot": 223,
+   "slot": 226,
    "name": "Tonsil of cerebellum.l",
    "label": "Tonsil of cerebellum",
    "category": "cerebellum",
@@ -9601,6 +9954,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3638,
     "vertices": 1821,
@@ -9619,7 +9973,7 @@
   },
   {
    "id": 398,
-   "slot": 224,
+   "slot": 227,
    "name": "Tonsil of cerebellum.r",
    "label": "Tonsil of cerebellum",
    "category": "cerebellum",
@@ -9642,6 +9996,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3638,
     "vertices": 1821,
@@ -9660,7 +10015,7 @@
   },
   {
    "id": 403,
-   "slot": 225,
+   "slot": 228,
    "name": "Transverse sinus.l",
    "label": "Transverse sinus",
    "category": "veins_sinuses",
@@ -9681,6 +10036,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1356,
     "vertices": 680,
@@ -9699,7 +10055,7 @@
   },
   {
    "id": 404,
-   "slot": 226,
+   "slot": 229,
    "name": "Transverse sinus.r",
    "label": "Transverse sinus",
    "category": "veins_sinuses",
@@ -9720,6 +10076,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1356,
     "vertices": 680,
@@ -9738,7 +10095,7 @@
   },
   {
    "id": 413,
-   "slot": 227,
+   "slot": 230,
    "name": "Tuber of vermis",
    "label": "Tuber of vermis",
    "category": "cerebellum",
@@ -9761,6 +10118,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1178,
     "vertices": 591,
@@ -9779,7 +10137,7 @@
   },
   {
    "id": 414,
-   "slot": 228,
+   "slot": 231,
    "name": "Tuberal hypothalamus.l",
    "label": "Tuberal hypothalamus",
    "category": "diencephalon",
@@ -9805,6 +10163,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 500,
@@ -9823,7 +10182,7 @@
   },
   {
    "id": 415,
-   "slot": 229,
+   "slot": 232,
    "name": "Tuberal hypothalamus.r",
    "label": "Tuberal hypothalamus",
    "category": "diencephalon",
@@ -9849,6 +10208,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Hypothalamus` mesh by neudorfer-hypothalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -9867,7 +10227,7 @@
   },
   {
    "id": 416,
-   "slot": 230,
+   "slot": 233,
    "name": "Uncinate fasciculus.l",
    "label": "Uncinate fasciculus",
    "category": "tracts",
@@ -9893,6 +10253,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -9911,7 +10272,7 @@
   },
   {
    "id": 417,
-   "slot": 231,
+   "slot": 234,
    "name": "Uncinate fasciculus.r",
    "label": "Uncinate fasciculus",
    "category": "tracts",
@@ -9937,6 +10298,7 @@
     "hcp1065-yeh2022"
    ],
    "basis": "imaging-registered: generated from hcp1065-yeh2022",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 956,
     "vertices": 480,
@@ -9955,7 +10317,7 @@
   },
   {
    "id": 418,
-   "slot": 232,
+   "slot": 235,
    "name": "Uvula of vermis",
    "label": "Uvula of vermis",
    "category": "cerebellum",
@@ -9978,6 +10340,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 2176,
     "vertices": 1090,
@@ -9996,7 +10359,7 @@
   },
   {
    "id": 421,
-   "slot": 233,
+   "slot": 236,
    "name": "Ventral anterior nucleus.l",
    "label": "Ventral anterior nucleus",
    "category": "diencephalon",
@@ -10022,6 +10385,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -10040,7 +10404,7 @@
   },
   {
    "id": 422,
-   "slot": 234,
+   "slot": 237,
    "name": "Ventral anterior nucleus.r",
    "label": "Ventral anterior nucleus",
    "category": "diencephalon",
@@ -10066,6 +10430,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -10084,7 +10449,7 @@
   },
   {
    "id": 423,
-   "slot": 235,
+   "slot": 238,
    "name": "Ventral laterodorsal nucleus.l",
    "label": "Ventral laterodorsal nucleus",
    "category": "diencephalon",
@@ -10110,6 +10475,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -10128,7 +10494,7 @@
   },
   {
    "id": 424,
-   "slot": 236,
+   "slot": 239,
    "name": "Ventral laterodorsal nucleus.r",
    "label": "Ventral laterodorsal nucleus",
    "category": "diencephalon",
@@ -10154,6 +10520,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -10172,7 +10539,7 @@
   },
   {
    "id": 425,
-   "slot": 237,
+   "slot": 240,
    "name": "Ventral lateroventral nucleus.l",
    "label": "Ventral lateroventral nucleus",
    "category": "diencephalon",
@@ -10198,6 +10565,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -10216,7 +10584,7 @@
   },
   {
    "id": 426,
-   "slot": 238,
+   "slot": 241,
    "name": "Ventral lateroventral nucleus.r",
    "label": "Ventral lateroventral nucleus",
    "category": "diencephalon",
@@ -10242,6 +10610,7 @@
     "zanatomy"
    ],
    "basis": "imaging-registered: a partition of Z-Anatomy's `Thalamus` mesh by najdenovska-thalamus",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1000,
     "vertices": 502,
@@ -10260,7 +10629,7 @@
   },
   {
    "id": 427,
-   "slot": 239,
+   "slot": 242,
    "name": "Vertebral artery.l",
    "label": "Vertebral artery",
    "category": "arteries",
@@ -10284,6 +10653,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3276,
     "vertices": 1640,
@@ -10302,7 +10672,7 @@
   },
   {
    "id": 428,
-   "slot": 240,
+   "slot": 243,
    "name": "Vertebral artery.r",
    "label": "Vertebral artery",
    "category": "arteries",
@@ -10326,6 +10696,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3276,
     "vertices": 1640,
@@ -10344,7 +10715,7 @@
   },
   {
    "id": 431,
-   "slot": 241,
+   "slot": 244,
    "name": "Vestibular nuclei.l",
    "label": "Vestibular nuclei",
    "category": "brainstem",
@@ -10371,6 +10742,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1568,
     "vertices": 786,
@@ -10389,7 +10761,7 @@
   },
   {
    "id": 432,
-   "slot": 242,
+   "slot": 245,
    "name": "Vestibular nuclei.r",
    "label": "Vestibular nuclei",
    "category": "brainstem",
@@ -10416,6 +10788,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 1568,
     "vertices": 786,
@@ -10434,7 +10807,7 @@
   },
   {
    "id": 435,
-   "slot": 243,
+   "slot": 246,
    "name": "Wing of central lobule.l",
    "label": "Wing of central lobule",
    "category": "cerebellum",
@@ -10457,6 +10830,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3144,
     "vertices": 1574,
@@ -10475,7 +10849,7 @@
   },
   {
    "id": 436,
-   "slot": 244,
+   "slot": 247,
    "name": "Wing of central lobule.r",
    "label": "Wing of central lobule",
    "category": "cerebellum",
@@ -10498,6 +10872,7 @@
     "zanatomy"
    ],
    "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "shipsFrom": "brain.glb",
    "full": {
     "triangles": 3144,
     "vertices": 1574,
@@ -10844,16 +11219,6 @@
    "group": "zanatomy-undeclared-brain-materials",
    "heldBecause": [
     "carries undeclared material(s) `Brain-Inner`"
-   ]
-  },
-  {
-   "id": 74,
-   "name": "Corpus callosum",
-   "category": "white_matter",
-   "side": "median",
-   "group": "zanatomy-undeclared-brain-materials",
-   "heldBecause": [
-    "carries only `Temporal lobe`, which appears otherwise only on the undeclared cortex; held fail-closed"
    ]
   },
   {
@@ -11274,26 +11639,6 @@
    "group": "dundee-cranial-nerves",
    "heldBecause": [
     "carries the `Nerve` material (Dundee CAHID cranial nerves, unverified)"
-   ]
-  },
-  {
-   "id": 201,
-   "name": "Midbrain.l",
-   "category": "brainstem",
-   "side": "left",
-   "group": "zanatomy-undeclared-brain-materials",
-   "heldBecause": [
-    "carries only `Temporal lobe`, which appears otherwise only on the undeclared cortex; held fail-closed"
-   ]
-  },
-  {
-   "id": 202,
-   "name": "Midbrain.r",
-   "category": "brainstem",
-   "side": "right",
-   "group": "zanatomy-undeclared-brain-materials",
-   "heldBecause": [
-    "carries only `Temporal lobe`, which appears otherwise only on the undeclared cortex; held fail-closed"
    ]
   },
   {

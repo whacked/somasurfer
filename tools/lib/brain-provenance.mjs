@@ -147,10 +147,59 @@ export function classifyStructure({ name, extras, materials }) {
   };
 }
 
+/**
+ * Held structures whose standing a measurement changed. Read from the committed
+ * result of the pre-registered origin test (docs/brain-origin-test.md), never
+ * written by hand:
+ *
+ *   - a structure the test CLEARED ships from brain.glb as it is, and cites the
+ *     source it was shown to be;
+ *   - a structure the test did not clear but the CTO routed to a replacement
+ *     (2026-10-11 18:32) ships the replacement's geometry instead, and cites
+ *     only the replacement's source, since none of the glb's surface remains.
+ */
+export const REPLACEMENTS = Object.freeze({
+  'Corpus callosum': { source: 'bodyparts3d', concept: 'FMA86464', route: 'CTO decision on DOG-127, 2026-10-11 18:32' },
+});
+
+export function applyOriginResult(structure, result) {
+  const name = structure.name.trim();
+  const row = result.structures.find((r) => r.name === name && r.role === 'held-out');
+  if (!row) return structure;
+  const evidence = `packages/atlas-assets/provenance/origin-test-bodyparts3d.json: mean ${row.matched.meanSymmetricMm} mm, p95 ${row.matched.p95Mm} mm, label agreement ${row.matched.labelAgreement}`;
+  if (result.result.clears.includes(name)) {
+    return {
+      ...structure,
+      group: GROUPS.cleared,
+      sources: [...new Set([...structure.sources.filter((x) => x !== 'zanatomy-undeclared-brain-materials'), 'bodyparts3d'])].sort(),
+      basis: `held for its material, then shown by the pre-registered origin test to be BodyParts3D's own mesh (${evidence})`,
+      shipsFrom: 'brain.glb',
+      formerlyHeldBecause: structure.heldBecause,
+      heldBecause: undefined,
+    };
+  }
+  const replacement = REPLACEMENTS[name];
+  if (replacement) {
+    return {
+      ...structure,
+      group: GROUPS.cleared,
+      sources: [replacement.source],
+      basis: `the glb's version failed the origin test (${evidence}); replaced by ${replacement.source} ${replacement.concept}, registered into the mesh frame (${replacement.route})`,
+      shipsFrom: `${replacement.source} ${replacement.concept}`,
+      formerlyHeldBecause: structure.heldBecause,
+      heldBecause: undefined,
+    };
+  }
+  return structure;
+}
+
 /** The whole manifest, from decoded nodes, plus counts per group. */
-export function buildProvenance(nodes) {
+export function buildProvenance(nodes, originResult = null) {
   const structures = nodes
     .map((n) => classifyStructure({ name: n.name, extras: n.extras, materials: n.parts.map((p) => p.material) }))
+    .map((s) => ({ shipsFrom: 'brain.glb', ...s }))
+    .map((s) => (originResult ? applyOriginResult(s, originResult) : s))
+    .map((s) => JSON.parse(JSON.stringify(s)))
     .sort((a, b) => a.id - b.id);
   const counts = {};
   for (const s of structures) counts[s.group] = (counts[s.group] ?? 0) + 1;

@@ -10,15 +10,20 @@ cannot check.
 
 | | structures | where |
 | --- | ---: | --- |
-| cleared, shipped | 245 | `packages/atlas-assets/brain/zanatomy-2929e94/` (CC BY-SA 4.0, entry `zanatomy-brain-meshes-cleared`) |
-| undeclared Z-Anatomy materials, held | 146 (126 of the 128 cortical) | in neither mesh file; listed by name under `excluded` in `structures.json` |
+| cleared, shipped | 248 | `packages/atlas-assets/brain/zanatomy-2929e94/` (CC BY-SA 4.0, entry `zanatomy-brain-meshes-cleared`) |
+| undeclared Z-Anatomy materials, held | 143 (126 of the 128 cortical) | in neither mesh file; listed by name under `excluded` in `structures.json` |
 | Dundee cranial nerves, unverified | 46 | the same |
 
 These groups come from `docs/asset-licensing.md` §7.3. The cortex stays held after
 §7.8: the upstream title behind Brainder is not established. The fallback the CTO
 decided in advance is a first-party ICBM152 cortex; see
-`docs/brain-cortex-fallback.md`. The corpus callosum and midbrain have their own
-route; see `docs/brain-origin-test.md`.
+`docs/brain-cortex-fallback.md`. The 248 are §7.3's 245 plus three that a measurement moved
+(`docs/brain-origin-test.md`):
+- **midbrain L and R** passed the pre-registered test as BodyParts3D's own meshes,
+  and ship from the glb citing `bodyparts3d`;
+- **the corpus callosum** failed it, and ships BodyParts3D's FMA86464 mesh
+  instead. It is placed by the test's own transform, and `structures.json`
+  records `shipsFrom` for every structure.
 
 **Provenance is generated, not written.** `tools/build-meshes.mjs` classifies all
 437 structures from the materials inside the pinned glb. It writes the result to
@@ -58,7 +63,7 @@ coordinate-placed finding inherits.
 - **Low** (`meshes.lowres.bin`, fetched eagerly). Each structure is decimated with
   meshoptimizer's topology-preserving simplifier, with open borders locked. The
   parameters are fixed in `tools/lib/brain-asset-paths.mjs`:
-  - **ratio 0.15**, which puts the low tier at about 0.72 MiB gzip, inside the
+  - **ratio 0.15**, which puts the low tier at about 0.77 MiB gzip, inside the
     brain's 1.00 MiB share of the low-resolution line;
   - a **floor of 128 triangles**, or all of a structure's triangles if it has fewer.
 
@@ -96,7 +101,7 @@ none.
 
 ```
 (cd tools/mesh-build && npm ci)                       # build-only: draco3dgltf, meshoptimizer
-node tools/build-meshes.mjs --source <brainproject>   # brain.glb + manifest.json at the pinned commit
+node tools/build-meshes.mjs --source <brainproject> --bp3d <BodyParts3D>   # pinned brain.glb + manifest.json; the BP3D 4.0 set for the corpus callosum
 node tools/fit-brain-registration.mjs --cit168 <dir>  # CIT168toMNI152-2009c_prob.nii.gz
 node tools/check-mesh-assets.mjs --write-report
 ```

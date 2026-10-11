@@ -560,3 +560,25 @@ generation of the cortical meshes and subcortical segmentations used FreeSurfer
 - **The cortex fallback is now the live route.** The fallback the CTO decided in advance is a first-party cortical surface extracted from ICBM152 2009c, which is permissive, already our `BV` template and natively MNI. W2 builds it; whether to ship it is the owner's decision, which the CTO takes via DOG-123.
 - **The origin test stays useful, but it cannot clear anything.** The test in `docs/brain-origin-test.md` can still settle whether Z-Anatomy's cortex is Brainder's. That would only matter if a licensor later answered (b).
 - **What would clear (b):** a statement from Anderson Winkler or MGH that FreeSurfer outputs are not "portions" of the Software, or an MGH grant.
+
+### 7.9 What W2's measurements moved (DOG-127, 2026-10-11)
+
+The pre-registered origin test (`docs/brain-origin-test.md`) ran against
+BodyParts3D 4.0. Its negative control discriminated: 0 of 17 mismatched pairs
+passed. It moved three structures out of `zanatomy-undeclared-brain-materials`:
+
+| structure | test result | ships from | cites |
+| --- | --- | --- | --- |
+| Midbrain.l, Midbrain.r | **pass**: BodyParts3D's own mesh, p95 0.14 mm | brain.glb | `brainproject-brain-glb`, `zanatomy`, `bodyparts3d` |
+| Corpus callosum | **fail** on label agreement (0.77, threshold 0.90) | BodyParts3D FMA86464 directly, placed by the test's transform | `bodyparts3d` |
+
+**W2 therefore ships 248 structures.** 143 remain held, including 126 of the 128
+cortical ones, and the 46 Dundee nerves remain unverified. The provenance
+manifest records the move per structure (`shipsFrom`, `formerlyHeldBecause`), and
+rule 10 checks it.
+
+The same run found that the four colliculi do **not** match BodyParts3D's
+colliculi. They are cleared by inference from the `Nucleus` material. That
+inference is about *which* cleared source they come from, and it is now known to
+be wrong as to BodyParts3D, though they may still be Z-Anatomy's own work. They
+are reported on DOG-123, not re-classified here.

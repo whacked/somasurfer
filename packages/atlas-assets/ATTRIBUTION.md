@@ -17,7 +17,7 @@ the site, so an asset cannot reach a user without its attribution.
 | BD body template, BodyParts3D 4.0 adult | `templates/bp3d-4.0-adult-body-centroid.body.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); adaptation by GStack | **yes** |
 | BV brain-volume template, ICBM152 2009c | `templates/icbm152-2009c-asym.brain-volume.json` | [MNI-BIC-permissive](https://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009) | Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University; adaptation by GStack | no |
 | ALC-1 name index and structure coverings | `labels/names.json`<br>`labels/coverings.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | The Database Center for Life Science (DBCLS); UBERON / OBO Foundry; adaptation by GStack | **yes** |
-| Brain meshes, cleared group: 245 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases) | `brain/zanatomy-2929e94/meshes.lowres.bin`<br>`brain/zanatomy-2929e94/meshes.fullres.bin`<br>`brain/zanatomy-2929e94/structures.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack | **yes** |
+| Brain meshes, cleared group: 248 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly | `brain/zanatomy-2929e94/meshes.lowres.bin`<br>`brain/zanatomy-2929e94/meshes.fullres.bin`<br>`brain/zanatomy-2929e94/structures.json` | [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack | **yes** |
 | MNI (ICBM152 2009c) to brain-mesh affine, with residuals | `registration/mni-to-zanatomy-2929e94.json` | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | GStack | no |
 
 ## Provenance
@@ -66,13 +66,13 @@ the site, so an asset cannot reach a user without its attribution.
 - **derived from** BodyParts3D/Anatomography 4.0 — BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan
 - **derived from** UBERON (basic.obo) — CC-BY-3.0, UBERON / OBO Foundry contributors
 
-### Brain meshes, cleared group: 245 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases)
+### Brain meshes, cleared group: 248 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly
 
 - **id** `zanatomy-brain-meshes-cleared`
 - **licence** CC-BY-SA-4.0
 - **holder** Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack
-- **source** Derived by tools/build-meshes.mjs from brainproject brain.glb at commit 2929e94f521a8ddceab26bc100a98dc06b0da060 (SHA-256 76a49ea4526a4880613aec7a02756bd7301b0b9d0680d7cae33e197b672c5453): welded, quantised to int16, and decimated per structure for the low tier
-- **note** Only the structures docs/asset-licensing.md 7.3 clears. The 146 undeclared-material structures (126 of 128 cortical) and the 46 Dundee cranial-nerve structures are in neither mesh file; structures.json lists them by name under `excluded`. Licence rule 10 checks every structure id inside these files against packages/atlas-assets/provenance/brain-zanatomy-2929e94.json. Data derived from the Human Connectome Project (CIT168, Najdenovska, Neudorfer, HCP1065): Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).
+- **source** Derived by tools/build-meshes.mjs from brainproject brain.glb at commit 2929e94f521a8ddceab26bc100a98dc06b0da060 (SHA-256 76a49ea4526a4880613aec7a02756bd7301b0b9d0680d7cae33e197b672c5453): welded, quantised to int16, and decimated per structure for the low tier. The corpus callosum is BodyParts3D 4.0 FMA86464 (isa_BP3D_4.0_obj_99.zip), placed in the mesh frame by the transform of the origin test (docs/brain-origin-test.md)
+- **note** Only structures that are cleared: by docs/asset-licensing.md 7.3, or by the pre-registered origin test (midbrain L and R, shown to be BodyParts3D's own; the corpus callosum, which failed it, ships from BodyParts3D instead). The 143 undeclared-material structures still held (126 of 128 cortical) and the 46 Dundee cranial-nerve structures are in neither mesh file; structures.json lists them by name under `excluded`, and records per structure which source it ships from (`shipsFrom`). Licence rule 10 checks every structure id inside these files against packages/atlas-assets/provenance/brain-zanatomy-2929e94.json. Data derived from the Human Connectome Project (CIT168, Najdenovska, Neudorfer, HCP1065): Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).
 - **derived from** BodyParts3D/Anatomography 4.0 — BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan
 - **derived from** brainproject brain model (brain.glb + manifest.json) — CC-BY-SA-4.0, Itay Inbar; Z-Anatomy contributors; BodyParts3D/DBCLS
 - **derived from** CIT168 amygdala atlas v1.0.3 — CIT168 amygdala atlas, Tyszka & Pauli (2016), CC BY-SA 4.0, https://osf.io/hksa6/
@@ -96,7 +96,7 @@ The following assets carry a share-alike obligation:
 
 - BD body template, BodyParts3D 4.0 adult — CC-BY-SA-4.0
 - ALC-1 name index and structure coverings — CC-BY-SA-4.0
-- Brain meshes, cleared group: 245 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases) — CC-BY-SA-4.0
+- Brain meshes, cleared group: 248 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly — CC-BY-SA-4.0
 
 That obligation is confined to this package by the following, checked on
 every push by `tools/check-licence-separation.mjs`:

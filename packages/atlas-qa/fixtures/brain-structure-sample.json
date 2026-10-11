@@ -4,12 +4,12 @@
   "The DOG-123 W8a brain sample: drawn once by tools/draw-brain-qa-sample.mjs, checked by tools/check-mesh-assets.mjs.",
   "Every `sample` entry ships and must be pickable, returning `expect.name`. Every `withheldControls` entry",
   "is held under docs/asset-licensing.md 7.3 and must NOT be pickable; the page should say why.",
-  "white_matter ships nothing, so it is represented by withheld controls, not by sampled structures."
+  "A category that ships fewer than 2 structures (white_matter ships 1) makes up the rest with withheld controls."
  ],
  "drawnFrom": {
   "mesh": "zanatomy-2929e94",
-  "structures": 245,
-  "excluded": 192
+  "structures": 248,
+  "excluded": 189
  },
  "seed": 13656359,
  "rules": {
@@ -20,8 +20,7 @@
    "Substantia nigra",
    "Nucleus accumbens"
   ],
-  "seed": 13656359,
-  "withheldControlsPerUnshippableCategory": 2
+  "seed": 13656359
  },
  "categories": {
   "all": [
@@ -49,24 +48,24 @@
    "meninges_dura",
    "tracts",
    "veins_sinuses",
-   "ventricles"
-  ],
-  "shippingNothing": [
+   "ventricles",
    "white_matter"
-  ]
+  ],
+  "shippingNothing": []
  },
  "quota": {
-  "arteries": 6,
+  "arteries": 5,
   "brainstem": 4,
   "cerebellum": 4,
   "cortex": 2,
   "cranial_nerves": 2,
   "deep_grey": 4,
-  "diencephalon": 5,
+  "diencephalon": 4,
   "meninges_dura": 2,
   "tracts": 6,
   "veins_sinuses": 3,
-  "ventricles": 2
+  "ventricles": 2,
+  "white_matter": 1
  },
  "sample": [
   {
@@ -114,47 +113,80 @@
    }
   },
   {
-   "id": 327,
-   "name": "Pyramid of medulla oblongata.l",
-   "label": "Pyramid of medulla oblongata",
+   "id": 147,
+   "name": "Insular branches of middle cerebral artery (M2).r",
+   "label": "Insular branches of middle cerebral artery (M2)",
+   "category": "arteries",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Insular branches of middle cerebral artery (M2)"
+   }
+  },
+  {
+   "id": 201,
+   "name": "Midbrain.l",
+   "label": "Midbrain",
    "category": "brainstem",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Pyramid of medulla oblongata"
+    "name": "Midbrain"
    }
   },
   {
-   "id": 328,
-   "name": "Pyramid of medulla oblongata.r",
-   "label": "Pyramid of medulla oblongata",
+   "id": 202,
+   "name": "Midbrain.r",
+   "label": "Midbrain",
    "category": "brainstem",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Pyramid of medulla oblongata"
+    "name": "Midbrain"
    }
   },
   {
-   "id": 130,
-   "name": "Inferior colliculus.l",
-   "label": "Inferior colliculus",
+   "id": 6,
+   "name": "Accessory nucleus of oculomotor nerve.l",
+   "label": "Accessory nucleus of oculomotor nerve",
    "category": "brainstem",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Inferior colliculus"
+    "name": "Accessory nucleus of oculomotor nerve"
    }
   },
   {
-   "id": 131,
-   "name": "Inferior colliculus.r",
-   "label": "Inferior colliculus",
+   "id": 7,
+   "name": "Accessory nucleus of oculomotor nerve.r",
+   "label": "Accessory nucleus of oculomotor nerve",
    "category": "brainstem",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Inferior colliculus"
+    "name": "Accessory nucleus of oculomotor nerve"
+   }
+  },
+  {
+   "id": 397,
+   "name": "Tonsil of cerebellum.l",
+   "label": "Tonsil of cerebellum",
+   "category": "cerebellum",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Tonsil of cerebellum"
+   }
+  },
+  {
+   "id": 398,
+   "name": "Tonsil of cerebellum.r",
+   "label": "Tonsil of cerebellum",
+   "category": "cerebellum",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Tonsil of cerebellum"
    }
   },
   {
@@ -180,28 +212,6 @@
    }
   },
   {
-   "id": 93,
-   "name": "Culmen",
-   "label": "Culmen",
-   "category": "cerebellum",
-   "side": "median",
-   "expect": {
-    "pickable": true,
-    "name": "Culmen"
-   }
-  },
-  {
-   "id": 413,
-   "name": "Tuber of vermis",
-   "label": "Tuber of vermis",
-   "category": "cerebellum",
-   "side": "median",
-   "expect": {
-    "pickable": true,
-    "name": "Tuber of vermis"
-   }
-  },
-  {
    "id": 122,
    "name": "Hippocampus.l",
    "label": "Hippocampus",
@@ -224,25 +234,25 @@
    }
   },
   {
-   "id": 330,
-   "name": "Sensory root of trigeminal nerve.l",
-   "label": "Sensory root of trigeminal nerve",
+   "id": 124,
+   "name": "Hypoglossal nerve (XII).l",
+   "label": "Hypoglossal nerve (XII)",
    "category": "cranial_nerves",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Sensory root of trigeminal nerve"
+    "name": "Hypoglossal nerve (XII)"
    }
   },
   {
-   "id": 331,
-   "name": "Sensory root of trigeminal nerve.r",
-   "label": "Sensory root of trigeminal nerve",
+   "id": 125,
+   "name": "Hypoglossal nerve (XII).r",
+   "label": "Hypoglossal nerve (XII)",
    "category": "cranial_nerves",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Sensory root of trigeminal nerve"
+    "name": "Hypoglossal nerve (XII)"
    }
   },
   {
@@ -312,47 +322,47 @@
    }
   },
   {
-   "id": 290,
-   "name": "Pulvinar.l",
-   "label": "Pulvinar",
+   "id": 421,
+   "name": "Ventral anterior nucleus.l",
+   "label": "Ventral anterior nucleus",
    "category": "diencephalon",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Pulvinar"
+    "name": "Ventral anterior nucleus"
    }
   },
   {
-   "id": 291,
-   "name": "Pulvinar.r",
-   "label": "Pulvinar",
+   "id": 422,
+   "name": "Ventral anterior nucleus.r",
+   "label": "Ventral anterior nucleus",
    "category": "diencephalon",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Pulvinar"
+    "name": "Ventral anterior nucleus"
    }
   },
   {
-   "id": 186,
-   "name": "Medial geniculate body.l",
-   "label": "Medial geniculate body",
+   "id": 414,
+   "name": "Tuberal hypothalamus.l",
+   "label": "Tuberal hypothalamus",
    "category": "diencephalon",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Medial geniculate body"
+    "name": "Tuberal hypothalamus"
    }
   },
   {
-   "id": 187,
-   "name": "Medial geniculate body.r",
-   "label": "Medial geniculate body",
+   "id": 415,
+   "name": "Tuberal hypothalamus.r",
+   "label": "Tuberal hypothalamus",
    "category": "diencephalon",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Medial geniculate body"
+    "name": "Tuberal hypothalamus"
    }
   },
   {
@@ -389,102 +399,80 @@
    }
   },
   {
-   "id": 365,
-   "name": "Superior longitudinal fasciculus II.l",
-   "label": "Superior longitudinal fasciculus II",
+   "id": 81,
+   "name": "Corticopontine tract (occipital).l",
+   "label": "Corticopontine tract (occipital)",
    "category": "tracts",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Superior longitudinal fasciculus II"
+    "name": "Corticopontine tract (occipital)"
    }
   },
   {
-   "id": 366,
-   "name": "Superior longitudinal fasciculus II.r",
-   "label": "Superior longitudinal fasciculus II",
+   "id": 82,
+   "name": "Corticopontine tract (occipital).r",
+   "label": "Corticopontine tract (occipital)",
    "category": "tracts",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Superior longitudinal fasciculus II"
+    "name": "Corticopontine tract (occipital)"
    }
   },
   {
-   "id": 87,
-   "name": "Corticostriatal tract (anterior).l",
-   "label": "Corticostriatal tract (anterior)",
+   "id": 91,
+   "name": "Corticostriatal tract (superior).l",
+   "label": "Corticostriatal tract (superior)",
    "category": "tracts",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Corticostriatal tract (anterior)"
+    "name": "Corticostriatal tract (superior)"
    }
   },
   {
-   "id": 88,
-   "name": "Corticostriatal tract (anterior).r",
-   "label": "Corticostriatal tract (anterior)",
+   "id": 92,
+   "name": "Corticostriatal tract (superior).r",
+   "label": "Corticostriatal tract (superior)",
    "category": "tracts",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Corticostriatal tract (anterior)"
+    "name": "Corticostriatal tract (superior)"
    }
   },
   {
-   "id": 35,
-   "name": "Arcuate fasciculus.l",
-   "label": "Arcuate fasciculus",
-   "category": "tracts",
-   "side": "left",
-   "expect": {
-    "pickable": true,
-    "name": "Arcuate fasciculus"
-   }
-  },
-  {
-   "id": 36,
-   "name": "Arcuate fasciculus.r",
-   "label": "Arcuate fasciculus",
-   "category": "tracts",
-   "side": "right",
-   "expect": {
-    "pickable": true,
-    "name": "Arcuate fasciculus"
-   }
-  },
-  {
-   "id": 373,
-   "name": "Superior petrosal sinus.l",
-   "label": "Superior petrosal sinus",
+   "id": 51,
+   "name": "Cavernous sinus.l",
+   "label": "Cavernous sinus",
    "category": "veins_sinuses",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Superior petrosal sinus"
+    "name": "Cavernous sinus"
    }
   },
   {
-   "id": 374,
-   "name": "Superior petrosal sinus.r",
-   "label": "Superior petrosal sinus",
+   "id": 52,
+   "name": "Cavernous sinus.r",
+   "label": "Cavernous sinus",
    "category": "veins_sinuses",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Superior petrosal sinus"
+    "name": "Cavernous sinus"
    }
   },
   {
-   "id": 337,
-   "name": "Straight sinus",
-   "label": "Straight sinus",
+   "id": 375,
+   "name": "Superior sagittal sinus",
+   "label": "Superior sagittal sinus",
    "category": "veins_sinuses",
    "side": "median",
    "expect": {
     "pickable": true,
-    "name": "Straight sinus"
+    "name": "Superior sagittal sinus"
    }
   },
   {
@@ -508,22 +496,20 @@
     "pickable": true,
     "name": "Third ventricle"
    }
-  }
- ],
- "withheldControls": [
+  },
   {
-   "id": 121,
-   "name": "Hippocampal commissure",
+   "id": 74,
+   "name": "Corpus callosum",
+   "label": "Corpus callosum",
    "category": "white_matter",
    "side": "median",
    "expect": {
-    "pickable": false,
-    "reason": "zanatomy-undeclared-brain-materials",
-    "heldBecause": [
-     "carries undeclared material(s) `White matter`"
-    ]
+    "pickable": true,
+    "name": "Corpus callosum"
    }
-  },
+  }
+ ],
+ "withheldControls": [
   {
    "id": 15,
    "name": "Anterior commissure",

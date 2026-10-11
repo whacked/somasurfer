@@ -35,7 +35,7 @@ const fixture = {
     'The DOG-123 W8a brain sample: drawn once by tools/draw-brain-qa-sample.mjs, checked by tools/check-mesh-assets.mjs.',
     'Every `sample` entry ships and must be pickable, returning `expect.name`. Every `withheldControls` entry',
     'is held under docs/asset-licensing.md 7.3 and must NOT be pickable; the page should say why.',
-    'white_matter ships nothing, so it is represented by withheld controls, not by sampled structures.',
+    'A category that ships fewer than 2 structures (white_matter ships 1) makes up the rest with withheld controls.',
   ],
   drawnFrom: { mesh: paths.id, structures: doc.structures.length, excluded: doc.excluded.length },
   seed: SAMPLE_RULES.seed,
@@ -46,4 +46,4 @@ const fixture = {
   withheldControls: r.withheldControls,
 };
 writeFileSync(SAMPLE_FIXTURE, `${JSON.stringify(fixture, null, 1)}\n`);
-console.log(`wrote ${rel(SAMPLE_FIXTURE)}: ${r.sample.length} sampled over ${r.shippable.length} categories, ${r.withheldControls.length} withheld control(s) for ${r.unshippable.join(', ')}`);
+console.log(`wrote ${rel(SAMPLE_FIXTURE)}: ${r.sample.length} sampled over ${r.shippable.length} categories, ${r.withheldControls.length} withheld control(s) for ${[...new Set(r.withheldControls.map((c) => c.category))].join(', ') || 'no category'}`);
