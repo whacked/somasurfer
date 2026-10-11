@@ -42,13 +42,7 @@ import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
 import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flags.js';
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
 import { curatedModel } from './viewer/corpus.js';
-import {
-  comparePapers,
-  comparisonLayers,
-  papersOverlapping,
-  researchModel,
-  revealPaper,
-} from './viewer/research.js';
+import { comparePapers, comparisonLayers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
 import { nameIndexFrames, selectAddress } from './viewer/select.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity } from './viewer/state.js';
 import {
