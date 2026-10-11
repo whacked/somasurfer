@@ -3,7 +3,13 @@
  * and every published error figure is what the committed files actually say.
  *
  *   node tools/check-mesh-assets.mjs            gate
- *   node tools/check-mesh-assets.mjs --report   print docs/brain-mesh-report.md
+ *   node tools/check-mesh-assets.mjs --report        print docs/brain-mesh-report.md
+ *   node tools/check-mesh-assets.mjs --body-report   print docs/body-mesh-report.md
+ *   node tools/check-mesh-assets.mjs --write-report  write both
+ *
+ * The body (DOG-128) is checked by tools/lib/body-mesh-gate.mjs, with the same
+ * per-structure checks (tools/lib/mesh-tier-checks.mjs) and its own
+ * registration to BD.
  *
  * Works from the committed files alone; it never needs brain.glb. "The source
  * manifest" here is the generated provenance file, filtered to the structures
@@ -32,18 +38,15 @@
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { REPO_ROOT, fail, pass } from './lib/repo.mjs';
-import { readMeshBin, structureGeometry } from './lib/meshbin.mjs';
-import { bounds, degenerateTriangles, surfaceArea, surfaceDeviation } from './lib/mesh-geometry.mjs';
+import { readMeshBin } from './lib/meshbin.mjs';
+import { checkStructures, checkTables } from './lib/mesh-tier-checks.mjs';
 import { GROUPS, verifyProvenance } from './lib/brain-provenance.mjs';
 import { BRAIN_MESH_BUILD, brainAssetPaths } from './lib/brain-asset-paths.mjs';
 import { HELD_OUT, LANDMARKS, MAX_OPEN_EDGE_SHARE, evaluate, meshGeometries, volumeCentroid } from './lib/brain-registration.mjs';
 import { checkSample } from './lib/brain-qa-sample.mjs';
+import { checkBodyMeshes } from './lib/body-mesh-gate.mjs';
 
 const GATE = 'mesh assets';
-const MIN_AXIS_SHARE = 0.5;
-const AREA_RATIO = [0.75, 1.25];
-/** structures.json rounds error figures to 3 decimals; allow that and nothing more. */
-const ERROR_TOLERANCE_MM = 0.0015;
 const REPORT_DOC = join(REPO_ROOT, 'docs', 'brain-mesh-report.md');
 
 const attribution = JSON.parse(readFileSync(join(REPO_ROOT, 'packages', 'atlas-assets', 'attribution.json'), 'utf8'));
@@ -94,66 +97,18 @@ for (const [tier, mesh] of [['low', low], ['full', full]]) {
     if (!rec) problems.push(`The ${tier} tier carries structure id ${t.id}, which the provenance manifest does not know.`);
     else if (rec.group !== GROUPS.cleared) problems.push(`The ${tier} tier carries ${rec.name.trim()} (id ${t.id}), which is held as ${rec.group}.`);
   }
-  if (ids.size !== mesh.table.length) problems.push(`The ${tier} tier lists a structure id more than once.`);
 }
-if (doc.structures.length !== low.table.length || doc.structures.length !== full.table.length) {
-  problems.push(`structures.json lists ${doc.structures.length} structures; the tiers hold ${low.table.length} (low) and ${full.table.length} (full).`);
-}
-doc.structures.forEach((s, slot) => {
-  if (s.slot !== slot || low.table[slot]?.id !== s.id || full.table[slot]?.id !== s.id) {
-    problems.push(`structures.json slot ${slot} (${s.name}) does not match the table slot in both mesh files.`);
-  }
-});
+problems.push(...checkTables({ doc, low, full }));
 if (doc.build?.floorTriangles !== BRAIN_MESH_BUILD.floorTriangles || doc.build?.ratio !== BRAIN_MESH_BUILD.ratio) {
   problems.push(`structures.json was built with ${JSON.stringify(doc.build)}, not ${JSON.stringify(BRAIN_MESH_BUILD)}.`);
 }
 if (problems.length > 0) fail(GATE, problems);
 
 // --- Per structure ----------------------------------------------------------
-const rows = [];
-for (const [slot, s] of doc.structures.entries()) {
-  const lg = structureGeometry(low, low.table[slot]);
-  const fg = structureGeometry(full, full.table[slot]);
-  const name = `${s.name} (id ${s.id})`;
-  const lowTris = lg.indices.length / 3;
-  const fullTris = fg.indices.length / 3;
-
-  for (const [tier, g] of [['low', lg], ['full', fg]]) {
-    const outOfRange = g.indices.some((i) => i >= g.positions.length / 3);
-    if (outOfRange) problems.push(`${name}: the ${tier} tier indexes a vertex outside its own range.`);
-    const deg = outOfRange ? 0 : degenerateTriangles(g.positions, g.indices);
-    if (deg > 0) problems.push(`${name}: ${deg} degenerate triangle(s) in the ${tier} tier.`);
-    if (g.indices.length === 0) problems.push(`${name}: the ${tier} tier has no triangles.`);
-  }
-  const required = Math.min(BRAIN_MESH_BUILD.floorTriangles, fullTris);
-  if (lowTris < required) {
-    problems.push(`${name}: ${lowTris} triangles in the low tier, under the floor of ${required}.`);
-  }
-  const lb = bounds(lg.positions);
-  const fb = bounds(fg.positions);
-  for (const [a, axis] of ['x', 'y', 'z'].entries()) {
-    if (fb.extent[a] > 0 && lb.extent[a] < MIN_AXIS_SHARE * fb.extent[a]) {
-      problems.push(`${name}: the low tier keeps ${(lb.extent[a] * 1000).toFixed(2)} mm of its ${(fb.extent[a] * 1000).toFixed(2)} mm ${axis} extent; it has collapsed toward a sliver.`);
-    }
-  }
-  const lowArea = surfaceArea(lg.positions, lg.indices) * 1e6;
-  const fullArea = surfaceArea(fg.positions, fg.indices) * 1e6;
-  const ratio = lowArea / fullArea;
-  if (!(ratio >= AREA_RATIO[0] && ratio <= AREA_RATIO[1])) {
-    problems.push(`${name}: low-tier area is ${ratio.toFixed(2)}x the full tier's, outside [${AREA_RATIO.join(', ')}]. Decimation does not do that to a surface; something moved vertices.`);
-  }
-
-  const dev = surfaceDeviation({ positions: lg.positions, indices: lg.indices }, { positions: fg.positions, indices: fg.indices });
-  const hausdorff = dev.hausdorff * 1000;
-  const mean = dev.meanSymmetric * 1000;
-  if (Math.abs(hausdorff - s.errorMm.hausdorff) > ERROR_TOLERANCE_MM || Math.abs(mean - s.errorMm.mean) > ERROR_TOLERANCE_MM) {
-    problems.push(`${name}: structures.json publishes Hausdorff ${s.errorMm.hausdorff} mm / mean ${s.errorMm.mean} mm; the files measure ${hausdorff.toFixed(3)} / ${mean.toFixed(3)} mm.`);
-  }
-  if (s.low.triangles !== lowTris || s.full.triangles !== fullTris) {
-    problems.push(`${name}: structures.json says ${s.low.triangles}/${s.full.triangles} triangles; the files hold ${lowTris}/${fullTris}.`);
-  }
-  rows.push({ s, lowTris, fullTris, hausdorff, mean, ratio, extentMm: Math.max(...fb.extent) * 1000 });
-}
+// tools/lib/mesh-tier-checks.mjs: the same checks the body is held to.
+const checked = checkStructures({ doc, low, full, floorTriangles: BRAIN_MESH_BUILD.floorTriangles, mmPerUnit: 1000 });
+problems.push(...checked.problems);
+const rows = checked.rows;
 
 // --- The registration: everything but the MNI centroids is re-derived ---------
 // The MNI side needs the CIT168 volume, which is not in the repository; its
@@ -276,6 +231,12 @@ const reportLines = [
 ];
 const reportText = `${reportLines.join('\n')}`;
 
+if (process.argv.includes('--body-report')) {
+  const { reportText: text, problems: bodyProblems } = checkBodyMeshes();
+  if (!text) fail(GATE, bodyProblems);
+  process.stdout.write(text);
+  process.exit(0);
+}
 if (process.argv.includes('--report')) {
   process.stdout.write(reportText);
   process.exit(0);
@@ -287,6 +248,10 @@ else if (readFileSync(REPORT_DOC, 'utf8') !== reportText) {
   problems.push('docs/brain-mesh-report.md is not what the committed mesh files measure. Regenerate it with `node tools/check-mesh-assets.mjs --write-report`.');
 }
 
+// --- The body (DOG-128): the same per-structure checks, plus its registration to BD
+const body = checkBodyMeshes({ writeReport: process.argv.includes('--write-report') });
+problems.push(...body.problems.map((p) => `body: ${p}`));
+
 if (problems.length > 0) fail(GATE, problems);
 
 pass(GATE, [
@@ -296,4 +261,5 @@ pass(GATE, [
   `Published error re-measured for all ${rows.length}: Hausdorff median ${fmt(pct(hs, 0.5))} mm, max ${fmt(Math.max(...hs))} mm.`,
   `Registration re-derived: held-out ${reg.summary.heldOut.maxMm} mm; QA sample ${sample.sample.length} structures,`
     + ` ${sample.withheldControls.length} withheld control(s), every rule met.`,
+  ...body.pass,
 ]);

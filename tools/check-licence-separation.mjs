@@ -62,6 +62,14 @@
  *      whether those recorded inputs, or the geometry, really are the glb's:
  *      this checks what a structure is labelled, not what it is.
  *
+ *      Body files (DOG-128) are checked the same way, against the body's own
+ *      structures.json: every structure an ATLM body file contains must be
+ *      listed there, with the sources the entry cites, and an element the body
+ *      excludes (the brain) must not ride along under its own id. The body has
+ *      one source, BodyParts3D, and its manifest is the build's grouping of
+ *      the archive's own element headers; the source is not in the repository,
+ *      so that grouping is checked for consistency, not re-derived.
+ *
  * CI tooling under tools/ is deliberately out of scope: validating assets is
  * exactly what a CI gate is for, and tools/ is not published or linked into
  * any code package. Rules 2, 3 and 6 are about the shipped artefact.
@@ -400,6 +408,26 @@ let ncEntryCount = 0;
 let citingEntryCount = 0;
 let brainFileCount = 0;
 let brainSlotCount = 0;
+let bodyFileCount = 0;
+let bodySlotCount = 0;
+
+/**
+ * A body structures.json as rule 10's provenance: its structures are what may
+ * ship, and every concept it excluded is held under its own FMA id, so a body
+ * file that carries one is caught even though structures.json does not list it.
+ */
+function bodyProvenance(structuresDoc) {
+  const provenance = new Map();
+  for (const e of structuresDoc.excluded ?? []) {
+    if (typeof e.fma === 'string') {
+      provenance.set(Number(e.fma.replace(/^FMA/, '')), { name: e.name ?? e.fma, group: 'excluded-from-body', heldBecause: [e.reason], sources: [] });
+    }
+  }
+  for (const s of structuresDoc.structures ?? []) {
+    provenance.set(s.id, { name: s.name, group: GROUPS.cleared, sources: Array.isArray(s.sources) ? s.sources : [] });
+  }
+  return provenance;
+}
 
 /**
  * The brain structure ids a file contains, read from the file itself, and the
@@ -427,9 +455,15 @@ function brainStructuresIn(abs) {
     } catch {
       return null;
     }
+    if (structuresDoc?.schema === 'atlas-body-structures/1') {
+      return { kind: 'body', ids: structuresDoc.structures.map((s) => s.id), provenance: bodyProvenance(structuresDoc) };
+    }
     if (structuresDoc?.schema !== 'atlas-brain-structures/1') return null;
     ids = structuresDoc.structures.map((s) => s.id);
   } else return null;
+  if (structuresDoc?.schema === 'atlas-body-structures/1') {
+    return { kind: 'body', ids, provenance: bodyProvenance(structuresDoc) };
+  }
 
   const commit = structuresDoc?.source?.commit;
   if (typeof commit !== 'string') return { error: 'names no source commit, so its provenance cannot be found.' };
@@ -645,14 +679,16 @@ for (const a of assets) {
       if (!existsSync(abs)) continue;
       const contained = brainStructuresIn(abs);
       if (contained === null) continue;
-      brainFileCount += 1;
+      if (contained.kind === 'body') bodyFileCount += 1;
+      else brainFileCount += 1;
       if (contained.error) {
-        problems.push(`${rel(abs)}: ${contained.error}`, `  A brain file whose contents cannot be checked against provenance is not shipped on trust.`);
+        problems.push(`${rel(abs)}: ${contained.error}`, `  A mesh file whose contents cannot be checked against provenance is not shipped on trust.`);
         continue;
       }
       const cited = new Set(Array.isArray(e.sources) ? e.sources : []);
       for (const id of contained.ids) {
-        brainSlotCount += 1;
+        if (contained.kind === 'body') bodySlotCount += 1;
+        else brainSlotCount += 1;
         const rec = contained.provenance.get(id);
         if (!rec) {
           problems.push(`${rel(abs)}: holds structure id ${id}, which the provenance manifest does not list.`);
@@ -675,7 +711,8 @@ for (const a of assets) {
   }
 }
 report.push(
-  `rule 10: ${brainFileCount} brain file(s), ${brainSlotCount} structure slot(s), each checked against the generated provenance manifest.`,
+  `rule 10: ${brainFileCount} brain file(s), ${brainSlotCount} structure slot(s), each checked against the generated provenance manifest;`
+    + ` ${bodyFileCount} body file(s), ${bodySlotCount} structure slot(s), each checked against the body's structures.json.`,
 );
 report.push(
   `${ncEntryCount} asset-nc entr${ncEntryCount === 1 ? 'y' : 'ies'}, none reachable in a default build;` +

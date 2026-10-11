@@ -243,9 +243,16 @@ const allAssetFiles = filesUnder(
  * next set over). Taking it off the low-resolution line would put it on no line
  * at all. So a set may only declare files in its own directory, and every lazy
  * file must land on a line that counts it.
+ *
+ * The body (DOG-128) is a mesh set like the brain, with its own share of the
+ * low-resolution line and its own lazy line, so both kinds of set are read
+ * here, and a lazy file must sit under the directory whose lines count it.
  */
 const BRAIN_ASSETS = join(DIST, 'assets', 'brain');
+const BODY_ASSETS = join(DIST, 'assets', 'body');
 const inBrain = (p) => p.startsWith(`${BRAIN_ASSETS}/`);
+const inBody = (p) => p.startsWith(`${BODY_ASSETS}/`);
+const MESH_SET_SCHEMAS = ['atlas-brain-structures/1', 'atlas-body-structures/1'];
 function lazyAssetFiles() {
   const out = new Set();
   const wrong = [];
@@ -256,12 +263,12 @@ function lazyAssetFiles() {
     } catch {
       continue;
     }
-    if (doc?.schema !== 'atlas-brain-structures/1') continue;
+    if (!MESH_SET_SCHEMAS.includes(doc?.schema)) continue;
     for (const [name, tier] of Object.entries(doc.tiers ?? {})) {
       if (tier.loading !== 'lazy') continue;
       const file = join(DIST, 'assets', String(tier.file));
       if (dirname(file) !== dirname(p)) wrong.push(`  ${rel(p)} declares tiers.${name} ${tier.file} lazy; a set may only declare files beside its own structures.json.`);
-      else if (!inBrain(file)) wrong.push(`  ${rel(p)} declares ${tier.file} lazy, and no byte line counts a lazy file outside dist/assets/brain/.`);
+      else if (!inBrain(file) && !inBody(file)) wrong.push(`  ${rel(p)} declares ${tier.file} lazy, and no byte line counts a lazy file outside dist/assets/brain/ or dist/assets/body/.`);
       else out.add(file);
     }
   }
@@ -274,6 +281,8 @@ const lazyAssets = lazyAssetFiles();
 const assetFiles = allAssetFiles.filter((p) => !lazyAssets.has(p));
 const lowResBrainFiles = assetFiles.filter(inBrain);
 const fullResBrainFiles = [...lazyAssets].filter(inBrain);
+const lowResBodyFiles = assetFiles.filter(inBody);
+const fullResBodyFiles = [...lazyAssets].filter(inBody);
 const missingLazy = [...lazyAssets].filter((p) => !existsSync(p));
 if (missingLazy.length > 0) {
   fail('performance budget', [
@@ -434,6 +443,8 @@ const indexGzip = gzipBytes(indexFiles);
 const assetGzip = gzipBytes(assetFiles);
 const lowResBrainGzip = gzipBytes(lowResBrainFiles);
 const fullResBrainGzip = gzipBytes(fullResBrainFiles);
+const lowResBodyGzip = gzipBytes(lowResBodyFiles);
+const fullResBodyGzip = gzipBytes(fullResBodyFiles);
 
 /**
  * Every line, as a function of the factor the parse times are scaled by. Called
@@ -467,6 +478,10 @@ function linesScaledBy(parseFactor) {
     // Lazily fetched; not in derivedLowResAssetLoadMs, because nothing waits
     // for it before the brain can be seen.
     fullResBrainAssetGzipBytes: fullResBrainGzip,
+    // The body's share (DOG-128), on the same terms: inside the 2.5 MiB line,
+    // and its lazy tier on a line of its own.
+    lowResBodyAssetGzipBytes: lowResBodyGzip,
+    fullResBodyAssetGzipBytes: fullResBodyGzip,
     indexParseMsNormalised: indexParseNorm,
     nameIndexBuildMsNormalised: nameIndexNorm,
     // The same measurement over the cells it bound. The absolute line is what
@@ -504,6 +519,8 @@ const EXACT_LINES = new Set([
   'lowResAssetGzipBytes',
   'lowResBrainAssetGzipBytes',
   'fullResBrainAssetGzipBytes',
+  'lowResBodyAssetGzipBytes',
+  'fullResBodyAssetGzipBytes',
 ]);
 const CALIBRATED_LINES = new Set([
   'indexParseMsNormalised',
@@ -811,7 +828,8 @@ const detail = [
           + ` term. Not gated: one cold sample is too noisy for a limit.`,
       ]),
   `files: ${bundleFiles.length} bundle, ${indexFiles.length} index (${nameIndexPaths.length} of them the name index), ${assetFiles.length} asset`
-    + ` (${lowResBrainFiles.length} of them the low-resolution brain), ${lazyAssets.size} fetched lazily (${fullResBrainFiles.length} brain, full resolution)`,
+    + ` (${lowResBrainFiles.length} of them the low-resolution brain, ${lowResBodyFiles.length} the low-resolution body),`
+    + ` ${lazyAssets.size} fetched lazily (${fullResBrainFiles.length} brain, ${fullResBodyFiles.length} body, full resolution)`,
   ...(calibrationOverrideMs !== null
     ? [
         ``,
