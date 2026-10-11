@@ -40,6 +40,15 @@ jobs:
       - uses: actions/configure-pages@v5
         id: pages
 
+      # The site bundles the compiled alc and atlas-research packages, which are
+      # not committed. CI only has them because each package's bundle test runs
+      # its builder; this job runs no tests, so it builds them itself. Each
+      # builder resolves paths from its own directory.
+      - name: Package bundles
+        run: |
+          (cd packages/alc && node scripts/build.mjs)
+          (cd packages/atlas-research && node scripts/build.mjs)
+
       # Pages serves a project site from /<repo>/, so the base path has to come
       # from the Pages config rather than being assumed to be /. Every URL the
       # build emits is relative to it.
