@@ -68,6 +68,11 @@ export type Vec3 = readonly [number, number, number];
  *                                      realises. Reserved space is not anatomy
  *   rejected_* / anything else         a rejection happens before geometry and
  *                                      changes nothing else on the page
+ *   cross_atlas_offer / no_template    the address resolved and lives in the
+ *                                      other atlas, versus no template in this
+ *                                      build realises it. One is a route
+ *                                      forward, the other is an incomplete
+ *                                      build, and the user can act on only one
  */
 export const MESSAGE_CODES = [
   // Resolution notices — the address resolved, with a caveat.
@@ -84,8 +89,39 @@ export const MESSAGE_CODES = [
   'rejected_too_long',
   'no_template',
   'frame_disabled',
-  // Offers that must accompany the two refusals that have a fallback.
+  // The fallback slot on the two refusals that are allowed to have one.
+  //
+  // TWO codes, not one, and that is the fix for an authoring error this set had
+  // until DOG-70. `frame_disabled` and `no_template` must both say what can be
+  // done instead — plan §4 and §6 — and there are two honest answers:
+  //
+  //   coarsest_ancestor_offered  a coarser ancestor CAN be placed, and is on
+  //                              offer as a route forward
+  //   no_ancestor_resolvable     none can, and the refusal says so explicitly
+  //                              rather than silently omitting the control
+  //
+  // One code for both states cannot tell the difference between a build that
+  // offered the ancestor and a build that declared there is none — and worse,
+  // asserting the one code where no ancestor exists demands an offer the
+  // library cannot produce. Template availability is a property of the FRAME
+  // (`locate()` raises both codes before it looks at a cell) and `ancestors()`
+  // never leaves the frame, so for a `BR` address or a frame whose template is
+  // missing, every rung fails identically and `null` is the correct answer.
+  // See `matrix.ts`'s coarsest-ancestor rows for the measurement.
   'coarsest_ancestor_offered',
+  'no_ancestor_resolvable',
+  /**
+   * The address resolved, and it lives in the other atlas.
+   *
+   * Not a refusal: the selection stands and its names stand. It is the other
+   * half of `docs/deep-link-atlas-rule.md` rule 3 — a URL never switches atlas,
+   * so the one thing that makes that bearable is that the view says where the
+   * address lives and offers the move. The shell has rendered the sentence and
+   * the button from `selection.elsewhere` all along; without a code for it the
+   * only observation of the offer is a DOM node, and there is no browser in
+   * this runner, so the offer would be permanently unverified.
+   */
+  'cross_atlas_offer',
   // Asset and data state.
   'assets_unavailable',
   'region_level_only',

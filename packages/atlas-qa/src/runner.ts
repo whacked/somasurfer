@@ -213,6 +213,17 @@ async function evaluateRow(
       `selected address: expected ${JSON.stringify(e.selectionAddress)}, got ${JSON.stringify(state.selection.address)}`,
     );
   }
+  if (e.selectionAddressAnyOf !== undefined) {
+    // "Either answer is correct, anything else is not" — see the field's note
+    // in `matrix.ts`. Weaker than `selectionAddress` on purpose, and still an
+    // assertion: going silent on the facet would let a refusal select
+    // somewhere the user never asked about.
+    must(
+      e.selectionAddressAnyOf.includes(state.selection.address),
+      `selected address: expected one of ${JSON.stringify(e.selectionAddressAnyOf)}, got `
+      + JSON.stringify(state.selection.address),
+    );
+  }
   if (e.assetsAvailable !== undefined) {
     must(
       state.assetsAvailable === e.assetsAvailable,

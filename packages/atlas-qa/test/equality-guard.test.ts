@@ -106,6 +106,16 @@ const REVIEWED: ReadonlyArray<{ file: string; code: string; reason: string }> = 
       + 'the matrix\'s own pinned literal and the build\'s echo of it, within a single template.',
   },
   {
+    file: 'src/runner.ts',
+    code: 'e.selectionAddressAnyOf.includes(state.selection.address),',
+    reason:
+      'The membership form of the two entries above, and the same argument: the candidates are the '
+      + 'row\'s own pinned literals (null, or the exact address the row asked for) and the operand is '
+      + 'the build\'s echo of one of them, in a single template. Covering overlap would be the WRONG '
+      + 'instrument here — an overlapping-but-different selection would satisfy it while meaning the '
+      + 'refusal landed somewhere the user never asked about, which is precisely what this row checks.',
+  },
+  {
     file: 'src/matrix.ts',
     code: 'row.expect.urlAddress !== undefined,',
     reason:

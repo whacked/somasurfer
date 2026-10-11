@@ -3,7 +3,7 @@
  *
  * A harness nobody has watched fail is decoration. The repo already works this
  * way — `tools/verify-gates.mjs` breaks each CI gate on purpose and requires it
- * to be caught — and this is the same argument applied to §7: thirteen builds,
+ * to be caught — and this is the same argument applied to §7: sixteen builds,
  * each breaking exactly ONE guarantee, each declaring which case is supposed to
  * notice.
  *
@@ -132,6 +132,59 @@ export const MUTANTS: readonly Mutant[] = [
           // a control.
           this.atlas = 'brain';
           return super.state();
+        }
+      })(o)),
+  },
+  {
+    id: 'link-switches-atlas',
+    breaks:
+      'a URL carrying an address from the other atlas switches to it instead of selecting where it stands',
+    // Both rows of the class notice, and they notice different halves: the
+    // no-parameter row because the atlas moved at all, the explicit-atlas row
+    // because a parameter that was written down lost to an inference.
+    caughtBy: ['brain-deep-link-resolves', 'cross-atlas-link-honours-the-explicit-atlas'],
+    caughtAs: 'fail',
+    exercises: ['cross-atlas-link'],
+    build: mutantOf('link-switches-atlas', (o) =>
+      new (class extends ReferenceViewer {
+        protected applyAddress(input: string, options: { fromUrl?: boolean } = {}): void {
+          // The rule DOG-72 rejected, restored exactly: arriving by URL with a
+          // brain address is treated as the explicit act of entering the brain
+          // atlas. Not a strawman — it is what this file did until the
+          // decision, and `docs/deep-link-atlas-rule.md` is the argument it
+          // lost. That is the point of having it here: the mutant worth keeping
+          // caught is the plausible alternative, not an absurdity.
+          //
+          // `BV` only. A `BR` address is refused for its frame before anything
+          // is applied, so switching there would break the "a refusal changes
+          // nothing" guarantee as well — two defects in one build, and then
+          // neither row's failure is attributable to this mutation.
+          if (options.fromUrl && input.trim().toUpperCase().startsWith('BV-')) {
+            this.atlas = 'brain';
+          }
+          super.applyAddress(input, options);
+        }
+      })(o)),
+  },
+  {
+    id: 'cross-atlas-offer-is-withheld',
+    breaks: 'an address belonging to the other atlas selects silently, with no offer and no route forward',
+    // The quieter half of the same rule, and the likelier one to ship: nothing
+    // switches, nothing is drawn, and the user is never told why. Without this
+    // mutant the offer is only asserted by rows that would still pass on the
+    // atlas and the cell alone, which is how the shell's one remaining job
+    // under rule 3 would go unmeasured.
+    caughtBy: ['brain-deep-link-resolves', 'cross-atlas-link-honours-the-explicit-atlas'],
+    caughtAs: 'fail',
+    exercises: ['cross-atlas-link'],
+    build: mutantOf('cross-atlas-offer-is-withheld', (o) =>
+      new (class extends ReferenceViewer {
+        async state(): Promise<ViewState> {
+          const s = await super.state();
+          return Object.freeze({
+            ...s,
+            messages: Object.freeze(s.messages.filter((m) => m.code !== 'cross_atlas_offer')),
+          }) as unknown as ViewState;
         }
       })(o)),
   },
@@ -324,6 +377,48 @@ export const MUTANTS: readonly Mutant[] = [
       })(o)),
   },
   {
+    id: 'ancestor-offer-fabricated-by-truncation',
+    breaks:
+      'the coarsest-ancestor offer is computed by truncating the address instead of by checking what '
+      + 'resolves, so a refused BR address is answered with a coarser BR address that refuses too',
+    // The deep BR row is the one that can see this: `br-frame-disabled` uses
+    // `BR-L-1`, which has no ancestors at all, so there is nothing to truncate
+    // and a string-truncating build looks correct there. That asymmetry is why
+    // the deep row exists (DOG-70).
+    caughtBy: ['br-offer-is-not-fabricated-by-truncation'],
+    caughtAs: 'fail',
+    exercises: ['coarsest-ancestor', 'frame-disabled'],
+    build: mutantOf('ancestor-offer-fabricated-by-truncation', (o) =>
+      new (class extends ReferenceViewer {
+        async state(): Promise<ViewState> {
+          const s = await super.state();
+          const dead = s.messages.find((m) => m.code === 'no_ancestor_resolvable');
+          if (!dead) return s;
+          // One mutation: the honest "nothing resolves" becomes an offer of the
+          // address one rung coarser, which is what dropping the resolvability
+          // check leaves behind.
+          // The address as the URL still shows it — a refused deep link leaves
+          // it there — minus its last refinement digit.
+          const asked = new URL(s.url, 'https://qa.invalid').searchParams.get('a');
+          const truncated = asked ? asked.replace(/[0-7]$/, '') : null;
+          return Object.freeze({
+            ...s,
+            messages: Object.freeze(
+              s.messages.map((m) =>
+                m.code === 'no_ancestor_resolvable'
+                  ? {
+                    code: 'coarsest_ancestor_offered' as const,
+                    severity: m.severity,
+                    text: `The coarsest address that does resolve here is ${truncated ?? 'a coarser cell'}; open that instead.`,
+                  }
+                  : m,
+              ),
+            ),
+          }) as ViewState;
+        }
+      })(o)),
+  },
+  {
     id: 'silently-skips-a-must-pass-case',
     breaks:
       'the build declines a capability a must-pass row needs, so the row does not run — nothing errors, '
@@ -389,13 +484,6 @@ export const UNMUTATED_CLASSES: ReadonlyArray<{ cls: CaseClass; reason: string }
       'rejection happens in `parse()` before the viewer sees anything, so the only UI-level mutation is '
       + 'to resolve anyway — which is `deep-link-drops-the-digits` in a less honest form. The row still '
       + 'runs and still asserts; it just has no single-point mutation of its own.',
-  },
-  {
-    cls: 'frame-disabled',
-    reason:
-      'the refusal and the ancestor offer both come from one branch that `no-template` also exercises, '
-      + 'and `silently-skips-a-must-pass-case` is pointed at `no-template` precisely because the pair '
-      + 'shares that branch.',
   },
   {
     cls: 'no-template',

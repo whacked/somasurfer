@@ -49,10 +49,11 @@ import {
   type ViewerDriver,
 } from './contract.ts';
 import {
+  anatomyIndexInput,
   coveringOfPaper,
-  nameIndexInput,
   papersForRegion,
   regionsOfPaper,
+  structureById,
   type ResearchFixture,
 } from './fixture.ts';
 
@@ -88,10 +89,33 @@ export interface JourneyPlan {
  * a result.
  */
 export function planJourney(fixture: ResearchFixture): JourneyPlan {
-  const bodyStructures = fixture.structures.filter((s) => s.atlas === 'body');
+  const allBody = fixture.structures.filter((s) => s.atlas === 'body');
   const brainStructures = fixture.structures.filter((s) => s.atlas === 'brain');
-  if (bodyStructures.length === 0) throw new Error(`fixture ${fixture.id} has no body structure`);
+  if (allBody.length === 0) throw new Error(`fixture ${fixture.id} has no body structure`);
   if (brainStructures.length === 0) throw new Error(`fixture ${fixture.id} has no brain structure`);
+
+  // Painted structures first: a structure with an EMPTY covering is named here
+  // and painted elsewhere, so there is no address to select and no cell to
+  // draw, and choosing one as the selection target would report the fixture's
+  // own gap as a product defect. Falls back to the full list rather than
+  // throwing, so the plan still names the target it would have used and the
+  // step reports `unverified` through the fixture requirement — a missing plan
+  // takes every other step down with it.
+  const paintedBody = allBody.filter((s) => s.cells.length > 0);
+
+  // And within those, a structure the BOUND ANATOMICAL INDEX names, because
+  // that is the index the build resolves selections against. On the integrated
+  // ref the research list also carries placeholder body structures with
+  // hand-assigned anchors — `ATLAS-LABEL:coronary-artery` and five others —
+  // which the real 57-structure index has never heard of. Clicking one would
+  // report the harness's choice of target as a build that cannot select, which
+  // is a false red of exactly the kind this file keeps choosing targets to
+  // avoid.
+  const named = fixture.anatomy ? new Set(fixture.anatomy.structures.map((s) => s.id)) : null;
+  const selectable = named === null ? paintedBody : paintedBody.filter((s) => named.has(s.id));
+  const bodyStructures = selectable.length >= 2
+    ? selectable
+    : paintedBody.length > 0 ? paintedBody : allBody;
 
   // The body atlas's brain, if the fixture names one; otherwise any other body
   // structure, so the cross-atlas step still has a source to act from.
@@ -194,6 +218,31 @@ class Checks {
       );
     }
   }
+}
+
+/**
+ * The planned structure, or `unverified` naming it when it cannot be clicked.
+ *
+ * A structure with an empty covering is admissible in the fixture and is still
+ * not a usable selection target: there is no address to put in the URL and no
+ * cell to draw at its extent. Asserting against it would report a gap in the
+ * index as a defect in the build, and skipping it silently would report a pass
+ * for a selection that never happened. Naming the structure is what makes the
+ * third answer actionable — the reader can go and look at that row of the
+ * index.
+ */
+function clickableStructure(fixture: ResearchFixture, structureId: string, what: string): void {
+  const s = structureById(fixture, structureId);
+  if (s.cells.length > 0) return;
+  unverifiable(
+    `${what} needs a structure with a covering and ${s.id} ("${s.name}") has an EMPTY one — it is named `
+    + `in ${fixture.oracle.researchNames} and painted by no index bound here`
+    + `${fixture.oracle.anatomyIndex === null
+      ? ', because no real anatomical index is in this tree'
+      : `; ${fixture.oracle.anatomyIndex} does not carry it`}`
+    + '. There is no address to select and no cell to draw, so the question cannot be put to the build. '
+    + 'That is not the same as the build getting it wrong.',
+  );
 }
 
 /** Every highlight must name a paper and a finding that exist in the fixture. */
@@ -315,6 +364,7 @@ export const JOURNEY: readonly JourneyStep[] = [
       + 'the previous step is untouched.',
     async run(ctx) {
       const c = new Checks();
+      clickableStructure(ctx.fixture, ctx.plan.bodyStructureId, 'selecting a body structure');
       const before = await ctx.driver.state();
       const s = await ctx.driver.clickStructure(ctx.plan.bodyStructureId);
 
@@ -348,7 +398,9 @@ export const JOURNEY: readonly JourneyStep[] = [
         // second copy of the expectation: the UI's ranking is only right if it
         // agrees with what the name index actually says.
         if (s.selection.address) {
-          const index = buildNameIndex(nameIndexInput(ctx.fixture));
+          // The ANATOMICAL index — the one the page binds — and not the research
+          // dataset's structure list. See `anatomyIndexInput`.
+          const index = buildNameIndex(anatomyIndexInput(ctx.fixture));
           const expected = resolve(s.selection.address, index);
           c.setEqual(
             names.map((n) => n.structureId),
@@ -432,6 +484,7 @@ export const JOURNEY: readonly JourneyStep[] = [
       + 'the second half alone.',
     async run(ctx) {
       const c = new Checks();
+      clickableStructure(ctx.fixture, ctx.plan.bodyBrainStructureId, 'selecting the body atlas\'s brain');
       const selected = await ctx.driver.clickStructure(ctx.plan.bodyBrainStructureId);
       c.equal(
         selected.atlas,

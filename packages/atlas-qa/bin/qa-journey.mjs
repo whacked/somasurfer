@@ -30,7 +30,7 @@ import { writeFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import { runSuite, formatReport, exitCodeFor } from '../src/runner.ts';
 import { referenceViewer } from '../src/referenceViewer.ts';
-import { resolveFixture, provenanceGaps } from '../src/fixture.ts';
+import { tryResolveFixture, provenanceGaps, oracleNotes } from '../src/fixture.ts';
 import { MUTANTS } from '../src/mutants.ts';
 
 const argv = process.argv.slice(2);
@@ -53,7 +53,7 @@ if (flag('help')) {
       '                       build is that nothing is allowed to be skipped.',
       '  --own-fixture        Use the harness fixture even if a curated one exists.',
       '  --json <path>        Write the full report as JSON.',
-      '  --negative-control   Run the thirteen broken builds and report whether each',
+      '  --negative-control   Run the fourteen broken builds and report whether each',
       '                       was caught by the case that declares it owns it.',
       '',
       'Exit: 0 product pass, 1 failure, 2 could not measure.',
@@ -62,7 +62,27 @@ if (flag('help')) {
   process.exit(0);
 }
 
-const fixture = resolveFixture({ preferOwn: flag('own-fixture') });
+// A fixture this harness cannot read is UNVERIFIED, and exits 2.
+//
+// Not 1. Exit 1 is a claim about the product or about the harness's own
+// consistency, and "I could not load the input" is neither — it is the absence
+// of a measurement, which is what the third code is for. This used to throw out
+// of module scope: exit 1, no report, no rows, a stack trace where a verdict
+// belongs. Forty rows that had nothing to do with the fixture went down with it.
+//
+// `--strict` does NOT turn this into a failure. Strict means "a must-pass case
+// the BUILD could not answer fails"; nothing was put to the build here.
+const resolved = tryResolveFixture({ preferOwn: flag('own-fixture') });
+if (resolved.fixture === null) {
+  console.error('§7 UNVERIFIED — the fixture could not be loaded, so nothing was measured.\n');
+  for (const why of resolved.why) console.error(`  ${why}`);
+  console.error(
+    '\n  Exit 2: could not measure. This is not a pass and it is not a failure of the build.\n'
+    + '  Fix the fixture, or run --own-fixture to measure against the harness\'s own and say so in the report.',
+  );
+  process.exit(2);
+}
+const fixture = resolved.fixture;
 
 // ---------------------------------------------------------------------------
 // The negative control
@@ -126,6 +146,9 @@ if (buildPath && buildPath !== 'reference') {
 const report = await runSuite(driver, { strict: flag('strict'), fixture });
 
 console.log(formatReport(report));
+
+console.log('\n  which index answered:');
+for (const note of oracleNotes(fixture)) console.log(`    · ${note}`);
 
 const gaps = provenanceGaps(fixture);
 if (gaps.length > 0) {

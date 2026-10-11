@@ -67,8 +67,8 @@ import { CAPABILITIES } from './contract.ts';
 import { QA_URL_PARAMS, type TemplateChoice } from './matrix.ts';
 import { templateSet } from './templates.ts';
 import {
+  anatomyIndexInput,
   coveringOfPaper,
-  nameIndexInput,
   papersForRegion,
   resolveFixture,
   type ResearchFixture,
@@ -134,10 +134,12 @@ function truncateDigits(address: string, digits: number): string {
  *
  * DECISION: where nothing in the address's own frame resolves — a `BR` address
  * with the frame disabled, or any address when its template is missing — the
- * refusal still has to offer a route forward, so the message names the enabled
- * frame to use instead and says plainly that no ancestor resolves. A dead end
- * with an apology is what plan §4 is trying to avoid; the offer degenerating to
- * "nothing here resolves, try BV" is still a route.
+ * refusal still has to answer the question, so it says plainly that no ancestor
+ * resolves and names the enabled frame to use instead. A dead end with an
+ * apology is what plan §4 is trying to avoid; "nothing here resolves, try BV"
+ * is still an answer. What it is NOT is an offer, and since DOG-70 it no longer
+ * claims to be one: `null` here produces `no_ancestor_resolvable`, and only a
+ * non-null result produces `coarsest_ancestor_offered`.
  */
 function coarsestResolvableAncestor(address: string, templates: TemplateChoice): string | null {
   let chain: string[];
@@ -193,7 +195,13 @@ export class ReferenceViewer implements ViewerDriver {
 
   constructor(options: ReferenceViewerOptions = {}) {
     this.fixture = options.fixture ?? resolveFixture();
-    this.index = buildNameIndex(nameIndexInput(this.fixture));
+    // The anatomical index the page binds, when the tree has one — the same
+    // index the journey's ranked-name assertions resolve against. The two must
+    // be the same document or the control disagrees with its own oracle and the
+    // negative control stops being evidence of anything. With no real index
+    // present (`anatomy: null`, which is every fixture the self-tests use) this
+    // is the fixture's own list, exactly as before.
+    this.index = buildNameIndex(anatomyIndexInput(this.fixture));
     this.buildId = options.buildId ?? `reference@${this.fixture.id}`;
     this.withheld = new Set(options.withhold ?? []);
   }
@@ -257,7 +265,14 @@ export class ReferenceViewer implements ViewerDriver {
 
     this.views = { body: freshView('body'), brain: freshView('brain') };
     this.stashedBodyView = null;
-    this.atlas = 'body';
+    // Rule 1 of `docs/deep-link-atlas-rule.md`: the `atlas` parameter decides
+    // the atlas, and an unknown or absent value means the default. Until DOG-72
+    // this was not read at all — the atlas was inferred from the address's
+    // frame instead, so a link naming its atlas and a link merely implying one
+    // were indistinguishable here, and the round trip plan §7 requires was
+    // covered only through the in-app `openBrainAtlas()` path.
+    const asked = params.get('atlas');
+    this.atlas = asked === 'brain' || asked === 'body' ? asked : 'body';
     this.acceptedAddress = null;
     this.filter = null;
     this.selectedPapers = [];
@@ -285,12 +300,19 @@ export class ReferenceViewer implements ViewerDriver {
   /**
    * Resolve an address into the current view.
    *
-   * DECISION: a BV address deep-linked from the URL enters the brain atlas
-   * directly. That is not the automatic navigation DOG-1 §2 forbids — the user
-   * named the brain cell in the address, so arriving in the brain atlas is what
-   * they asked for. Selection inside an atlas still never navigates.
+   * DECIDED, DOG-72, `docs/deep-link-atlas-rule.md`: **nothing here switches the
+   * atlas.** The `atlas` parameter decides it and nothing else does, so an
+   * address belonging to the other atlas — out of a URL or off the clipboard,
+   * the same either way — is selected where we stand and reported with
+   * `cross_atlas_offer`. This method used to send a `fromUrl` BV address
+   * straight to the brain atlas; the argument for that is in the decision
+   * record, as is the reason it lost.
+   *
+   * `fromUrl` is kept because `reject()` has no business knowing it either way
+   * and the callers read better for saying where the address came from.
    */
   protected applyAddress(input: string, options: { fromUrl?: boolean } = {}): void {
+    void options;
     let parsed;
     try {
       parsed = parse(input);
@@ -299,14 +321,12 @@ export class ReferenceViewer implements ViewerDriver {
       return;
     }
 
-    // Resolve BEFORE switching atlas. Switching first and then discovering the
-    // address does not resolve leaves the user in the brain atlas looking at an
-    // error about an address that was never shown — and it made the
-    // `no_template` row report that the camera and layers had changed, which
-    // they had, for no reason the user asked for.
+    // Resolve BEFORE anything is applied. Applying first and then discovering
+    // the address does not resolve leaves the user looking at an error about an
+    // address that was never shown — and it made the `no_template` row report
+    // that the camera and layers had changed, which they had, for no reason the
+    // user asked for.
     const templates = templateSet(this.template);
-    const targetAtlas: 'body' | 'brain' =
-      parsed.frame === 'BV' && options.fromUrl ? 'brain' : this.atlas;
 
     let located;
     try {
@@ -315,8 +335,19 @@ export class ReferenceViewer implements ViewerDriver {
       this.reject(error as AlcError, parsed.canonical);
       return;
     }
-    this.atlas = targetAtlas;
     const v = this.view();
+
+    /**
+     * The address resolved, and it lives in the other atlas.
+     *
+     * Rule 3: it still selects and still names itself; what does not happen is
+     * the drawing and the camera move, because this atlas holds no geometry
+     * that could contain it. Exactly the shape of the assets-unavailable case
+     * below, for the same reason — a resolved address with nothing to show for
+     * it — so it shares that guard rather than returning early.
+     */
+    const home: 'body' | 'brain' = parsed.frame === 'BD' ? 'body' : 'brain';
+    const elsewhere = home !== this.atlas;
 
     v.templateId = located.templateId;
     const flags = located.flags;
@@ -356,12 +387,22 @@ export class ReferenceViewer implements ViewerDriver {
     if (flags.folded) {
       v.messages.push({ code: 'folded', severity: 'notice', text: notes });
     }
+    if (elsewhere) {
+      v.messages.push({
+        code: 'cross_atlas_offer',
+        severity: 'notice',
+        text:
+          `This address belongs to the ${home} atlas. The view has not been changed — `
+          + `open the ${home} atlas to see it.`,
+      });
+    }
 
     // DECISION: with no geometry loaded there is nothing to draw and nothing to
     // fly to, so neither happens. The address still resolves and the names are
     // still shown — plan §6's last row — but presenting an empty viewport as a
-    // located result would claim more than the build can deliver.
-    if (this.assetsOk) {
+    // located result would claim more than the build can deliver. A cross-atlas
+    // address is the same situation reached a different way.
+    if (this.assetsOk && !elsewhere) {
       v.camera = {
         targetMm: [...displayed.pointMm] as unknown as Vec3,
         distanceMm: Math.max(50, Math.hypot(...displayed.extentMm) * 8),
@@ -405,14 +446,24 @@ export class ReferenceViewer implements ViewerDriver {
 
     if (messageCode === 'no_template' || messageCode === 'frame_disabled') {
       const ancestor = coarsestResolvableAncestor(input, this.template);
-      v.messages.push({
-        code: 'coarsest_ancestor_offered',
-        severity: 'notice',
-        text: ancestor
-          ? `The coarsest address that does resolve here is ${ancestor}; open that instead.`
-          : 'No ancestor of this address resolves in this build either. The enabled brain frame in v1 is '
-            + 'BV, the AC-PC proportional volume frame; address the location there.',
-      });
+      // Two states, two codes — see `contract.ts`. This used to push
+      // `coarsest_ancestor_offered` for both, with the degenerate case hidden
+      // in the prose, which made the stand-in claim an offer it had not made
+      // and let the matrix demand one where none can exist (DOG-70).
+      v.messages.push(ancestor
+        ? {
+          code: 'coarsest_ancestor_offered',
+          severity: 'notice',
+          text: `The coarsest address that does resolve here is ${ancestor}; open that instead.`,
+        }
+        : {
+          code: 'no_ancestor_resolvable',
+          severity: 'notice',
+          text:
+            'No ancestor of this address resolves in this build either, so there is nothing coarser to '
+            + 'offer. The enabled brain frame in v1 is BV, the AC-PC proportional volume frame; address '
+            + 'the location there.',
+        });
     }
     // A rejection changes nothing else: no camera move, no selection, no URL.
   }
