@@ -92,6 +92,81 @@ function withUnverified(line, unverified, limit = null) {
   return substitute(PERF_BUDGET, JSON.stringify(budget, null, 2) + '\n');
 }
 
+/** The performance gate's JSON report for this build, at a substituted calibration. */
+function perfReport(calibrationMs, extra = []) {
+  // TMPDIR is run-scoped and may already be gone, so make sure it exists.
+  mkdirSync(tmpdir(), { recursive: true });
+  const dir = mkdtempSync(join(tmpdir(), 'perf-reading-'));
+  const path = join(dir, 'perf.json');
+  try {
+    const result = run('perf-budget.mjs', ['--calibration-ms', String(calibrationMs), ...extra, '--json', path]);
+    if (!existsSync(path)) throw new Error(`perf-budget wrote no report: ${result.stderr || result.stdout}`);
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+/** The same, for a build somewhere other than packages/atlas-web/dist. */
+const perfReportAt = (dist) => perfReport(120, ['--dist', rel(dist)]);
+
+/**
+ * What actions/configure-pages hands the Deploy job for this repository, without
+ * a trailing slash, exactly as the job passes it to the build.
+ */
+const PAGES_BASE = '/somasurfer';
+const BASE_BUILD = join(WEB, '.gate-verify-base');
+const BASE_BUILD_DIST = join(BASE_BUILD, 'dist');
+
+/**
+ * Build the site again at the Pages base, beside the CI build rather than over
+ * it, returning a restore function. `dist/` is gitignored at any depth, so the
+ * copy never shows up as an untracked file.
+ */
+function buildAtPagesBase() {
+  const out = spawnSync(
+    process.execPath,
+    [join(WEB, 'build.mjs'), '--base', PAGES_BASE, '--out', '.gate-verify-base/dist'],
+    { cwd: REPO_ROOT, encoding: 'utf8', env: { ...process.env, NODE_OPTIONS: '' } },
+  );
+  const restore = () => rmSync(BASE_BUILD, { recursive: true, force: true });
+  if (out.status !== 0) {
+    restore();
+    throw new Error(`the build at ${PAGES_BASE} failed: ${out.stderr || out.stdout}`);
+  }
+  // A build that ignored --base would make both cases a second run at `/`.
+  const index = JSON.parse(readFileSync(join(BASE_BUILD_DIST, 'data', 'atlas-index.json'), 'utf8'));
+  if (!String(index.nameIndex?.namesPath).startsWith(`${PAGES_BASE}/`)) {
+    restore();
+    throw new Error(`the build at ${PAGES_BASE} emitted namesPath ${JSON.stringify(index.nameIndex?.namesPath)}`);
+  }
+  return restore;
+}
+
+/** The figure a line's verdict would be taken from on this runner, at that calibration. */
+function perfReading(report, line) {
+  const reading = report.verdicts[line]?.reported;
+  if (!(reading > 0)) throw new Error(`no positive reading for ${line} to stage a limit against`);
+  return reading;
+}
+
+/**
+ * Limits staged from the measurement, not from a literal (DOG-120).
+ *
+ * A breakage that sets a line to "1 ms" or "10 ms" is only a breakage on a
+ * runner whose reading sits above that literal. GitHub's runner read the raw
+ * index parse at 0.9 ms and the name index build at 9.5 ms, so both cases
+ * staged a limit the line was already under, and the gate rightly passed. These
+ * read the line on this runner first and stage a power of ten at least 10x away
+ * from the reading, which survives any run-to-run noise this gate has shown and
+ * still prints as a plain number the expectations can match exactly.
+ */
+const limitBelow = (reading) => 10 ** Math.floor(Math.log10(reading / 10));
+const limitAbove = (reading) => 10 ** Math.ceil(Math.log10(reading * 10));
+
+/** A staged limit as perf-budget prints it, escaped for a RegExp. */
+const shown = (limit) => String(Number(limit.toPrecision(2))).replace(/[.+-]/g, '\\$&');
+
 const run = (script, args = []) =>
   spawnSync(process.execPath, [join(REPO_ROOT, 'tools', script), ...args], {
     cwd: REPO_ROOT,
@@ -185,6 +260,9 @@ function standUpRealIndex({ omit = [], alsoName = [], strayFrom = null } = {}) {
     restoreNames();
   };
 }
+
+/** Limits a case staged from the measurement, read back by its expectations. */
+const staged = {};
 
 const CASES = [
   {
@@ -600,8 +678,8 @@ const CASES = [
     name: 'perf-fast-runner-still-gates-on-certainty',
     gate: 'performance budget',
     criterion: 'off-band parse lines are still gated where the unnormalised time alone proves it',
-    expect: [
-      /lowResAssetParseMsNormalised: at least \d+ ms on the reference machine, against a budget of 1 ms/,
+    expect: () => [
+      new RegExp(`lowResAssetParseMsNormalised: at least [\\d.]+ ms on the reference machine, against a budget of ${shown(staged.assetParse)} ms`),
       /over budget\s+here is over budget there/,
     ],
     describe: 'an asset parse budget the raw time busts, on a runner too fast to normalise',
@@ -609,10 +687,12 @@ const CASES = [
     // suppression. Unnormalised time on a runner faster than the reference is a
     // lower bound on what the reference pays, so a line over budget here is
     // over budget there whatever the correction would have been. Dropping the
-    // budget to 1 ms is how a regression past that bound is staged on demand.
+    // budget well under this runner's own reading is how a regression past that
+    // bound is staged on demand.
     break: () => {
       requireBuild();
-      return withBudgetLimit('lowResAssetParseMsNormalised', 1);
+      staged.assetParse = limitBelow(perfReading(perfReport(25), 'lowResAssetParseMsNormalised'));
+      return withBudgetLimit('lowResAssetParseMsNormalised', staged.assetParse);
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
   },
@@ -635,8 +715,10 @@ const CASES = [
     name: 'perf-unverified-declaration-is-load-bearing',
     gate: 'performance budget',
     criterion: 'a line with no declaration over it gates, and goes red',
-    expect: [/indexParseMsNormalised: at least [\d.]+ ms on the reference machine, against a budget of 1 ms/],
-    describe: 'the index parse line at a 1 ms budget, with no unverified declaration over it',
+    expect: () => [
+      new RegExp(`indexParseMsNormalised: at least [\\d.]+ ms on the reference machine, against a budget of ${shown(staged.indexParse)} ms`),
+    ],
+    describe: 'the index parse line at a budget 10x under its own reading, with no unverified declaration over it',
     // Half of what keeps `unverified` from being a suppression, and the half that
     // has to be CONSTRUCTED rather than inherited.
     //
@@ -658,9 +740,15 @@ const CASES = [
     // parse happened to land above it. It wandered between 38 ms and 66 ms on one
     // machine and the case passed and failed alternately. The claim asserted here
     // is the structural one, which is deterministic.
+    //
+    // 1 ms was not deterministic either, only on a slower machine than GitHub's:
+    // run 38122454231 read the raw parse at 0.9 ms, so the line was within its
+    // 1 ms budget and this breakage passed (DOG-120). The limit is now staged
+    // from this runner's own reading, an order of magnitude under it.
     break: () => {
       requireBuild();
-      return withBudgetLimit('indexParseMsNormalised', 1);
+      staged.indexParse = limitBelow(perfReading(perfReport(25), 'indexParseMsNormalised'));
+      return withBudgetLimit('indexParseMsNormalised', staged.indexParse);
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
   },
@@ -669,12 +757,12 @@ const CASES = [
     gate: 'performance budget',
     criterion: 'a declaration is what stops a line that would otherwise be red',
     mustPass: true,
-    expect: [
+    expect: () => [
+      new RegExp(`indexParseMsNormalised: (?:at least |at most )?[\\d.]+ ms.*against a budget of ${shown(staged.indexParseHeld)} ms.*NOT GATED\\.`),
       /UNVERIFIED, MEASURED BUT NOT GATED:/,
-      /indexParseMsNormalised: (?:at least |at most )?[\d.]+ ms.*against a budget of 1 ms.*NOT GATED\./,
       /A green result from this gate is not a statement about the line\(s\) above/,
     ],
-    describe: 'the same 1 ms budget as the case above, with an unverified declaration over it',
+    describe: 'the same staged budget as the case above, with an unverified declaration over it',
     // The other half of the constructed pair, and the direction that actually
     // carries the risk: a declaration has to be able to hold back a line that is
     // genuinely over, or `unverified` is decoration. Same line, same 1 ms limit,
@@ -684,8 +772,12 @@ const CASES = [
     //
     // It is `mustPass` because the gate is required NOT to fail here. That is the
     // whole claim: the declaration suppressed a red line and said so out loud.
+    // The limit is staged from the reading, as above, so the line under the
+    // declaration really is over; at a literal 1 ms on GitHub's runner it was not,
+    // and this case passed without the declaration holding anything back.
     break: () => {
       requireBuild();
+      staged.indexParseHeld = limitBelow(perfReading(perfReport(25), 'indexParseMsNormalised'));
       return withUnverified(
         'indexParseMsNormalised',
         {
@@ -693,7 +785,7 @@ const CASES = [
           reason: 'Staged by tools/verify-gates.mjs to prove a declaration can hold back a line that is over.',
           clearedBy: 'Nothing. This block exists only inside this gate case and is restored away after it.',
         },
-        1,
+        staged.indexParseHeld,
       );
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
@@ -882,8 +974,8 @@ const CASES = [
     name: 'perf-name-index-growth-is-not-a-regression',
     gate: 'performance budget',
     criterion: 'over on the absolute line while within per-cell says the remedy is a worker, not a bigger limit',
-    expect: [
-      /nameIndexBuildMsNormalised: [\d.]+ ms against a budget of 10 ms/,
+    expect: () => [
+      new RegExp(`nameIndexBuildMsNormalised: [\\d.]+ ms against a budget of ${shown(staged.nameIndexBuild)} ms`),
       /THIS IS NOT A REGRESSION, AND RAISING THE LINE IS THE WRONG FIX/,
       /so the cost of binding one/,
       /move the name index build off the critical path/,
@@ -901,14 +993,87 @@ const CASES = [
     // message keys on is "absolute over, per-cell within", and fabricating a
     // bigger coverings.json would also move the byte lines and the cell count
     // and prove less about the branch. Both limits are moved in one
-    // substitution, deliberately — the per-cell limit is raised far clear of any
+    // substitution, deliberately — the per-cell limit is raised far clear of the
     // reading so that half of the pair cannot flip on a contended runner and
     // turn a real assertion into a confusing red.
+    //
+    // Both are staged from this runner's reading. The absolute line used to be a
+    // literal 10 ms, set against the ~43 ms this gate reads here; GitHub's runner
+    // read 9.5 ms, so the line it set out to bust was within (DOG-120).
     break: () => {
       requireBuild();
-      return withBudgetLimits({ nameIndexBuildMsNormalised: 10, nameIndexBuildUsPerCell: 1000 });
+      const report = perfReport(120);
+      staged.nameIndexBuild = limitBelow(perfReading(report, 'nameIndexBuildMsNormalised'));
+      return withBudgetLimits({
+        nameIndexBuildMsNormalised: staged.nameIndexBuild,
+        nameIndexBuildUsPerCell: limitAbove(perfReading(report, 'nameIndexBuildUsPerCell')),
+      });
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', '120']),
+  },
+
+  // -------------------------------------------------------------------------
+  // A non-root base (DOG-120).
+  //
+  // Pages builds with the base its config hands out, `/somasurfer`, and every
+  // URL the atlas index emits carries it. CI builds at `/` and nothing else, so
+  // the gate joined `/somasurfer/assets/...` onto dist/, failed every deploy, and
+  // stayed green here. These build a second copy at the Pages base, beside the
+  // one CI checked rather than over it.
+  // -------------------------------------------------------------------------
+  {
+    name: 'perf-non-root-base-is-not-a-failure',
+    gate: 'performance budget',
+    criterion: 'a build at a non-root base is measured, name index included, and not failed',
+    mustPass: true,
+    expect: [
+      /✓ performance budget/,
+      /2 of them the name index/,
+      /nameIndexBuildMsNormalised\s+[\d.]+ ms/,
+    ],
+    describe: `a build at the Pages base ${PAGES_BASE}, with nothing else wrong`,
+    break: () => {
+      requireBuild();
+      return buildAtPagesBase();
+    },
+    // The console says the name index was found; the report has to say it was
+    // found INSIDE this build and gated, or a lookup that fell back to some other
+    // copy would read the same.
+    audit: () => {
+      const report = perfReportAt(BASE_BUILD_DIST);
+      const problems = [];
+      const expected = ['names.json', 'coverings.json'].map((f) => `${rel(BASE_BUILD_DIST)}/assets/labels/${f}`);
+      if (JSON.stringify(report.nameIndex?.files) !== JSON.stringify(expected)) {
+        problems.push(`nameIndex.files is ${JSON.stringify(report.nameIndex?.files)}, expected ${JSON.stringify(expected)}.`);
+      }
+      for (const key of ['nameIndexBuildMsNormalised', 'nameIndexBuildUsPerCell']) {
+        const verdict = report.verdicts[key]?.verdict;
+        if (verdict !== 'within' && verdict !== 'over') {
+          problems.push(`${key} reports ${JSON.stringify(verdict)} at a non-root base; it has a subject and must gate.`);
+        }
+      }
+      return problems;
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120', '--dist', rel(BASE_BUILD_DIST)]),
+  },
+  {
+    name: 'perf-non-root-base-still-needs-the-name-index',
+    gate: 'performance budget',
+    criterion: 'stripping the base does not make a missing name index pass',
+    expect: [
+      /points at a name index that is not in the build/,
+      new RegExp(`${rel(BASE_BUILD_DIST).replace(/[.]/g, '\\.')}/assets/labels/names\\.json`),
+    ],
+    describe: `a build at the Pages base ${PAGES_BASE} with its names.json deleted`,
+    // The other half. Without it the base-stripping above could be a lookup that
+    // never fails, and the first case would read the same.
+    break: () => {
+      requireBuild();
+      const restore = buildAtPagesBase();
+      rmSync(join(BASE_BUILD_DIST, 'assets', 'labels', 'names.json'));
+      return restore;
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120', '--dist', rel(BASE_BUILD_DIST)]),
   },
 ];
 
@@ -960,7 +1125,10 @@ for (const c of selected) {
     restore = await c.break();
     const result = c.check();
     const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
-    const missing = c.expect.filter((re) => !re.test(output));
+    // A function when the expectation names a limit staged from the measurement,
+    // which only exists once `break` has run.
+    const expect = typeof c.expect === 'function' ? c.expect() : c.expect;
+    const missing = expect.filter((re) => !re.test(output));
     // A case may also assert on something the console output cannot carry — the
     // shape of the JSON report, say. Problems come back as lines.
     const audited = c.audit ? await c.audit() : [];
@@ -1017,6 +1185,7 @@ for (const c of selected) {
 }
 
 // A failed restore is worse than a failed case: leave nothing behind.
+rmSync(BASE_BUILD, { recursive: true, force: true });
 for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', 'gate-verify.js'), GATE_TEMPLATE]) {
   rmSync(path, { force: true });
   rmSync(`${path}.gate-verify-stash`, { force: true });

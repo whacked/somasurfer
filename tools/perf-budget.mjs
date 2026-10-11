@@ -2,7 +2,7 @@
  * Measures the built site against ci/performance-budget.json and fails if it
  * is over budget on any line.
  *
- *   node tools/perf-budget.mjs [--json out.json] [--quiet]
+ *   node tools/perf-budget.mjs [--json out.json] [--quiet] [--dist <dir>]
  *
  * What is honestly measured here, and what is not:
  *
@@ -45,12 +45,18 @@
 
 import { gzipSync } from 'node:zlib';
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { REPO_ROOT, fail, pass, rel } from './lib/repo.mjs';
 import { buildNameIndex } from '../packages/alc/src/index.ts';
 import { joinNameIndex } from '../packages/atlas-web/src/viewer/nameindex.js';
 
-const DIST = join(REPO_ROOT, 'packages', 'atlas-web', 'dist');
+/**
+ * `--dist <dir>` measures a build somewhere other than packages/atlas-web/dist.
+ * It exists so tools/verify-gates.mjs can measure a non-root-base build without
+ * overwriting the one CI just built and checked; the Deploy job does not pass it.
+ */
+const distAt = process.argv.indexOf('--dist');
+const DIST = distAt >= 0 ? resolve(REPO_ROOT, process.argv[distAt + 1]) : join(REPO_ROOT, 'packages', 'atlas-web', 'dist');
 const budget = JSON.parse(readFileSync(join(REPO_ROOT, 'ci', 'performance-budget.json'), 'utf8'));
 
 if (!existsSync(DIST)) {
@@ -151,7 +157,8 @@ function nameIndexFiles() {
   if (!existsSync(indexPath)) {
     fail('performance budget', [`${rel(indexPath)} does not exist. Run \`npm run build\` first.`]);
   }
-  const descriptor = JSON.parse(readFileSync(indexPath, 'utf8')).nameIndex;
+  const index = JSON.parse(readFileSync(indexPath, 'utf8'));
+  const descriptor = index.nameIndex;
 
   // A build that declares no name index has nothing here to measure, and that
   // is a fact about the build rather than a failure — `main` is such a build
@@ -176,9 +183,27 @@ function nameIndexFiles() {
       `declaring a source, and the line will say so instead of failing.`,
     ]);
   }
-  const paths = [descriptor.namesPath, descriptor.coveringsPath].map((p) =>
-    join(DIST, String(p ?? '').replace(/^\/+/, '')),
-  );
+  // The descriptor's paths are URLs, and they carry the deploy base: Pages builds
+  // with `--base /somasurfer/` and the index says `/somasurfer/assets/...`, which
+  // is right for the site and is not a path under dist/. app.js strips the
+  // index's own `base` before it fetches, so this does the same, from the same
+  // field. Joining the URL onto dist/ as it stood failed every non-root deploy
+  // (DOG-120), and CI only ever builds at `/`, so nothing here could see it.
+  // A relative path is fetched under the base as it stands, so only an absolute
+  // one outside the base is unreachable.
+  const base = typeof index.base === 'string' && index.base !== '' ? index.base : '/';
+  const urls = [descriptor.namesPath, descriptor.coveringsPath].map((p) => String(p ?? ''));
+  const outside = urls.filter((u) => u.startsWith('/') && !u.startsWith(base));
+  if (outside.length > 0) {
+    fail('performance budget', [
+      `The atlas index points at a name index outside its own base ${JSON.stringify(base)}:`,
+      ...outside.map((u) => `  ${u}`),
+      ``,
+      `app.js fetches these paths under the base, so a path outside it is one the`,
+      `page cannot fetch from this build either.`,
+    ]);
+  }
+  const paths = urls.map((u) => join(DIST, u.startsWith(base) ? u.slice(base.length) : u));
   const missing = paths.filter((p) => !existsSync(p));
   if (missing.length > 0) {
     fail('performance budget', [
@@ -518,7 +543,10 @@ const fmt = (key, v) =>
       ? `${(v / 1024).toFixed(1)} KiB`
       : isPerCell(key)
         ? `${v.toFixed(1)} us/cell`
-        : `${v.toFixed(0)} ms`;
+        // Sub-10 ms fractions keep two significant figures: verify-gates stages
+        // limits below a fast runner's 0.9 ms reading, and "a budget of 0 ms"
+        // would misstate them.
+        : `${v >= 10 || Number.isInteger(v) ? v.toFixed(0) : Number(v.toPrecision(2))} ms`;
 
 /**
  * What a line's number is allowed to prove.
