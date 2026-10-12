@@ -1,0 +1,1 @@
+{"dist":"packages/atlas-web/dist","roots":{"data":{"root":"data/api/v1/","files":31,"kinds":{"index":1,"paper":30}},"assets":{"root":"assets/api/v1/","files":89,"kinds":{"region-index":1,"paper-regions":30,"region":58}}},"invalid":[],"total":120,"verdict":"pass"}

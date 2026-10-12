@@ -1,0 +1,579 @@
+{
+  "startedAt": "2026-10-12T17:18:42.474Z",
+  "build": {
+    "id": "qa-integrated-v2@127fbd20 state-machine only (app.js/DOM NOT observed; page dataset research-seed-2026.10.1)",
+    "kind": "product"
+  },
+  "fixture": {
+    "id": "research-seed-2026.10.1",
+    "path": "packages/atlas-research/data/research-seed.json + packages/atlas-research/data/names-seed.json + packages/atlas-assets/labels/names.json + packages/atlas-assets/labels/coverings.json",
+    "sha256": "5eb23f140310606c8fb930b5494e3ac5cec8f12608d3c70f2fbb6c7882642429",
+    "kind": "curated"
+  },
+  "strict": true,
+  "plan": {
+    "bodyStructureId": "FMA13295",
+    "bodyBrainStructureId": "FMA13075",
+    "researchRegionId": "ATLAS-LABEL:precentral-gyrus",
+    "multiRegionPaperId": "paper:fischl-2012-freesurfer",
+    "comparisonPaperId": "paper:brodmann-1909-localisation",
+    "regionsOutsideFilter": [
+      "ATLAS-LABEL:amygdala",
+      "ATLAS-LABEL:fusiform-gyrus",
+      "ATLAS-LABEL:hippocampus",
+      "ATLAS-LABEL:postcentral-gyrus",
+      "ATLAS-LABEL:thalamus",
+      "HCP-MMP1:V1"
+    ]
+  },
+  "harnessVerdict": "FAIL",
+  "productVerdict": "FAIL",
+  "counts": {
+    "total": 43,
+    "pass": 41,
+    "fail": 1,
+    "unverified": 1,
+    "mustPassTotal": 41,
+    "mustPassPass": 39,
+    "mustPassFail": 1,
+    "mustPassUnverified": 1
+  },
+  "mustPassMissing": [],
+  "harnessProblems": [],
+  "results": [
+    {
+      "id": "default-no-address",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "With no address in the URL the body atlas opens at its default camera and default layers, nothing is selected, and no message of any kind is shown.",
+      "covers": [
+        "default-view"
+      ],
+      "problems": [],
+      "durationMs": 8
+    },
+    {
+      "id": "canonical-body",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "The camera flies to the centre of the T07 two-o'clock outer cell, the cell is outlined at its TRUE EXTENT rather than as a point, a ranked name list with containment fractions and the name-index version is shown, and the URL keeps the canonical address unchanged — this address is within the template's precision, so nothing is truncated.",
+      "covers": [
+        "canonical"
+      ],
+      "problems": [],
+      "durationMs": 58
+    },
+    {
+      "id": "loose-body-same-view",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "The loose form restores a view identical to the canonical row's in every facet, and the URL is rewritten to the canonical address. Accepting the loose form but landing somewhere else would be worse than rejecting it.",
+      "covers": [
+        "loose",
+        "canonical"
+      ],
+      "problems": [],
+      "durationMs": 12
+    },
+    {
+      "id": "check-symbol-accepted",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "An address carrying its correct check symbol restores the same view as the bare address, and the URL holds the canonical body without the symbol.",
+      "covers": [
+        "check-symbol",
+        "canonical"
+      ],
+      "problems": [],
+      "durationMs": 12
+    },
+    {
+      "id": "check-symbol-mismatch-rejected",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A damaged check symbol is refused with a message naming the symbol the address implies, the camera does not move, and nothing is selected. The address is NOT resolved on the grounds that the body parses.",
+      "covers": [
+        "check-symbol",
+        "malformed"
+      ],
+      "problems": [],
+      "durationMs": 11
+    },
+    {
+      "id": "over-precise",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A six-digit address against a template that justifies five resolves and flies to the cell, but the outline is drawn at the FIVE-digit extent and a notice names both counts. The address in the URL is left exactly as given — it is not silently truncated, because the user's address is not wrong, only finer than this template can answer.",
+      "covers": [
+        "over-precise"
+      ],
+      "problems": [],
+      "durationMs": 23
+    },
+    {
+      "id": "clamped-cranial",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A point 400 mm above the top of the column is addressed at C01 with a notice naming the CRANIAL end specifically. It is never silently projected, and the message is not the caudal one.",
+      "covers": [
+        "clamped-cranial"
+      ],
+      "problems": [],
+      "durationMs": 5
+    },
+    {
+      "id": "clamped-caudal",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A point 400 mm below the bottom of the column is addressed at S01 with a notice naming the CAUDAL end specifically, and not the cranial one.",
+      "covers": [
+        "clamped-caudal"
+      ],
+      "problems": [],
+      "durationMs": 52
+    },
+    {
+      "id": "clamped-address-replayed-is-not-a-clamp",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Deep-linking the address that a clamp PRODUCED restores that cell and does NOT claim a clamp happened: the clamp was a fact about the original point, not about the address. Showing the clamp notice here would tell a user their perfectly good address is out of bounds.",
+      "covers": [
+        "clamped-cranial",
+        "canonical"
+      ],
+      "problems": [],
+      "durationMs": 2
+    },
+    {
+      "id": "folded-reports-fold-not-clamp",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Against the folding fixture the anterior T06 cell reports a FOLD, naming every competing level (T01 and T06), and says the address is ambiguous. It must not be reported as the point having left the body: this point is well inside it, and the coordinate system is what failed.",
+      "covers": [
+        "folded"
+      ],
+      "problems": [],
+      "durationMs": 209
+    },
+    {
+      "id": "same-address-unfolded-in-a-sound-template",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "The identical address against the sound body template resolves with no fold notice at all. The fold is a property of the template, not of the address, and a build that warns on the address has learned the wrong lesson.",
+      "covers": [
+        "folded"
+      ],
+      "problems": [],
+      "durationMs": 281
+    },
+    {
+      "id": "variant-T13",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "T13 is a recognised vertebral count anomaly. The address is accepted, a notice says this is real anatomy the template does not realise and that an explicit level mapping is required, and the camera DOES NOT MOVE — there are no millimetres to fly to, and inventing some would be the guess the whole flag exists to refuse. It must not be reported as an absent level.",
+      "covers": [
+        "variant"
+      ],
+      "problems": [],
+      "durationMs": 1
+    },
+    {
+      "id": "variant-L06",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "L06 is a recognised vertebral count anomaly. The address is accepted, a notice says this is real anatomy the template does not realise and that an explicit level mapping is required, and the camera DOES NOT MOVE — there are no millimetres to fly to, and inventing some would be the guess the whole flag exists to refuse. It must not be reported as an absent level.",
+      "covers": [
+        "variant"
+      ],
+      "problems": [],
+      "durationMs": 8
+    },
+    {
+      "id": "variant-S06",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "S06 is a recognised vertebral count anomaly. The address is accepted, a notice says this is real anatomy the template does not realise and that an explicit level mapping is required, and the camera DOES NOT MOVE — there are no millimetres to fly to, and inventing some would be the guess the whole flag exists to refuse. It must not be reported as an absent level.",
+      "covers": [
+        "variant"
+      ],
+      "problems": [],
+      "durationMs": 1
+    },
+    {
+      "id": "absent-S02",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "S02 is reserved in the grammar and realised by no template: the address is accepted, the notice says this level is not in the current template, and the camera does not move. The message is distinct from the variant one, because reserved space is not anatomy.",
+      "covers": [
+        "absent"
+      ],
+      "problems": [],
+      "durationMs": 3
+    },
+    {
+      "id": "absent-S03",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "S03 is reserved in the grammar and realised by no template: the address is accepted, the notice says this level is not in the current template, and the camera does not move. The message is distinct from the variant one, because reserved space is not anatomy.",
+      "covers": [
+        "absent"
+      ],
+      "problems": [],
+      "durationMs": 1
+    },
+    {
+      "id": "absent-S04",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "S04 is reserved in the grammar and realised by no template: the address is accepted, the notice says this level is not in the current template, and the camera does not move. The message is distinct from the variant one, because reserved space is not anatomy.",
+      "covers": [
+        "absent"
+      ],
+      "problems": [],
+      "durationMs": 4
+    },
+    {
+      "id": "absent-S05",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "S05 is reserved in the grammar and realised by no template: the address is accepted, the notice says this level is not in the current template, and the camera does not move. The message is distinct from the variant one, because reserved space is not anatomy.",
+      "covers": [
+        "absent"
+      ],
+      "problems": [],
+      "durationMs": 0
+    },
+    {
+      "id": "sacrum-S01-is-not-absent",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "S01 is the one addressable sacral level and resolves normally. The four rows above must not have been implemented as \"anything sacral is absent\".",
+      "covers": [
+        "absent"
+      ],
+      "problems": [],
+      "durationMs": 37
+    },
+    {
+      "id": "malformed-bad-digit",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A digit outside the octal alphabet is refused inline, naming the alphabet and the offending character, before any geometry runs. Nothing else on the page changes.",
+      "covers": [
+        "malformed"
+      ],
+      "problems": [],
+      "durationMs": 5
+    },
+    {
+      "id": "malformed-unknown-frame",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "An unknown frame id is refused with the known frames named, and the default body view is left exactly as it was.",
+      "covers": [
+        "malformed"
+      ],
+      "problems": [],
+      "durationMs": 6
+    },
+    {
+      "id": "malformed-empty-address",
+      "kind": "matrix",
+      "mustPass": false,
+      "outcome": "pass",
+      "observable": "An empty `a` parameter is treated as no address rather than as a malformed one: the default view opens with no error. A link truncated by a mail client should not look like a broken address.",
+      "covers": [
+        "malformed",
+        "url-hygiene"
+      ],
+      "problems": [],
+      "durationMs": 0
+    },
+    {
+      "id": "c08-rejected-with-the-correction-named",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "C08 is refused, and the message NAMES THE CORRECTION: there is no eighth cervical vertebra, the C8 nerve root is what exists, it exits below C07, and the user probably wants C07 or T01. A bare \"not an addressable level\" is a failure of this row even though the address is rejected.",
+      "covers": [
+        "c08-correction",
+        "malformed"
+      ],
+      "problems": [],
+      "durationMs": 5
+    },
+    {
+      "id": "length-at-the-64-character-cap",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A 64-character input is INSIDE the cap, so it is not refused for length — it is refused for carrying 53 refinement digits where BD allows 12, and the message says so. The cap is inclusive, and the digit cap is the bound that actually bites.",
+      "covers": [
+        "length-cap"
+      ],
+      "problems": [],
+      "durationMs": 4
+    },
+    {
+      "id": "length-over-the-64-character-cap",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A 65-character input is refused for LENGTH, before the frame registry is consulted at all. The trust boundary runs in front of every frame-specific code path.",
+      "covers": [
+        "length-cap"
+      ],
+      "problems": [],
+      "durationMs": 3
+    },
+    {
+      "id": "br-frame-disabled",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A BR cortical-surface address is accepted by the grammar and refused by the viewer: the message explains the frame ships disabled in v1, and ANSWERS THE FALLBACK QUESTION — here by saying plainly that no coarser ancestor can be placed either, because every ancestor of a BR address is also in BR. It must not invent an offer it cannot honour. The camera and the layers do not move, and nothing is drawn.",
+      "covers": [
+        "frame-disabled",
+        "coarsest-ancestor"
+      ],
+      "problems": [],
+      "durationMs": 5
+    },
+    {
+      "id": "no-template",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A well-formed BV address with no brain template loaded is explained as a missing template — not as a bad address — and the fallback question is answered: no ancestor resolves either, because they are all in BV and BV is the frame with no template. The distinction matters: the user's address is correct and the build is incomplete. The camera and the layers do not move.",
+      "covers": [
+        "no-template",
+        "coarsest-ancestor"
+      ],
+      "problems": [],
+      "durationMs": 178
+    },
+    {
+      "id": "br-offer-is-not-fabricated-by-truncation",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A DEEP BR address — one with four ancestors of its own (BR-L-4, BR-L-47, BR-L-471) — is refused with the same two messages as the shallow one: the frame is disabled, and no ancestor can be placed. No coarser address is offered, because none of those four resolves either. A build that offers BR-L-4 here has computed the offer by TRUNCATING THE STRING instead of by checking what resolves, and is pointing the user at a second dead end.",
+      "covers": [
+        "coarsest-ancestor",
+        "frame-disabled"
+      ],
+      "problems": [],
+      "durationMs": 181
+    },
+    {
+      "id": "brain-deep-link-resolves",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A hand-written BV address with NO atlas parameter stays in the body atlas and selects: the address resolves and is named, nothing is drawn and the camera does not move — the body atlas holds no geometry that could contain a brain cell — and the view says which atlas the address belongs to and offers to open it. A link does not switch atlas; the atlas parameter does.",
+      "covers": [
+        "canonical",
+        "cross-atlas-link"
+      ],
+      "problems": [],
+      "durationMs": 4
+    },
+    {
+      "id": "brain-deep-link-restores",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "The link the product itself produces from the brain atlas — address AND atlas — reopens in the brain atlas with the cell outlined at its true extent and the camera on it. This is the round trip plan §7 actually requires, and the reason the decided rule needs no implied switch: encodeView emits the atlas whenever it is not the default.",
+      "covers": [
+        "canonical",
+        "cross-atlas-restore"
+      ],
+      "problems": [],
+      "durationMs": 2
+    },
+    {
+      "id": "cross-atlas-link-honours-the-explicit-atlas",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "A link naming one atlas and an address belonging to another is not a contradiction to resolve: the atlas parameter is obeyed as written, the address selects where it was asked to, and the offer carries the move. This is the case the rejected rule would have had to break a tie for.",
+      "covers": [
+        "cross-atlas-link"
+      ],
+      "problems": [],
+      "durationMs": 1
+    },
+    {
+      "id": "assets-unavailable-addresses-still-resolve",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "With the geometry failing to load the atlas says so plainly, and the address STILL parses and still resolves to its ranked name list. Nothing is drawn and the camera does not move — there is no mesh to look at, so flying to coordinates would present an empty viewport as a result — but the address stays in the URL and the names are there. A failed mesh fetch must not take the addressing layer down with it, because names and addresses need no mesh at all.",
+      "covers": [
+        "assets-unavailable"
+      ],
+      "problems": [],
+      "durationMs": 2
+    },
+    {
+      "id": "equality-guard-different-strings-same-place",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Asked whether two DIFFERENT address strings from two subjects denote the same place at a 6 mm residual, the build answers yes, via covering overlap. A build comparing strings says no. Spec §6: string equality agrees only 4% of the time at a 5 mm residual.",
+      "covers": [
+        "equality-guard"
+      ],
+      "problems": [],
+      "durationMs": 1
+    },
+    {
+      "id": "equality-guard-same-string-not-asserted-same",
+      "kind": "matrix",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Asked about two IDENTICAL strings across subjects, the build still answers from geometry and names the basis as a tolerance rather than as string identity. Getting the right answer for the wrong reason is how the previous row starts passing again later.",
+      "covers": [
+        "equality-guard"
+      ],
+      "problems": [],
+      "durationMs": 0
+    },
+    {
+      "id": "url-unknown-params",
+      "kind": "matrix",
+      "mustPass": false,
+      "outcome": "pass",
+      "observable": "Unknown query parameters are ignored and the address still restores its view. Links are pasted into papers and mail clients, which add parameters.",
+      "covers": [
+        "url-hygiene"
+      ],
+      "problems": [],
+      "durationMs": 2
+    },
+    {
+      "id": "default-body-view",
+      "kind": "journey",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "The app opens in the BODY atlas with at least one visible layer, nothing selected, no address in the URL and no error message. The brain atlas is not entered on load.",
+      "covers": [
+        "a user can open the default body view"
+      ],
+      "problems": [],
+      "durationMs": 1
+    },
+    {
+      "id": "change-layers",
+      "kind": "journey",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Hiding a layer and halving another's opacity changes exactly those layers. The camera does not move, the atlas does not change, and nothing becomes selected — changing what is visible is not a navigation and not a selection.",
+      "covers": [
+        "a user can change visible structures"
+      ],
+      "problems": [],
+      "durationMs": 2
+    },
+    {
+      "id": "select-structure-without-leaving-atlas",
+      "kind": "journey",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Clicking a body structure selects it, shows its ALC address and a RANKED NAME LIST WITH CONTAINMENT FRACTIONS together with the name-index version, draws the cell at its true extent, and puts the address in the URL. The atlas is still the body atlas, and the layer state set by the previous step is untouched.",
+      "covers": [
+        "a user can select a region without leaving the atlas"
+      ],
+      "problems": [],
+      "durationMs": 105
+    },
+    {
+      "id": "explicit-brain-navigation",
+      "kind": "journey",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Selecting the body atlas's brain does NOT switch atlas — it selects, like any other structure. Only the explicit Open brain atlas action switches, and then the atlas is the brain atlas. The two halves are asserted in that order, because a build that switches on selection would pass the second half alone.",
+      "covers": [
+        "a user can explicitly open the linked brain atlas"
+      ],
+      "problems": [],
+      "durationMs": 18
+    },
+    {
+      "id": "region-research",
+      "kind": "journey",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Filtering by a brain region lists exactly the papers the fixture links to that region, in a list that is narrower than the unfiltered one, and nothing is highlighted yet — browsing a list is not selecting a paper.",
+      "covers": [
+        "a user can browse region-linked research"
+      ],
+      "problems": [],
+      "durationMs": 198
+    },
+    {
+      "id": "paper-reveals-all-its-regions",
+      "kind": "journey",
+      "mustPass": true,
+      "outcome": "fail",
+      "observable": "Selecting a paper found through one region highlights EVERY region that paper maps, including the ones the active filter excludes. The filter itself does not change — it narrows the paper list, never a selected paper's own mappings. Every highlight names its paper and its finding, and a finding with no spatial detail is marked region-level only rather than being given a position.",
+      "covers": [
+        "a user can select a paper to reveal all its mapped brain regions"
+      ],
+      "problems": [
+        "finding finding:fischl-2012-freesurfer/surface-reconstruction must be marked region-level only: expected true, got false",
+        "finding finding:fischl-2012-freesurfer/thickness-measurement must be marked region-level only: expected true, got false",
+        "finding finding:fischl-2012-freesurfer/subcortical-segmentation must be marked region-level only: expected true, got false",
+        "finding finding:fischl-2012-freesurfer/registration-to-template must be marked region-level only: expected true, got false",
+        "a finding with no spatial detail is present but the region-level-only marker is not shown"
+      ],
+      "durationMs": 585
+    },
+    {
+      "id": "compare-two-papers",
+      "kind": "journey",
+      "mustPass": true,
+      "outcome": "unverified",
+      "observable": "Adding a second paper keeps the first selected, gives each paper its own colour, and hatches exactly the cells both cover. The overlap is the COVERING INTERSECTION of the two papers — not the set of address strings they have in common — and every highlight still names its finding.",
+      "covers": [
+        "a user can compare papers through the agreed display modes"
+      ],
+      "problems": [],
+      "unverifiedReason": "blocked: paper-reveals-all-its-regions failed, so this step never ran",
+      "durationMs": 0
+    },
+    {
+      "id": "return-to-body-with-previous-view-intact",
+      "kind": "journey",
+      "mustPass": true,
+      "outcome": "pass",
+      "observable": "Returning to the body atlas restores the camera, the layer visibility and opacity, the isolate and label state and the selection exactly as they were before the brain atlas was opened. \"Preserve the previous view\" is a claim about every one of those, not only about the camera.",
+      "covers": [
+        "a user can return to the body"
+      ],
+      "problems": [],
+      "durationMs": 96
+    }
+  ]
+}

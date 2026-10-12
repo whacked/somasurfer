@@ -1,0 +1,48 @@
+PASS       nav: landing on body; landing→brain true, landing→body true, brain→body true, body→brain true, one click each
+pass 280 Posterior inferior cerebellar artery.l px=809 points=1 clicksAtPixel=1 view=default 
+pass 281 Posterior inferior cerebellar artery.r px=857 points=1 clicksAtPixel=1 view=default 
+pass 149 Internal carotid artery.l px=1895 points=1 clicksAtPixel=1 view=default 
+pass 150 Internal carotid artery.r px=1981 points=1 clicksAtPixel=1 view=default 
+pass 147 Insular branches of middle cerebral artery (M2).r px=209 points=1 clicksAtPixel=1 view=default 
+pass 201 Midbrain.l px=792 points=1 clicksAtPixel=1 view=default 
+pass 202 Midbrain.r px=855 points=1 clicksAtPixel=1 view=default 
+pass 6 Accessory nucleus of oculomotor nerve.l px=35 points=3 clicksAtPixel=2 view=default 
+pass 7 Accessory nucleus of oculomotor nerve.r px=33 points=6 clicksAtPixel=2 view=yaw+180 
+pass 397 Tonsil of cerebellum.l px=707 points=1 clicksAtPixel=1 view=default 
+pass 398 Tonsil of cerebellum.r px=1208 points=1 clicksAtPixel=3 view=default 
+pass 378 Superior semilunar lobule.l px=1935 points=1 clicksAtPixel=1 view=default 
+pass 379 Superior semilunar lobule.r px=2437 points=1 clicksAtPixel=1 view=default 
+pass 122 Hippocampus.l px=566 points=1 clicksAtPixel=2 view=default 
+pass 123 Hippocampus.r px=662 points=1 clicksAtPixel=2 view=default 
+pass 124 Hypoglossal nerve (XII).l px=520 points=1 clicksAtPixel=1 view=default 
+pass 125 Hypoglossal nerve (XII).r px=612 points=1 clicksAtPixel=1 view=default 
+pass 346 Subthalamic nucleus.l px=102 points=1 clicksAtPixel=1 view=default 
+pass 347 Subthalamic nucleus.r px=59 points=1 clicksAtPixel=1 view=default 
+pass 344 Substantia nigra.l px=182 points=1 clicksAtPixel=1 view=default 
+pass 345 Substantia nigra.r px=122 points=1 clicksAtPixel=1 view=default 
+pass 220 Nucleus accumbens.l px=153 points=1 clicksAtPixel=1 view=default 
+pass 221 Nucleus accumbens.r px=188 points=1 clicksAtPixel=2 view=default 
+pass 421 Ventral anterior nucleus.l px=255 points=1 clicksAtPixel=2 view=default 
+pass 422 Ventral anterior nucleus.r px=332 points=1 clicksAtPixel=2 view=default 
+pass 414 Tuberal hypothalamus.l px=90 points=1 clicksAtPixel=2 view=default 
+pass 415 Tuberal hypothalamus.r px=93 points=1 clicksAtPixel=1 view=default 
+pass 103 Falx cerebri px=16369 points=1 clicksAtPixel=1 view=default 
+pass 394 Tentorium cerebelli.l px=3116 points=1 clicksAtPixel=2 view=default 
+pass 395 Tentorium cerebelli.r px=2710 points=1 clicksAtPixel=1 view=default 
+pass 81 Corticopontine tract (occipital).l px=276 points=1 clicksAtPixel=1 view=default 
+pass 82 Corticopontine tract (occipital).r px=471 points=1 clicksAtPixel=1 view=default 
+pass 91 Corticostriatal tract (superior).l px=365 points=1 clicksAtPixel=1 view=default 
+pass 92 Corticostriatal tract (superior).r px=467 points=1 clicksAtPixel=1 view=default 
+pass 51 Cavernous sinus.l px=352 points=1 clicksAtPixel=1 view=default 
+pass 52 Cavernous sinus.r px=435 points=1 clicksAtPixel=1 view=default 
+pass 375 Superior sagittal sinus px=3104 points=1 clicksAtPixel=1 view=default 
+pass 109 Fourth ventricle px=1211 points=1 clicksAtPixel=1 view=default 
+pass 396 Third ventricle px=752 points=1 clicksAtPixel=1 view=default 
+pass 74 Corpus callosum px=5064 points=1 clicksAtPixel=1 view=default 
+PASS       picking: 40/40 picked back to their own key and name (23 distinct structures; 30 on the first click, 10 by clicking the same spot again); brain full tier, 53726 px painted against an all-hidden view
+PASS       picking-controls: 1/1 withheld controls absent from the drawn and pickable set
+PASS       picking-controls-say-why: 1/1 withheld controls explained on the page after searching their name (Anterior commissure: 1 visible mention(s), search results ["Anterior commissure is held back and not drawn: carries undeclared material(s) `White matter` (zanatomy-undeclared-brain-materials)."], scope "258 structures drawn in this atlas, then BD names; no names exist for BV, and choosing one of those will not leave this atlas.")
+PASS       body: 1605 body structures (full tier), head-to-foot regions present: head, thorax, pelvis, arm, hand, leg, foot; 27297 px painted against an all-hidden view
+PASS       paper-regions: 30 papers; 29 with structures, 1 empty with a stated reason, 0 empty with none
+PASS       region-papers: 53 drawn structures with a region document (53 with papers; 1808 more carry a region key that nothing links to); 0 round-trip mismatches
+exit 0
