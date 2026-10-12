@@ -17,6 +17,20 @@ export function treeUrl(root, from, href) {
   return url;
 }
 
+/**
+ * A model built from an API answer, or the answer while it has no document.
+ * A document that passed the kind check can still be malformed (a stale cached
+ * copy): that reads as the API failing, not as a throw on every later commit.
+ */
+export function apiModel(got, build) {
+  if (!got.doc) return got;
+  try {
+    return { model: build(got.doc) };
+  } catch (error) {
+    return { error: `malformed document: ${error.message}` };
+  }
+}
+
 /** Where a region key's document is, from the region index: `href`, or null when no paper links it. */
 export function listedHref(regionIndex, kind, id) {
   const row = kind === 'region'
@@ -96,4 +110,15 @@ export function overlayOf(model, atlas) {
     for (const s of r.structures) out.set(s.key, r.exact || out.get(s.key) === 'exact' ? 'exact' : 'approximate');
   }
   return out;
+}
+
+/**
+ * The revealed paper's frame in `atlas`: the structures to fit, and whether the
+ * reveal is spent. It waits only while this atlas's meshes are still coming and
+ * none of its structures here is drawn yet, so it frames once, never again.
+ */
+export function paperFrame(model, atlas, meshStatus) {
+  const here = model.regions.filter((r) => r.atlas === atlas);
+  const drawn = here.flatMap((r) => r.structures);
+  return { drawn, done: drawn.length > 0 || here.length === 0 || !['pending', 'loading'].includes(meshStatus) };
 }

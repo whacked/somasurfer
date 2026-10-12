@@ -231,18 +231,24 @@ describe('picking', () => {
       }
       return out;
     };
-    let picks = 0;
-    for (const mesh of [decoded(ICBM), za]) {
-      for (const s of mesh.structures) {
-        if (mesh === za && outside.has(s.category)) continue;
-        assert.deepEqual(clamped(mesh, s).slice(0, 1), [], `${s.name} (${s.category})`);
-        picks += 1;
+    // Both tiers: the page draws, and so picks, the full tier once it arrives.
+    // The ICBM cortex ships one tier, so the page keeps drawing its low one.
+    assert.equal(json(ASSET_MESH_SETS.find((e) => e.id === ICBM).structures).tiers.full, undefined, 'an ICBM full tier would need checking too');
+    for (const tier of ['low', 'full']) {
+      const zaTier = decoded(ZA, tier);
+      let picks = 0;
+      for (const mesh of tier === 'low' ? [decoded(ICBM), zaTier] : [zaTier]) {
+        for (const s of mesh.structures) {
+          if (mesh === zaTier && outside.has(s.category)) continue;
+          assert.deepEqual(clamped(mesh, s).slice(0, 1), [], `${tier}: ${s.name} (${s.category})`);
+          picks += 1;
+        }
       }
+      assert.ok(picks > 100, `${tier}: ${picks} structures checked`);
+      // The check can see a clamp: an artery runs below the box.
+      const arteries = zaTier.structures.filter((s) => s.category === 'arteries');
+      assert.ok(arteries.some((s) => clamped(zaTier, s).length > 0), `${tier}: no artery vertex is clamped`);
     }
-    assert.ok(picks > 100, `${picks} structures checked`);
-    // The check can see a clamp: an artery runs below the box.
-    const arteries = za.structures.filter((s) => s.category === 'arteries');
-    assert.ok(arteries.some((s) => clamped(za, s).length > 0), 'no artery vertex is clamped');
   });
 
   it('finds structures by any word of their title', () => {

@@ -719,4 +719,15 @@ hidden layer: a layer setting never hides a paper's mapping.
 
 The camera is framed on the paper's structures in this atlas once, on reveal,
 as soon as they are drawn. A reveal before the meshes arrive frames when they
-do. It never refits afterwards, so the user's own camera moves stand.
+do. It never refits afterwards, so the user's own camera moves stand. A
+pending frame belongs to the atlas the paper was revealed in: switching atlas
+before the API answers cancels it, rather than framing in the new atlas.
+
+Both rules live outside `app.js`, so `test/region-papers.test.js` can reach
+them: `paperFrame()` in `viewer/regionpapers.js` decides when the frame is
+spent, and `meshDraws()` in `viewer/state.js` builds the solid and x-ray lists.
+
+A document can pass the kind and schema checks and still be malformed inside,
+for example a stale cached copy. `apiModel()` turns a throw while reading it
+into the panel's "could not be read" state, so nothing throws inside every
+later `commit()`.

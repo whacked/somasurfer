@@ -76,6 +76,47 @@ export function structureLayers(layers, structure) {
   };
 }
 
+/**
+ * One atlas's mesh draw list. Solids: one draw per run of equally opaque,
+ * same-coloured structures; the sets are laid out by layer, so a frame is a few
+ * dozen draws, not 1,605. X-ray: a paper's structures (`overlay`, key ->
+ * exact|approximate), whatever their layer, then the selected structure when its
+ * layer would not show it, last so it reads on top of a paper's.
+ */
+export function meshDraws(sets, { layers, chosen, overlay, palette }) {
+  const solids = [];
+  const xrays = [];
+  let xray = null;
+  for (const set of sets) {
+    if (!set.gpu) continue;
+    const marked = [];
+    const byOpacity = new Map();
+    for (const s of set.structures) {
+      // The selected structure keeps its layer's opacity, so a faded skin stays
+      // faded. Opaque or hidden, an x-ray pass shows it through what is in front.
+      const isChosen = s.key === chosen;
+      const mark = overlay.get(s.key);
+      const colour = isChosen ? palette.chosen : mark ? palette.paper : palette[s.lobe ? s.label : s.category] ?? palette.other;
+      const hatch = !isChosen && mark === 'approximate' ? palette.paperStripe : null;
+      const { visible, opacity } = structureLayers(layers, s);
+      if (isChosen && (!visible || opacity >= 1)) {
+        xray = { mesh: set.gpu, ranges: [{ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour }] };
+      } else if (mark) {
+        marked.push({ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour, hatch });
+      }
+      if (!visible || !(opacity > 0)) continue;
+      if (!byOpacity.has(opacity)) byOpacity.set(opacity, []);
+      const ranges = byOpacity.get(opacity);
+      const last = ranges[ranges.length - 1];
+      if (last && last.colour === colour && last.hatch === hatch && last.firstTriangle + last.triangleCount === s.firstTriangle) last.triangleCount += s.triangleCount;
+      else ranges.push({ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour, hatch });
+    }
+    for (const [opacity, ranges] of byOpacity) solids.push({ mesh: set.gpu, ranges, visible: true, opacity });
+    if (marked.length > 0) xrays.push({ mesh: set.gpu, ranges: marked });
+  }
+  return { solids, xray: xray ? [...xrays, xray] : xrays };
+}
+
 export function createViewer(options = {}) {
   const state = {
     atlas: 'body',
