@@ -24,8 +24,9 @@
  * `research` (DOG-132) names the research API representation whose region
  * keys are this set's structures, and which structure field is the id in it:
  * `representation/structure[idField]`. Our statement, checked against the
- * served region tree by test/region-papers.test.js. The ICBM cortex has none
- * until its lobes reach the region tree (DOG-157).
+ * served region tree by test/region-papers.test.js. `labels: true` keys the
+ * set's label structures instead of its geometry: the ICBM cortex's region
+ * keys are its lobes (DOG-157), and the unlabelled surface has none.
  *
  * Order matters within an atlas only for drawing: a set listed first is
  * uploaded first. Each set is fetched, decoded and drawn on its own, so one
@@ -39,6 +40,7 @@ export const ASSET_MESH_SETS = Object.freeze([
     structures: 'brain/icbm152-2009c/structures.json',
     // First-party lobe labels, one per vertex (DOG-151 criterion 7).
     labels: 'brain/icbm152-2009c/lobes.json',
+    research: Object.freeze({ representation: 'icbm152-2009c-cortex-lobes', idField: 'id', labels: true }),
   }),
   Object.freeze({
     id: 'zanatomy-2929e94',

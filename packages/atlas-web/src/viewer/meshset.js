@@ -135,7 +135,9 @@ export function meshSetFrom(entry, { structures: doc, labels = null, registratio
     // `name` is the source's (`Caudate nucleus.l`); `title` is what a reader sees.
     const title = s.label ? `${s.label}${sided ? ` (${s.side})` : ''}` : s.name;
     // Its key in the research API's region tree (DOG-132), when this set declares one.
-    const apiId = entry.research && !extra.lobe ? s[entry.research.idField] : undefined;
+    // A set keyed by its labels keys only its lobes; any other set, only its geometry.
+    const keyed = entry.research && Boolean(entry.research.labels) === Boolean(extra.lobe);
+    const apiId = keyed ? s[entry.research.idField] : undefined;
     const regionKey = apiId === undefined ? null : `${entry.research.representation}/${apiId}`;
     return { key: structureKey(entry.id, s.id), id: s.id, set: entry.id, name: s.name, title, label: s.label ?? null, category, side: s.side ?? null, parts, group: `${category}|${parts.join('+')}`, regionKey, ...extra };
   };

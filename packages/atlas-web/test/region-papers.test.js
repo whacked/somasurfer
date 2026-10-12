@@ -68,13 +68,16 @@ const link = (over) => ({
 });
 
 describe('which drawn structure is which region', () => {
-  it('stamps each declared set with its representation, and the ICBM cortex with none until its lobes are in the tree', () => {
+  it('stamps each declared set with its representation, and the ICBM cortex through its lobes only', () => {
     const at = (set, id) => sets.brain.concat(sets.body).find((s) => s.id === set).structures.find((s) => s.id === id);
     assert.equal(at('zanatomy-2929e94', 122).regionKey, 'zanatomy-gross-anatomy/122');
     assert.equal(at('bp3d-4066585', 13075).regionKey, 'bodyparts3d-bd/FMA13075');
     const icbm = sets.brain.find((s) => s.id === 'icbm152-2009c').structures;
-    assert.ok(icbm.length > 0);
-    assert.ok(icbm.every((s) => s.regionKey === null), 'a lobe must not claim a region key the tree does not have');
+    const lobes = icbm.filter((s) => s.lobe);
+    assert.ok(lobes.length > 0 && lobes.length < icbm.length, `${lobes.length} lobes of ${icbm.length} structures`);
+    for (const s of lobes) assert.equal(s.regionKey, `icbm152-2009c-cortex-lobes/${s.id}`, s.name);
+    // The medial wall and cut faces keep the geometry's id, which is no lobe's.
+    assert.ok(icbm.filter((s) => !s.lobe).every((s) => s.regionKey === null), 'unlabelled surface must not claim a lobe key');
   });
 
   it('reaches every region the served tree lists, or knows exactly which it cannot draw', () => {
@@ -223,8 +226,13 @@ describe('paper → regions', () => {
   });
 
   it('overlays nothing for a paper with no structures, and nothing with no paper', () => {
+    // Its gyral targets are all held; its one empty reason is structure-held.
+    const desikan = models.find((m) => m.paperId === 'paper:desikan-2006-gyral-parcellation');
+    assert.deepEqual(desikan.regions, []);
+    assert.equal(overlayOf(desikan, 'brain').size, 0);
+    // Glasser's areas, empty before DOG-157, now reach the lobes they lie in.
     const glasser = models.find((m) => m.paperId === 'paper:glasser-2016-mmp1');
-    assert.equal(overlayOf(glasser, 'brain').size, 0);
+    assert.ok(overlayOf(glasser, 'brain').size > 0);
     assert.equal(overlayOf(null, 'brain').size, 0);
   });
 
