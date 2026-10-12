@@ -90,13 +90,14 @@ const SIDES = { left: 'left', right: 'right', median: 'median' };
  *   not a precision to publish, so the gate stops it.
  * - MIN_HELD_OUT: the held-out landmarks behind that figure. Two today (the red
  *   nucleus, both sides).
- * - COVERAGE_FLOOR: what W5 delivered at review (44 of 170 mappings, 15 of 30
- *   papers by named structure). Raise it when coverage grows; lowering it is a
- *   decision, made in a diff a reviewer reads.
+ * - COVERAGE_FLOOR: raised by DOG-157 to what the checked lobe targets deliver
+ *   (109 of 170 mappings, 29 of 30 papers by named structure; W5 delivered 44
+ *   and 15). Raise it when coverage grows; lowering it is a decision, made in a
+ *   diff a reviewer reads.
  */
 const PRECISION_FLOOR_MM = 7;
 const MIN_HELD_OUT = 2;
-const COVERAGE_FLOOR = Object.freeze({ mappings: 44, papers: 15 });
+const COVERAGE_FLOOR = Object.freeze({ mappings: 109, papers: 29 });
 
 /**
  * Why the lobe cortex is supplied without a locator, so no coordinate is placed
