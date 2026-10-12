@@ -268,13 +268,31 @@ export async function buildMeshTiers({
   const decimate = minComponentTriangles === null
     ? decimateWhole
     : (m, mesh, target) => decimateByComponent(m, mesh, target, minComponentTriangles);
-  const welded = meshes.map((m) => ({ record: m, mesh: weld(m.positions, m.indices), sourceTriangles: m.indices.length / 3 }));
-  const frame = quantisationFrame(welded.map((w) => w.mesh));
+  // A mesh may be given lazily, as `{ id, load() }`, and is then never held
+  // beside the others: one pass takes each welded mesh's bounds for the shared
+  // frame, and a second loads it again, builds its tiers and lets it go. The
+  // body needs this (DOG-128): all 6.4 million source triangles at once is more
+  // memory than the build host has; the run that tried was killed at 868 MB
+  // RSS with 270 MB left on the host. Same weld, same bounds, same frame, so
+  // the output is the eager path's, byte for byte.
+  const weldOf = (m) => {
+    const g = m.load ? m.load() : m;
+    return { record: m, mesh: weld(g.positions, g.indices), sourceTriangles: g.indices.length / 3 };
+  };
+  const lazy = meshes.some((m) => typeof m.load === 'function');
+  const eager = lazy ? null : meshes.map(weldOf);
+  const frame = quantisationFrame(eager
+    ? eager.map((w) => w.mesh)
+    : meshes.map((m) => {
+      const b = bounds(weldOf(m).mesh.positions);
+      return { positions: Float64Array.of(...b.min, ...b.max) };
+    }));
 
   const full = [];
   const low = [];
   const report = [];
-  for (const w of welded) {
+  for (const [k, m] of meshes.entries()) {
+    const w = eager ? eager[k] : weldOf(m);
     const sourceMesh = reorder(M, w.mesh);
     const sourceTris = sourceMesh.indices.length / 3;
     let fullTarget = Math.min(sourceTris, Math.max(fullFloorTriangles, Math.ceil(sourceTris * fullRatio)));

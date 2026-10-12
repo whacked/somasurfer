@@ -79,30 +79,27 @@ const bp3d = openSource(source);
 const laterality = assertLaterality(bp3d);
 
 const t0 = performance.now();
-const loaded = bp3d.files().map((f) => bp3d.loadFile(f));
-const byFile = new Map(loaded.map((f) => [f.file, f]));
+// Headers only to group, and each structure's geometry loaded when the tier
+// builder asks for it and dropped after: holding all 2,234 parsed element files
+// at once was more memory than the build host has (killed at 868 MB RSS).
+const loaded = bp3d.files().map((f) => bp3d.loadHeader(f));
 const { structures, excluded } = groupBodyStructures(bp3d, loaded);
 
-const meshes = structures.map((s) => {
-  let n = 0;
-  let t = 0;
-  for (const f of s.files) {
-    n += byFile.get(f).V.length;
-    t += byFile.get(f).F.length;
-  }
-  const positions = new Float32Array(n);
-  const indices = new Uint32Array(t);
+const loadStructure = (s) => {
+  const parts = s.files.map((f) => bp3d.loadFile(f));
+  const positions = new Float32Array(parts.reduce((n, p) => n + p.V.length, 0));
+  const indices = new Uint32Array(parts.reduce((n, p) => n + p.F.length, 0));
   let v = 0;
   let i = 0;
-  for (const f of s.files) {
-    const { V, F } = byFile.get(f);
+  for (const { V, F } of parts) {
     positions.set(V, v);
     for (let k = 0; k < F.length; k += 1) indices[i + k] = F[k] + v / 3;
     v += V.length;
     i += F.length;
   }
-  return { id: s.id, positions, indices };
-});
+  return { positions, indices };
+};
+const meshes = structures.map((s) => ({ id: s.id, load: () => loadStructure(s) }));
 const tiers = await buildMeshTiers({ meshes, mmPerUnit: 1, ...params });
 const reportById = new Map(tiers.report.map((r) => [r.id, r]));
 
