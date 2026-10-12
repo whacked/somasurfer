@@ -96,6 +96,11 @@
       "limit": 3500,
       "covers": "navigation start to the first click being handled, on the reference machine, derived as above plus a fixed render allowance",
       "why": "Interaction is the product. 3.5 s is the outer edge of acceptable for a first visit to a 3D atlas, and the target to beat once the viewer lands."
+    },
+    "derivedFirstBrainFrameMs": {
+      "limit": 3500,
+      "covers": "a brain link, navigation start to the first brain frame drawn, on the reference machine: the critical path of derivedFirstInteractionMs, one round of asset requests, the files the page fetches for the brain (each brain mesh set's structures.json, label file and registration where declared, and its eager tier, read from the atlas index's meshSets), the viewer's own decode of them (meshSetFrom, normalised), and the render allowance",
+      "why": "DOG-123 set the first brain frame at <= 3,500 ms modelled on this reference machine, as the derivedFirstInteractionMs limit, with no loosened line (CTO comment of 2026-10-11 17:02, carried into DOG-129). That line's derivation stops at the critical path, so it cannot see the brain at all; this one prices the brain in, under the same 3,500 ms. It is a second line at the same limit, not a looser one."
     }
   },
   "renderAllowanceMs": {

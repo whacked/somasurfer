@@ -50,6 +50,7 @@ import { REPO_ROOT, fail, pass, rel } from './lib/repo.mjs';
 import { buildNameIndex } from '../packages/alc/src/index.ts';
 import { MAGIC as ATLM_MAGIC, readMeshBin } from './lib/meshbin.mjs';
 import { joinNameIndex } from '../packages/atlas-web/src/viewer/nameindex.js';
+import { meshSetFrom } from '../packages/atlas-web/src/viewer/meshset.js';
 
 /**
  * `--dist <dir>` measures a build somewhere other than packages/atlas-web/dist.
@@ -430,6 +431,61 @@ const assetParseMs = parseMs(assetFiles, (value) => {
   return sink + (value.levels?.length ?? 0) + 1;
 });
 
+/**
+ * The first brain frame (DOG-129): every file a brain link fetches before the
+ * brain can be drawn, and the work the page does on them.
+ *
+ * Read from the build's own `meshSets` declaration in the atlas index, the way
+ * app.js reads it, so the bytes are the files the page fetches: each brain
+ * set's structures.json, its label file and registration where it has them,
+ * and its eager (`low`) tier. Not `lowResBrainAssetGzipBytes`, which is a byte
+ * line over a directory and would cost a file nobody fetches for this frame.
+ *
+ * The parse term is the viewer's own decode, `meshSetFrom` in
+ * packages/atlas-web/src/viewer/meshset.js: JSON.parse of the documents, then
+ * dequantise, transform into MNI, split the cortex into lobes, lay out by
+ * layer and box every structure. The reader's walk alone, which is what
+ * `lowResAssetParseMsNormalised` measures, is a fraction of that, and the page
+ * draws nothing until all of it has run.
+ *
+ * `null` when the build declares no brain mesh set, as `main` does today: a
+ * fact about the build, reported as such, never a zero.
+ */
+const brainFrame = (() => {
+  const index = JSON.parse(readFileSync(join(DIST, 'data', 'atlas-index.json'), 'utf8'));
+  const base = typeof index.base === 'string' && index.base !== '' ? index.base : '/';
+  const sets = (index.meshSets ?? []).filter((e) => e.atlas === 'brain');
+  if (sets.length === 0) return null;
+  const toDist = (u) => join(DIST, String(u).startsWith(base) ? String(u).slice(base.length) : String(u));
+  const files = [];
+  const inputs = sets.map((entry) => {
+    const texts = {};
+    for (const key of ['structures', 'labels', 'registration']) {
+      if (!entry[key]) continue;
+      const path = toDist(entry[key]);
+      files.push(path);
+      texts[key] = readFileSync(path, 'utf8');
+    }
+    const low = JSON.parse(texts.structures).tiers?.low?.file;
+    if (typeof low !== 'string') fail('performance budget', [`${rel(toDist(entry.structures))} declares no low tier, so no first brain frame can be drawn from it.`]);
+    const path = join(DIST, 'assets', low);
+    files.push(path);
+    return { entry, texts, bytes: readFileSync(path) };
+  });
+  let best = Infinity;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const t0 = performance.now();
+    let sink = 0;
+    for (const { entry, texts, bytes } of inputs) {
+      const docs = Object.fromEntries(Object.entries(texts).map(([k, t]) => [k, JSON.parse(t)]));
+      sink += meshSetFrom(entry, docs, bytes).structures.length;
+    }
+    if (!(sink > 0)) throw new Error('the first brain frame decoded no structures');
+    best = Math.min(best, performance.now() - t0);
+  }
+  return { files, gzip: gzipBytes(files), parseMs: best };
+})();
+
 // ---------------------------------------------------------------------------
 // Derivation onto the reference machine.
 // ---------------------------------------------------------------------------
@@ -494,6 +550,12 @@ function linesScaledBy(parseFactor) {
     derivedLowResAssetLoadMs:
       criticalPathMs + budget.transferModel.roundTrips.assets * rttMs + transferMs(assetGzip) + assetParseNorm,
     derivedFirstInteractionMs: criticalPathMs + budget.renderAllowanceMs.value,
+    // A brain link: the critical path, one round of asset requests, the brain
+    // frame's own files, the viewer's decode of them, and the render allowance.
+    derivedFirstBrainFrameMs: brainFrame === null
+      ? null
+      : criticalPathMs + budget.transferModel.roundTrips.assets * rttMs + transferMs(brainFrame.gzip)
+        + brainFrame.parseMs * parseFactor + budget.renderAllowanceMs.value,
   };
 }
 
@@ -533,6 +595,7 @@ const CALIBRATED_LINES = new Set([
   'lowResAssetParseMsNormalised',
   'derivedLowResAssetLoadMs',
   'derivedFirstInteractionMs',
+  'derivedFirstBrainFrameMs',
 ]);
 
 const unclassified = Object.keys(budget.budgets).filter((k) => !EXACT_LINES.has(k) && !CALIBRATED_LINES.has(k));
@@ -830,6 +893,10 @@ const detail = [
   `files: ${bundleFiles.length} bundle, ${indexFiles.length} index (${nameIndexPaths.length} of them the name index), ${assetFiles.length} asset`
     + ` (${lowResBrainFiles.length} of them the low-resolution brain, ${lowResBodyFiles.length} the low-resolution body),`
     + ` ${lazyAssets.size} fetched lazily (${fullResBrainFiles.length} brain, ${fullResBodyFiles.length} body, full resolution)`,
+  brainFrame === null
+    ? `first brain frame: NOT IN THIS BUILD — the atlas index declares no brain mesh set.`
+    : `first brain frame: ${brainFrame.files.length} files, ${(brainFrame.gzip / 1024).toFixed(1)} KiB gzip,`
+      + ` the viewer's decode ${brainFrame.parseMs.toFixed(1)} ms raw (best of 3)`,
   ...(calibrationOverrideMs !== null
     ? [
         ``,
@@ -869,9 +936,9 @@ const detail = [
         ``,
       ]
     : []),
-  `NOT MEASURED: the same two derived numbers in a real browser. That needs the`,
+  `NOT MEASURED: the derived numbers in a real browser. That needs the`,
   `viewer and a headless browser in CI. Until then the ${budget.renderAllowanceMs.value} ms render allowance`,
-  `in derivedFirstInteractionMs is a stated placeholder, not an observation.`,
+  `in derivedFirstInteractionMs and derivedFirstBrainFrameMs is a stated placeholder, not an observation.`,
 ];
 
 const report = {

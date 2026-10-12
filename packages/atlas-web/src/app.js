@@ -273,7 +273,7 @@ function renderNotices() {
   const box = $('notices');
   box.replaceChildren();
   const selection = viewer.state.selection;
-  const all = [...ui.notices];
+  const all = [...ui.notices, ...(ui.meshNotices?.[viewer.atlas] ? [ui.meshNotices[viewer.atlas]] : [])];
   if (!viewer.isAvailable()) {
     all.push(atlasUnavailableNotice(viewer.state.unavailable[viewer.atlas]));
   }
@@ -1009,16 +1009,20 @@ function scene() {
     // are laid out by layer, so a frame is a few dozen draws, not 1,605.
     const byOpacity = new Map();
     for (const s of set.structures) {
+      // The selected structure keeps its layer's opacity, so a faded skin stays
+      // faded. Opaque or hidden, an x-ray pass shows it through what is in front.
       const chosen = s.key === viewer.structureOf();
-      const { visible, opacity } = chosen ? { visible: true, opacity: 1 } : structureLayers(layers, s);
-      if (!visible || !(opacity > 0)) continue;
       const colour = chosen ? ui.palette.chosen : ui.palette[s.lobe ? s.label : s.category] ?? ui.palette.other;
+      const { visible, opacity } = structureLayers(layers, s);
+      if (chosen && (!visible || opacity >= 1)) {
+        xray = { mesh: set.gpu, ranges: [{ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour }] };
+      }
+      if (!visible || !(opacity > 0)) continue;
       if (!byOpacity.has(opacity)) byOpacity.set(opacity, []);
       const ranges = byOpacity.get(opacity);
       const last = ranges[ranges.length - 1];
       if (last && last.colour === colour && last.firstTriangle + last.triangleCount === s.firstTriangle) last.triangleCount += s.triangleCount;
       else ranges.push({ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour });
-      if (chosen) xray = { mesh: set.gpu, ranges: [{ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour }] };
     }
     for (const [opacity, ranges] of byOpacity) solids.push({ mesh: set.gpu, ranges, visible: true, opacity });
   }
@@ -1396,17 +1400,19 @@ async function drawTier(atlas, tier) {
     }
   }));
   if (failed.length > 0) {
-    ui.notices.push({
+    (ui.meshNotices ??= {})[atlas] = {
       code: 'meshes-unavailable',
       severity: 'warning',
       title: `Some ${atlas} anatomy could not be drawn`,
       detail: `The ${tier}-resolution meshes of ${failed.join(', ')} failed to load. Addresses still `
         + 'parse and resolve to names, and cells are still drawn at their true extent.',
-    });
+    };
   }
   if (ui.sets[atlas].length > 0) {
     ui.meshStatus[atlas] = ui.sets[atlas].every((m) => m.tier === 'full' || !ui.fullTiers?.has(m.id)) ? 'full' : 'low';
-    ui.bounds[atlas] = boundsOfStructures(ui.sets[atlas].flatMap((m) => m.structures));
+    // The brain is framed on the BV template's box, not on the arteries and
+    // nerves that run far below it; the body on all of its anatomy.
+    if (atlas === 'body' || !ui.hemispheres) ui.bounds[atlas] = boundsOfStructures(ui.sets[atlas].flatMap((m) => m.structures));
     // An automatic fit is refitted to the anatomy; a camera from a link or a drag is left alone.
     if (ui.autoFit[atlas] && ui.autoFit[atlas] === viewer.cameraOf(atlas)) {
       ui.autoFit[atlas] = viewer.setCamera(fitCamera(ui.bounds[atlas]), atlas);

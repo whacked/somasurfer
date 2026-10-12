@@ -277,6 +277,8 @@ file, not observed:
 critical path     = 2 × RTT + (bundle + index) / downlink + index parse
 low-res asset load = critical path + 1 × RTT + assets / downlink + asset parse
 first interaction  = critical path + render allowance
+first brain frame  = critical path + 1 × RTT + brain frame files / downlink
+                     + the viewer's decode of them + render allowance
 ```
 
 Two round trips for the critical path and one for the assets: HTTP/2 over a
@@ -293,6 +295,35 @@ clock speed and little else, so raw and normalised numbers are both always
 reported, and the gate will not quote a normalised number at all if the runner
 is more than 4× off the reference — at that distance the correction would be
 doing more work than the measurement.
+
+### The first brain frame (DOG-129)
+
+`derivedFirstBrainFrameMs` is the brain link: what it costs to go from
+navigation to the brain drawn, on the reference machine. DOG-123 set it at
+**≤ 3,500 ms modelled**, the `derivedFirstInteractionMs` limit, and asked for
+no loosened line. That line stops at the critical path, so it never saw the
+brain; this one is a second line at the **same** limit that prices the brain in.
+
+- **Bytes:** the files a brain link fetches, read from the atlas index's
+  `meshSets` the way `app.js` reads it: each brain set's `structures.json`, its
+  label file and registration where declared, and its eager (`low`) tier. It is
+  not `lowResBrainAssetGzipBytes`, which is a directory line and would cost a
+  file nobody fetches for this frame.
+- **Parse:** the viewer's own decode, `meshSetFrom` in
+  `packages/atlas-web/src/viewer/meshset.js` (dequantise, carry into MNI, split
+  the cortex into lobes, lay out by layer, box every structure). That is several
+  times the reader's walk that `lowResAssetParseMsNormalised` measures, and the
+  page draws nothing until it has run. Best of three, normalised like every
+  other parse term.
+- **Not in a build with no brain mesh set** (`main` today): reported as absent,
+  never as zero.
+
+`app.js` matches the model's ordering: the URL's atlas fetches its low tier
+first, the other atlas's low tier comes next, and full tiers load only after.
+So a brain link is not queued behind the body.
+
+At DOG-129's branch it reads **1,417 ms / 3,500 ms (40%)**: 6 files, 958.7 KiB
+gzip, and a 127 ms raw decode on a runner calibrated at 2.4× the reference.
 
 ## When the runner is too far from the reference
 
