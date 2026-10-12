@@ -57,6 +57,11 @@
       "covers": "the brain mesh files declared `loading: \"lazy\"` in their structures.json (the full-resolution tier), gzipped",
       "why": "Derived once, on 2026-10-11, from the first full-tier build (DOG-127, 4,972,008 B gzip): 1.10 x that, rounded up to the next 256 KiB, = 5.25 MiB. It is a committed literal, not re-derived at gate time, so it cannot ratchet to whatever the next build happens to weigh. At 25 Mbit/s it is about 1.8 s of background transfer after the low tier is already drawn. The 10% was margin for re-encoding the set it was derived from. The origin-test moves (midbrain x2 from the glb, the corpus callosum from BodyParts3D) then added about 349 KB, and holding the 4 colliculi took some of it back, so the 244 structures that ship now leave about 3.6%, not 10% (docs/brain-mesh-report.md has the current reading). The literal stays as derived. Adding a clearance group (the cortex, if it clears) is a new decision about this line, not headroom inside it."
     },
+    "lowResBodyAssetGzipBytes": {
+      "limit": 1310720,
+      "covers": "dist/assets/body/**, gzipped, less the lazily fetched tier: the body's share of lowResAssetGzipBytes, counted in that line as well",
+      "why": "The body's 1.25 MiB of the 2.5 MiB low-resolution line, as agreed in W2 (DOG-127) and recorded in docs/performance-budget.md: brain 1.00 MiB, body 1.25 MiB, v1 templates and labels 0.25 MiB. It holds the full-body human (DOG-128, W3) to its share, so a body that grows cannot spend the brain's room."
+    },
     "indexParseMsNormalised": {
       "limit": 40,
       "covers": "JSON.parse of data/*.json plus building the lookup maps, normalised to the reference machine",

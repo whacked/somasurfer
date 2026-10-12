@@ -295,9 +295,14 @@ export async function buildMeshTiers({
     const w = eager ? eager[k] : weldOf(m);
     const sourceMesh = reorder(M, w.mesh);
     const sourceTris = sourceMesh.indices.length / 3;
+    // A mesh marked `keepFull` ships its full tier undecimated even when the
+    // set's is decimated: the body's 25 BD vertebrae, the frame's own witnesses
+    // (DOG-128). Decimated to ~256 triangles, they moved BD's T07 and T09 axis
+    // points 1.03 and 1.31 mm, past the registration gate's 1 mm.
+    const decimateFull = fullRatio < 1 && !m.keepFull;
     let fullTarget = Math.min(sourceTris, Math.max(fullFloorTriangles, Math.ceil(sourceTris * fullRatio)));
-    if (fullRatio < 1 && shapeMargin) fullTarget = shapeKeepingTarget(M, decimate, sourceMesh, fullTarget, shapeMargin.full);
-    const fullMesh = fullRatio < 1 ? reorder(M, decimate(M, sourceMesh, fullTarget)) : sourceMesh;
+    if (decimateFull && shapeMargin) fullTarget = shapeKeepingTarget(M, decimate, sourceMesh, fullTarget, shapeMargin.full);
+    const fullMesh = decimateFull ? reorder(M, decimate(M, sourceMesh, fullTarget)) : sourceMesh;
     const fq = quantise(fullMesh, frame);
     const fullTris = fq.indices.length / 3;
     // The floor is a guarantee, not a target: the simplifier may stop short of

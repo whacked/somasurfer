@@ -31,7 +31,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
 import { REPO_ROOT, fail, rel } from './lib/repo.mjs';
-import { SOURCE, assertLaterality, openSource } from './lib/bp3d.mjs';
+import { BD_LEVELS, SOURCE, assertLaterality, openSource } from './lib/bp3d.mjs';
 import { BODY_CATEGORIES, BODY_EXCLUSIONS, groupBodyStructures } from './lib/body-structures.mjs';
 import { buildMeshTiers } from './lib/brain-meshes.mjs';
 import { BODY_MESH_BUILD, bodyAssetPaths } from './lib/body-asset-paths.mjs';
@@ -99,7 +99,11 @@ const loadStructure = (s) => {
   }
   return { positions, indices };
 };
-const meshes = structures.map((s) => ({ id: s.id, load: () => loadStructure(s) }));
+// The 25 BD vertebrae keep their source resolution in the full tier: the
+// registration gate re-derives BD's level points from them, and decimated they
+// moved two of those points past its 1 mm (T07 1.03, T09 1.31 mm at 09ee895).
+const BD_WITNESSES = new Set(BD_LEVELS.map(([, fma]) => fma));
+const meshes = structures.map((s) => ({ id: s.id, keepFull: BD_WITNESSES.has(s.fma), load: () => loadStructure(s) }));
 const tiers = await buildMeshTiers({ meshes, mmPerUnit: 1, ...params });
 const reportById = new Map(tiers.report.map((r) => [r.id, r]));
 
@@ -140,6 +144,7 @@ const structuresDoc = {
     simplifier: 'meshoptimizer 1.3.0 simplify(), LockBorder; topology-preserving edge collapse',
     errorMeasure: 'symmetric Hausdorff and mean surface distance, every vertex, exact nearest-surface, millimetres',
     exclusions: BODY_EXCLUSIONS,
+    fullTierUndecimated: { fma: [...BD_WITNESSES], why: 'the 25 BD vertebrae: the registration gate re-derives BD level points from them' },
     categories: BODY_CATEGORIES.map(([category, tree, fma, term]) => ({ category, tree, fma, term })),
   },
   tiers: {
