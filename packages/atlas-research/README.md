@@ -133,8 +133,15 @@ stays the same.
 
 The lobe-labelled ICBM152 cortex (DOG-151) is registered as
 `icbm152-2009c-cortex-lobes`, and every HCP-MMP1 entry targets its lobe as well as
-its gyrus. Until DOG-151's label file is on the tree, the gate prints those targets
-as UNVERIFIED: unchecked, and resolving to nothing.
+its gyrus. The gate reads DOG-151's label file
+(`packages/atlas-assets/brain/icbm152-2009c/lobes.json`) and checks every lobe
+target against it: the label exists, with one structure per side and the id
+DOG-151 publishes (DOG-157). The lobes are supplied as named structures only,
+with no locator, so a coordinate never lands on them. On the low tier a
+nearest-label rule puts the A1 peak in the parietal lobe and the PHA1 and FFC
+peaks on unlabelled faces, so the gate prints `NOT PLACED:` for the lobe cortex
+rather than placing points there. `PHA1` targets the temporal lobe only, because
+DOG-151's limbic lobe stops at the cingulate sulcus.
 
 **Two criteria are vacuous on the real data today, and the gate says so.** There
 are 0 coordinate links (every curated coordinate falls inside no shipped
@@ -143,7 +150,7 @@ coordinate link is `exact-term`", the precision floor, and "HCP-MMP1 links are
 crosswalk, approximate, and keep the area name" are checked only by
 `region-index.test.ts` and the gate's self-test. `check-crosswalk` prints
 `VACUOUS:` for each, rather than counting them as passes. Coverage
-(≥ 44 of 170 mappings, ≥ 15 of 30 papers) and coordinate precision (≥ ±7 mm,
+(≥ 109 of 170 mappings, ≥ 29 of 30 papers) and coordinate precision (≥ ±7 mm,
 from ≥ 2 held-out landmarks) are committed literals in the gate, not readings.
 
 ## Tests
