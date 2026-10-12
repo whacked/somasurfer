@@ -14,8 +14,8 @@
  *
  * How a pick is judged (DOG-133 comments, CTO rule of DOG-143): 17 left/right
  * pairs share one `expect.name`, so a name match alone cannot tell a pick of
- * one side from the other. Each entry is drawn with only its category, and
- * only its hemisphere when it has one. Its own pixels are the difference
+ * one side from the other. Each entry is drawn with only its category
+ * isolated, and its other hemisphere hidden when it has one. Its own pixels are the difference
  * between that view with and without the entry selected (selection draws the
  * structure through whatever is in front). A pick passes only if a click on
  * one of those pixels, through the page's own pointer path, selects that
@@ -80,6 +80,21 @@ async function open(search) {
 const press = (page, testid) => page.$eval(`[data-testid=${testid}]`, (el) => el.click());
 const uncheck = (page, testid) => page.$eval(`[data-testid=${testid}]`, (el) => { if (el.checked && !el.disabled) el.click(); });
 
+/** A real pointer drag on the canvas: `rotate` turns 0.008 rad per pixel. */
+async function drag(page, dx, dy) {
+  const b = await page.locator('[data-testid=canvas]').boundingBox();
+  const x = b.x + b.width / 2; const y = b.y + b.height / 2;
+  await page.mouse.move(x, y); await page.mouse.down();
+  for (let i = 1; i <= 8; i += 1) await page.mouse.move(x + (dx * i) / 8, y + (dy * i) / 8);
+  await page.mouse.up();
+}
+const QUARTER = Math.round(Math.PI / 2 / 0.008);
+const VIEWS = [
+  { name: 'default' },
+  { name: 'yaw+90', dx: QUARTER }, { name: 'yaw+180', dx: 2 * QUARTER }, { name: 'yaw-90', dx: -QUARTER },
+  { name: 'from below', dy: -QUARTER }, { name: 'from above', dy: QUARTER },
+];
+
 const settle = (page) => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 60)))));
 
 async function shot(page) {
@@ -88,7 +103,7 @@ async function shot(page) {
   // A clip of the page, not an element shot: the element never reads as
   // "stable" while the page redraws, and the clip is the same pixels.
   const b = await page.locator('[data-testid=canvas]').boundingBox();
-  return page.screenshot({ clip: { x: Math.round(b.x), y: Math.round(b.y), width: Math.round(b.width), height: Math.round(b.height) }, animations: 'allow', timeout: 180000 });
+  return page.screenshot({ clip: { x: b.x, y: b.y, width: b.width, height: b.height }, animations: 'allow', timeout: 180000 });
 }
 
 /** Pixels that differ between two shots, plus up to `k` points deepest inside that mask. */
@@ -192,33 +207,49 @@ if (want('picking')) {
     await press(page, 'reset-layers');
     await page.evaluate(() => { window.__atlas.selectStructure(null); window.__atlas.resetCamera(); });
     await press(page, `layer-isolate-${e.category}`);
-    if (e.side === 'left' || e.side === 'right') await press(page, `layer-isolate-${e.side}`);
-    const plain = await shot(page);
-    await page.evaluate((k) => window.__atlas.selectStructure(k), key);
-    const selected = await shot(page);
-    const mask = await maskOf(page, plain, selected);
-    r.ownPixels = mask.changed;
-    await page.evaluate(() => window.__atlas.selectStructure(null));
-    if (!mask.changed) { r.status = 'fail'; r.why = 'selecting it changes no pixel: it does not render'; continue; }
-    r.attempts = [];
-    for (const p of mask.points) {
-      const got = await page.evaluate(([x, y]) => window.__atlas.pickAt(x, y), [p.x, p.y]);
-      await settle(page);
-      const panel = await page.textContent('#structure-name').catch(() => null);
-      r.attempts.push({ x: p.x, y: p.y, depth: p.depth, picked: got.structure, panel });
-      if (got.structure === key) break;
+    // One isolation slot (`iso=`): a second isolate replaces the first, so the
+    // other hemisphere is hidden with its toggle instead.
+    if (e.side === 'left' || e.side === 'right') await uncheck(page, `layer-toggle-${e.side === 'left' ? 'right' : 'left'}`);
+    const layers = await page.evaluate(() => window.__atlas.viewer.layersOf());
+    r.layers = layers;
+    // The default camera first, then the views a user gets by dragging: a
+    // structure enclosed by a sibling from one side may be clickable from another.
+    r.attempts = []; r.views = [];
+    for (const view of VIEWS) {
+      await page.evaluate(() => window.__atlas.resetCamera());
+      if (view.dx || view.dy) await drag(page, view.dx ?? 0, view.dy ?? 0);
+      await page.evaluate(() => window.__atlas.selectStructure(null));
+      const plain = await shot(page);
+      await page.evaluate((k) => window.__atlas.selectStructure(k), key);
+      const selected = await shot(page);
+      const mask = await maskOf(page, plain, selected);
+      await page.evaluate(() => window.__atlas.selectStructure(null));
+      r.views.push({ view: view.name, ownPixels: mask.changed });
+      if (!r.selectedShot && mask.changed) r.selectedShot = selected;
+      for (const p of mask.points) {
+        const got = await page.evaluate(([x, y]) => window.__atlas.pickAt(x, y), [p.x, p.y]);
+        await settle(page);
+        const panel = await page.textContent('#structure-name').catch(() => null);
+        r.attempts.push({ view: view.name, x: p.x, y: p.y, depth: p.depth, picked: got.structure, panel });
+        if (got.structure === key) break;
+      }
+      if (r.attempts.at(-1)?.picked === key) break;
     }
+    r.ownPixels = Math.max(0, ...r.views.map((v) => v.ownPixels));
+    if (!r.ownPixels) { r.status = 'fail'; r.why = 'selecting it changes no pixel in any view: it does not render'; continue; }
     const hit = r.attempts.find((a) => a.picked === key);
     const label = hit ? drawn.find((s) => s.key === hit.picked)?.label : null;
     r.pickedName = label;
+    r.view = hit?.view ?? null;
     r.panel = hit?.panel ?? null;
     if (!hit) { r.status = 'fail'; r.why = `none of ${r.attempts.length} clicks on its own pixels picked it (got ${[...new Set(r.attempts.map((a) => a.picked))].join(', ')})`; continue; }
     if (label !== e.expect.name || !String(hit.panel ?? '').startsWith(e.expect.name)) { r.status = 'fail'; r.why = `picked its key but named "${label}" / panel "${hit.panel}"`; continue; }
     r.status = 'pass';
     if (results.filter((x) => x.status === 'pass').length <= 3 || ['Subthalamic nucleus', 'Substantia nigra', 'Nucleus accumbens'].includes(e.expect.name)) {
-      writeFileSync(join(OUT, 'shots', `pick-${e.id}-selected.png`), selected);
+      writeFileSync(join(OUT, 'shots', `pick-${e.id}-selected.png`), r.selectedShot);
     }
   }
+  for (const r of results) delete r.selectedShot;
   const passed = results.filter((r) => r.status === 'pass');
   const perCategory = {};
   for (const r of results) { const c = (perCategory[r.category] ??= { sample: 0, pass: 0 }); c.sample += 1; if (r.status === 'pass') c.pass += 1; }
@@ -236,16 +267,22 @@ if (want('picking')) {
     await settle(page);
     const results = await page.$$eval('[data-testid=search-results] li', (ns) => ns.map((n) => n.textContent.trim()));
     const scope = await page.textContent('[data-testid=search-scope]').catch(() => '');
-    const bodyText = await page.evaluate(() => document.body.innerText);
-    const saysWhy = new RegExp(`${c.name}[^\\n]{0,200}(held|withheld|licen|undeclared)`, 'i').test(bodyText) || /held|withheld|licen/i.test(results.join(' '));
-    controls.push({ id: c.id, name: c.name, reason: c.expect.reason, drawn: asDrawn.map((s) => s.key), searchResults: results, searchScope: scope, saysWhy });
+    // "Says why" needs the name and a reason in the same visible place: every
+    // stretch of visible text that names the structure, and whether it explains.
+    const mentions = await page.evaluate((name) => {
+      const text = document.body.innerText; const out = [];
+      for (let i = text.indexOf(name); i >= 0; i = text.indexOf(name, i + 1)) out.push(text.slice(Math.max(0, i - 120), i + name.length + 200));
+      return out;
+    }, c.name);
+    const saysWhy = mentions.some((m) => /held|withheld|licen[cs]e|undeclared|not (drawn|shipped)/i.test(m));
+    controls.push({ id: c.id, name: c.name, reason: c.expect.reason, drawn: asDrawn.map((s) => s.key), searchResults: results, searchScope: scope, mentions, saysWhy });
   }
   await page.fill('[data-testid=search-input]', '');
   const notDrawn = controls.every((c) => c.drawn.length === 0);
   row('picking-controls', notDrawn ? 'pass' : 'fail',
     `${controls.filter((c) => c.drawn.length === 0).length}/${controls.length} withheld controls absent from the drawn and pickable set`, { controls });
   row('picking-controls-say-why', controls.every((c) => c.saysWhy) ? 'pass' : 'fail',
-    `${controls.filter((c) => c.saysWhy).length}/${controls.length} withheld controls explained on the page (searching the name: ${controls.map((c) => JSON.stringify(c.searchResults)).join('; ')})`, { controls });
+    `${controls.filter((c) => c.saysWhy).length}/${controls.length} withheld controls explained on the page after searching their name (${controls.map((c) => `${c.name}: ${c.mentions.length} visible mention(s), search results ${JSON.stringify(c.searchResults)}, scope ${JSON.stringify(c.searchScope)}`).join('; ')})`, { controls });
   await page.close();
 }
 
