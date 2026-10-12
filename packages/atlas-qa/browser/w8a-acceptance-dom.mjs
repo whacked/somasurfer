@@ -21,7 +21,10 @@
  * one of those pixels, through the page's own pointer path, selects that
  * entry's key and the panel names `expect.name`. Clicking the same spot again
  * reaches the structure behind (DOG-192), so a pick may take several clicks on
- * one pixel; the count is recorded, and 1 means the first click.
+ * one pixel; the count is recorded, and 1 means the first click. Every pick
+ * found through `pickAt` is then repeated with real, slightly jittery mouse
+ * taps, because the pointer path (wireCanvas) is where a tap's camera and
+ * point are decided, and `pickAt` does not go through it.
  */
 
 import { createServer } from 'node:http';
@@ -249,6 +252,25 @@ if (want('picking')) {
     r.ownPixels = Math.max(0, ...r.views.map((v) => v.ownPixels));
     if (!r.ownPixels) { r.status = 'fail'; r.why = 'selecting it changes no pixel in any view: it does not render'; continue; }
     const hit = r.attempts.find((a) => a.picked === key);
+    if (hit) {
+      // Confirm through the real pointer: `pickAt` calls pick() directly and
+      // skips wireCanvas, where a tap's camera and point are decided. Back to
+      // the view the hit was found in, a miss in a corner to end any
+      // click-again run, then the same number of slightly jittery taps.
+      await page.evaluate(() => window.__atlas.resetCamera());
+      const view = VIEWS.find((v) => v.name === hit.view);
+      if (view.dx || view.dy) await drag(page, view.dx ?? 0, view.dy ?? 0);
+      await page.evaluate(() => { window.__atlas.pickAt(2, 2); window.__atlas.selectStructure(null); });
+      const b = await page.locator('[data-testid=canvas]').boundingBox();
+      for (let i = 0; i < hit.clicks; i += 1) {
+        await page.mouse.move(b.x + hit.x, b.y + hit.y);
+        await page.mouse.down();
+        await page.mouse.move(b.x + hit.x + 2, b.y + hit.y + 1);
+        await page.mouse.up();
+      }
+      await settle(page);
+      r.pointer = { taps: hit.clicks, selected: await page.evaluate(() => window.__atlas.structure()), panel: await page.textContent('#structure-name').catch(() => null) };
+    }
     const label = hit ? drawn.find((s) => s.key === hit.picked)?.label : null;
     r.pickedName = label;
     r.view = hit?.view ?? null;
@@ -256,6 +278,7 @@ if (want('picking')) {
     r.panel = hit?.panel ?? null;
     if (!hit) { r.status = 'fail'; r.why = `none of ${r.attempts.length} clicks on its own pixels picked it (got ${[...new Set(r.attempts.map((a) => a.picked))].join(', ')})`; continue; }
     if (label !== e.expect.name || !String(hit.panel ?? '').startsWith(e.expect.name)) { r.status = 'fail'; r.why = `picked its key but named "${label}" / panel "${hit.panel}"`; continue; }
+    if (r.pointer.selected !== key || !String(r.pointer.panel ?? '').startsWith(e.expect.name)) { r.status = 'fail'; r.why = `pickAt reaches it, but ${r.pointer.taps} real taps at (${hit.x}, ${hit.y}) select ${r.pointer.selected} / panel "${r.pointer.panel}"`; continue; }
     r.status = 'pass';
     if (results.filter((x) => x.status === 'pass').length <= 3 || ['Subthalamic nucleus', 'Substantia nigra', 'Nucleus accumbens'].includes(e.expect.name)) {
       writeFileSync(join(OUT, 'shots', `pick-${e.id}-selected.png`), r.selectedShot);
