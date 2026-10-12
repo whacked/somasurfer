@@ -1404,7 +1404,7 @@ function wireCanvas() {
 
   canvas.addEventListener('pointerdown', (event) => {
     canvas.setPointerCapture(event.pointerId);
-    drag = { x: event.clientX, y: event.clientY, moved: 0, button: event.button, shift: event.shiftKey };
+    drag = { x: event.clientX, y: event.clientY, moved: 0, button: event.button, shift: event.shiftKey, camera: viewer.cameraOf(), at: { clientX: event.clientX, clientY: event.clientY } };
   });
   canvas.addEventListener('pointermove', (event) => {
     if (!drag) return;
@@ -1422,11 +1422,13 @@ function wireCanvas() {
     draw();
   });
   canvas.addEventListener('pointerup', (event) => {
-    const travelled = drag && drag.moved > 4;
+    const press = drag;
     drag = null;
-    // A camera move is not a selection. Only a click without travel picks.
-    if (travelled) commit({ push: false });
-    else pick(event);
+    // A camera move is not a selection. Only a click without travel picks, at
+    // the camera and point it was pressed with, so a jittery click again still goes deeper.
+    if (press?.moved > 4) return commit({ push: false });
+    if (press) viewer.setCamera(press.camera);
+    pick(press?.at ?? event);
   });
   canvas.addEventListener('pointercancel', () => { drag = null; });
   canvas.addEventListener('contextmenu', (event) => event.preventDefault());
