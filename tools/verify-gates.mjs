@@ -1592,7 +1592,7 @@ const CASES = [
     gate: 'mesh assets',
     criterion: 'the mesh gate checks every body structure and all 25 BD levels on the committed tree, not none',
     mustPass: true,
-    expect: [/bp3d-4066585: __BODY_STRUCTURES__ body structures in both tiers/, /Published error re-measured for all __BODY_STRUCTURES__: Hausdorff/, /Registered to BD: 25 level points re-derived from the shipped vertebrae/],
+    expect: [/bp3d-4066585: 1605 body structures in both tiers/, /Published error re-measured for all 1605: Hausdorff/, /Registered to BD: 25 level points re-derived from the shipped vertebrae/],
     describe: 'the committed body mesh files, unchanged',
     break: () => () => {},
     check: () => run('check-mesh-assets.mjs'),
@@ -1601,7 +1601,7 @@ const CASES = [
     name: 'body-skull-bone-lost-from-low-tier',
     gate: 'mesh assets',
     criterion: 'the mesh gate fails when a body structure is missing from the low tier',
-    expect: [/body: structures\.json lists __BODY_STRUCTURES__ structures; the tiers hold __BODY_STRUCTURES_LESS_ONE__ \(low\)/],
+    expect: [/body: structures\.json lists 1605 structures; the tiers hold 1604 \(low\)/],
     describe: 'a low tier with the frontal bone decimated out of existence',
     break: () => {
       const bone = bodyStructure('Frontal bone');
@@ -1689,7 +1689,7 @@ const CASES = [
     gate: 'licence separation',
     criterion: 'rule 10 checks every structure slot of the committed body files, not none',
     mustPass: true,
-    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\)[^\n]*; 3 body file\(s\), __BODY_SLOTS__ structure slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\)[^\n]*; 3 body file\(s\), 4815 structure slot\(s\)/],
     describe: 'the committed body mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),
