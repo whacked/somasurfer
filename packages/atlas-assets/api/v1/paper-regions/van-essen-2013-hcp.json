@@ -1,0 +1,40 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:van-essen-2013-hcp",
+ "paperHref": "../../../../data/api/v1/papers/van-essen-2013-hcp.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:van-essen-2013-hcp/multimodal-acquisition/hcp-mmp1-v1"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:van-essen-2013-hcp/subject-count/atlas-label-inferior-frontal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:van-essen-2013-hcp/surface-based-registration/atlas-label-precentral-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:van-essen-2013-hcp/minimal-preprocessing/atlas-label-fusiform-gyrus"
+   ]
+  }
+ ]
+}

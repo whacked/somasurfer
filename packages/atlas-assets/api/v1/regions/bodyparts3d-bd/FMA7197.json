@@ -1,0 +1,88 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "key": "bodyparts3d-bd/FMA7197",
+ "representation": "bodyparts3d-bd",
+ "structureId": "FMA7197",
+ "structureName": "liver",
+ "papers": [
+  {
+   "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+   "href": "../../../../../data/api/v1/papers/mitsuhashi-2009-bodyparts3d.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7197",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/per-part-meshes",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7197",
+     "structureName": "liver",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7197",
+      "label": "liver"
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:mungall-2012-uberon",
+   "href": "../../../../../data/api/v1/papers/mungall-2012-uberon.json",
+   "links": [
+    {
+     "mappingId": "map:mungall-2012-uberon/multi-species-integration/fma7197",
+     "findingId": "finding:mungall-2012-uberon/multi-species-integration",
+     "paperId": "paper:mungall-2012-uberon",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7197",
+     "structureName": "liver",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7197",
+      "label": "liver"
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:rosse-2003-fma",
+   "href": "../../../../../data/api/v1/papers/rosse-2003-fma.json",
+   "links": [
+    {
+     "mappingId": "map:rosse-2003-fma/reference-ontology/fma7197",
+     "findingId": "finding:rosse-2003-fma/reference-ontology",
+     "paperId": "paper:rosse-2003-fma",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7197",
+     "structureName": "liver",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7197",
+      "label": "liver"
+     }
+    }
+   ]
+  }
+ ]
+}

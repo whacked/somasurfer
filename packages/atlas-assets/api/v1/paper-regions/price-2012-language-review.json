@@ -1,0 +1,68 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:price-2012-language-review",
+ "paperHref": "../../../../data/api/v1/papers/price-2012-language-review.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:price-2012-language-review/heard-speech/hcp-mmp1-a1"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:A4 (\"Auditory area 4\") is held by the asset owner: Superior temporal gyrus (Lateral part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:price-2012-language-review/heard-speech/hcp-mmp1-a4"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:price-2012-language-review/speech-production/hcp-mmp1-44"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:price-2012-language-review/speech-production/hcp-mmp1-4"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:price-2012-language-review/reading/hcp-mmp1-ffc"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:lingual-gyrus (\"lingual gyrus\") is held by the asset owner: Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:price-2012-language-review/reading/atlas-label-lingual-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:TE1a (\"Area TE1a (anterior temporal)\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:price-2012-language-review/semantic-retrieval/hcp-mmp1-te1a"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:TGd (\"Area TGd (temporal pole, dorsal)\") is held by the asset owner: Temporal pole. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:price-2012-language-review/semantic-retrieval/hcp-mmp1-tgd"
+   ]
+  }
+ ]
+}

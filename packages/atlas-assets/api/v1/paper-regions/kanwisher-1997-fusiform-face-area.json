@@ -1,0 +1,41 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:kanwisher-1997-fusiform-face-area",
+ "paperHref": "../../../../data/api/v1/papers/kanwisher-1997-fusiform-face-area.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:kanwisher-1997-fusiform-face-area/face-selective-region/hcp-mmp1-ffc",
+    "map:kanwisher-1997-fusiform-face-area/peak-coordinate/hcp-mmp1-ffc"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:kanwisher-1997-fusiform-face-area/right-lateralisation/atlas-label-fusiform-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:kanwisher-1997-fusiform-face-area/stimulus-contrast/atlas-label-occipital-lobe"
+   ]
+  },
+  {
+   "code": "coordinate-outside-shipped-structures",
+   "detail": "(40, -55, -10) mm lies inside no shipped structure of zanatomy-gross-anatomy zanatomy-2929e94; the nearest is Superior semilunar lobule.r, 0.54 mm away in the mesh frame. Not linked: nearest is not containing, and the structure that does contain it may be held.",
+   "mappingIds": [
+    "map:kanwisher-1997-fusiform-face-area/peak-coordinate/hcp-mmp1-ffc"
+   ]
+  }
+ ]
+}

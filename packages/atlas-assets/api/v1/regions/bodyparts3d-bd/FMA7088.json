@@ -1,0 +1,63 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "key": "bodyparts3d-bd/FMA7088",
+ "representation": "bodyparts3d-bd",
+ "structureId": "FMA7088",
+ "structureName": "heart",
+ "papers": [
+  {
+   "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+   "href": "../../../../../data/api/v1/papers/mitsuhashi-2009-bodyparts3d.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7088",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/per-part-meshes",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7088",
+     "structureName": "heart",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7088",
+      "label": "heart"
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:rosse-2003-fma",
+   "href": "../../../../../data/api/v1/papers/rosse-2003-fma.json",
+   "links": [
+    {
+     "mappingId": "map:rosse-2003-fma/reference-ontology/fma7088",
+     "findingId": "finding:rosse-2003-fma/reference-ontology",
+     "paperId": "paper:rosse-2003-fma",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7088",
+     "structureName": "heart",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7088",
+      "label": "heart"
+     }
+    }
+   ]
+  }
+ ]
+}

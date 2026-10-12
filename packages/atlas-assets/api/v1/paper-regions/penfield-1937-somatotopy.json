@@ -1,0 +1,54 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:penfield-1937-somatotopy",
+ "paperHref": "../../../../data/api/v1/papers/penfield-1937-somatotopy.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:penfield-1937-somatotopy/motor-strip/hcp-mmp1-4"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:penfield-1937-somatotopy/motor-strip/atlas-label-precentral-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:penfield-1937-somatotopy/sensory-strip/hcp-mmp1-3b"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:penfield-1937-somatotopy/sensory-strip/atlas-label-postcentral-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:1 (\"Area 1 (somatosensory)\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:penfield-1937-somatotopy/disproportionate-representation/hcp-mmp1-1"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:FOP4 (\"Frontal opercular area 4\") is held by the asset owner: Circular sulcus of insula; Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:penfield-1937-somatotopy/stimulation-not-imaging/hcp-mmp1-fop4"
+   ]
+  }
+ ]
+}

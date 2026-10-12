@@ -1,0 +1,103 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "key": "zanatomy-gross-anatomy/78",
+ "representation": "zanatomy-gross-anatomy",
+ "structureId": "78",
+ "structureName": "Corticomedial group.r",
+ "papers": [
+  {
+   "paperId": "paper:amunts-2020-julich-brain",
+   "href": "../../../../../data/api/v1/papers/amunts-2020-julich-brain.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "78",
+     "structureName": "Corticomedial group.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:fan-2016-brainnetome",
+   "href": "../../../../../data/api/v1/papers/fan-2016-brainnetome.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "78",
+     "structureName": "Corticomedial group.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:fischl-2012-freesurfer",
+   "href": "../../../../../data/api/v1/papers/fischl-2012-freesurfer.json",
+   "links": [
+    {
+     "mappingId": "map:fischl-2012-freesurfer/subcortical-segmentation/atlas-label-amygdala",
+     "findingId": "finding:fischl-2012-freesurfer/subcortical-segmentation",
+     "paperId": "paper:fischl-2012-freesurfer",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "78",
+     "structureName": "Corticomedial group.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ]
+}

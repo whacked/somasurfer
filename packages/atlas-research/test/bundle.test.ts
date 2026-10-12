@@ -213,7 +213,20 @@ test('bundle: the viewer bundle stopped containing the modules it stopped reachi
   // the shipped bundle only because `index.ts` re-exports them.
   const scopes = (text: string) => [...text.matchAll(/^const (__m_\w+) = \(\(\) => \{$/gm)].map((m) => m[1]).sort();
 
-  assert.deepEqual(scopes(full), ['__m_browse', '__m_dataset', '__m_index', '__m_layers', '__m_links', '__m_validate']);
+  // The region index and the representation registry (DOG-130), and the API
+  // documents and client (DOG-131), are build-time and API work: in the
+  // package, never in what the page loads.
+  assert.deepEqual(scopes(full), [
+    '__m_api',
+    '__m_browse',
+    '__m_dataset',
+    '__m_index',
+    '__m_layers',
+    '__m_links',
+    '__m_region_index',
+    '__m_representations',
+    '__m_validate',
+  ]);
   assert.deepEqual(scopes(viewer), ['__m_dataset', '__m_index_viewer', '__m_links', '__m_validate']);
 
   // And the functions themselves are gone, not merely unexported. An unreached

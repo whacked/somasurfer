@@ -58,6 +58,66 @@ export {
 
 export { formatCitation, isSafeUrl, safeHref, sourceLink, type SourceLink } from './links.ts';
 
+export { REPRESENTATIONS, representation, type GeometryKind, type Representation } from './representations.ts';
+
+export {
+  buildRegionIndex,
+  checkRegionIndex,
+  CROSSWALK_ONLY_SCHEMES,
+  serialiseRegionIndex,
+  structureKey,
+  validateCrosswalk,
+  type Crosswalk,
+  type CrosswalkCompleteness,
+  type CrosswalkEntry,
+  type CrosswalkTarget,
+  type HeldStructure,
+  type LinkHow,
+  type LinkPrecision,
+  type LocateResult,
+  type MappingOutcome,
+  type PaperRegions,
+  type RegionCoverage,
+  type RegionIndex,
+  type RegionIndexInput,
+  type RegionLink,
+  type RepresentationData,
+  type RepresentedStructure,
+  type Side,
+  type StructurePapers,
+  type Unplaced,
+  type UnplacedCode,
+} from './region-index.ts';
+
+export {
+  API_LICENCES,
+  API_ROOTS,
+  API_SCHEMA,
+  API_VERSION,
+  apiDocuments,
+  apiHref,
+  apiPaths,
+  createPaperApi,
+  createRegionApi,
+  createResearchApi,
+  createStaticApiClient,
+  paperSlug,
+  validateApiDocument,
+  type ApiDocument,
+  type ApiIndex,
+  type ApiPaper,
+  type ApiPaperRegions,
+  type ApiRegion,
+  type ApiRegionIndex,
+  type ApiTransport,
+  type ApiTree,
+  type PaperApi,
+  type RegionApi,
+  type ResearchApi,
+  type ResearchApiClient,
+  type SerialisedRegionIndex,
+} from './api.ts';
+
 export type {
   AuthoredAgainst,
   Confidence,

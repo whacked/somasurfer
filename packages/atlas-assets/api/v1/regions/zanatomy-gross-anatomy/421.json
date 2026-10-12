@@ -1,0 +1,133 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "key": "zanatomy-gross-anatomy/421",
+ "representation": "zanatomy-gross-anatomy",
+ "structureId": "421",
+ "structureName": "Ventral anterior nucleus.l",
+ "papers": [
+  {
+   "paperId": "paper:fan-2016-brainnetome",
+   "href": "../../../../../data/api/v1/papers/fan-2016-brainnetome.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "421",
+     "structureName": "Ventral anterior nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:fischl-2012-freesurfer",
+   "href": "../../../../../data/api/v1/papers/fischl-2012-freesurfer.json",
+   "links": [
+    {
+     "mappingId": "map:fischl-2012-freesurfer/subcortical-segmentation/atlas-label-thalamus",
+     "findingId": "finding:fischl-2012-freesurfer/subcortical-segmentation",
+     "paperId": "paper:fischl-2012-freesurfer",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "421",
+     "structureName": "Ventral anterior nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:mazziotta-2001-icbm",
+   "href": "../../../../../data/api/v1/papers/mazziotta-2001-icbm.json",
+   "links": [
+    {
+     "mappingId": "map:mazziotta-2001-icbm/probabilistic-not-single-subject/atlas-label-thalamus",
+     "findingId": "finding:mazziotta-2001-icbm/probabilistic-not-single-subject",
+     "paperId": "paper:mazziotta-2001-icbm",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "421",
+     "structureName": "Ventral anterior nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:power-2011-functional-areas",
+   "href": "../../../../../data/api/v1/papers/power-2011-functional-areas.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "421",
+     "structureName": "Ventral anterior nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "key": "zanatomy-gross-anatomy/50",
+ "representation": "zanatomy-gross-anatomy",
+ "structureId": "50",
+ "structureName": "Caudate nucleus.r",
+ "papers": [
+  {
+   "paperId": "paper:fonov-2011-unbiased-templates",
+   "href": "../../../../../data/api/v1/papers/fonov-2011-unbiased-templates.json",
+   "links": [
+    {
+     "mappingId": "map:fonov-2011-unbiased-templates/nonlinear-averaging/atlas-label-caudate-nucleus",
+     "findingId": "finding:fonov-2011-unbiased-templates/nonlinear-averaging",
+     "paperId": "paper:fonov-2011-unbiased-templates",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "50",
+     "structureName": "Caudate nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:caudate-nucleus",
+      "label": "caudate nucleus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:tzourio-mazoyer-2002-aal",
+   "href": "../../../../../data/api/v1/papers/tzourio-mazoyer-2002-aal.json",
+   "links": [
+    {
+     "mappingId": "map:tzourio-mazoyer-2002-aal/subcortical-regions/atlas-label-caudate-nucleus",
+     "findingId": "finding:tzourio-mazoyer-2002-aal/subcortical-regions",
+     "paperId": "paper:tzourio-mazoyer-2002-aal",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "50",
+     "structureName": "Caudate nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:caudate-nucleus",
+      "label": "caudate nucleus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ]
+}

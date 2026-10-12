@@ -1,0 +1,135 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:panjabi-1991-thoracic-morphometry",
+ "paperHref": "../../../../data/api/v1/papers/panjabi-1991-thoracic-morphometry.json",
+ "regions": [
+  {
+   "key": "bodyparts3d-bd/FMA13075",
+   "structureName": "fourth lumbar vertebra",
+   "href": "../regions/bodyparts3d-bd/FMA13075.json",
+   "links": [
+    {
+     "mappingId": "map:panjabi-1991-thoracic-morphometry/level-to-level-variation/fma13075",
+     "findingId": "finding:panjabi-1991-thoracic-morphometry/level-to-level-variation",
+     "paperId": "paper:panjabi-1991-thoracic-morphometry",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA13075",
+     "structureName": "fourth lumbar vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA13075",
+      "label": "fourth lumbar vertebra"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA16202",
+   "structureName": "sacrum",
+   "href": "../regions/bodyparts3d-bd/FMA16202.json",
+   "links": [
+    {
+     "mappingId": "map:panjabi-1991-thoracic-morphometry/level-to-level-variation/fma16202",
+     "findingId": "finding:panjabi-1991-thoracic-morphometry/level-to-level-variation",
+     "paperId": "paper:panjabi-1991-thoracic-morphometry",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA16202",
+     "structureName": "sacrum",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA16202",
+      "label": "sacrum"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7647",
+   "structureName": "spinal cord",
+   "href": "../regions/bodyparts3d-bd/FMA7647.json",
+   "links": [
+    {
+     "mappingId": "map:panjabi-1991-thoracic-morphometry/canal-dimensions/fma7647",
+     "findingId": "finding:panjabi-1991-thoracic-morphometry/canal-dimensions",
+     "paperId": "paper:panjabi-1991-thoracic-morphometry",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7647",
+     "structureName": "spinal cord",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7647",
+      "label": "spinal cord"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA9968",
+   "structureName": "seventh thoracic vertebra",
+   "href": "../regions/bodyparts3d-bd/FMA9968.json",
+   "links": [
+    {
+     "mappingId": "map:panjabi-1991-thoracic-morphometry/vertebral-dimensions/fma9968",
+     "findingId": "finding:panjabi-1991-thoracic-morphometry/vertebral-dimensions",
+     "paperId": "paper:panjabi-1991-thoracic-morphometry",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA9968",
+     "structureName": "seventh thoracic vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA9968",
+      "label": "seventh thoracic vertebra"
+     }
+    },
+    {
+     "mappingId": "map:panjabi-1991-thoracic-morphometry/pedicle-geometry/fma9968",
+     "findingId": "finding:panjabi-1991-thoracic-morphometry/pedicle-geometry",
+     "paperId": "paper:panjabi-1991-thoracic-morphometry",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA9968",
+     "structureName": "seventh thoracic vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA9968",
+      "label": "seventh thoracic vertebra"
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

@@ -21,9 +21,9 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
 import { readMeshBin, writeMeshBin } from './lib/meshbin.mjs';
 import { brainAssetPaths } from './lib/brain-asset-paths.mjs';
@@ -376,6 +376,25 @@ function editJson(path, edit, indent) {
   const doc = JSON.parse(readFileSync(path, 'utf8'));
   edit(doc);
   return substitute(path, `${JSON.stringify(doc, null, indent)}\n`);
+}
+
+const CROSSWALK = join(ASSETS, 'crosswalk', 'crosswalk.json');
+const REGION_INDEX = join(ASSETS, 'crosswalk', `region-index-${BRAIN.id}.json`);
+const API_TREE = join(ASSETS, 'api', 'v1');
+/** One committed region document to stage edits on: the first, so it exists whatever the coverage. */
+const API_REGION_DOC = (() => {
+  const dir = join(API_TREE, 'regions');
+  if (!existsSync(dir)) return join(dir, 'missing.json');
+  const rep = readdirSync(dir).sort()[0];
+  return rep ? join(dir, rep, readdirSync(join(dir, rep)).sort()[0]) : join(dir, 'missing.json');
+})();
+const API_STRAY = join(API_TREE, 'regions', 'gate-verify', '0.json');
+
+/** `crosswalk.json` with one entry changed, in a single substitution. */
+function withCrosswalk(mutate) {
+  const doc = JSON.parse(readFileSync(CROSSWALK, 'utf8'));
+  mutate(doc);
+  return substitute(CROSSWALK, `${JSON.stringify(doc, null, 1)}\n`);
 }
 
 /** The structure records of a committed brain file, by name, for staging against. */
@@ -2015,6 +2034,225 @@ const CASES = [
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS), '--dist', rel(BASE_BUILD_DIST)]),
   },
+
+  // -------------------------------------------------------------------------
+  // Crosswalk and region index (DOG-130).
+  // -------------------------------------------------------------------------
+  {
+    name: 'crosswalk-gate-reads-the-committed-files',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate resolves the whole seed on the committed tree and finds the index matching',
+    mustPass: true,
+    expect: [
+      /coverage: \d+ of 170 mappings reach a named structure, covering \d+ of 30 papers/,
+      /index: .*region-index-zanatomy-2929e94\.json matches its inputs/,
+      /floors \(committed\): coverage ≥ 44 of 170 mappings and ≥ 15 of 30 papers, met; coordinate precision ≥ ±7 mm/,
+      /VACUOUS: 0 coordinate links/,
+      /VACUOUS: 0 HCP-MMP1 → gyrus links/,
+      /UNVERIFIED: 25 crosswalk target\(s\) in icbm152-2009c-cortex-lobes/,
+    ],
+    describe: 'the committed crosswalk, seed and brain assets, unchanged',
+    // A gate that resolved nothing would also pass. This pins that it resolved the
+    // seed, that the floors are the committed literals, and that what it cannot
+    // check is still said out loud: deleting the VACUOUS or UNVERIFIED report
+    // would otherwise leave those criteria passing in silence.
+    break: () => () => {},
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-index-hand-edited',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when the committed region index is not what its inputs produce',
+    expect: [/region-index-zanatomy-2929e94\.json does not match what its inputs produce/],
+    describe: 'the committed region index claiming every paper is non-empty',
+    // The figure W8a reads. Inflating it is the edit that matters, so it is the one staged.
+    break: () => {
+      const doc = JSON.parse(readFileSync(REGION_INDEX, 'utf8'));
+      doc.coverage.papers.nonEmpty = doc.coverage.papers.total;
+      return substitute(REGION_INDEX, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-hcp-entry-claims-exact',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when an HCP-MMP1 area claims to be the gyrus it is projected onto',
+    expect: [/crosswalk HCP-MMP1:V1: claims exact-term/],
+    describe: 'crosswalk.json filing HCP-MMP1 V1 as exact-term',
+    break: () =>
+      withCrosswalk((doc) => {
+        const v1 = doc.entries.find((e) => e.term === 'HCP-MMP1:V1');
+        if (!v1) throw new Error('HCP-MMP1:V1 is no longer in the crosswalk to stage this against');
+        v1.how = 'exact-term';
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-target-misspelt',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when a target names no structure, shipped or held',
+    expect: [/crosswalk ATLAS-LABEL:putamen: target "Putamen nucleus" is not a structure of zanatomy-gross-anatomy/],
+    describe: 'crosswalk.json naming the putamen "Putamen nucleus"',
+    // A misspelt target resolves to nothing, and nothing reads like a hold.
+    break: () =>
+      withCrosswalk((doc) => {
+        const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:putamen');
+        if (!e) throw new Error('ATLAS-LABEL:putamen is no longer in the crosswalk to stage this against');
+        e.targets[0].label = 'Putamen nucleus';
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-seed-term-unmapped',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when a term the seed uses has no entry',
+    expect: [/term ATLAS-LABEL:thalamus has no crosswalk entry/],
+    describe: 'crosswalk.json with the thalamus entry deleted',
+    break: () => withCrosswalk((doc) => (doc.entries = doc.entries.filter((e) => e.term !== 'ATLAS-LABEL:thalamus'))),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-coverage-below-floor',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when coverage drops below its committed floor, not just when the index drifts',
+    expect: [/coverage floor: 38 of 170 mappings and 12 of 30 papers reach a named structure,/],
+    describe: 'crosswalk.json filing the hippocampus under the held precentral gyrus (6 mappings and 3 papers lost)',
+    // A valid crosswalk that links less. The drift check fires too; this pins the
+    // floor, which is the one that survives a --write.
+    break: () =>
+      withCrosswalk((doc) => {
+        const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:hippocampus');
+        if (!e) throw new Error('ATLAS-LABEL:hippocampus is no longer in the crosswalk to stage this against');
+        e.targets = [{ representation: 'zanatomy-gross-anatomy', label: 'Precentral gyrus' }];
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-registration-precision-below-floor',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate refuses a registration claiming better than the committed precision floor',
+    expect: [/precision floor: the registration claims a held-out error of ±1 mm, below the committed floor of ±7 mm/],
+    describe: 'the registration summary claiming a 1 mm held-out error',
+    // Read from the file, the floor used to follow it down. This is the refit the
+    // committed literal exists to stop.
+    break: () => {
+      const reg = JSON.parse(readFileSync(BRAIN_REGISTRATION, 'utf8'));
+      reg.summary.heldOut.maxMm = 1;
+      return substitute(BRAIN_REGISTRATION, `${JSON.stringify(reg, null, 1)}\n`);
+    },
+    check: () => run('check-crosswalk.mjs'),
+  },
+
+  // -------------------------------------------------------------------------
+  // The static research API (DOG-131).
+  // -------------------------------------------------------------------------
+  {
+    name: 'research-api-reads-the-committed-tree',
+    gate: 'research api',
+    criterion: 'the API gate validates both trees, agrees with the live index, and finds the committed region tree matching',
+    mustPass: true,
+    expect: [
+      /region tree \(CC BY-SA 4\.0, packages\/atlas-assets\/api\/v1 → dist\/assets\/api\/v1\/\): 1 region-index, \d+ region, 30 paper-regions/,
+      /paper tree \(Apache-2\.0, emitted by the site build to dist\/data\/api\/v1\/\): 1 index, 30 paper/,
+      /live index: papersFor and regionsFor agree with every region and paper-regions document/,
+      /committed: packages\/atlas-assets\/api\/v1 matches its inputs, and attribution entry research-api-regions lists exactly its files/,
+    ],
+    describe: 'the committed region tree, seed and region index, unchanged',
+    break: () => () => {},
+    check: () => run('build-research-api.mjs'),
+  },
+  {
+    name: 'research-api-region-doc-hand-edited',
+    gate: 'research api',
+    criterion: 'the API gate fails when a committed region document is not what its inputs produce',
+    expect: [/api\/v1\/regions\/.*\.json does not match what its inputs produce/],
+    describe: 'a committed region document renaming its structure',
+    break: () => {
+      const doc = JSON.parse(readFileSync(API_REGION_DOC, 'utf8'));
+      doc.structureName = `${doc.structureName} (edited)`;
+      return substitute(API_REGION_DOC, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('build-research-api.mjs'),
+  },
+  {
+    name: 'research-api-stray-endpoint',
+    gate: 'research api',
+    criterion: 'the API gate fails on a file in the region tree that no query answers for',
+    expect: [/api\/v1\/regions\/gate-verify\/0\.json is not an endpoint the API answers for/],
+    describe: 'a region document nobody generated, dropped into the committed tree',
+    break: () => {
+      mkdirSync(join(API_TREE, 'regions', 'gate-verify'), { recursive: true });
+      const restore = substitute(API_STRAY, readFileSync(API_REGION_DOC));
+      return () => {
+        restore();
+        removeIfEmpty(join(API_TREE, 'regions', 'gate-verify'));
+      };
+    },
+    check: () => run('build-research-api.mjs'),
+  },
+  {
+    name: 'research-api-stale-against-inputs',
+    gate: 'research api',
+    criterion: 'the API gate fails when the region tree no longer answers what the live index answers',
+    expect: [/the live index says/],
+    describe: 'crosswalk.json filing the hippocampus under the held precentral gyrus, with no regeneration',
+    // The region index and the tree are both stale now, and check-crosswalk
+    // catches the index. This pins that the API gate checks against the live
+    // inputs itself, rather than trusting the committed index it is built from.
+    break: () =>
+      withCrosswalk((doc) => {
+        const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:hippocampus');
+        if (!e) throw new Error('ATLAS-LABEL:hippocampus is no longer in the crosswalk to stage this against');
+        e.targets = [{ representation: 'zanatomy-gross-anatomy', label: 'Precentral gyrus' }];
+      }),
+    check: () => run('build-research-api.mjs'),
+  },
+  {
+    name: 'research-api-contract-at-pages-base',
+    gate: 'research api contract',
+    criterion: 'every response the site serves at /somasurfer/ equals the library answer, and every link resolves under it',
+    mustPass: true,
+    expect: [
+      /at base \/somasurfer\/ on http:\/\/127\.0\.0\.1:\d+, and read it back from \/somasurfer\/data\/atlas-index\.json alone/,
+      /\d+ distinct relative links followed under \/somasurfer\/, all 200/,
+      /self-test: a region document served with a link dropped is caught/,
+    ],
+    describe: 'a build at the Pages base, unchanged',
+    break: () => buildAtPagesBase(),
+    check: () => run('check-research-api-contract.mjs', ['--dist', BASE_BUILD_DIST]),
+  },
+  {
+    name: 'research-api-contract-served-doc-differs',
+    gate: 'research api contract',
+    criterion: 'the contract check fails when a served region document differs from the library answer',
+    expect: [/region\(.*\): the served answer differs from the library's/],
+    describe: 'dist/assets/api/v1/ serving a region document with one link dropped',
+    break: () => {
+      requireBuild();
+      const shipped = join(WEB, 'dist', 'assets', relative(ASSETS, API_REGION_DOC));
+      const doc = JSON.parse(readFileSync(shipped, 'utf8'));
+      doc.papers[0].links.pop();
+      if (doc.papers[0].links.length === 0) doc.papers.shift();
+      if (doc.papers.length === 0) throw new Error(`${rel(shipped)} has no paper left to stage this against`);
+      return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-research-api-contract.mjs'),
+  },
+  {
+    name: 'research-api-contract-paper-missing',
+    gate: 'research api contract',
+    criterion: 'the contract check fails when a paper the library answers for is a 404 on the site',
+    expect: [/paper\(paper:[^)]+\): the served answer differs from the library's \(404\)/],
+    describe: 'dist/data/api/v1/papers/ missing one paper document',
+    break: () => {
+      requireBuild();
+      const dir = join(WEB, 'dist', 'data', 'api', 'v1', 'papers');
+      const first = readdirSync(dir).sort()[0];
+      if (!first) throw new Error('dist/data/api/v1/papers/ is empty');
+      return hide(join(dir, first));
+    },
+    check: () => run('check-research-api-contract.mjs'),
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -2062,6 +2300,10 @@ const touched = [
   rel(ICBM_LOW),
   rel(ICBM_STRUCTURES),
   rel(ICBM_LOBES),
+  rel(CROSSWALK),
+  rel(REGION_INDEX),
+  // The whole committed region tree: a case edits one document and plants a stray one.
+  rel(API_TREE),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
@@ -2143,6 +2385,8 @@ for (const c of selected) {
 
 // A failed restore is worse than a failed case: leave nothing behind.
 rmSync(BASE_BUILD, { recursive: true, force: true });
+rmSync(API_STRAY, { force: true });
+removeIfEmpty(join(API_TREE, 'regions', 'gate-verify'));
 for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', 'gate-verify.js'), GATE_TEMPLATE, LEAKED_NC, MERGED]) {
   rmSync(path, { force: true });
   rmSync(`${path}.gate-verify-stash`, { force: true });

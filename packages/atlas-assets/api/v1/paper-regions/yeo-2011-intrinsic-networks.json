@@ -1,0 +1,47 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:yeo-2011-intrinsic-networks",
+ "paperHref": "../../../../data/api/v1/papers/yeo-2011-intrinsic-networks.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:yeo-2011-intrinsic-networks/seven-network-solution/atlas-label-posterior-cingulate-cortex"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:yeo-2011-intrinsic-networks/seven-network-solution/atlas-label-precuneus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:yeo-2011-intrinsic-networks/default-network-anterior/atlas-label-anterior-cingulate-cortex"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:yeo-2011-intrinsic-networks/networks-are-not-areas/hcp-mmp1-pgs"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:IPS1 (\"Intraparietal sulcus area 1\") is held by the asset owner: Intraparietal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:yeo-2011-intrinsic-networks/confidence-maps/hcp-mmp1-ips1"
+   ]
+  }
+ ]
+}

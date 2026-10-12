@@ -1,0 +1,48 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:amunts-1999-broca",
+ "paperHref": "../../../../data/api/v1/papers/amunts-1999-broca.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:amunts-1999-broca/area-44-variability/hcp-mmp1-44",
+    "map:amunts-1999-broca/interhemispheric-asymmetry/hcp-mmp1-44"
+   ]
+  },
+  {
+   "code": "coordinate-outside-shipped-structures",
+   "detail": "BV-L-0001 lies inside no shipped structure of zanatomy-gross-anatomy zanatomy-2929e94; the nearest is Inferior semilunar lobule.l, 32.87 mm away in the mesh frame. Not linked: nearest is not containing, and the structure that does contain it may be held.",
+   "mappingIds": [
+    "map:amunts-1999-broca/area-44-variability/hcp-mmp1-44"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:amunts-1999-broca/area-44-variability/hcp-mmp1-45"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:amunts-1999-broca/gyrus-level/atlas-label-inferior-frontal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:amunts-1999-broca/borders-cross-sulci/atlas-label-precentral-gyrus"
+   ]
+  }
+ ]
+}

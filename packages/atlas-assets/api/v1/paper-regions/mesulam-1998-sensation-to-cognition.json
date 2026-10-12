@@ -1,0 +1,72 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:mesulam-1998-sensation-to-cognition",
+ "paperHref": "../../../../data/api/v1/papers/mesulam-1998-sensation-to-cognition.json",
+ "regions": [
+  {
+   "key": "zanatomy-gross-anatomy/122",
+   "structureName": "Hippocampus.l",
+   "href": "../regions/zanatomy-gross-anatomy/122.json",
+   "links": [
+    {
+     "mappingId": "map:mesulam-1998-sensation-to-cognition/limbic-end/atlas-label-hippocampus",
+     "findingId": "finding:mesulam-1998-sensation-to-cognition/limbic-end",
+     "paperId": "paper:mesulam-1998-sensation-to-cognition",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/123",
+   "structureName": "Hippocampus.r",
+   "href": "../regions/zanatomy-gross-anatomy/123.json",
+   "links": [
+    {
+     "mappingId": "map:mesulam-1998-sensation-to-cognition/limbic-end/atlas-label-hippocampus",
+     "findingId": "finding:mesulam-1998-sensation-to-cognition/limbic-end",
+     "paperId": "paper:mesulam-1998-sensation-to-cognition",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "123",
+     "structureName": "Hippocampus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

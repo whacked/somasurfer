@@ -14,7 +14,8 @@
       "labels",
       "brain",
       "body",
-      "registration"
+      "registration",
+      "api"
     ],
     "ncPayloadDirs": [
       "nc"

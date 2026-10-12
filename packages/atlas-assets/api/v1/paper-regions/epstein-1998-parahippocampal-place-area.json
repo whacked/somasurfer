@@ -1,0 +1,41 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:epstein-1998-parahippocampal-place-area",
+ "paperHref": "../../../../data/api/v1/papers/epstein-1998-parahippocampal-place-area.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:epstein-1998-parahippocampal-place-area/scene-selective-region/hcp-mmp1-pha1",
+    "map:epstein-1998-parahippocampal-place-area/peak-coordinate/hcp-mmp1-pha1"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:epstein-1998-parahippocampal-place-area/parahippocampal-location/atlas-label-parahippocampal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:epstein-1998-parahippocampal-place-area/not-object-selective/hcp-mmp1-ffc"
+   ]
+  },
+  {
+   "code": "coordinate-outside-shipped-structures",
+   "detail": "(26, -42, -10) mm lies inside no shipped structure of zanatomy-gross-anatomy zanatomy-2929e94; the nearest is Posterior quadrangular lobule.r, 1.01 mm away in the mesh frame. Not linked: nearest is not containing, and the structure that does contain it may be held.",
+   "mappingIds": [
+    "map:epstein-1998-parahippocampal-place-area/peak-coordinate/hcp-mmp1-pha1"
+   ]
+  }
+ ]
+}
