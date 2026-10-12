@@ -47,6 +47,16 @@ import { buildTemplates } from './fixtures/fixtures.mjs';
 // may declare. Imported from the validator that enforces it rather than
 // restated, so the build cannot emit a role the viewer will reject.
 import { RESEARCH_ROLES } from './src/viewer/research.js';
+// The paper half of the static research API: the dataset alone, so ours.
+import {
+  API_LICENCES,
+  API_ROOTS,
+  API_SCHEMA,
+  API_VERSION,
+  apiDocuments,
+  createPaperApi,
+  loadDataset,
+} from '../atlas-research/src/index.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
@@ -328,6 +338,36 @@ if (/fixture/i.test(researchDoc.version) !== (researchDoc.role === 'fixture')) {
 emit('data/research.json', JSON.stringify(researchDoc) + '\n');
 
 /**
+ * The static research API, v1 (DOG-131). `packages/atlas-research/schema/api-1.md`.
+ *
+ * Two trees. The paper tree is the curated dataset alone, so it is ours and is
+ * emitted here, under dist/data/, from `createPaperApi` — the same function the
+ * library answers with. The region tree is joined with BY-SA structure names,
+ * so it is asset content: it is committed in packages/atlas-assets/api/v1/ by
+ * tools/build-research-api.mjs and arrives above as a byte copy, like every
+ * other payload. This build only checks that it arrived; it never reads it,
+ * which is what keeps rule 6 true of dist/data/api/.
+ *
+ * Every link inside both trees is relative, so neither embeds the base. The
+ * two roots are published, under the base, in `atlas-index.json`.
+ */
+const researchApiDocs = apiDocuments(createPaperApi(loadDataset(curatedSeed)));
+for (const d of researchApiDocs) emit(`${API_ROOTS.data}${d.path}`, JSON.stringify(d.body) + '\n');
+if (!assetFiles.some((a) => a.path === `${API_ROOTS.assets}index.json`)) {
+  throw new Error(
+    `the paper tree links the region tree at ${API_ROOTS.assets}index.json, and no such payload was copied. `
+    + 'Run node tools/build-research-api.mjs --write, or check that payloadDirs still covers api/.',
+  );
+}
+const researchApi = {
+  schema: API_SCHEMA,
+  version: API_VERSION,
+  dataRoot: `${BASE}${API_ROOTS.data}`,
+  assetsRoot: `${BASE}${API_ROOTS.assets}`,
+  licences: API_LICENCES,
+};
+
+/**
  * What the page says about the corpus it serves.
  *
  * Everything here except `resolution` is read straight off the dataset, so it
@@ -398,6 +438,8 @@ const atlasIndex = {
     structureCount: null,
   },
   research,
+  /** The static research API's two roots; `createStaticApiClient` takes them as they are. */
+  researchApi,
   assets: assetFiles.map((a) => ({
     path: `${BASE}${a.path}`,
     bytes: a.bytes,
