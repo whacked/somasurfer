@@ -98,7 +98,12 @@ decimated too. The parameters are fixed in `tools/lib/body-asset-paths.mjs`:
   the source to `fullRatio`, with a floor of `fullFloorTriangles` (or all of its
   triangles if it has fewer). The build measures each structure's deviation from
   the source and publishes it as `fullVsSourceMm`. That figure is the build's:
-  the gate has the two tiers and not the source.
+  the gate has the two tiers and not the source. **One exception:** the 25 BD
+  vertebrae ship at source resolution in the full tier
+  (`build.fullTierUndecimated`), because the registration check measures BD
+  from them. The first gate-complete build decimated them, and BD's T07 and
+  T09 axis points moved 1.03 and 1.31 mm, past the 1 mm tolerance. That
+  violation is what this exception fixes. The gate's tolerance was not changed.
 - **Low** (`meshes.lowres.bin`, fetched eagerly): each structure decimated from
   the full tier to `ratio`, with a floor of `floorTriangles`, exactly as the
   brain's low tier is.
