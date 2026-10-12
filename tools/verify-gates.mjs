@@ -376,6 +376,17 @@ function withCrosswalk(mutate) {
   return substitute(CROSSWALK, `${JSON.stringify(doc, null, 1)}\n`);
 }
 
+const ICBM_LOW = join(ASSETS, 'brain', 'icbm152-2009c', 'cortex.lowres.bin');
+const ICBM_STRUCTURES = join(ASSETS, 'brain', 'icbm152-2009c', 'structures.json');
+const ICBM_LOBES = join(ASSETS, 'brain', 'icbm152-2009c', 'lobes.json');
+
+/** A committed JSON file with one edit applied, written back in its own layout. */
+function editJson(path, edit, indent) {
+  const doc = JSON.parse(readFileSync(path, 'utf8'));
+  edit(doc);
+  return substitute(path, `${JSON.stringify(doc, null, indent)}\n`);
+}
+
 /** The structure records of a committed brain file, by name, for staging against. */
 function brainStructure(name) {
   const doc = JSON.parse(readFileSync(BRAIN_STRUCTURES, 'utf8'));
@@ -1404,12 +1415,103 @@ const CASES = [
     },
     check: () => run('check-mesh-assets.mjs'),
   },
+  // -------------------------------------------------------------------------
+  // The ICBM152 cortex (DOG-151): its own gate, and rule 10 on a volume-derived set.
+  // -------------------------------------------------------------------------
+  {
+    name: 'icbm-cortex-gate-reads-the-committed-files',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate checks both hemispheres of the committed low tier, not none',
+    mustPass: true,
+    expect: [/cortex\.lowres\.bin: 2 structures, left [\d,]+ triangles, right [\d,]+ triangles; 0 non-manifold edges/, /all 6 lobes in both hemispheres/],
+    describe: 'the committed cortex, its structures.json and lobes.json, unchanged',
+    break: () => () => {},
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'icbm-cortex-non-manifold-edge',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when the shipped tier has a non-manifold edge',
+    expect: [/Cerebral cortex\.l \(id 1\): 3 non-manifold edge\(s\) \(0 open, 3 in more than two triangles\)/],
+    describe: 'the left hemisphere with its first triangle repeated, so each of its three edges is in three triangles',
+    break: () => rewriteMesh(ICBM_LOW, (records) => records.map((r) => {
+      if (r.id !== 1) return r;
+      const indices = new Uint32Array(r.indices.length + 3);
+      indices.set(r.indices);
+      indices.set([r.indices[0], r.indices[1], r.indices[2]], r.indices.length);
+      return { ...r, indices };
+    })),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'icbm-cortex-cut-called-validated',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when the cerebrum cut is labelled validated',
+    expect: [/labels the cerebrum cut validated \(cutValidated true\)\. Nothing has validated it/],
+    describe: 'structures.json with cerebellarLeak.cutValidated set to true and nothing else changed',
+    break: () => editJson(ICBM_STRUCTURES, (doc) => { doc.cerebellarLeak.cutValidated = true; }, 1),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'icbm-lobes-drawn-from-a-parcellation',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when the lobe labels declare a third-party parcellation',
+    expect: [/lobes\.json declares third-party parcellations used: \["harvard-oxford"\]/],
+    describe: 'lobes.json declaring Harvard-Oxford among the parcellations used to draw it',
+    break: () => editJson(ICBM_LOBES, (doc) => { doc.licence.thirdPartyParcellationsUsed = ['harvard-oxford']; }),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'licence-volume-set-cites-an-unrecorded-source',
+    gate: 'licence separation',
+    criterion: 'rule 10 fails when a structure of a volume-derived set names any source but its one upstream',
+    expect: [/entry icbm152-cortex-surface ships Cerebral cortex\.l \(id 1\), which is held as uncleared-source/, /its sources are \["icbm152-2009c","harvard-oxford"\], not exactly the set's one upstream, icbm152-2009c/],
+    describe: 'the cortex structures.json naming harvard-oxford among the left hemisphere\'s sources',
+    break: () => editJson(ICBM_STRUCTURES, (doc) => { doc.structures[0].sources.push('harvard-oxford'); }, 1),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'icbm-cortex-published-area-missing',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when structures.json drops the area and volume it is checked against',
+    expect: [/Cerebral cortex\.l \(id 1\): structures\.json does not publish its area and enclosed volume/],
+    describe: 'structures.json with low.areaMm2 and low.enclosedVolumeCm3 deleted from both hemispheres (DOG-165 F2)',
+    break: () => editJson(ICBM_STRUCTURES, (doc) => {
+      for (const st of doc.structures) { delete st.low.areaMm2; delete st.low.enclosedVolumeCm3; }
+    }, 1),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'licence-glb-set-relabelled-volume',
+    gate: 'licence separation',
+    criterion: 'rule 10 still judges a glb-derived set by its manifest when the set calls itself a volume',
+    expect: [/ships Posterior transverse collateral sulcus\.l \(id 0\), which is held as zanatomy-undeclared-brain-materials/],
+    describe: 'the zanatomy structures.json with a held structure (id 0) appended, source.kind "volume", and brainproject-brain-glb pushed onto every structure\'s sources (DOG-165 F1, reproduction C)',
+    break: () => editJson(BRAIN_STRUCTURES, (doc) => {
+      doc.source.kind = 'volume';
+      doc.structures.push({ ...doc.structures[0], id: 0, name: 'Posterior transverse collateral sulcus.l', label: 'Posterior transverse collateral sulcus' });
+      for (const st of doc.structures) if (!st.sources.includes('brainproject-brain-glb')) st.sources.push('brainproject-brain-glb');
+    }, 1),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-glb-set-relabelled-volume-without-commit',
+    gate: 'licence separation',
+    criterion: 'rule 10 refuses the volume path to a set whose upstream the registry does not record as a volume',
+    expect: [/says it is a volume-derived set, but its upstream "brainproject-brain-glb" is not recorded in upstreamSources with kind "volume"/],
+    describe: 'the zanatomy structures.json relabelled source.kind "volume", its glb commit deleted and its upstream left as brainproject-brain-glb',
+    break: () => editJson(BRAIN_STRUCTURES, (doc) => {
+      doc.source.kind = 'volume';
+      delete doc.source.commit;
+    }, 1),
+    check: () => run('check-licence-separation.mjs'),
+  },
   {
     name: 'licence-rule-10-reads-the-brain-files',
     gate: 'licence separation',
     criterion: 'rule 10 checks every structure slot of the committed brain files, not none',
     mustPass: true,
-    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\), each checked against the generated provenance manifest; 2 volume-derived file\(s\), 4 slot\(s\)/],
     describe: 'the committed brain mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),
@@ -1789,6 +1891,9 @@ const touched = [
   rel(BRAIN_ORIGIN_RESULT),
   rel(CROSSWALK),
   rel(REGION_INDEX),
+  rel(ICBM_LOW),
+  rel(ICBM_STRUCTURES),
+  rel(ICBM_LOBES),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
