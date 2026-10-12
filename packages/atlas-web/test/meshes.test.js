@@ -18,7 +18,7 @@ import { ASSET_MESH_SETS } from '../catalogue/asset-meshes.mjs';
 import { encodeBrainVolume } from '../src/alc.js';
 import { readMeshBin } from '../src/viewer/atlm.js';
 import { decodeView, encodeView } from '../src/viewer/deeplink.js';
-import { BANDS, boundsOfStructures, meshSetFrom, pickStructure, searchStructures } from '../src/viewer/meshset.js';
+import { BANDS, boundsOfStructures, meshSetFrom, pickStructure, searchStructures, withheldOf } from '../src/viewer/meshset.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, structureLayers } from '../src/viewer/state.js';
 import { validateBrainVolumeTemplate } from '../src/viewer/template.js';
 import { ASSETS, REPO_ROOT } from './real-assets.js';
@@ -195,6 +195,36 @@ describe('picking', () => {
     for (const control of sample.withheldControls) {
       assert.equal(za.structures.some((s) => s.id === control.id), false, control.name);
     }
+  });
+
+  it('finds the withheld control by name and says why, in the shipped file\'s words', () => {
+    const entry = ASSET_MESH_SETS.find((e) => e.id === ZA);
+    const held = withheldOf(entry, json(entry.structures));
+    for (const control of sample.withheldControls) {
+      const [w] = searchStructures(held, control.name, 4);
+      assert.ok(w, `${control.name} is found as withheld`);
+      assert.ok(w.title.includes(control.name), w.title);
+      assert.equal(w.group, control.expect.reason);
+      assert.deepEqual(w.reasons, control.expect.heldBecause);
+      assert.equal(searchStructures(za.structures, control.name).some((s) => s.title === w.title), false, 'and is not also offered as drawn');
+    }
+  });
+
+  it('reads every named exclusion of every set, one entry per name, each with a reason', () => {
+    for (const entry of ASSET_MESH_SETS) {
+      const doc = json(entry.structures);
+      const held = withheldOf(entry, doc);
+      const named = (doc.excluded ?? []).filter((x) => typeof x.name === 'string');
+      assert.equal(named.length > 0, held.length > 0, `${entry.id} lists what it holds`);
+      for (const w of held) assert.ok(w.reasons.length > 0, `${entry.id} ${w.title} has a reason`);
+      assert.equal(new Set(held.map((w) => w.title)).size, held.length, `${entry.id} titles are unique`);
+    }
+    // Not vacuous: the body file holds files that name nothing, which are left
+    // out, and the brain file holds all three groups.
+    assert.ok(json(ASSET_MESH_SETS.find((e) => e.id === BODY).structures).excluded.some((x) => x.name === null));
+    const za = ASSET_MESH_SETS.find((e) => e.id === ZA);
+    assert.deepEqual([...new Set(withheldOf(za, json(za.structures)).map((w) => w.group))].sort(),
+      ['dundee-cranial-nerves', 'held-by-decision', 'zanatomy-undeclared-brain-materials']);
   });
 
   it('returns the nearest structure the layers admit, not the first one listed', () => {

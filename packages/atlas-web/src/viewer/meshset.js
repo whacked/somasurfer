@@ -267,6 +267,25 @@ function hitTriangle(o, d, P, a, b, c) {
 }
 
 /**
+ * What a set's `structures.json` holds back under `excluded[]`, as
+ * `{ set, title, group, reasons }`, so a search for a withheld name can say
+ * why in the file's own words instead of finding nothing. The brain sets give
+ * `group` and `heldBecause[]`, the body one `reason` per file; files sharing a
+ * name are one entry, and a file that names no concept is left out.
+ */
+export function withheldOf(entry, doc) {
+  const byTitle = new Map();
+  for (const x of doc?.excluded ?? []) {
+    if (typeof x.name !== 'string') continue;
+    const sided = x.side === 'left' || x.side === 'right';
+    const title = sided ? `${x.name.replace(/\.[lr]$/, '')} (${x.side})` : x.name;
+    const w = byTitle.get(title) ?? byTitle.set(title, { set: entry.id, title, group: x.group ?? null, reasons: [] }).get(title);
+    for (const r of x.heldBecause ?? [x.reason]) if (typeof r === 'string' && !w.reasons.includes(r)) w.reasons.push(r);
+  }
+  return [...byTitle.values()];
+}
+
+/**
  * Structures whose title contains every word of `query`, best first: a title
  * that starts with the query, then shorter titles. Case-insensitive.
  */
