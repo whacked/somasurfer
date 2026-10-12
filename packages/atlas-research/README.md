@@ -136,6 +136,16 @@ The lobe-labelled ICBM152 cortex (DOG-151) is registered as
 its gyrus. Until DOG-151's label file is on the tree, the gate prints those targets
 as UNVERIFIED: unchecked, and resolving to nothing.
 
+**Two criteria are vacuous on the real data today, and the gate says so.** There
+are 0 coordinate links (every curated coordinate falls inside no shipped
+structure) and 0 HCP-MMP1 → gyrus links (every target gyrus is held). So "no
+coordinate link is `exact-term`", the precision floor, and "HCP-MMP1 links are
+crosswalk, approximate, and keep the area name" are checked only by
+`region-index.test.ts` and the gate's self-test. `check-crosswalk` prints
+`VACUOUS:` for each, rather than counting them as passes. Coverage
+(≥ 44 of 170 mappings, ≥ 15 of 30 papers) and coordinate precision (≥ ±7 mm,
+from ≥ 2 held-out landmarks) are committed literals in the gate, not readings.
+
 ## Tests
 
 ```

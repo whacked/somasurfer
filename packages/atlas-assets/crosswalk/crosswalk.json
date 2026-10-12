@@ -522,7 +522,7 @@
      "label": "Cingulate gyrus and sulcus (Middle anterior part)"
     }
    ],
-   "why": "Z-Anatomy divides the cingulate gyrus into Destrieux-style parts and carries no pregenual (anterior) part; the middle anterior part is the anterior cingulate it does model"
+   "why": "Z-Anatomy divides the cingulate gyrus into Destrieux-style parts and carries no pregenual (anterior) part. Its middle anterior part is the anterior MID-cingulate cortex (aMCC), not the pregenual ACC, so this is the nearest modelled neighbour, not the structure named"
   },
   {
    "term": "ATLAS-LABEL:brainstem",

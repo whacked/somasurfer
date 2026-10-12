@@ -26,9 +26,13 @@
  *      input that moved without a regeneration, is drift.
  *   5. The gate can fail: `selfTest()` feeds checks 1 and 2 indexes and
  *      crosswalks broken on purpose, and fails if any passes.
+ *   6. Committed floors, not readings: coverage (COVERAGE_FLOOR) and the
+ *      coordinate precision (PRECISION_FLOOR_MM, MIN_HELD_OUT).
  *
- * Reported: coverage against the v1 baseline, measured the way the baseline
- * was (buildResearchIndex against the BD name index and both templates).
+ * Reported, never counted as a pass: coverage against the v1 baseline, measured
+ * the way the baseline was; VACUOUS criteria, which the real data gives nothing
+ * to check (0 coordinate links, 0 HCP-MMP1 -> gyrus links today); and
+ * UNVERIFIED crosswalk targets, whose representation's data is not on the tree.
  */
 
 import { createHash } from 'node:crypto';
@@ -70,6 +74,25 @@ const json = (p) => JSON.parse(bytes(p).toString('utf8'));
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
 const rep = (id) => REPRESENTATIONS.find((r) => r.id === id);
 const SIDES = { left: 'left', right: 'right', median: 'median' };
+
+/**
+ * Committed literals, not readings (CTO review of 4f58f93). A floor taken from
+ * the data at gate time compares the data with itself: a refit reporting ±1 mm
+ * from two points, or a crosswalk edit that drops every link, would pass.
+ *
+ * - PRECISION_FLOOR_MM: no coordinate link may claim better than this, whatever
+ *   the registration file says. 7 mm is the plan's figure and brainproject's own
+ *   held-out error; ours measured 8.55. A refit below it is a finding to review,
+ *   not a precision to publish, so the gate stops it.
+ * - MIN_HELD_OUT: the held-out landmarks behind that figure. Two today (the red
+ *   nucleus, both sides).
+ * - COVERAGE_FLOOR: what W5 delivered at review (44 of 170 mappings, 15 of 30
+ *   papers by named structure). Raise it when coverage grows; lowering it is a
+ *   decision, made in a diff a reviewer reads.
+ */
+const PRECISION_FLOOR_MM = 7;
+const MIN_HELD_OUT = 2;
+const COVERAGE_FLOOR = Object.freeze({ mappings: 44, papers: 15 });
 
 // ---------------------------------------------------------------------------
 // Inputs
@@ -162,6 +185,7 @@ function selfTest(inputs, index) {
     return { ...index, mappings };
   };
   const someLink = index.mappings.flatMap((o) => o.links)[0];
+  const registrationMm = inputs.representations.find((r) => r.representation.id === 'zanatomy-gross-anatomy').coordinatePrecision.mm;
   if (!someLink) {
     failures.push('the committed inputs produce no link at all, so the link checks have nothing to break.');
     return failures;
@@ -181,7 +205,11 @@ function selfTest(inputs, index) {
   expectRed(
     'a coordinate link tighter than the registration',
     checkRegionIndex(
-      withMappings((ms) => ms[0].links.push({ ...placed, how: 'coordinate', precision: { kind: 'mm', mm: 1, basis: 'x' } })),
+      // Half the supplied registration's own figure, so the case stays tighter
+      // than it whatever the file claims; a fixed 1 mm went inert at ±1 mm.
+      withMappings((ms) =>
+        ms[0].links.push({ ...placed, how: 'coordinate', precision: { kind: 'mm', mm: registrationMm / 2, basis: 'x' } }),
+      ),
       inputs.representations,
     ),
     /tighter than the registration's measured/,
@@ -189,7 +217,16 @@ function selfTest(inputs, index) {
   expectRed(
     'an HCP-MMP1 link labelled exact-term',
     checkRegionIndex(
-      withMappings((ms) => ms[0].links.push({ ...someLink, source: { scheme: 'HCP-MMP1', term: 'HCP-MMP1:V1', label: 'V1' } })),
+      // `how` and precision are set here, not inherited: `someLink` is whatever
+      // link comes first, and a crosswalk link there made this case inert.
+      withMappings((ms) =>
+        ms[0].links.push({
+          ...someLink,
+          how: 'exact-term',
+          precision: { kind: 'exact' },
+          source: { scheme: 'HCP-MMP1', term: 'HCP-MMP1:V1', label: 'V1' },
+        }),
+      ),
       inputs.representations,
     ),
     /HCP-MMP1 link labelled exact-term; it must be crosswalk/,
@@ -272,6 +309,21 @@ for (const e of inputs.crosswalk.entries) {
   }
 }
 
+// The registration's claim, against the committed literals rather than itself.
+{
+  const claimed = inputs.registration.summary.heldOut.maxMm;
+  const n = inputs.registration.heldOut.length;
+  if (!(claimed >= PRECISION_FLOOR_MM)) {
+    problems.push(
+      `precision floor: the registration claims a held-out error of ±${claimed} mm, below the committed floor of ±${PRECISION_FLOOR_MM} mm.`,
+      `  Coordinate links would inherit it. Review the refit; lowering PRECISION_FLOOR_MM is a decision, not a regeneration.`,
+    );
+  }
+  if (n < MIN_HELD_OUT) {
+    problems.push(`precision floor: the registration's held-out figure rests on ${n} landmark(s); at least ${MIN_HELD_OUT} are required.`);
+  }
+}
+
 // 3. Locator, on points whose answer is known: each single-structure landmark's
 //    MNI centroid. Only the convex ones are required. The caudate's centroid
 //    lies in the concavity of its C, outside the nucleus, so "outside" is the
@@ -297,6 +349,32 @@ for (const lm of [...inputs.registration.landmarks, ...inputs.registration.heldO
 // 2. Index.
 const index = buildRegionIndex(inputs);
 problems.push(...checkRegionIndex(index, inputs.representations));
+
+const allLinks = index.mappings.flatMap((o) => o.links);
+for (const l of allLinks) {
+  if (l.how === 'coordinate' && !(l.precision.kind === 'mm' && l.precision.mm >= PRECISION_FLOOR_MM)) {
+    problems.push(`precision floor: mapping ${l.mappingId} → ${l.structureName} claims ${JSON.stringify(l.precision)}, below the committed ±${PRECISION_FLOOR_MM} mm.`);
+  }
+}
+if (index.coverage.mappings.linked < COVERAGE_FLOOR.mappings || index.coverage.papers.nonEmpty < COVERAGE_FLOOR.papers) {
+  problems.push(
+    `coverage floor: ${index.coverage.mappings.linked} of ${index.coverage.mappings.total} mappings and ${index.coverage.papers.nonEmpty} of ${index.coverage.papers.total} papers reach a named structure,`,
+    `  below the committed floor of ${COVERAGE_FLOOR.mappings} mappings and ${COVERAGE_FLOOR.papers} papers. A regeneration does not lower it; an edit to COVERAGE_FLOOR does.`,
+  );
+}
+
+// Criteria the real data cannot exercise. A check over zero links passes by
+// construction, so it is reported as vacuous rather than counted as a pass.
+const coordinateLinks = allLinks.filter((l) => l.how === 'coordinate').length;
+const hcpGyrusLinks = allLinks.filter((l) => l.source.scheme === 'HCP-MMP1' && l.representation === 'zanatomy-gross-anatomy').length;
+const vacuous = [
+  ...(coordinateLinks === 0
+    ? ['0 coordinate links: "no coordinate link is exact-term" and the precision floor have nothing to check on this data']
+    : []),
+  ...(hcpGyrusLinks === 0
+    ? ['0 HCP-MMP1 → gyrus links (every target gyrus is held): "crosswalk, approximate, area name kept" has nothing to check on this data']
+    : []),
+];
 
 // 5. Self-test, before any result is trusted.
 const selfFailures = selfTest(inputs, index);
@@ -361,6 +439,8 @@ pass('crosswalk', [
   `  baseline (v1, cells): ${base.mappingsResolved} of 170 mappings, ${base.papersCovered} of 30 papers; of those, ${base.mappingsResolvedToANamedStructure} mappings and ${base.papersWithANamedStructure} papers reach a named structure.`,
   `  ${held} mapping(s) reach only held structures. ${empty.length} paper(s) have no region, each with a stated reason: ${empty.map((p) => `${p.paperId} (${[...new Set(p.emptyBecause.map((e) => e.code))].join(', ')})`).join('; ') || 'none'}.`,
   `index: ${rel(INDEX_PATH)} matches its inputs.`,
+  `floors (committed): coverage ≥ ${COVERAGE_FLOOR.mappings} of 170 mappings and ≥ ${COVERAGE_FLOOR.papers} of 30 papers, met; coordinate precision ≥ ±${PRECISION_FLOOR_MM} mm from ≥ ${MIN_HELD_OUT} held-out landmarks, met.`,
+  ...vacuous.map((v) => `VACUOUS: ${v}. Covered only by region-index.test.ts and this gate's self-test.`),
   ...[...unverified].map(
     ([id, u]) =>
       `UNVERIFIED: ${u.targets} crosswalk target(s) in ${id} (${[...u.labels].sort().join(', ')}): its data is not on this tree, so their labels are unchecked and they resolve to nothing.`,

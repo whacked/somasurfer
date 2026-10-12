@@ -17,7 +17,7 @@
   },
   "crosswalk": {
    "file": "packages/atlas-assets/crosswalk/crosswalk.json",
-   "sha256": "c60ff2372f56a9c25ff6a723cfae901f625f6afcdb1c12743de41d685be15794"
+   "sha256": "36bf37e57e757fedcbe8b96a1156cb7ff4b7d96884221f00607c5068bf4a191b"
   },
   "structures": {
    "file": "packages/atlas-assets/brain/zanatomy-2929e94/structures.json",

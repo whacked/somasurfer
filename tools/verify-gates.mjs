@@ -1644,9 +1644,19 @@ const CASES = [
     gate: 'crosswalk',
     criterion: 'the crosswalk gate resolves the whole seed on the committed tree and finds the index matching',
     mustPass: true,
-    expect: [/coverage: \d+ of 170 mappings reach a named structure, covering \d+ of 30 papers/, /index: .*region-index-zanatomy-2929e94\.json matches its inputs/],
+    expect: [
+      /coverage: \d+ of 170 mappings reach a named structure, covering \d+ of 30 papers/,
+      /index: .*region-index-zanatomy-2929e94\.json matches its inputs/,
+      /floors \(committed\): coverage ≥ 44 of 170 mappings and ≥ 15 of 30 papers, met; coordinate precision ≥ ±7 mm/,
+      /VACUOUS: 0 coordinate links/,
+      /VACUOUS: 0 HCP-MMP1 → gyrus links/,
+      /UNVERIFIED: 25 crosswalk target\(s\) in icbm152-2009c-cortex-lobes/,
+    ],
     describe: 'the committed crosswalk, seed and brain assets, unchanged',
-    // A gate that resolved nothing would also pass. This pins that it resolved the seed.
+    // A gate that resolved nothing would also pass. This pins that it resolved the
+    // seed, that the floors are the committed literals, and that what it cannot
+    // check is still said out loud: deleting the VACUOUS or UNVERIFIED report
+    // would otherwise leave those criteria passing in silence.
     break: () => () => {},
     check: () => run('check-crosswalk.mjs'),
   },
@@ -1700,6 +1710,37 @@ const CASES = [
     expect: [/term ATLAS-LABEL:thalamus has no crosswalk entry/],
     describe: 'crosswalk.json with the thalamus entry deleted',
     break: () => withCrosswalk((doc) => (doc.entries = doc.entries.filter((e) => e.term !== 'ATLAS-LABEL:thalamus'))),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-coverage-below-floor',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when coverage drops below its committed floor, not just when the index drifts',
+    expect: [/coverage floor: 38 of 170 mappings and 12 of 30 papers reach a named structure,/],
+    describe: 'crosswalk.json filing the hippocampus under the held precentral gyrus (6 mappings and 3 papers lost)',
+    // A valid crosswalk that links less. The drift check fires too; this pins the
+    // floor, which is the one that survives a --write.
+    break: () =>
+      withCrosswalk((doc) => {
+        const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:hippocampus');
+        if (!e) throw new Error('ATLAS-LABEL:hippocampus is no longer in the crosswalk to stage this against');
+        e.targets = [{ representation: 'zanatomy-gross-anatomy', label: 'Precentral gyrus' }];
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-registration-precision-below-floor',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate refuses a registration claiming better than the committed precision floor',
+    expect: [/precision floor: the registration claims a held-out error of ±1 mm, below the committed floor of ±7 mm/],
+    describe: 'the registration summary claiming a 1 mm held-out error',
+    // Read from the file, the floor used to follow it down. This is the refit the
+    // committed literal exists to stop.
+    break: () => {
+      const reg = JSON.parse(readFileSync(BRAIN_REGISTRATION, 'utf8'));
+      reg.summary.heldOut.maxMm = 1;
+      return substitute(BRAIN_REGISTRATION, `${JSON.stringify(reg, null, 1)}\n`);
+    },
     check: () => run('check-crosswalk.mjs'),
   },
 ];
