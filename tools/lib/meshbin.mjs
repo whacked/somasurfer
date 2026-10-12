@@ -5,9 +5,9 @@
  *
  * This module is the format's single definition. The writer is used by
  * tools/build-meshes.mjs; the reader by the gates (tools/perf-budget.mjs,
- * tools/check-mesh-assets.mjs, tools/check-licence-separation.mjs) and, from
- * W4, by the viewer. It has no imports, so a consumer anywhere can take it
- * as it stands. Fork it and the perf gate stops measuring what the page does.
+ * tools/check-mesh-assets.mjs, tools/check-licence-separation.mjs) and by the
+ * viewer, which loads it from packages/atlas-web/src/viewer/atlm.js (DOG-129).
+ * Fork it and the perf gate stops measuring what the page does.
  *
  * Layout, little-endian, every section 4-byte aligned:
  *
@@ -38,11 +38,17 @@
  * reader must honour it.
  */
 
-export const MAGIC = 'ATLM';
-export const VERSION = 1;
-export const HEADER_BYTES = 64;
-export const TABLE_STRIDE = 5;
-export const FLAG_INDEX32 = 1;
+import {
+  FLAG_INDEX32, HEADER_BYTES, MAGIC, TABLE_STRIDE, VERSION, octDecode, readMeshBin,
+} from '../../packages/atlas-web/src/viewer/atlm.js';
+
+/*
+ * The READ side lives in packages/atlas-web/src/viewer/atlm.js and is
+ * re-exported here, so the gates and the viewer run one reader, not two that
+ * agree today (DOG-129). It is in the shipped bundle, which is why its comments
+ * are short and the layout is documented above, in a file that is not shipped.
+ */
+export { FLAG_INDEX32, HEADER_BYTES, MAGIC, TABLE_STRIDE, VERSION, octDecode, readMeshBin };
 
 const align4 = (n) => (n + 3) & ~3;
 
@@ -58,21 +64,6 @@ export function octEncode(x, y, z) {
   }
   const q = (t) => Math.max(-127, Math.min(127, Math.round(t * 127)));
   return [q(u), q(v)];
-}
-
-/** Octahedral decode of two snorm8 components to a unit normal. */
-export function octDecode(qu, qv) {
-  const u = Math.max(-1, qu / 127);
-  const v = Math.max(-1, qv / 127);
-  let x = u;
-  let y = v;
-  const z = 1 - Math.abs(u) - Math.abs(v);
-  if (z < 0) {
-    x = (1 - Math.abs(v)) * (u >= 0 ? 1 : -1);
-    y = (1 - Math.abs(u)) * (v >= 0 ? 1 : -1);
-  }
-  const l = Math.hypot(x, y, z) || 1;
-  return [x / l, y / l, z / l];
 }
 
 /**
@@ -128,70 +119,6 @@ export function writeMeshBin({ origin, step, structures }) {
     i += s.indices.length;
   });
   return new Uint8Array(buf);
-}
-
-/**
- * Read a file without copying it: typed-array views over the buffer and a
- * structure table. Throws on anything malformed, naming what, because a gate
- * that reads a truncated file as "fewer structures" would pass it.
- */
-export function readMeshBin(bytes) {
-  const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-  if (u8.byteLength < HEADER_BYTES) throw new Error(`ATLM: ${u8.byteLength} bytes is shorter than the header`);
-  // Views need an aligned, exclusively owned buffer.
-  const buf = u8.byteOffset % 4 === 0 && u8.byteOffset + u8.byteLength <= u8.buffer.byteLength
-    ? u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength)
-    : u8.slice().buffer;
-  const dv = new DataView(buf);
-  const magic = String.fromCharCode(dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3));
-  if (magic !== MAGIC) throw new Error(`ATLM: bad magic ${JSON.stringify(magic)}`);
-  const version = dv.getUint16(4, true);
-  if (version !== VERSION) throw new Error(`ATLM: version ${version}, this reader knows ${VERSION}`);
-  const flags = dv.getUint16(6, true);
-  const index32 = (flags & FLAG_INDEX32) !== 0;
-  const structureCount = dv.getUint32(8, true);
-  const vertexCount = dv.getUint32(12, true);
-  const indexCount = dv.getUint32(16, true);
-  const origin = [0, 1, 2].map((a) => dv.getFloat32(20 + a * 4, true));
-  const step = [0, 1, 2].map((a) => dv.getFloat32(32 + a * 4, true));
-  const tableOffset = dv.getUint32(44, true);
-  const positionsOffset = dv.getUint32(48, true);
-  const normalsOffset = dv.getUint32(52, true);
-  const indicesOffset = dv.getUint32(56, true);
-  const byteLength = dv.getUint32(60, true);
-  if (byteLength !== buf.byteLength) {
-    throw new Error(`ATLM: header says ${byteLength} bytes, file has ${buf.byteLength}`);
-  }
-  if (indicesOffset + indexCount * (index32 ? 4 : 2) > buf.byteLength) throw new Error('ATLM: index section overruns the file');
-
-  const table = [];
-  for (let k = 0; k < structureCount; k += 1) {
-    const t = tableOffset + k * TABLE_STRIDE * 4;
-    table.push({
-      id: dv.getUint32(t, true),
-      firstVertex: dv.getUint32(t + 4, true),
-      vertexCount: dv.getUint32(t + 8, true),
-      firstIndex: dv.getUint32(t + 12, true),
-      indexCount: dv.getUint32(t + 16, true),
-    });
-  }
-  for (const s of table) {
-    if (s.firstVertex + s.vertexCount > vertexCount || s.firstIndex + s.indexCount > indexCount || s.indexCount % 3 !== 0) {
-      throw new Error(`ATLM: structure ${s.id} has a range outside the file`);
-    }
-  }
-  return {
-    version,
-    index32,
-    origin,
-    step,
-    vertexCount,
-    indexCount,
-    table,
-    positions: new Int16Array(buf, positionsOffset, vertexCount * 3),
-    normals: new Int8Array(buf, normalsOffset, vertexCount * 2),
-    indices: index32 ? new Uint32Array(buf, indicesOffset, indexCount) : new Uint16Array(buf, indicesOffset, indexCount),
-  };
 }
 
 /**
