@@ -1409,7 +1409,11 @@ async function drawTier(atlas, tier) {
     };
   }
   if (ui.sets[atlas].length > 0) {
-    ui.meshStatus[atlas] = ui.sets[atlas].every((m) => m.tier === 'full' || !ui.fullTiers?.has(m.id)) ? 'full' : 'low';
+    // Sets that declare a full tier at all: the ICBM cortex ships only a low
+    // one. This atlas's own documents only, so the brain never waits on the body's.
+    const docs = await Promise.allSettled(entries.map(setDocs));
+    const fullTiers = new Set(entries.filter((e, i) => docs[i].value?.structures.tiers?.full).map((e) => e.id));
+    ui.meshStatus[atlas] = ui.sets[atlas].every((m) => m.tier === 'full' || !fullTiers.has(m.id)) ? 'full' : 'low';
     // The brain is framed on the BV template's box, not on the arteries and
     // nerves that run far below it; the body on all of its anatomy.
     if (atlas === 'body' || !ui.hemispheres) ui.bounds[atlas] = boundsOfStructures(ui.sets[atlas].flatMap((m) => m.structures));
@@ -1428,9 +1432,6 @@ const meshesLoaded = (async () => {
     ui.meshStatus = { body: 'no-renderer', brain: 'no-renderer' };
     return;
   }
-  const docs = await Promise.allSettled(meshEntries.map(setDocs));
-  // Sets that declare a full tier at all: the ICBM cortex ships only a low one.
-  ui.fullTiers = new Set(meshEntries.filter((e, i) => docs[i].value?.structures.tiers?.full).map((e) => e.id));
   const first = viewer.atlas;
   await loadMeshes(first, 'low');
   await loadMeshes(first === 'body' ? 'brain' : 'body', 'low');
