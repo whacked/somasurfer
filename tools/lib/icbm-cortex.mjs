@@ -26,6 +26,8 @@ export const PINNED = Object.freeze({
     sha256: '804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4',
   },
   dir: 'mni_icbm152_nlin_asym_09c',
+  // The archive's licence, at its root. It asks that the copyright notice appear in all copies.
+  copying: { name: 'COPYING', sha256: '5915d16f84d99c3cedc8290b09da72f6f92e5dde1ba1c9859ee186aa952b66a4' },
   files: {
     gm: { name: 'mni_icbm152_gm_tal_nlin_asym_09c.nii', sha256: '781550eec4b7f0e33abfba267b96887a32cf57f9482c958c700f9e35199cc666' },
     wm: { name: 'mni_icbm152_wm_tal_nlin_asym_09c.nii', sha256: '337525d68780df3eef82539cf1ff3f44efeb4d988379407cf7a678303bd913d4' },

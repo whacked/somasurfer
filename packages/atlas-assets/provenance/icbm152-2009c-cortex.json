@@ -11497,11 +11497,11 @@
   }
  },
  "timingsS": {
-  "readAndCutS": 1.4,
-  "extractS": 20.2,
-  "measureAndLabelS": 70.2,
-  "lowTierS": 83.8,
-  "errorS": 34,
-  "leakS": 14.8
+  "readAndCutS": 2.4,
+  "extractS": 11.5,
+  "measureAndLabelS": 71.3,
+  "lowTierS": 83.3,
+  "errorS": 34.3,
+  "leakS": 11.7
  }
 }

@@ -61,6 +61,11 @@
  *      fails here instead of clearing what it labels. No offline check can see
  *      whether those recorded inputs, or the geometry, really are the glb's:
  *      this checks what a structure is labelled, not what it is.
+ *      A set extracted from a volume (structures.json `source.kind: "volume"`,
+ *      such as the ICBM152 cortex, DOG-151) has no glb manifest. Its own
+ *      structures.json is the record: every structure must name its sources,
+ *      among them the set's upstream, each recorded in upstreamSources with a
+ *      verdict that ships, and the entry shipping the file must cite them.
  *
  * CI tooling under tools/ is deliberately out of scope: validating assets is
  * exactly what a CI gate is for, and tools/ is not published or linked into
@@ -408,7 +413,7 @@ let brainSlotCount = 0;
  * that sits beside every mesh file; a mesh with no such sibling is an error,
  * never a pass.
  */
-function brainStructuresIn(abs) {
+function brainStructuresIn(abs, upstream) {
   const bytes = readFileSync(abs);
   let ids;
   let structuresDoc;
@@ -431,6 +436,7 @@ function brainStructuresIn(abs) {
     ids = structuresDoc.structures.map((s) => s.id);
   } else return null;
 
+  if (structuresDoc?.source?.kind === 'volume') return volumeProvenance(structuresDoc, ids, upstream);
   const commit = structuresDoc?.source?.commit;
   if (typeof commit !== 'string') return { error: 'names no source commit, so its provenance cannot be found.' };
   const manifestPath = join(REPO_ROOT, brainAssetPaths(commit).provenance);
@@ -444,6 +450,32 @@ function brainStructuresIn(abs) {
   const drift = verifyProvenance(manifest, JSON.parse(readFileSync(originPath, 'utf8')));
   if (drift.length > 0) return { error: `has a provenance manifest that does not re-derive:\n    ${drift.join('\n    ')}` };
   return { ids, provenance: new Map(manifest.structures.map((s) => [s.id, s])) };
+}
+/**
+ * Provenance for a volume-derived set, from its own structures.json. A
+ * structure is cleared when it names its sources, they include the set's
+ * upstream, and every one is recorded with a verdict that ships.
+ */
+function volumeProvenance(doc, ids, upstream) {
+  const upstreamId = doc.source?.upstream;
+  if (typeof upstreamId !== 'string') return { error: 'is a volume-derived set that names no upstream source.' };
+  const listed = new Set(doc.structures.map((s) => s.id));
+  for (const id of ids) {
+    if (!listed.has(id)) return { error: `holds structure id ${id}, which its structures.json does not list.` };
+  }
+  const provenance = new Map();
+  for (const s of doc.structures) {
+    const sources = Array.isArray(s.sources) ? s.sources : [];
+    const heldBecause = [];
+    if (!sources.includes(upstreamId)) heldBecause.push(`it does not name the set's upstream, ${upstreamId}`);
+    for (const src of sources) {
+      const rec = upstream.get(src);
+      if (!rec) heldBecause.push(`its source ${src} is not recorded in upstreamSources`);
+      else if (!VERDICTS_THAT_SHIP.includes(rec.verdict)) heldBecause.push(`its source ${src} has verdict ${JSON.stringify(rec.verdict)}`);
+    }
+    provenance.set(s.id, { name: s.name, sources, group: heldBecause.length === 0 ? GROUPS.cleared : 'uncleared-source', heldBecause });
+  }
+  return { ids, provenance };
 }
 for (const a of assets) {
   if (!existsSync(join(a.dir, 'attribution.json'))) continue;
@@ -643,7 +675,7 @@ for (const a of assets) {
     for (const f of e.files ?? []) {
       const abs = join(a.dir, f);
       if (!existsSync(abs)) continue;
-      const contained = brainStructuresIn(abs);
+      const contained = brainStructuresIn(abs, sources);
       if (contained === null) continue;
       brainFileCount += 1;
       if (contained.error) {

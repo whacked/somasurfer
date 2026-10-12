@@ -124,6 +124,10 @@ const inputs = {
   files: Object.fromEntries(Object.entries(vols).map(([k, v]) => [k, { file: `${PINNED.dir}/${PINNED.files[k].name}`, sha256: v.sha }])),
   grid: { dims: frame.dims, voxelMm: 1, originMm: frame.offset, space: 'MNI152 2009c asymmetric (sform_code 4), RAS' },
 };
+const copyingPath = join(icbmDir, PINNED.copying.name);
+if (!existsSync(copyingPath)) fail(GATE, [`${copyingPath} is missing. Extract COPYING from the archive too: the surface ships with its notice.`]);
+const copying = readFileSync(copyingPath);
+if (sha256(copying) !== PINNED.copying.sha256) fail(GATE, [`${copyingPath} does not match the recorded SHA-256 ${PINNED.copying.sha256}.`]);
 const c = cerebrum(GATE, vols, frame, { csfCarve: CSF_CARVE });
 vols = null;
 lap('readAndCutS');
@@ -275,6 +279,12 @@ const structuresDoc = {
     axes: { x: 'right (RAS)', y: 'anterior', z: 'superior' },
     quantisation: { origin: qframe.origin, step: qframe.step, quantisationStepMm: round(Math.max(...qframe.step), 5) },
   },
+  licence: {
+    id: 'MNI-BIC-permissive',
+    note: 'The surface is derived from the ICBM152 2009c template. Its licence, the archive\'s COPYING, is reproduced verbatim below and asks that the copyright notice appear in all copies.',
+    copying: copying.toString('utf8'),
+    copyingSha256: PINNED.copying.sha256,
+  },
   mapping: { toMni152_2009cAsym: 'identity', affine: null, errorMm: 0, note: 'Native: the surface is extracted from the template volumes in their own sform (sform_code 4, 1 mm, axis-aligned). There is no registration, so there is no registration error. The surface\'s own geometric error is per structure, errorMm.' },
   build: {
     field: `GM + WM - CSF, level ${round(1 - 2 * CSF_CARVE, 2)} (the CSF probability ${CSF_CARVE} level), inside the brain mask`,
@@ -292,6 +302,7 @@ const structuresDoc = {
     method: 'shipped low-tier vertices mapped into the brain-mesh frame by mniToMesh (registration/mni-to-zanatomy-2929e94.json) and tested for being inside the committed Z-Anatomy cerebellum (31 structures) by two-way ray parity; depth is the distance to the nearest cerebellar surface',
     limitation: `The reference is the Z-Anatomy cerebellum carried by an affine whose held-out error is ${ref.heldOutMm} mm at the deep grey nuclei and is extrapolated, unmeasured, at the cerebellum. Only counts deeper than that error are robust to it. No cerebellum label with a licence readable today exists for this template, so the cut is not validated.`,
     shippedLowTier: leakSummary,
+    referencePlacement: leak.referencePlacement,
     detail: FILES.provenance,
   },
   counts: { structures: structures.length },

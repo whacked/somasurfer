@@ -39,6 +39,12 @@
    "quantisationStepMm": 0.00276
   }
  },
+ "licence": {
+  "id": "MNI-BIC-permissive",
+  "note": "The surface is derived from the ICBM152 2009c template. Its licence, the archive's COPYING, is reproduced verbatim below and asks that the copyright notice appear in all copies.",
+  "copying": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain\nImaging Centre, Montreal Neurological Institute, McGill University.\nPermission to use, copy, modify, and distribute this software and\nits documentation for any purpose and without fee is hereby granted,\nprovided that the above copyright notice appear in all copies.  The\nauthors and McGill University make no representations about the\nsuitability of this software for any purpose.  It is provided \"as\nis\" without express or implied warranty.  The authors are not\nresponsible for any data loss, equipment damage, property loss, or\ninjury to subjects or patients resulting from the use or misuse of\nthis software package. \n",
+  "copyingSha256": "5915d16f84d99c3cedc8290b09da72f6f92e5dde1ba1c9859ee186aa952b66a4"
+ },
  "mapping": {
   "toMni152_2009cAsym": "identity",
   "affine": null,
@@ -82,6 +88,12 @@
     "deeperThan4Mm": 20,
     "deeperThanHeldOutError": 0
    }
+  },
+  "referencePlacement": {
+   "referenceVertices": 70315,
+   "inRemovedTissue": 54584,
+   "inKeptCerebrum": 9872,
+   "outsideTissue": 5859
   },
   "detail": "provenance/icbm152-2009c-cortex.json"
  },
