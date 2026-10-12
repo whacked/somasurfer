@@ -1,5 +1,12 @@
 # Brain cortex fallback: an ICBM152 2009c surface (prototype)
 
+> **Superseded (DOG-151).** The owner approved shipping this cortex on card `6a774981`. What ships, and what it
+> measures, is in [brain-cortex-icbm.md](brain-cortex-icbm.md); the build is `tools/build-icbm-cortex.mjs`, which
+> replaced the prototype tool. Two things changed from the prototype below. The surface is now the CSF 0.3 level,
+> not the GM + WM 0.5 level, because that level fused the opercula over the insula and the hemispheres along the
+> medial surface. And the low tier is about half the size, so that it fits the brain's share with 5% left. This
+> page is kept as the record of what the prototype measured.
+
 **Status: prototype, not shipped.** 126 of the 128 Z-Anatomy cortical structures are not licence-cleared
 (docs/asset-licensing.md §7.3). The fallback the CTO decided in advance is a first-party cerebral surface
 extracted from the ICBM152 2009c template. This document says what the prototype is and what it measured.
