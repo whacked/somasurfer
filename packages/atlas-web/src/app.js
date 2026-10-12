@@ -15,7 +15,7 @@ import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
 import { curatedModel, paperSource } from './viewer/corpus.js';
 import { comparePapers, comparisonLayers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
 import { checkApiDocument, listedHref, overlayOf, paperRegions, regionPapers, treeUrl } from './viewer/regionpapers.js';
-import { boundsOfStructures, meshSetFrom, pickStructure, searchStructures } from './viewer/meshset.js';
+import { boundsOfStructures, meshSetFrom, nextPick, pickStructures, searchStructures } from './viewer/meshset.js';
 import { nameIndexFrames, selectAddress } from './viewer/select.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity, structureLayers } from './viewer/state.js';
 import {
@@ -80,6 +80,8 @@ const ui = {
   /** DOG-132: the revealed paper's structures, key -> exact|approximate, and a paper waiting to be framed. */
   overlay: new Map(),
   framePaper: null,
+  /** DOG-192: the last click, and every structure under it. */
+  pickedAt: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -1121,6 +1123,18 @@ function renderStructure() {
   }
   box.append(el('h3', { id: 'structure-name', textContent: s.title }));
   box.append(el('p', { className: 'muted', textContent: `${layerLabel(s.category)} · ${s.set}${s.lobe ? ` · ${s.labelSet}` : ''}` }));
+  const under = ui.pickedAt;
+  const depth = under ? under.keys.indexOf(key) : -1;
+  if (depth >= 0 && under.keys.length > 1 && under.atlas === viewer.atlas && under.camera === JSON.stringify(viewer.cameraOf())) {
+    const next = under.keys[(depth + 1) % under.keys.length];
+    const title = ui.sets[viewer.atlas].flatMap((set) => set.structures).find((x) => x.key === next)?.title ?? next;
+    box.append(el('p', {
+      className: 'muted',
+      id: 'structure-depth',
+      textContent: `${depth + 1} of ${under.keys.length} structures under the pointer. Click the same spot again for `
+        + `${depth + 1 === under.keys.length ? 'the nearest again' : 'the one behind'}: ${title}.`,
+    }));
+  }
   if (s.placedBy) {
     box.append(el('p', {
       className: 'note',
@@ -1332,6 +1346,11 @@ function commit({ push = false } = {}) {
   if (window.__atlas) window.__atlas.selection = viewer.state.selection;
 }
 
+function sameSpot(before, now) {
+  return Boolean(before) && before.atlas === now.atlas && before.camera === now.camera
+    && Math.abs(before.x - now.x) <= 4 && Math.abs(before.y - now.y) <= 4;
+}
+
 /** Click -> address. (docs/viewer-shell.md) */
 function pick(event) {
   const canvas = $('canvas');
@@ -1353,10 +1372,14 @@ function pick(event) {
   // A layer faded below half is see-through to the pointer, so a faded skin
   // lets you click the organ behind it.
   const layers = viewer.layersOf();
-  const hit = pickStructure(ui.sets[viewer.atlas], ray.origin, ray.direction, (s) => {
+  const hits = pickStructures(ui.sets[viewer.atlas], ray.origin, ray.direction, (s) => {
     const { visible, opacity } = structureLayers(layers, s);
     return visible && opacity >= 0.5;
   });
+  // A click again on the same spot goes one deeper (docs/viewer-shell.md).
+  const at = { atlas: viewer.atlas, x: event.clientX - rect.left, y: event.clientY - rect.top, camera: JSON.stringify(viewer.cameraOf()) };
+  const hit = nextPick(hits, { again: sameSpot(ui.pickedAt, at), current: viewer.structureOf() });
+  ui.pickedAt = { ...at, keys: hits.map((h) => h.structure.key) };
   viewer.selectStructure(hit?.structure.key ?? null);
 
   // The address comes from the frame's own encoder, never the structure, so its flags reach the user (docs/viewer-shell.md).
@@ -1701,7 +1724,7 @@ window.__atlas = {
   pickAt: (x, y) => {
     const rect = $('canvas').getBoundingClientRect();
     pick({ clientX: rect.left + x, clientY: rect.top + y });
-    return { structure: viewer.structureOf(), address: viewer.state.selection?.address ?? null };
+    return { structure: viewer.structureOf(), address: viewer.state.selection?.address ?? null, under: ui.pickedAt?.keys ?? [] };
   },
   ready: true,
 };

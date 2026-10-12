@@ -18,7 +18,7 @@ import { ASSET_MESH_SETS } from '../catalogue/asset-meshes.mjs';
 import { encodeBrainVolume } from '../src/alc.js';
 import { readMeshBin } from '../src/viewer/atlm.js';
 import { decodeView, encodeView } from '../src/viewer/deeplink.js';
-import { BANDS, boundsOfStructures, meshSetFrom, pickStructure, searchStructures } from '../src/viewer/meshset.js';
+import { BANDS, boundsOfStructures, meshSetFrom, nextPick, pickStructure, pickStructures, searchStructures } from '../src/viewer/meshset.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, structureLayers } from '../src/viewer/state.js';
 import { validateBrainVolumeTemplate } from '../src/viewer/template.js';
 import { ASSETS, REPO_ROOT } from './real-assets.js';
@@ -189,6 +189,44 @@ describe('picking', () => {
       assert.equal(hit.structure.label, want.expect.name);
       assert.ok(hit.structure.title.startsWith(want.expect.name), hit.structure.title);
     }
+  });
+
+  it('reaches every W8a sample structure by clicking one spot again, enclosed or not (DOG-192)', () => {
+    // The page's own filter at the brain's opening layers, over both brain sets.
+    const icbm = decoded(ICBM);
+    const v = createViewer();
+    v.openAtlas('brain');
+    const layers = v.layersOf();
+    const accept = (s) => {
+      const { visible, opacity } = structureLayers(layers, s);
+      return visible && opacity >= 0.5;
+    };
+    const enclosed = [];
+    for (const want of sample.sample) {
+      const s = za.structures.find((x) => x.id === want.id);
+      const { origin, direction } = rayAt(za, s);
+      const hits = pickStructures([za, icbm], origin, direction, accept);
+      let picked = nextPick(hits);
+      let clicks = 1;
+      while (picked.structure.key !== s.key && clicks <= hits.length) {
+        picked = nextPick(hits, { again: true, current: picked.structure.key });
+        clicks += 1;
+      }
+      assert.equal(picked.structure.key, s.key, `${want.name} is under the pointer and a click again reaches it`);
+      assert.deepEqual(picked.pointMm, [0, 1, 2].map((a) => origin[a] + direction[a] * picked.t), 'its address is from its own surface');
+      if (clicks > 1) enclosed.push(want.id);
+    }
+    // The four W8a found: the EW nuclei inside the midbrain, the hippocampi inside the ICBM lobes.
+    for (const id of [6, 7, 122, 123]) assert.ok(enclosed.includes(id), `fixture ${id} is not the nearest hit, so needs the click again`);
+  });
+
+  it('cycles through the hits, deepest back to nearest', () => {
+    const hits = ['a', 'b', 'c'].map((key, t) => ({ structure: { key }, t }));
+    assert.equal(nextPick([]), null);
+    assert.equal(nextPick(hits, { again: true, current: 'a' }).structure.key, 'b');
+    assert.equal(nextPick(hits, { again: true, current: 'c' }).structure.key, 'a', 'wraps');
+    assert.equal(nextPick(hits, { again: true, current: 'gone' }).structure.key, 'a', 'a selection not under the pointer starts at the front');
+    assert.equal(nextPick(hits, { again: false, current: 'b' }).structure.key, 'a', 'a fresh click is the nearest');
   });
 
   it('does not draw, so cannot pick, the withheld control', () => {

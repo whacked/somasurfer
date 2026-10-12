@@ -229,26 +229,35 @@ function enterBox(o, d, lo, hi) {
   return t0;
 }
 
-/**
- * Nearest hit on any structure `accept` admits, as `{ structure, t, pointMm }`,
- * or null. Both faces hit, as in the v1 picker.
- */
-export function pickStructure(meshes, origin, direction, accept = () => true) {
-  let best = null;
+/** Nearest hit `accept` admits, as `{ structure, t, pointMm }`, or null. */
+export const pickStructure = (...args) => pickStructures(...args)[0] ?? null;
+
+/** Every structure `accept` admits that the ray hits, nearest first, at its own nearest hit. Both faces hit. (DOG-192) */
+export function pickStructures(meshes, origin, direction, accept = () => true) {
+  const hits = [];
   for (const mesh of meshes) {
     const { positions: P, triangles: T } = mesh;
     for (const s of mesh.structures) {
-      if (!accept(s)) continue;
-      const enter = enterBox(origin, direction, s.lo, s.hi);
-      if (enter === null || (best && enter > best.t)) continue;
+      if (!accept(s) || enterBox(origin, direction, s.lo, s.hi) === null) continue;
+      let near = null;
       for (let i = s.firstTriangle * 3; i < (s.firstTriangle + s.triangleCount) * 3; i += 3) {
         const t = hitTriangle(origin, direction, P, T[i] * 3, T[i + 1] * 3, T[i + 2] * 3);
-        if (t !== null && (!best || t < best.t)) best = { structure: s, t };
+        if (t !== null && (near === null || t < near)) near = t;
       }
+      if (near !== null) hits.push({ structure: s, t: near });
     }
   }
-  if (!best) return null;
-  return { ...best, pointMm: [0, 1, 2].map((a) => origin[a] + direction[a] * best.t) };
+  return hits
+    .sort((a, b) => a.t - b.t)
+    .map((h) => ({ ...h, pointMm: [0, 1, 2].map((a) => origin[a] + direction[a] * h.t) }));
+}
+
+/** The nearest hit, or on a click again the one behind `current`, wrapping. (docs/viewer-shell.md) */
+export function nextPick(hits, { again = false, current = null } = {}) {
+  if (hits.length === 0) return null;
+  if (!again) return hits[0];
+  const at = hits.findIndex((h) => h.structure.key === current);
+  return hits[(at + 1) % hits.length];
 }
 
 /** Möller–Trumbore over a flat position array, without allocating. */

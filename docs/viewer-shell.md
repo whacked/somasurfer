@@ -236,6 +236,29 @@ including `folded` — which is exactly the case where the triangle's level and
 the frame's answer differ, so trusting the triangle would hide the one defect
 the flag exists to show.
 
+### `const hit = nextPick(hits, { again: sameSpot(ui.pickedAt, at), current: viewer.structureOf() });`
+
+A click again on the same spot goes one structure deeper (DOG-192).
+
+`pickStructures` (in `viewer/meshset.js`) returns every structure the layers
+admit under the pointer, nearest first, each at its own nearest hit. A first
+click takes the nearest, so it still picks what is seen. A click again — the
+same atlas, the same camera, within 4 CSS px — takes the one behind whatever
+was picked last, and wraps to the front after the deepest. The address is
+encoded from the picked structure's own surface point, not the front one's.
+
+Without it, a structure enclosed by another in its own layer is never the
+nearest hit, and no layer setting exposes it: the Edinger–Westphal nucleus
+inside the midbrain (both `brainstem`), and Z-Anatomy's hippocampus inside the
+ICBM152 lobe surfaces (both `cortex`). Fading the layer below half makes the
+enclosed structure pointer-transparent along with its parent. An innermost-hit
+rule was the alternative and was not taken: it would make a click on a visible
+surface select something the user cannot see.
+
+The structure panel says where the pick sits in that stack ("2 of 3
+structures under the pointer") and names what a click again picks, only while
+the camera has not moved. `__atlas.pickAt` returns the stack as `under`.
+
 ### `if (viewer.atlas === 'body') {`
 
 The address comes from the millimetres through the frame's own encoder,
