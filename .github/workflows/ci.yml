@@ -74,6 +74,12 @@ jobs:
       - name: Crosswalk and region index
         run: node tools/check-crosswalk.mjs
 
+      # Gate 4c: the static research API's region tree (CC BY-SA, committed in
+      # packages/atlas-assets/api/v1/) validates against schema/api-1.md, agrees
+      # with the live region index, and is what its inputs produce (DOG-131).
+      - name: Research API region tree
+        run: node tools/build-research-api.mjs
+
       - name: Static build
         run: node packages/atlas-web/build.mjs
 
@@ -81,6 +87,11 @@ jobs:
       # only be checked once there is one.
       - name: Licence separation in the built artefact
         run: node tools/check-licence-separation.mjs
+
+      # Every response the built site serves equals the library's answer to the
+      # same query, read over HTTP at the build's own base (DOG-131).
+      - name: Research API contract
+        run: node tools/check-research-api-contract.mjs
 
       # Gate 5: the performance budget, measured against the committed fixture.
       - name: Performance budget

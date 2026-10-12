@@ -393,23 +393,30 @@ export function apiDocuments(api: PaperApi | RegionApi | ResearchApi): { tree: A
 // The client
 // ---------------------------------------------------------------------------
 
-type Fetch = (url: string) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>;
+/** The caller's HTTP GET. Injected: this package makes no request of its own (trust.test.ts). */
+export type ApiTransport = (url: string) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>;
 
 /**
  * The static API, read over HTTP. `dataRoot` and `assetsRoot` are the two
  * tree roots as absolute URLs (`atlas-index.json` publishes both under the
- * site's base). A 404 is `null`, as the local answer is; any other failure,
- * and any document that does not validate, throws.
+ * site's base). `transport` is the caller's GET, typically
+ * `(url) => fetch(url)` in a browser.
+ *
+ * Every URL it asks for is one of the two roots plus a path `apiPaths` built
+ * from a path-safe id, so no curated value chooses a host or escapes a root;
+ * an id that is not path-safe throws before anything is requested. A 404 is
+ * `null`, as the local answer is; any other failure, and any document that
+ * does not validate or is not the kind asked for, throws.
  */
-export function createStaticApiClient(options: { dataRoot: string; assetsRoot: string; fetch?: Fetch }): ResearchApiClient {
-  const doFetch: Fetch = options.fetch ?? ((url) => globalThis.fetch(url));
+export function createStaticApiClient(options: { dataRoot: string; assetsRoot: string; transport: ApiTransport }): ResearchApiClient {
+  const { transport } = options;
   const roots: Record<ApiTree, string> = { data: options.dataRoot, assets: options.assetsRoot };
   for (const [tree, root] of Object.entries(roots)) {
     if (!root.endsWith('/')) throw new Error(`api: ${tree}Root ${JSON.stringify(root)} must end in "/".`);
   }
   async function get<T extends ApiDocument>(tree: ApiTree, path: string, kind: T['kind']): Promise<T | null> {
     const url = new URL(path, roots[tree]).href;
-    const res = await doFetch(url);
+    const res = await transport(url);
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`api: GET ${url} answered ${res.status}.`);
     const body = await res.json();
@@ -424,10 +431,10 @@ export function createStaticApiClient(options: { dataRoot: string; assetsRoot: s
   };
   return {
     index: async () => must(await get<ApiIndex>('data', apiPaths.index(), 'index'), 'the data index'),
-    paper: (id) => get<ApiPaper>('data', apiPaths.paper(id), 'paper'),
+    paper: async (id) => get<ApiPaper>('data', apiPaths.paper(id), 'paper'),
     regionIndex: async () => must(await get<ApiRegionIndex>('assets', apiPaths.index(), 'region-index'), 'the region index'),
-    region: (key) => get<ApiRegion>('assets', apiPaths.region(key), 'region'),
-    paperRegions: (id) => get<ApiPaperRegions>('assets', apiPaths.paperRegions(id), 'paper-regions'),
+    region: async (key) => get<ApiRegion>('assets', apiPaths.region(key), 'region'),
+    paperRegions: async (id) => get<ApiPaperRegions>('assets', apiPaths.paperRegions(id), 'paper-regions'),
   };
 }
 

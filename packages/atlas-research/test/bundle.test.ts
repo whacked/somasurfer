@@ -213,9 +213,11 @@ test('bundle: the viewer bundle stopped containing the modules it stopped reachi
   // the shipped bundle only because `index.ts` re-exports them.
   const scopes = (text: string) => [...text.matchAll(/^const (__m_\w+) = \(\(\) => \{$/gm)].map((m) => m[1]).sort();
 
-  // The region index and the representation registry (DOG-130) are build-time
-  // and API work: in the package, never in what the page loads.
+  // The region index and the representation registry (DOG-130), and the API
+  // documents and client (DOG-131), are build-time and API work: in the
+  // package, never in what the page loads.
   assert.deepEqual(scopes(full), [
+    '__m_api',
     '__m_browse',
     '__m_dataset',
     '__m_index',

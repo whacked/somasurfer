@@ -132,7 +132,11 @@ async function compare(origin, served = new Set()) {
   }
   if (problems.length > 0) return { problems, answered: 0, hrefs: 0, reached: new Set() };
 
-  const client = createStaticApiClient({ dataRoot: `${origin}${roots.dataRoot}`, assetsRoot: `${origin}${roots.assetsRoot}` });
+  const client = createStaticApiClient({
+    dataRoot: `${origin}${roots.dataRoot}`,
+    assetsRoot: `${origin}${roots.assetsRoot}`,
+    transport: (url) => fetch(url),
+  });
   const urls = new Map();
   let answered = 0;
   for (const [q, args] of queries) {

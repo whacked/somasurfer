@@ -15,7 +15,7 @@
     "packages/atlas-web"
   ],
   "scripts": {
-    "ci": "npm run check:node && npm run test:counted && npm run audit:check && npm run audit:template && npm run check:research && npm run check:meshes && npm run check:crosswalk && npm run check:licences && npm run build && npm run check:licences && npm run perf:check && npm run verify:gates",
+    "ci": "npm run check:node && npm run test:counted && npm run audit:check && npm run audit:template && npm run check:research && npm run check:meshes && npm run check:crosswalk && npm run check:api && npm run check:licences && npm run build && npm run check:licences && npm run check:api-contract && npm run perf:check && npm run verify:gates",
     "check:node": "node tools/check-node-version.mjs",
     "test:counted": "node tools/check-test-count.mjs",
     "audit:check": "node tools/check-audit-drift.mjs",
@@ -23,6 +23,8 @@
     "check:research": "node tools/check-research-dataset.mjs",
     "check:meshes": "node tools/check-mesh-assets.mjs",
     "check:crosswalk": "node tools/check-crosswalk.mjs",
+    "check:api": "node tools/build-research-api.mjs",
+    "check:api-contract": "node tools/check-research-api-contract.mjs",
     "check:licences": "node tools/check-licence-separation.mjs",
     "build": "node packages/atlas-web/build.mjs",
     "perf:check": "node tools/perf-budget.mjs",

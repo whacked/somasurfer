@@ -109,6 +109,7 @@ export {
   type ApiPaperRegions,
   type ApiRegion,
   type ApiRegionIndex,
+  type ApiTransport,
   type ApiTree,
   type PaperApi,
   type RegionApi,

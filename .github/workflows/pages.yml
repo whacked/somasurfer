@@ -60,6 +60,11 @@ jobs:
       - name: Licence separation in the deployed artefact
         run: node tools/check-licence-separation.mjs
 
+      # The research API, served at the Pages base exactly as it will be
+      # deployed, answers what the library answers (DOG-131).
+      - name: Research API contract on the deployed artefact
+        run: node tools/check-research-api-contract.mjs
+
       - name: Performance budget on the deployed artefact
         run: node tools/perf-budget.mjs
 
