@@ -807,7 +807,8 @@ function renderResearch() {
 /** Reveal a paper (null hides it) and frame its structures once they can be. */
 function revealResearchPaper(paperId) {
   ui.revealed = paperId;
-  ui.framePaper = paperId;
+  // The frame belongs to the atlas the paper was revealed in, whichever path switches atlas.
+  ui.framePaper = paperId ? { paperId, atlas: viewer.atlas } : null;
   // A different paper ends the comparison rather than re-anchoring it.
   if (!comparing()) ui.comparison = null;
   uploadHighlights();
@@ -1265,8 +1266,6 @@ function openAtlas(atlas) {
 
 function afterAtlasChange() {
   const atlas = viewer.atlas;
-  // A reveal frames the atlas it was made in; one still waiting on the API does not follow a switch.
-  ui.framePaper = null;
   fitIfUnset(atlas);
   loadMeshes(atlas, 'low').then(() => loadMeshes(atlas, 'full'));
   uploadSelectedCell();
@@ -1278,9 +1277,9 @@ function afterAtlasChange() {
 function commit({ push = false } = {}) {
   const regions = ui.revealed ? paperRegionsOf(ui.revealed).model : null;
   ui.overlay = overlayOf(regions, viewer.atlas);
-  if (ui.framePaper && ui.framePaper === ui.revealed && regions) {
+  if (ui.framePaper && ui.framePaper.paperId === ui.revealed && regions) {
     // Framed once, on reveal, as soon as its structures here are drawn; never by switching atlas.
-    const { drawn, done } = paperFrame(regions, viewer.atlas, ui.meshStatus[viewer.atlas]);
+    const { drawn, done } = paperFrame(regions, viewer.atlas, ui.meshStatus[viewer.atlas], ui.framePaper.atlas);
     if (drawn.length > 0) viewer.setCamera(flyToCell(viewer.cameraOf(), boundsOfStructures(drawn)));
     if (done) ui.framePaper = null;
   }

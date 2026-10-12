@@ -115,9 +115,12 @@ export function overlayOf(model, atlas) {
 /**
  * The revealed paper's frame in `atlas`: the structures to fit, and whether the
  * reveal is spent. It waits only while this atlas's meshes are still coming and
- * none of its structures here is drawn yet, so it frames once, never again.
+ * none of its structures here is drawn yet, so it frames once, never again. A
+ * reveal made in `revealedIn` is spent unframed in any other atlas, by whatever
+ * path the view got there (a button, a return, browser Back).
  */
-export function paperFrame(model, atlas, meshStatus) {
+export function paperFrame(model, atlas, meshStatus, revealedIn) {
+  if (revealedIn !== atlas) return { drawn: [], done: true };
   const here = model.regions.filter((r) => r.atlas === atlas);
   const drawn = here.flatMap((r) => r.structures);
   return { drawn, done: drawn.length > 0 || here.length === 0 || !['pending', 'loading'].includes(meshStatus) };

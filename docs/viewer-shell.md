@@ -720,8 +720,10 @@ hidden layer: a layer setting never hides a paper's mapping.
 The camera is framed on the paper's structures in this atlas once, on reveal,
 as soon as they are drawn. A reveal before the meshes arrive frames when they
 do. It never refits afterwards, so the user's own camera moves stand. A
-pending frame belongs to the atlas the paper was revealed in: switching atlas
-before the API answers cancels it, rather than framing in the new atlas.
+pending frame belongs to the atlas the paper was revealed in. It is recorded
+with that atlas, so if the view is in any other atlas when the API answers, the
+frame is dropped unframed. That holds whichever path switched the view: the
+Open button, Back to, or browser Back through `popstate`.
 
 Both rules live outside `app.js`, so `test/region-papers.test.js` can reach
 them: `paperFrame()` in `viewer/regionpapers.js` decides when the frame is

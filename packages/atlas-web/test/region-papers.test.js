@@ -248,16 +248,24 @@ describe('the camera and the x-ray pass', () => {
   const both = models.find((m) => m.paperId === 'paper:mazziotta-2001-icbm');
 
   it('frames a revealed paper once, on its structures in this atlas, and waits only while they are still coming', () => {
-    const brain = paperFrame(both, 'brain', 'loading');
+    const brain = paperFrame(both, 'brain', 'loading', 'brain');
     assert.deepEqual(brain.drawn.map((s) => s.key), [...overlayOf(both, 'brain').keys()]);
     assert.equal(brain.done, true, 'framed as soon as anything here is drawn, so a later commit never refits');
     // Its body region is the spinal cord, drawn only as parts: nothing to frame.
     // While the body meshes are coming, the reveal waits; once they are in, or failed, it is spent.
-    assert.deepEqual(paperFrame(both, 'body', 'loading'), { drawn: [], done: false });
-    assert.deepEqual(paperFrame(both, 'body', 'pending'), { drawn: [], done: false });
-    for (const status of ['low', 'full', 'failed', 'none']) assert.deepEqual(paperFrame(both, 'body', status), { drawn: [], done: true }, status);
+    assert.deepEqual(paperFrame(both, 'body', 'loading', 'body'), { drawn: [], done: false });
+    assert.deepEqual(paperFrame(both, 'body', 'pending', 'body'), { drawn: [], done: false });
+    for (const status of ['low', 'full', 'failed', 'none']) assert.deepEqual(paperFrame(both, 'body', status, 'body'), { drawn: [], done: true }, status);
     const glasser = models.find((m) => m.paperId === 'paper:glasser-2016-mmp1');
-    assert.deepEqual(paperFrame(glasser, 'brain', 'loading'), { drawn: [], done: true }, 'a paper with no structures waits for nothing');
+    assert.deepEqual(paperFrame(glasser, 'brain', 'loading', 'brain'), { drawn: [], done: true }, 'a paper with no structures waits for nothing');
+  });
+
+  it('never frames in an atlas the paper was not revealed in, however the view got there', () => {
+    // Revealed in the body, answered after a switch to the brain (a button, a return or browser Back):
+    // the brain structures are drawn, and still nothing is framed, and the reveal is spent.
+    assert.deepEqual(paperFrame(both, 'brain', 'full', 'body'), { drawn: [], done: true });
+    assert.deepEqual(paperFrame(both, 'brain', 'loading', 'body'), { drawn: [], done: true }, 'not kept waiting for the old atlas either');
+    assert.deepEqual(paperFrame(both, 'body', 'loading', 'brain'), { drawn: [], done: true });
   });
 
   it('draws a paper\'s structures through any layer, and the selected one last', () => {
