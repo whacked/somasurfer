@@ -151,3 +151,8 @@ footer { padding: 14px 16px; border-top: 1px solid var(--edge); font-size: 12px;
 .layers h3 { font-size: 0.8rem; margin: 0.5rem 0 0.2rem; opacity: 0.75; }
 .structure-panel { border-left: 3px solid rgb(77 242 214); padding-left: 0.5rem; margin: 0.5rem 0; }
 .structure-panel h3 { margin: 0; }
+.region-papers, .paper-regions { margin-top: 10px; }
+.links { margin: 2px 0 6px; padding-left: 16px; font-size: 12px; }
+.links .approximate, .paper-region.approximate > .structure-label, .paper-region.approximate > button { font-style: italic; }
+.how { font-family: ui-monospace, monospace; font-size: 11px; padding: 0 4px; border-radius: 3px; background: #2a2f38; }
+.approximate .how { background: repeating-linear-gradient(135deg, #5a3a1c 0 3px, #2a2f38 3px 6px); }

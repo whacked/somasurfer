@@ -79,6 +79,8 @@ export const ANATOMY_COLOURS = Object.freeze({
   cardiovascular: [0.80, 0.30, 0.32], nervous: [0.94, 0.86, 0.48], respiratory: [0.62, 0.76, 0.86],
   alimentary: [0.80, 0.62, 0.46], urinary: [0.86, 0.76, 0.42], genital: [0.80, 0.56, 0.70],
   endocrine: [0.60, 0.80, 0.56], other: [0.62, 0.62, 0.66], chosen: [0.30, 0.95, 0.84],
+  // A selected paper's structures (DOG-132): solid where a link is exact, striped where every link is approximate.
+  paper: [0.98, 0.42, 0.16], paperStripe: [0.24, 0.12, 0.08],
 });
 
 export const CELL_COLOUR = [0.98, 0.62, 0.21];
@@ -269,13 +271,13 @@ export function createRenderer(canvas) {
       gl.disable(gl.BLEND);
     }
 
-    // --- the selected structure, through whatever is in front of it --------
-    if (scene.xray) {
+    // --- the selected structure and a paper's, through whatever is in front --
+    for (const xray of [].concat(scene.xray ?? [])) {
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.disable(gl.DEPTH_TEST);
       gl.depthMask(false);
-      drawSolidRanges({ ...scene.xray, opacity: 0.3 });
+      drawSolidRanges({ ...xray, opacity: 0.3 });
       gl.depthMask(true);
       gl.enable(gl.DEPTH_TEST);
       gl.disable(gl.BLEND);
@@ -286,6 +288,8 @@ export function createRenderer(canvas) {
       gl.uniform1f(loc.solid.alpha, item.opacity);
       for (const range of item.ranges) {
         gl.uniform3fv(loc.solid.colour, new Float32Array(range.colour));
+        gl.uniform1f(loc.solid.hatch, range.hatch ? 8 * dpr : 0);
+        if (range.hatch) gl.uniform3fv(loc.solid.hatchColour, new Float32Array(range.hatch));
         gl.drawElements(
           gl.TRIANGLES,
           range.triangleCount * 3,

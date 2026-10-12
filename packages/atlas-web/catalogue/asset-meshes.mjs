@@ -21,6 +21,12 @@
  *          the meshes and the frame are the same coordinates (W3's
  *          `registration.transform` is identity).
  *
+ * `research` (DOG-132) names the research API representation whose region
+ * keys are this set's structures, and which structure field is the id in it:
+ * `representation/structure[idField]`. Our statement, checked against the
+ * served region tree by test/region-papers.test.js. The ICBM cortex has none
+ * until its lobes reach the region tree (DOG-157).
+ *
  * Order matters within an atlas only for drawing: a set listed first is
  * uploaded first. Each set is fetched, decoded and drawn on its own, so one
  * failing costs that set and nothing else.
@@ -39,10 +45,12 @@ export const ASSET_MESH_SETS = Object.freeze([
     atlas: 'brain',
     structures: 'brain/zanatomy-2929e94/structures.json',
     registration: 'registration/mni-to-zanatomy-2929e94.json',
+    research: Object.freeze({ representation: 'zanatomy-gross-anatomy', idField: 'id' }),
   }),
   Object.freeze({
     id: 'bp3d-4066585',
     atlas: 'body',
     structures: 'body/bp3d-4066585/structures.json',
+    research: Object.freeze({ representation: 'bodyparts3d-bd', idField: 'fma' }),
   }),
 ]);

@@ -2,10 +2,11 @@
 
 `packages/atlas-web/src/` is shipped to the browser byte for byte, and every
 comment in it is counted by `bundleGzipBytes`. So the longer explanations of
-`app.js`, `viewer/state.js` and `viewer/renderer.js` live here, each under the
+`app.js`, `viewer/state.js`, `viewer/renderer.js` and `viewer/corpus.js` live here, each under the
 line of code it explains, and the code keeps a one-line summary that points back
 to this file. They were moved verbatim by DOG-129 when the mesh viewer took the
-bundle over its line; nothing was reworded.
+bundle over its line; nothing was reworded. DOG-132 moved `viewer/corpus.js`'s
+header the same way, verbatim, when the region↔paper panels did the same.
 
 Search this file for the code line to find its note.
 
@@ -560,3 +561,162 @@ matrices the geometry was drawn with. A label derived from an independently
 re-derived projection drifts from the thing it labels as soon as either
 side's near plane or field of view changes, and a label a few pixels off
 the structure it names is worse than no label.
+
+## `viewer/corpus.js`
+
+### Module header
+
+The curated corpus, resolved in the browser, against the real name index.
+
+`research.js` validates a document whose geometry is already decided: each
+finding arrives carrying cells. That shape is all a build can honestly emit,
+because deciding the cells means resolving a structure id against the name
+index, the name index is an asset payload, and rule 6 of
+`tools/check-licence-separation.mjs` holds `dist/data/` to deriving nothing
+from asset content. So `dist/data/research.json` ships the curated dataset as
+TEXT — papers, findings, structure ids, provenance — and the join happens
+here, at load, where the index has already been fetched.
+
+That is the whole architectural point of R2, and it is also what makes the
+numbers below possible to state at all: they are measurements against the
+index the page actually binds, not estimates.
+
+#### What the join actually yields, measured
+
+Against `bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da`
+with both shipped templates bound, `research-seed-2026.10.1` resolves **31 of
+its 170 mappings**, across **10 of 30 papers** and **24 of 120 findings**.
+139 mappings resolve to nothing at all.
+
+Those are not disappointing numbers to be smoothed over. They are the
+honest extent of what v1 can place, and the entire job of this module is to
+carry them to the screen intact:
+
+  - **Nothing is placed that the index did not place.** There is no fallback
+    to a structure's covering, no synthetic index, no inferred position. An
+    unresolved mapping contributes zero cells, and `buildResearchIndex()`
+    already guarantees that by giving it `EMPTY_COVERING`; this module must
+    simply not invent one.
+  - **The residue is listed, described, and painted nowhere.** A paper with
+    no placed geometry is still a paper. It stays in the list, stays
+    selectable, and reveals all of its mappings — each one saying why it has
+    no extent.
+
+#### Why the unresolved reason is NOT "unknown structure"
+
+All 139 come back from the resolver with `unresolvedReason:
+'unknown-structure'`, and that string is correct about the mechanism and
+badly wrong as a sentence to show a reader. DOG-46 reserved those words
+deliberately, to mean *a mistyped accession* — an id that should have
+resolved and did not. Printing them 139 times would accuse the curator of
+139 typos, when in fact the dataset predicted every one of them in advance.
+
+It did so in `authoredAgainst.partitions`, which exists for exactly this.
+Each partition states, per structure id, which index was supposed to name it
+and whether that index is real or a declared placeholder. Joining against it
+turns a mechanism into a cause, and the measured split is:
+
+  brain-parcellation  placeholder, 46 ids   135 unresolved,  5 resolved
+  body-bd             real,        14 ids     0 unresolved, 26 resolved
+  body-not-in-index   placeholder,  3 ids     4 unresolved,  0 resolved
+
+**The 139 do not share one cause, so they do not share one sentence.** 135
+are blocked by licensing — no brain parcellation cleared redistribution, and
+`docs/asset-licensing.md` §4 is final for v1. The other 4 are a coverage gap:
+the cleared BodyParts3D subset has a generic rib but no individual rib, and
+carries neither the coronary artery nor the quadratus lumborum. The dataset
+separates those two partitions on purpose and says why in each `reason`
+("a coverage gap in the index rather than a licence refusal, and it is
+recorded separately for that reason"), so collapsing them into one message
+about licensing would introduce a fresh conflation while fixing another — the
+same error as conflating `folded` with `clamped`.
+
+So the explanation is keyed off each mapping's OWN partition, and the cause
+shown is the partition's own recorded `reason`, verbatim. Verbatim rather
+than paraphrased because that text is the decision, written by whoever made
+it; a paraphrase of a licence verdict is a new claim about a licence.
+
+And `unknown-structure` keeps its DOG-46 meaning, now exclusively: it is
+said only when the id belongs to a partition declared `real` against the
+very index that just failed to name it. That case is a genuine data error,
+and today it happens zero times — which is a fact worth being able to see
+change.
+
+#### Resolved does not imply named
+
+5 of the 31 resolved mappings sit in the `placeholder` brain partition, and
+that is not a contradiction. Only `region-level` precision needs the index to
+name anything — `cells` and `coordinates` mappings carry their own geometry.
+Those 5 are therefore **placed but unnameable**: real extent, with a label
+that came from the curator rather than from any index. They keep
+`labelFromIndex: false` so the panel can say so, because a curated label
+rendered identically to an index name is a quiet upgrade of one to the other.
+
+Three states, then, not two: placed and named (26), placed but unnameable
+(5), not placed (139).
+
+## `viewer/regionpapers.js` and the region↔paper panels (DOG-132)
+
+### Module header
+
+Region → papers and paper → regions are read from W6's static research API
+(`packages/atlas-research/schema/api-1.md`), from the **region tree** under
+`index.researchApi.assetsRoot`. The documents there are already joined: every
+link carries its `how`, its precision and the curated term it came from. The
+viewer does not resolve anything. It finds a document through the region
+index's own `href`s, refuses one that is not the `atlas-research-api/1` kind it
+asked for or whose `href` leaves the tree, and displays it.
+
+Paper titles and finding statements come from the corpus the page has already
+loaded (`data/research.json`), which is the same dataset version the API
+names. So a region panel costs one small fetch, and nothing is fetched until a
+structure is selected or a paper is revealed. The first frame does not wait on
+the API.
+
+**Why not `createStaticApiClient`.** W6 left the choice to W7. Adding it to the
+viewer entry costs 7.9 KB of gzip, mostly the validator and its comments, with
+4.2 KiB of `bundleGzipBytes` left. The API's documents are validated where they
+are made and served: by `tools/build-research-api.mjs`, and over HTTP by
+`tools/check-research-api-contract.mjs`. The page checks only kind, schema and
+containment.
+
+**Which structure is which region.** `catalogue/asset-meshes.mjs` declares,
+per mesh set, the API representation its structures belong to and which field
+is the id there: `zanatomy-gross-anatomy` by `id`, `bodyparts3d-bd` by `fma`.
+`meshSetFrom` stamps each structure with that `regionKey`.
+`test/region-papers.test.js` holds every region the served tree lists to that
+declaration. The ICBM cortex declares none: its lobes are not in the region
+tree until DOG-157, and its panel says so rather than "no papers".
+
+### `function regionPapersSection(s) {`
+
+Region → papers. Every paper and finding the region document lists, each link
+with its `how`, its precision and the curated term. An approximate link reads
+as approximate in words, in italics and on a striped `how` tag. An HCP-MMP1 link
+always shows its original area name, because the structure it was projected
+onto is not what the paper said. "Loading", "the API could not be read", "no
+representation covers this set" and "no paper links this structure" are four
+different sentences.
+
+### `function paperRegionsSection(paperId) {`
+
+Paper → regions. All of the paper's structures, never narrowed by the selection.
+A paper with none prints the API's stated reasons (`emptyBecause`), code and
+detail verbatim. A structure in the other atlas is named there and is not
+opened: selection never switches the atlas. A region with no single drawn
+structure in this build is listed and says so. Six body regions (heart, liver,
+both lungs, spinal cord) are BodyParts3D wholes that the body mesh ships only
+as parts.
+
+### `const regions = ui.revealed ? paperRegionsOf(ui.revealed).model : null;`
+
+The overlay is computed once per commit, not per frame. A structure is drawn
+**solid** in the paper colour when any link to it is exact, and **striped**
+when every link is approximate. So a crosswalk or coordinate link looks
+approximate in 3D as well as in the panel. Marked structures are also drawn in
+the x-ray pass, so a thalamic nucleus shows through the cortex and through a
+hidden layer: a layer setting never hides a paper's mapping.
+
+The camera is framed on the paper's structures in this atlas once, on reveal,
+as soon as they are drawn. A reveal before the meshes arrive frames when they
+do. It never refits afterwards, so the user's own camera moves stand.

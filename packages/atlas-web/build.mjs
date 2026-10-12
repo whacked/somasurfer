@@ -233,6 +233,7 @@ const meshSetEntries = ASSET_MESH_SETS.map((declaration) => {
     }
     entry[key] = `${BASE}assets/${declaration[key]}`;
   }
+  if (declaration.research) entry.research = { ...declaration.research };
   return entry;
 });
 
