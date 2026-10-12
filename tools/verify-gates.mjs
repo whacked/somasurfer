@@ -1649,6 +1649,39 @@ const CASES = [
     check: () => run('check-mesh-assets.mjs'),
   },
   {
+    name: 'body-sliver-hidden-by-undrawn-vertices',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate measures the drawn surface: a sliver cannot hide behind vertices no triangle uses',
+    expect: [/body: Left seventh rib \(id 8256\): the low tier keeps [\d.]+ mm of its [\d.]+ mm [xyz] extent; it has collapsed toward a sliver/],
+    describe: 'the left seventh rib flattened onto one plane, with one undrawn vertex left at each end of the flattened axis',
+    // DOG-173 F1: extents were taken over every vertex, so two vertices no
+    // triangle uses, parked at the old extremes, kept the extent whole.
+    break: () => {
+      const rib = bodyStructure('Left seventh rib');
+      return rewriteMesh(BODY_LOW, (records) => records.map((r) => {
+        if (r.id !== rib.id) return r;
+        const ext = [0, 1, 2].map((a) => {
+          let lo = Infinity;
+          let hi = -Infinity;
+          for (let v = a; v < r.positions.length; v += 3) {
+            lo = Math.min(lo, r.positions[v]);
+            hi = Math.max(hi, r.positions[v]);
+          }
+          return { a, lo, hi, span: hi - lo };
+        }).sort((x, y) => x.span - y.span)[0];
+        const flat = Int16Array.from(r.positions, (q, i) => (i % 3 === ext.a ? ext.lo : q));
+        const ends = [ext.lo, ext.hi].flatMap((q) => [0, 1, 2].map((a) => (a === ext.a ? q : flat[a])));
+        const positions = new Int16Array(flat.length + 6);
+        positions.set(flat);
+        positions.set(ends, flat.length);
+        const normals = new Int8Array(r.normals.length + 4);
+        normals.set(r.normals);
+        return { ...r, positions, normals };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
     name: 'body-not-in-the-bd-frame',
     gate: 'mesh assets',
     criterion: 'the mesh gate fails when the body is not in BD\'s frame, though every per-structure check still passes',
@@ -1750,6 +1783,21 @@ const CASES = [
       return substitute(app, `${readFileSync(app, 'utf8')}\nexport const INLINED_FEMUR = '${range}';\n`);
     },
     check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'perf-body-lines-read-the-built-body',
+    gate: 'performance budget',
+    criterion: 'the body byte lines measure the body files in the build, not none',
+    mustPass: true,
+    expect: [/2 the low-resolution body\), 2 fetched lazily \(1 brain, 1 body, full resolution\)/],
+    describe: 'the build as it stands',
+    // DOG-173 note: a build that stopped copying body/ would read 0 B on both
+    // body lines and pass them. This pins that the gate found the files.
+    break: () => {
+      requireBuild();
+      return () => {};
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
   },
   {
     name: 'perf-body-full-tier-undeclared-overruns-its-share',
