@@ -1454,10 +1454,46 @@ const CASES = [
   {
     name: 'licence-volume-set-cites-an-unrecorded-source',
     gate: 'licence separation',
-    criterion: 'rule 10 fails when a structure of a volume-derived set names a source that is not recorded',
-    expect: [/entry icbm152-cortex-surface ships Cerebral cortex\.l \(id 1\), which is held as uncleared-source/, /its source harvard-oxford is not recorded in upstreamSources/],
+    criterion: 'rule 10 fails when a structure of a volume-derived set names any source but its one upstream',
+    expect: [/entry icbm152-cortex-surface ships Cerebral cortex\.l \(id 1\), which is held as uncleared-source/, /its sources are \["icbm152-2009c","harvard-oxford"\], not exactly the set's one upstream, icbm152-2009c/],
     describe: 'the cortex structures.json naming harvard-oxford among the left hemisphere\'s sources',
     break: () => editJson(ICBM_STRUCTURES, (doc) => { doc.structures[0].sources.push('harvard-oxford'); }, 1),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'icbm-cortex-published-area-missing',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when structures.json drops the area and volume it is checked against',
+    expect: [/Cerebral cortex\.l \(id 1\): structures\.json does not publish its area and enclosed volume/],
+    describe: 'structures.json with low.areaMm2 and low.enclosedVolumeCm3 deleted from both hemispheres (DOG-165 F2)',
+    break: () => editJson(ICBM_STRUCTURES, (doc) => {
+      for (const st of doc.structures) { delete st.low.areaMm2; delete st.low.enclosedVolumeCm3; }
+    }, 1),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'licence-glb-set-relabelled-volume',
+    gate: 'licence separation',
+    criterion: 'rule 10 still judges a glb-derived set by its manifest when the set calls itself a volume',
+    expect: [/ships Posterior transverse collateral sulcus\.l \(id 0\), which is held as zanatomy-undeclared-brain-materials/],
+    describe: 'the zanatomy structures.json with a held structure (id 0) appended, source.kind "volume", and brainproject-brain-glb pushed onto every structure\'s sources (DOG-165 F1, reproduction C)',
+    break: () => editJson(BRAIN_STRUCTURES, (doc) => {
+      doc.source.kind = 'volume';
+      doc.structures.push({ ...doc.structures[0], id: 0, name: 'Posterior transverse collateral sulcus.l', label: 'Posterior transverse collateral sulcus' });
+      for (const st of doc.structures) if (!st.sources.includes('brainproject-brain-glb')) st.sources.push('brainproject-brain-glb');
+    }, 1),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-glb-set-relabelled-volume-without-commit',
+    gate: 'licence separation',
+    criterion: 'rule 10 refuses the volume path to a set whose upstream the registry does not record as a volume',
+    expect: [/says it is a volume-derived set, but its upstream "brainproject-brain-glb" is not recorded in upstreamSources with kind "volume"/],
+    describe: 'the zanatomy structures.json relabelled source.kind "volume", its glb commit deleted and its upstream left as brainproject-brain-glb',
+    break: () => editJson(BRAIN_STRUCTURES, (doc) => {
+      doc.source.kind = 'volume';
+      delete doc.source.commit;
+    }, 1),
     check: () => run('check-licence-separation.mjs'),
   },
   {
@@ -1465,7 +1501,7 @@ const CASES = [
     gate: 'licence separation',
     criterion: 'rule 10 checks every structure slot of the committed brain files, not none',
     mustPass: true,
-    expect: [/rule 10: 5 brain file\(s\), 736 structure slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\), each checked against the generated provenance manifest; 2 volume-derived file\(s\), 4 slot\(s\)/],
     describe: 'the committed brain mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),

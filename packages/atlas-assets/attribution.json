@@ -282,7 +282,9 @@
       "verdict": "cleared",
       "verifiedAt": "2026-10-09",
       "attributionStatement": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.",
-      "evidence": "The archive's own COPYING file (archive SHA-256 804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4), quoted in docs/asset-licensing.md section 2. Recorded here in DOG-126 so the BV template can cite it."
+      "evidence": "The archive's own COPYING file (archive SHA-256 804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4), quoted in docs/asset-licensing.md section 2. Recorded here in DOG-126 so the BV template can cite it.",
+      "kind": "volume",
+      "kindNote": "An image volume. Brain sets extracted from it carry no glb provenance manifest; licence rule 10 judges them from their own structures.json, and only because this record says so (DOG-151, DOG-165)."
     },
     {
       "id": "uberon",

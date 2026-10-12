@@ -119,8 +119,14 @@ for (const [slot, s] of doc.structures.entries()) {
   if (s.low?.triangles !== tris || s.low?.vertices !== n) problems.push(`${name}: structures.json says ${s.low?.triangles} triangles / ${s.low?.vertices} vertices; the file holds ${tris} / ${n}.`);
   const area = surfaceArea(g.positions, g.indices);
   const volume = signedVolume(g.positions, g.indices) / 1000;
-  if (Math.abs(area - s.low?.areaMm2) > 1) problems.push(`${name}: structures.json says ${s.low?.areaMm2} mm^2; the file measures ${area.toFixed(0)}.`);
-  if (Math.abs(volume - s.low?.enclosedVolumeCm3) > 0.1) problems.push(`${name}: structures.json says ${s.low?.enclosedVolumeCm3} cm^3 enclosed; the file measures ${volume.toFixed(1)}.`);
+  // Absent is a failure: a missing figure makes the difference NaN, and NaN
+  // compares false, so without this the check would pass by not running (DOG-165 F2).
+  if (!Number.isFinite(s.low?.areaMm2) || !Number.isFinite(s.low?.enclosedVolumeCm3)) {
+    problems.push(`${name}: structures.json does not publish its area and enclosed volume (low.areaMm2 ${JSON.stringify(s.low?.areaMm2)}, low.enclosedVolumeCm3 ${JSON.stringify(s.low?.enclosedVolumeCm3)}).`);
+  } else {
+    if (Math.abs(area - s.low.areaMm2) > 1) problems.push(`${name}: structures.json says ${s.low.areaMm2} mm^2; the file measures ${area.toFixed(0)}.`);
+    if (Math.abs(volume - s.low.enclosedVolumeCm3) > 0.1) problems.push(`${name}: structures.json says ${s.low.enclosedVolumeCm3} cm^3 enclosed; the file measures ${volume.toFixed(1)}.`);
+  }
   if (!(Number.isFinite(s.errorMm?.hausdorff) && Number.isFinite(s.errorMm?.mean))) problems.push(`${name}: no published error against the undecimated surface.`);
   rows.push({ s, tris, n, m, area, volume });
 }
