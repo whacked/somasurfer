@@ -4,7 +4,7 @@
  "licence": "CC-BY-SA-4.0",
  "attributionHref": "../../ATTRIBUTION.md",
  "datasetVersion": "research-seed-2026.10.1",
- "crosswalkVersion": "crosswalk-2026.10.2",
+ "crosswalkVersion": "crosswalk-2026.10.3",
  "representations": [
   {
    "id": "zanatomy-gross-anatomy",
@@ -17,22 +17,26 @@
   {
    "id": "bodyparts3d-bd",
    "version": "bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da"
+  },
+  {
+   "id": "icbm152-2009c-cortex-lobes",
+   "version": "icbm152-2009c-cortex-lobes"
   }
  ],
  "coverage": {
   "mappings": {
    "total": 170,
-   "linked": 44,
+   "linked": 109,
    "byHow": {
     "exact-term": 36,
-    "crosswalk": 8,
+    "crosswalk": 73,
     "coordinate": 0
    }
   },
   "papers": {
    "total": 30,
-   "nonEmpty": 15,
-   "emptyWithStatedReason": 15
+   "nonEmpty": 29,
+   "emptyWithStatedReason": 1
   }
  },
  "regions": [
@@ -186,6 +190,174 @@
     "paper:panjabi-1991-thoracic-morphometry"
    ],
    "href": "regions/bodyparts3d-bd/FMA9968.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/101",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "101",
+   "structureName": "Frontal lobe.l",
+   "paperIds": [
+    "paper:amunts-1999-broca",
+    "paper:amunts-2020-julich-brain",
+    "paper:brodmann-1909-localisation",
+    "paper:buckner-2008-default-network",
+    "paper:catani-2008-virtual-dissection",
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:glasser-2016-mmp1",
+    "paper:hickok-2007-dual-stream",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:penfield-1937-somatotopy",
+    "paper:price-2012-language-review",
+    "paper:zilles-2010-brodmann-centenary"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/101.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/102",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "102",
+   "structureName": "Parietal lobe.l",
+   "paperIds": [
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:hagmann-2008-structural-core",
+    "paper:hickok-2007-dual-stream",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:penfield-1937-somatotopy",
+    "paper:power-2011-functional-areas",
+    "paper:raichle-2001-default-mode",
+    "paper:yeo-2011-intrinsic-networks"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/102.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/103",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "103",
+   "structureName": "Temporal lobe.l",
+   "paperIds": [
+    "paper:buckner-2008-default-network",
+    "paper:epstein-1998-parahippocampal-place-area",
+    "paper:hickok-2007-dual-stream",
+    "paper:kanwisher-1997-fusiform-face-area",
+    "paper:mazziotta-2001-icbm",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:price-2012-language-review"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/103.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/104",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "104",
+   "structureName": "Occipital lobe.l",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:brodmann-1909-localisation",
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:fischl-2012-freesurfer",
+    "paper:fonov-2011-unbiased-templates",
+    "paper:glasser-2016-mmp1",
+    "paper:mazziotta-2001-icbm",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:van-essen-2013-hcp",
+    "paper:zilles-2010-brodmann-centenary"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/104.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/106",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "106",
+   "structureName": "Limbic lobe.l",
+   "paperIds": [
+    "paper:buckner-2008-default-network",
+    "paper:hagmann-2008-structural-core"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/106.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/201",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "201",
+   "structureName": "Frontal lobe.r",
+   "paperIds": [
+    "paper:amunts-1999-broca",
+    "paper:amunts-2020-julich-brain",
+    "paper:brodmann-1909-localisation",
+    "paper:buckner-2008-default-network",
+    "paper:catani-2008-virtual-dissection",
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:glasser-2016-mmp1",
+    "paper:hickok-2007-dual-stream",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:penfield-1937-somatotopy",
+    "paper:price-2012-language-review",
+    "paper:zilles-2010-brodmann-centenary"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/201.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/202",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "202",
+   "structureName": "Parietal lobe.r",
+   "paperIds": [
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:hagmann-2008-structural-core",
+    "paper:hickok-2007-dual-stream",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:penfield-1937-somatotopy",
+    "paper:power-2011-functional-areas",
+    "paper:raichle-2001-default-mode",
+    "paper:yeo-2011-intrinsic-networks"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/202.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/203",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "203",
+   "structureName": "Temporal lobe.r",
+   "paperIds": [
+    "paper:buckner-2008-default-network",
+    "paper:epstein-1998-parahippocampal-place-area",
+    "paper:hickok-2007-dual-stream",
+    "paper:kanwisher-1997-fusiform-face-area",
+    "paper:mazziotta-2001-icbm",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:price-2012-language-review"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/203.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/204",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "204",
+   "structureName": "Occipital lobe.r",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:brodmann-1909-localisation",
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:fischl-2012-freesurfer",
+    "paper:fonov-2011-unbiased-templates",
+    "paper:glasser-2016-mmp1",
+    "paper:mazziotta-2001-icbm",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:van-essen-2013-hcp",
+    "paper:zilles-2010-brodmann-centenary"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/204.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/206",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "206",
+   "structureName": "Limbic lobe.r",
+   "paperIds": [
+    "paper:buckner-2008-default-network",
+    "paper:hagmann-2008-structural-core"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/206.json"
   },
   {
    "key": "zanatomy-gross-anatomy/122",
@@ -615,32 +787,42 @@
  "papers": [
   {
    "paperId": "paper:brodmann-1909-localisation",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/204"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/brodmann-1909-localisation.json"
   },
   {
    "paperId": "paper:glasser-2016-mmp1",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/204"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/glasser-2016-mmp1.json"
   },
   {
    "paperId": "paper:amunts-1999-broca",
-   "regionKeys": [],
-   "emptyBecause": [
-    "coordinate-outside-shipped-structures",
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/201"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/amunts-1999-broca.json"
   },
   {
    "paperId": "paper:amunts-2020-julich-brain",
    "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/204",
     "zanatomy-gross-anatomy/122",
     "zanatomy-gross-anatomy/123",
     "zanatomy-gross-anatomy/165",
@@ -657,10 +839,13 @@
   },
   {
    "paperId": "paper:zilles-2010-brodmann-centenary",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/204"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/zilles-2010-brodmann-centenary.json"
   },
   {
@@ -717,15 +902,18 @@
   },
   {
    "paperId": "paper:yeo-2011-intrinsic-networks",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/202"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/yeo-2011-intrinsic-networks.json"
   },
   {
    "paperId": "paper:power-2011-functional-areas",
    "regionKeys": [
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/202",
     "zanatomy-gross-anatomy/153",
     "zanatomy-gross-anatomy/154",
     "zanatomy-gross-anatomy/161",
@@ -752,24 +940,32 @@
   },
   {
    "paperId": "paper:hagmann-2008-structural-core",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/106",
+    "icbm152-2009c-cortex-lobes/202",
+    "icbm152-2009c-cortex-lobes/206"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/hagmann-2008-structural-core.json"
   },
   {
    "paperId": "paper:van-essen-2013-hcp",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/204"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/van-essen-2013-hcp.json"
   },
   {
    "paperId": "paper:mazziotta-2001-icbm",
    "regionKeys": [
     "bodyparts3d-bd/FMA7647",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/203",
+    "icbm152-2009c-cortex-lobes/204",
     "zanatomy-gross-anatomy/153",
     "zanatomy-gross-anatomy/154",
     "zanatomy-gross-anatomy/161",
@@ -797,6 +993,8 @@
   {
    "paperId": "paper:fonov-2011-unbiased-templates",
    "regionKeys": [
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/204",
     "zanatomy-gross-anatomy/122",
     "zanatomy-gross-anatomy/123",
     "zanatomy-gross-anatomy/49",
@@ -808,6 +1006,8 @@
   {
    "paperId": "paper:fischl-2012-freesurfer",
    "regionKeys": [
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/204",
     "zanatomy-gross-anatomy/122",
     "zanatomy-gross-anatomy/123",
     "zanatomy-gross-anatomy/153",
@@ -842,15 +1042,28 @@
   },
   {
    "paperId": "paper:eickhoff-2005-anatomy-toolbox",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/202",
+    "icbm152-2009c-cortex-lobes/204"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/eickhoff-2005-anatomy-toolbox.json"
   },
   {
    "paperId": "paper:mesulam-1998-sensation-to-cognition",
    "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/202",
+    "icbm152-2009c-cortex-lobes/203",
+    "icbm152-2009c-cortex-lobes/204",
     "zanatomy-gross-anatomy/122",
     "zanatomy-gross-anatomy/123"
    ],
@@ -859,15 +1072,22 @@
   },
   {
    "paperId": "paper:raichle-2001-default-mode",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/202"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/raichle-2001-default-mode.json"
   },
   {
    "paperId": "paper:buckner-2008-default-network",
    "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/106",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/203",
+    "icbm152-2009c-cortex-lobes/206",
     "zanatomy-gross-anatomy/122",
     "zanatomy-gross-anatomy/123"
    ],
@@ -876,50 +1096,62 @@
   },
   {
    "paperId": "paper:price-2012-language-review",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/203"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/price-2012-language-review.json"
   },
   {
    "paperId": "paper:hickok-2007-dual-stream",
-   "regionKeys": [],
-   "emptyBecause": [
-    "coordinate-outside-shipped-structures",
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/202",
+    "icbm152-2009c-cortex-lobes/203"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/hickok-2007-dual-stream.json"
   },
   {
    "paperId": "paper:kanwisher-1997-fusiform-face-area",
-   "regionKeys": [],
-   "emptyBecause": [
-    "coordinate-outside-shipped-structures",
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/203"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/kanwisher-1997-fusiform-face-area.json"
   },
   {
    "paperId": "paper:epstein-1998-parahippocampal-place-area",
-   "regionKeys": [],
-   "emptyBecause": [
-    "coordinate-outside-shipped-structures",
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/203"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/epstein-1998-parahippocampal-place-area.json"
   },
   {
    "paperId": "paper:penfield-1937-somatotopy",
-   "regionKeys": [],
-   "emptyBecause": [
-    "structure-held"
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/202"
    ],
+   "emptyBecause": [],
    "href": "paper-regions/penfield-1937-somatotopy.json"
   },
   {
    "paperId": "paper:catani-2008-virtual-dissection",
    "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/201",
     "zanatomy-gross-anatomy/122",
     "zanatomy-gross-anatomy/123"
    ],

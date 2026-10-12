@@ -3,38 +3,76 @@
  "kind": "paper-regions",
  "licence": "CC-BY-SA-4.0",
  "datasetVersion": "research-seed-2026.10.1",
- "crosswalkVersion": "crosswalk-2026.10.2",
+ "crosswalkVersion": "crosswalk-2026.10.3",
  "paperId": "paper:van-essen-2013-hcp",
  "paperHref": "../../../../data/api/v1/papers/van-essen-2013-hcp.json",
- "regions": [],
- "emptyBecause": [
+ "regions": [
   {
-   "code": "structure-held",
-   "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
-   "mappingIds": [
-    "map:van-essen-2013-hcp/multimodal-acquisition/hcp-mmp1-v1"
+   "key": "icbm152-2009c-cortex-lobes/104",
+   "structureName": "Occipital lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/104.json",
+   "links": [
+    {
+     "mappingId": "map:van-essen-2013-hcp/multimodal-acquisition/hcp-mmp1-v1",
+     "findingId": "finding:van-essen-2013-hcp/multimodal-acquisition",
+     "paperId": "paper:van-essen-2013-hcp",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "104",
+     "structureName": "Occipital lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V1 lies in the banks of the calcarine sulcus and spills onto its lips."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:V1",
+      "label": "Primary visual cortex (V1)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Calcarine sulcus"
+      ]
+     }
+    }
    ]
   },
   {
-   "code": "structure-held",
-   "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
-   "mappingIds": [
-    "map:van-essen-2013-hcp/subject-count/atlas-label-inferior-frontal-gyrus"
-   ]
-  },
-  {
-   "code": "structure-held",
-   "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
-   "mappingIds": [
-    "map:van-essen-2013-hcp/surface-based-registration/atlas-label-precentral-gyrus"
-   ]
-  },
-  {
-   "code": "structure-held",
-   "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
-   "mappingIds": [
-    "map:van-essen-2013-hcp/minimal-preprocessing/atlas-label-fusiform-gyrus"
+   "key": "icbm152-2009c-cortex-lobes/204",
+   "structureName": "Occipital lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/204.json",
+   "links": [
+    {
+     "mappingId": "map:van-essen-2013-hcp/multimodal-acquisition/hcp-mmp1-v1",
+     "findingId": "finding:van-essen-2013-hcp/multimodal-acquisition",
+     "paperId": "paper:van-essen-2013-hcp",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "204",
+     "structureName": "Occipital lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V1 lies in the banks of the calcarine sulcus and spills onto its lips."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:V1",
+      "label": "Primary visual cortex (V1)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Calcarine sulcus"
+      ]
+     }
+    }
    ]
   }
- ]
+ ],
+ "emptyBecause": []
 }

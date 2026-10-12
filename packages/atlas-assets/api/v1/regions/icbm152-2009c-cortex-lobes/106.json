@@ -1,0 +1,77 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "key": "icbm152-2009c-cortex-lobes/106",
+ "representation": "icbm152-2009c-cortex-lobes",
+ "structureId": "106",
+ "structureName": "Limbic lobe.l",
+ "papers": [
+  {
+   "paperId": "paper:buckner-2008-default-network",
+   "href": "../../../../../data/api/v1/papers/buckner-2008-default-network.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/network-anatomy/hcp-mmp1-rsc",
+     "findingId": "finding:buckner-2008-default-network/network-anatomy",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "106",
+     "structureName": "Limbic lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. RSC lies behind the splenium on the isthmus of the cingulate gyrus, which is Z-Anatomy's posteroventral cingulate part."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:RSC",
+      "label": "Retrosplenial complex"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Cingulate gyrus (Posteroventral part*)"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:hagmann-2008-structural-core",
+   "href": "../../../../../data/api/v1/papers/hagmann-2008-structural-core.json",
+   "links": [
+    {
+     "mappingId": "map:hagmann-2008-structural-core/retrosplenial-participation/hcp-mmp1-rsc",
+     "findingId": "finding:hagmann-2008-structural-core/retrosplenial-participation",
+     "paperId": "paper:hagmann-2008-structural-core",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "106",
+     "structureName": "Limbic lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. RSC lies behind the splenium on the isthmus of the cingulate gyrus, which is Z-Anatomy's posteroventral cingulate part."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:RSC",
+      "label": "Retrosplenial complex"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Cingulate gyrus (Posteroventral part*)"
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}

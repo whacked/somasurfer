@@ -2046,15 +2046,19 @@ const CASES = [
     expect: [
       /coverage: \d+ of 170 mappings reach a named structure, covering \d+ of 30 papers/,
       /index: .*region-index-zanatomy-2929e94\.json matches its inputs/,
-      /floors \(committed\): coverage ≥ 44 of 170 mappings and ≥ 15 of 30 papers, met; coordinate precision ≥ ±7 mm/,
+      /floors \(committed\): coverage ≥ 109 of 170 mappings and ≥ 29 of 30 papers, met; coordinate precision ≥ ±7 mm/,
+      /lobes: 24 crosswalk target\(s\) in icbm152-2009c-cortex-lobes checked against .*lobes\.json/,
+      /NOT PLACED: coordinates on icbm152-2009c-cortex-lobes, no locator/,
       /VACUOUS: 0 coordinate links/,
       /VACUOUS: 0 HCP-MMP1 → gyrus links/,
-      /UNVERIFIED: 25 crosswalk target\(s\) in icbm152-2009c-cortex-lobes/,
+      // DOG-157: the lobe targets are checked, so no UNVERIFIED line may remain.
+      // Matches at the start only when the word appears nowhere in the output.
+      /^(?![\s\S]*UNVERIFIED)/,
     ],
     describe: 'the committed crosswalk, seed and brain assets, unchanged',
     // A gate that resolved nothing would also pass. This pins that it resolved the
     // seed, that the floors are the committed literals, and that what it cannot
-    // check is still said out loud: deleting the VACUOUS or UNVERIFIED report
+    // check is still said out loud: deleting the VACUOUS or NOT PLACED report
     // would otherwise leave those criteria passing in silence.
     break: () => () => {},
     check: () => run('check-crosswalk.mjs'),
@@ -2115,8 +2119,8 @@ const CASES = [
     name: 'crosswalk-coverage-below-floor',
     gate: 'crosswalk',
     criterion: 'the crosswalk gate fails when coverage drops below its committed floor, not just when the index drifts',
-    expect: [/coverage floor: 38 of 170 mappings and 12 of 30 papers reach a named structure,/],
-    describe: 'crosswalk.json filing the hippocampus under the held precentral gyrus (6 mappings and 3 papers lost)',
+    expect: [/coverage floor: 103 of 170 mappings and 29 of 30 papers reach a named structure,/],
+    describe: 'crosswalk.json filing the hippocampus under the held precentral gyrus (6 mappings lost)',
     // A valid crosswalk that links less. The drift check fires too; this pins the
     // floor, which is the one that survives a --write.
     break: () =>
@@ -2124,6 +2128,26 @@ const CASES = [
         const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:hippocampus');
         if (!e) throw new Error('ATLAS-LABEL:hippocampus is no longer in the crosswalk to stage this against');
         e.targets = [{ representation: 'zanatomy-gross-anatomy', label: 'Precentral gyrus' }];
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-lobe-label-renamed',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when the shipped lobe label set renames a label the crosswalk targets (DOG-157)',
+    expect: [/crosswalk HCP-MMP1:RSC: target "Limbic lobe" is not a structure of icbm152-2009c-cortex-lobes/],
+    describe: 'lobes.json calling the limbic lobe "Cingulate lobe", in its values and on both sides',
+    // The rename happens in the label file, not the crosswalk: the contract runs
+    // both ways, and the lobe targets were UNVERIFIED until this side was read.
+    break: () =>
+      editJson(ICBM_LOBES, (doc) => {
+        const n = doc.structures.filter((s) => s.label === 'Limbic lobe').length;
+        if (n !== 2) throw new Error(`lobes.json has ${n} "Limbic lobe" structures, not 2, to stage this against`);
+        for (const x of [...doc.values, ...doc.structures]) {
+          if (x.label !== 'Limbic lobe') continue;
+          x.label = 'Cingulate lobe';
+          if (x.name) x.name = x.name.replace('Limbic lobe', 'Cingulate lobe');
+        }
       }),
     check: () => run('check-crosswalk.mjs'),
   },

@@ -14,7 +14,8 @@
  *   1. The crosswalk is well formed, every target is a structure of its
  *      representation (shipped or held), HCP-MMP1 entries are crosswalk, and
  *      every term the seed uses has an entry or a representation keyed by its
- *      scheme.
+ *      scheme. Lobe targets are checked against lobes.json itself (DOG-157):
+ *      each label names one structure per side, with the id DOG-151 publishes.
  *   2. The index meets the acceptance criteria as `checkRegionIndex` states
  *      them: how and precision on every link, no coordinate link labelled
  *      exact-term or claiming less than the registration error, every paper
@@ -31,15 +32,24 @@
  *
  * Reported, never counted as a pass: coverage against the v1 baseline, measured
  * the way the baseline was; VACUOUS criteria, which the real data gives nothing
- * to check (0 coordinate links, 0 HCP-MMP1 -> gyrus links today); and
- * UNVERIFIED crosswalk targets, whose representation's data is not on the tree.
+ * to check (0 coordinate links, 0 HCP-MMP1 -> gyrus links today); coordinates
+ * the lobe cortex does not place (it has no locator; see LOBES_UNPLACED_BECAUSE);
+ * and UNVERIFIED crosswalk targets, whose representation's data is not on the
+ * tree (none since DOG-157, but the report stays for the next representation).
  */
 
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 
 import { fail, pass, rel } from './lib/repo.mjs';
-import { BRAIN, REGION_INDEX_PATH, REGION_INPUT_PATHS as PATHS, loadRegionInputs, readRepoFile } from './lib/region-inputs.mjs';
+import {
+  BRAIN,
+  LOBE_REPRESENTATION,
+  REGION_INDEX_PATH,
+  REGION_INPUT_PATHS as PATHS,
+  loadRegionInputs,
+  readRepoFile,
+} from './lib/region-inputs.mjs';
 import { buildNameIndex } from '../packages/alc/src/index.ts';
 import {
   buildRegionIndex,
@@ -66,13 +76,58 @@ const sha256 = (b) => createHash('sha256').update(b).digest('hex');
  *   not a precision to publish, so the gate stops it.
  * - MIN_HELD_OUT: the held-out landmarks behind that figure. Two today (the red
  *   nucleus, both sides).
- * - COVERAGE_FLOOR: what W5 delivered at review (44 of 170 mappings, 15 of 30
- *   papers by named structure). Raise it when coverage grows; lowering it is a
- *   decision, made in a diff a reviewer reads.
+ * - COVERAGE_FLOOR: raised by DOG-157 to what the checked lobe targets deliver
+ *   (109 of 170 mappings, 29 of 30 papers by named structure; W5 delivered 44
+ *   and 15). Raise it when coverage grows; lowering it is a decision, made in a
+ *   diff a reviewer reads.
  */
 const PRECISION_FLOOR_MM = 7;
 const MIN_HELD_OUT = 2;
-const COVERAGE_FLOOR = Object.freeze({ mappings: 44, papers: 15 });
+const COVERAGE_FLOOR = Object.freeze({ mappings: 109, papers: 29 });
+
+/**
+ * Why the lobe cortex is supplied without a locator, so no coordinate is placed
+ * on it (DOG-157). Measured on the shipped low tier with nearest-vertex labels:
+ * the A1 peak (-52, -18, 7), on Heschl's gyrus, is nearest Parietal-lobe vertices
+ * (5.2 mm), so a nearest-label locator would file it in the wrong lobe; the PHA1
+ * peak (26, -42, -10) is 3.1 mm from vertices labelled 0 (medial wall, cut
+ * faces), and the FFC peak (40, -55, -10) 10.6 mm from them. Placing a point in
+ * a lobe needs a rule for depth and for the unlabelled faces that nobody has set,
+ * so coordinates reach the lobes through their terms only, as crosswalk links.
+ */
+const LOBES_UNPLACED_BECAUSE =
+  'no locator: the low tier puts the A1 peak nearest Parietal-lobe vertices and the PHA1 and FFC peaks nearest unlabelled faces, so a nearest-label rule would mislabel them';
+const LOBE_SIDES = Object.freeze({ left: 1, right: 2 });
+
+/**
+ * Lobe targets against lobes.json, beyond "the label exists": each targeted
+ * label is one structure per side, whose id is DOG-151's published
+ * hemisphere x 100 + value and whose name is the label side-suffixed. A
+ * renumbered or one-sided label set would still pass the string check, and the
+ * links would carry ids the viewer does not draw.
+ */
+function lobeTargetProblems(crosswalk, lobesDoc) {
+  const problems = [];
+  if (lobesDoc.id !== LOBE_REPRESENTATION) {
+    problems.push(`lobes: ${PATHS.lobes} is ${JSON.stringify(lobesDoc.id)}, not ${LOBE_REPRESENTATION}.`);
+  }
+  const labels = new Set(
+    crosswalk.entries.flatMap((e) => e.targets.filter((t) => t.representation === LOBE_REPRESENTATION).map((t) => t.label)),
+  );
+  for (const label of [...labels].sort()) {
+    const value = lobesDoc.values.find((v) => v.label === label)?.value;
+    for (const [side, hemi] of Object.entries(LOBE_SIDES)) {
+      const want = { id: hemi * 100 + value, name: `${label}.${side[0]}` };
+      const got = lobesDoc.structures.filter((s) => s.label === label && s.side === side);
+      if (value === undefined || got.length !== 1 || got[0].id !== want.id || got[0].name !== want.name) {
+        problems.push(
+          `lobes: target "${label}" (${side}) should be one structure ${JSON.stringify(want)} in ${PATHS.lobes}; found ${JSON.stringify(got.map((s) => ({ id: s.id, name: s.name })))}.`,
+        );
+      }
+    }
+  }
+  return problems;
+}
 
 /** The v1 figure, measured the way the 31/170 baseline was measured. */
 function baseline(inputs) {
@@ -204,6 +259,19 @@ function selfTest(inputs, index) {
   };
   expectRed('an HCP-MMP1 entry claiming exact-term', cw((c) => (c.entries.find((e) => e.term.startsWith('HCP-MMP1:')).how = 'exact-term')), /claims exact-term/);
   expectRed('a misspelt target', cw((c) => (c.entries[0].targets[0].label += ' (sic)')), /is not a structure of zanatomy-gross-anatomy/);
+  expectRed(
+    'a misspelt lobe target',
+    cw((c) => {
+      const t = c.entries.flatMap((e) => e.targets).find((x) => x.representation === LOBE_REPRESENTATION);
+      t.label = t.label.toLowerCase();
+    }),
+    /is not a structure of icbm152-2009c-cortex-lobes/,
+  );
+  {
+    const renumbered = structuredClone(inputs.lobesDoc);
+    renumbered.structures.find((s) => s.side === 'right').id += 1;
+    expectRed('a renumbered lobe structure', lobeTargetProblems(inputs.crosswalk, renumbered), /should be one structure/);
+  }
   expectRed('a seed term with no entry', cw((c) => c.entries.shift()), /has no crosswalk entry/);
   expectRed('a crosswalk entry with no reason', cw((c) => delete c.entries.find((e) => e.how === 'crosswalk').why), /says neither why/);
   return failures;
@@ -221,6 +289,7 @@ const inputs = loadRegionInputs();
 
 // 1. Crosswalk.
 problems.push(...validateCrosswalk(inputs.crosswalk, inputs.representations, inputs.dataset));
+problems.push(...lobeTargetProblems(inputs.crosswalk, inputs.lobesDoc));
 
 // Targets in a registered representation whose data is not on this tree cannot
 // be checked: a misspelt lobe label would pass. Reported UNVERIFIED, by
@@ -293,6 +362,13 @@ if (index.coverage.mappings.linked < COVERAGE_FLOOR.mappings || index.coverage.p
 // Criteria the real data cannot exercise. A check over zero links passes by
 // construction, so it is reported as vacuous rather than counted as a pass.
 const coordinateLinks = allLinks.filter((l) => l.how === 'coordinate').length;
+const placedOnLobes = allLinks.filter((l) => l.how === 'coordinate' && l.representation === LOBE_REPRESENTATION).length;
+const lobeTargets = { targets: 0, labels: new Set(), links: allLinks.filter((l) => l.representation === LOBE_REPRESENTATION).length };
+for (const t of inputs.crosswalk.entries.flatMap((e) => e.targets)) {
+  if (t.representation !== LOBE_REPRESENTATION) continue;
+  lobeTargets.targets += 1;
+  lobeTargets.labels.add(t.label);
+}
 const hcpGyrusLinks = allLinks.filter((l) => l.source.scheme === 'HCP-MMP1' && l.representation === 'zanatomy-gross-anatomy').length;
 const vacuous = [
   ...(coordinateLinks === 0
@@ -359,7 +435,8 @@ const empty = index.papers.filter((p) => p.regions.length === 0);
 pass('crosswalk', [
   `self-test: red on a coordinate link labelled exact-term or tighter than the registration, an HCP-MMP1 link labelled`,
   `  exact-term or without its area name, a mapping or paper with nothing and no reason, a lost inverted entry,`,
-  `  and on crosswalks with an exact HCP-MMP1 entry, a misspelt target, a missing term and an unexplained entry.`,
+  `  and on crosswalks with an exact HCP-MMP1 entry, a misspelt target or lobe target, a renumbered lobe, a missing term`,
+  `  and an unexplained entry.`,
   `locator: ${landmarkLines.join(', ')}; ${REQUIRED_INSIDE.join(', ')} required.`,
   `coverage: ${c.mappings.linked} of ${c.mappings.total} mappings reach a named structure, covering ${c.papers.nonEmpty} of ${c.papers.total} papers.`,
   `  by how: exact-term ${c.mappings.byHow['exact-term']}, crosswalk ${c.mappings.byHow.crosswalk}, coordinate ${c.mappings.byHow.coordinate} (a mapping may count under more than one).`,
@@ -367,6 +444,9 @@ pass('crosswalk', [
   `  ${held} mapping(s) reach only held structures. ${empty.length} paper(s) have no region, each with a stated reason: ${empty.map((p) => `${p.paperId} (${[...new Set(p.emptyBecause.map((e) => e.code))].join(', ')})`).join('; ') || 'none'}.`,
   `index: ${rel(INDEX_PATH)} matches its inputs.`,
   `floors (committed): coverage ≥ ${COVERAGE_FLOOR.mappings} of 170 mappings and ≥ ${COVERAGE_FLOOR.papers} of 30 papers, met; coordinate precision ≥ ±${PRECISION_FLOOR_MM} mm from ≥ ${MIN_HELD_OUT} held-out landmarks, met.`,
+  `lobes: ${lobeTargets.targets} crosswalk target(s) in ${LOBE_REPRESENTATION} checked against ${PATHS.lobes} (${[...lobeTargets.labels].sort().join(', ')});`,
+  `  ${lobeTargets.links} link(s), each label one structure per side with DOG-151's id.`,
+  `NOT PLACED: coordinates on ${LOBE_REPRESENTATION}, ${LOBES_UNPLACED_BECAUSE}. ${placedOnLobes} coordinate link(s) there.`,
   ...vacuous.map((v) => `VACUOUS: ${v}. Covered only by region-index.test.ts and this gate's self-test.`),
   ...[...unverified].map(
     ([id, u]) =>

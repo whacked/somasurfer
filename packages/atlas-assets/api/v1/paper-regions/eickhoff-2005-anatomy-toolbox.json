@@ -3,52 +3,316 @@
  "kind": "paper-regions",
  "licence": "CC-BY-SA-4.0",
  "datasetVersion": "research-seed-2026.10.1",
- "crosswalkVersion": "crosswalk-2026.10.2",
+ "crosswalkVersion": "crosswalk-2026.10.3",
  "paperId": "paper:eickhoff-2005-anatomy-toolbox",
  "paperHref": "../../../../data/api/v1/papers/eickhoff-2005-anatomy-toolbox.json",
- "regions": [],
- "emptyBecause": [
+ "regions": [
   {
-   "code": "structure-held",
-   "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
-   "mappingIds": [
-    "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-44"
+   "key": "icbm152-2009c-cortex-lobes/101",
+   "structureName": "Frontal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/101.json",
+   "links": [
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-44",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "101",
+     "structureName": "Frontal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-45",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "101",
+     "structureName": "Frontal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-4",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/maximum-probability-map",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "101",
+     "structureName": "Frontal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:4",
+      "label": "Primary motor cortex (area 4)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Central sulcus",
+       "Precentral gyrus"
+      ]
+     }
+    }
    ]
   },
   {
-   "code": "structure-held",
-   "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
-   "mappingIds": [
-    "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-45"
+   "key": "icbm152-2009c-cortex-lobes/102",
+   "structureName": "Parietal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/102.json",
+   "links": [
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-3b",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/maximum-probability-map",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "102",
+     "structureName": "Parietal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 3b lies in the posterior bank of the central sulcus, so both are named. On the lobe cortex the central sulcus is the frontal-parietal boundary, and area 3b lies on its posterior (parietal) side."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:3b",
+      "label": "Primary somatosensory cortex (area 3b)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Central sulcus",
+       "Postcentral gyrus"
+      ]
+     }
+    }
    ]
   },
   {
-   "code": "structure-held",
-   "detail": "every supplied target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
-   "mappingIds": [
-    "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-3b"
+   "key": "icbm152-2009c-cortex-lobes/104",
+   "structureName": "Occipital lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/104.json",
+   "links": [
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/overlap-with-activation/hcp-mmp1-v1",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/overlap-with-activation",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "104",
+     "structureName": "Occipital lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V1 lies in the banks of the calcarine sulcus and spills onto its lips."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:V1",
+      "label": "Primary visual cortex (V1)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Calcarine sulcus"
+      ]
+     }
+    }
    ]
   },
   {
-   "code": "structure-held",
-   "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
-   "mappingIds": [
-    "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-4"
+   "key": "icbm152-2009c-cortex-lobes/201",
+   "structureName": "Frontal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/201.json",
+   "links": [
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-44",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-45",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-4",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/maximum-probability-map",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:4",
+      "label": "Primary motor cortex (area 4)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Central sulcus",
+       "Precentral gyrus"
+      ]
+     }
+    }
    ]
   },
   {
-   "code": "structure-held",
-   "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
-   "mappingIds": [
-    "map:eickhoff-2005-anatomy-toolbox/overlap-with-activation/hcp-mmp1-v1"
+   "key": "icbm152-2009c-cortex-lobes/202",
+   "structureName": "Parietal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/202.json",
+   "links": [
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-3b",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/maximum-probability-map",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "202",
+     "structureName": "Parietal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 3b lies in the posterior bank of the central sulcus, so both are named. On the lobe cortex the central sulcus is the frontal-parietal boundary, and area 3b lies on its posterior (parietal) side."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:3b",
+      "label": "Primary somatosensory cortex (area 3b)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Central sulcus",
+       "Postcentral gyrus"
+      ]
+     }
+    }
    ]
   },
   {
-   "code": "structure-held",
-   "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
-   "mappingIds": [
-    "map:eickhoff-2005-anatomy-toolbox/assignment-is-probabilistic/atlas-label-precentral-gyrus"
+   "key": "icbm152-2009c-cortex-lobes/204",
+   "structureName": "Occipital lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/204.json",
+   "links": [
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/overlap-with-activation/hcp-mmp1-v1",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/overlap-with-activation",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "204",
+     "structureName": "Occipital lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V1 lies in the banks of the calcarine sulcus and spills onto its lips."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:V1",
+      "label": "Primary visual cortex (V1)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Calcarine sulcus"
+      ]
+     }
+    }
    ]
   }
- ]
+ ],
+ "emptyBecause": []
 }

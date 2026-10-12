@@ -96,9 +96,9 @@ export const REPRESENTATIONS: readonly Representation[] = Object.freeze([
     shareAlike: true,
   }),
   // The cortex the owner approved on card 6a774981 (DOG-151): the ICBM152 2009c
-  // surface, natively MNI, with first-party lobe labels. Registered before its
-  // data lands, so crosswalk targets can name it; until then the gate reports
-  // those targets UNVERIFIED rather than checked.
+  // surface, natively MNI, with first-party lobe labels. tools/check-crosswalk.mjs
+  // supplies its structures from lobes.json and checks every crosswalk target
+  // against them (DOG-157). It supplies no locator, so no coordinate lands here.
   Object.freeze({
     id: 'icbm152-2009c-cortex-lobes',
     title: 'ICBM152 2009c cortex, first-party lobe labels (DOG-151)',
