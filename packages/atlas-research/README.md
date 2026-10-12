@@ -18,6 +18,8 @@ surface.
 | `src/browse.ts` | `browseByAnatomy`, `browseByResearch`, `paperSelection` |
 | `src/layers.ts` | the palette, the common refinement, `solidColourLayers` |
 | `src/links.ts` | the one place a curator URL becomes an `href` |
+| `src/api.ts` | the static research API v1: documents, the local answers, a client, the validator |
+| `schema/api-1.md` | the API contract: two trees and why, paths, every document |
 | `fixtures/` | the 5-paper fixture and the synthetic name index it resolves against |
 | `data/` | the curated seed set and the synthetic index it resolves against |
 | `data/citation-report.json` | what Crossref and PubMed returned for all 30 sources, per paper |
@@ -146,6 +148,28 @@ crosswalk, approximate, and keep the area name" are checked only by
 (≥ 44 of 170 mappings, ≥ 15 of 30 papers) and coordinate precision (≥ ±7 mm,
 from ≥ 2 held-out landmarks) are committed literals in the gate, not readings.
 
+## The static research API, v1 (DOG-131)
+
+The region ↔ paper queries are also served as static JSON. There is no server.
+Read [`schema/api-1.md`](./schema/api-1.md). In short:
+
+- **Two trees, because two licences.** The paper tree is the curated dataset
+  alone. It is Apache-2.0 and is emitted by the site build to
+  `dist/data/api/v1/`. The region tree is joined with BY-SA structure names, so
+  it is asset-derived: `tools/build-research-api.mjs --write` commits it in
+  `packages/atlas-assets/api/v1/`, and the build byte-copies it to
+  `dist/assets/api/v1/` as attribution entry `research-api-regions`. Licence
+  rule 6 is unchanged.
+- **Three ways to ask, one answer.**
+  - `createResearchApi({ dataset, regionIndex })` answers locally.
+  - `createStaticApiClient({ dataRoot, assetsRoot, transport })` asks the
+    served trees. The caller supplies `transport`, so this package still never
+    makes a request of its own.
+  - `tools/check-research-api-contract.mjs` serves a built site at its own base
+    and requires every response to deep-equal the library's answer.
+- **Paths take the base from `atlas-index.json`** (`researchApi.dataRoot`,
+  `researchApi.assetsRoot`). Every link inside a document is relative.
+
 ## Tests
 
 ```
@@ -161,6 +185,7 @@ node --test --experimental-strip-types 'test/*.test.ts'
 | `seed.test.ts` | the curated seed set, and the stage-B resolution gate |
 | `citations.test.ts` | every identifier traces to a named source, with a must-pass case |
 | `region-index.test.ts` | region links: how and precision, containing not nearest, held targets, the cortex swap as data, the round trip |
+| `api.test.ts` | the API: every document validates, both trees' licences, agreement with the live index, paths under any base, the validator's must-fail table, the client |
 
 ## Stage A and stage B
 

@@ -8,6 +8,8 @@
  *   dist/index.html          page shell, attribution rendered in
  *   dist/app/*.js|css        client bundle, served as native ES modules
  *   dist/data/*.json         prebuilt indexes, derived from @gstack/alc only
+ *   dist/data/api/v1/**      the research API's paper tree: the curated
+ *                            dataset alone (its region tree is an asset)
  *   dist/assets/**           asset payloads, byte-identical copies, with the
  *                            asset package's own LICENSE and ATTRIBUTION.md
  *   dist/build-manifest.json what was emitted, for the performance budget
