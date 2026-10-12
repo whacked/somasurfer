@@ -131,6 +131,11 @@ cortex, whether to a cleared gyral cortex or a lobe-labelled one, means
 changing data: a registry entry and crosswalk targets. The resolver code
 stays the same.
 
+The lobe-labelled ICBM152 cortex (DOG-151) is registered as
+`icbm152-2009c-cortex-lobes`, and every HCP-MMP1 entry targets its lobe as well as
+its gyrus. Until DOG-151's label file is on the tree, the gate prints those targets
+as UNVERIFIED: unchecked, and resolving to nothing.
+
 ## Tests
 
 ```

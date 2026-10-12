@@ -1,6 +1,6 @@
 {
  "schema": "atlas-crosswalk/1",
- "version": "crosswalk-2026.10.1",
+ "version": "crosswalk-2026.10.2",
  "comment": [
   "Hand-authored. Maps every term the research seed uses that is not a representation's own id onto",
   "named structures of a registered representation (packages/atlas-research/src/representations.ts).",
@@ -9,7 +9,10 @@
   "boundaries differ. Every crosswalk link is approximate and shows `why`. HCP-MMP1 entries are",
   "always crosswalk. A target may be held by the asset owner; it is listed anyway, so that clearing it",
   "later resolves with no edit here. tools/check-crosswalk.mjs refuses a target that is not a",
-  "structure of the representation, shipped or held, and a seed term with no entry."
+  "structure of the representation, shipped or held, and a seed term with no entry.",
+  "Every HCP-MMP1 entry also targets the lobe of icbm152-2009c-cortex-lobes (owner card 6a774981, DOG-151):",
+  "an area is smaller than its lobe, so the lobe link is a crosswalk too. Its labels are the contract posted on",
+  "DOG-151; until that label file is on the tree, tools/check-crosswalk.mjs reports these targets UNVERIFIED."
  ],
  "licence": "Apache-2.0, first-party (GStack). Names Z-Anatomy structures by label, as identifiers, the way registration/mni-to-zanatomy-2929e94.json does; carries no geometry. Not in payloadDirs, so it does not ship; whoever ships it adds an attribution.json entry, and licence rule 5 refuses it until they do.",
  "assertedBy": "Staff Engineer (DOG-130)",
@@ -24,6 +27,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Postcentral gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Parietal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 1 lies on the crown of the postcentral gyrus.",
@@ -42,9 +49,13 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Central sulcus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Parietal lobe"
     }
    ],
-   "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 3b lies in the posterior bank of the central sulcus, so both are named.",
+   "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 3b lies in the posterior bank of the central sulcus, so both are named. On the lobe cortex the central sulcus is the frontal-parietal boundary, and area 3b lies on its posterior (parietal) side.",
    "reference": "Glasser MF et al. (2016) A multi-modal parcellation of human cerebral cortex. Nature 536:171-178, doi:10.1038/nature18933; Supplementary Neuroanatomical Results, area descriptions"
   },
   {
@@ -60,6 +71,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Central sulcus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Frontal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus.",
@@ -74,6 +89,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Opercular part of inferior frontal gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Frontal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.",
@@ -88,6 +107,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Triangular part of inferior frontal gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Frontal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it.",
@@ -102,6 +125,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Transverse frontopolar gyrus and sulcus*"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Frontal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 10d is dorsal frontopolar cortex; the nearest Z-Anatomy unit is the frontopolar gyrus and sulcus.",
@@ -120,6 +147,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Middle frontal gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Frontal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 55b lies at the junction of the posterior middle frontal gyrus and the precentral gyrus, so both are named.",
@@ -134,6 +165,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Precuneus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Parietal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 7Pm is one of several areas on the precuneus.",
@@ -148,6 +183,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Middle frontal gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Frontal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus.",
@@ -162,6 +201,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Transverse temporal gyri"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Temporal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. A1 lies on the medial transverse temporal (Heschl's) gyrus.",
@@ -176,6 +219,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Superior temporal gyrus (Lateral part)"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Temporal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. A4 lies on the lateral superior temporal gyrus, beside the auditory core.",
@@ -190,6 +237,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Lateral occipitotemporal gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Temporal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. FFC is one area on the fusiform (lateral occipitotemporal) gyrus.",
@@ -208,6 +259,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Circular sulcus of insula"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Frontal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. FOP4 lies on the inner frontal operculum toward the circular sulcus of the insula; both are named and neither is the area.",
@@ -222,6 +277,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Intraparietal sulcus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Parietal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. IPS1 is one of several areas along the intraparietal sulcus.",
@@ -236,6 +295,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Supramarginal gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Parietal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PFm lies on the posterior supramarginal gyrus.",
@@ -250,6 +313,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Angular gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Parietal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PGs lies on the superior angular gyrus.",
@@ -264,9 +331,17 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Medial occipitotemporal gyrus (Parahippocampal*)"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Limbic lobe"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Temporal lobe"
     }
    ],
-   "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus.",
+   "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under both the limbic and the temporal lobe, because conventions differ on where the parahippocampal gyrus belongs.",
    "reference": "Glasser MF et al. (2016) A multi-modal parcellation of human cerebral cortex. Nature 536:171-178, doi:10.1038/nature18933; Supplementary Neuroanatomical Results, area descriptions"
   },
   {
@@ -278,6 +353,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Cingulate gyrus (Posteroventral part*)"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Limbic lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. RSC lies behind the splenium on the isthmus of the cingulate gyrus, which is Z-Anatomy's posteroventral cingulate part.",
@@ -292,6 +371,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Superior frontal gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Frontal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. SFL lies on the superior frontal gyrus near its medial border.",
@@ -306,6 +389,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Superior temporal sulcus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Temporal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. STSvp lies in the lower bank of the posterior superior temporal sulcus.",
@@ -320,6 +407,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Middle temporal gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Temporal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. TE1a lies on the anterior middle temporal gyrus.",
@@ -334,6 +425,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Temporal pole"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Temporal lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. TGd is the dorsal part of the temporal pole.",
@@ -348,6 +443,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Calcarine sulcus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Occipital lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V1 lies in the banks of the calcarine sulcus and spills onto its lips.",
@@ -366,6 +465,10 @@
     {
      "representation": "zanatomy-gross-anatomy",
      "label": "Lingual gyrus"
+    },
+    {
+     "representation": "icbm152-2009c-cortex-lobes",
+     "label": "Occipital lobe"
     }
    ],
    "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V2 surrounds V1 on the cuneus above and the lingual gyrus below.",

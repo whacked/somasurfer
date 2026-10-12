@@ -258,6 +258,20 @@ const inputs = loadInputs();
 // 1. Crosswalk.
 problems.push(...validateCrosswalk(inputs.crosswalk, inputs.representations, inputs.dataset));
 
+// Targets in a registered representation whose data is not on this tree cannot
+// be checked: a misspelt lobe label would pass. Reported UNVERIFIED, by
+// representation, never counted as checked and never failed for being absent.
+const supplied = new Set(inputs.representations.map((r) => r.representation.id));
+const unverified = new Map();
+for (const e of inputs.crosswalk.entries) {
+  for (const t of e.targets) {
+    if (supplied.has(t.representation)) continue;
+    const u = unverified.get(t.representation) ?? unverified.set(t.representation, { targets: 0, labels: new Set() }).get(t.representation);
+    u.targets += 1;
+    u.labels.add(t.label);
+  }
+}
+
 // 3. Locator, on points whose answer is known: each single-structure landmark's
 //    MNI centroid. Only the convex ones are required. The caudate's centroid
 //    lies in the concavity of its C, outside the nucleus, so "outside" is the
@@ -347,4 +361,8 @@ pass('crosswalk', [
   `  baseline (v1, cells): ${base.mappingsResolved} of 170 mappings, ${base.papersCovered} of 30 papers; of those, ${base.mappingsResolvedToANamedStructure} mappings and ${base.papersWithANamedStructure} papers reach a named structure.`,
   `  ${held} mapping(s) reach only held structures. ${empty.length} paper(s) have no region, each with a stated reason: ${empty.map((p) => `${p.paperId} (${[...new Set(p.emptyBecause.map((e) => e.code))].join(', ')})`).join('; ') || 'none'}.`,
   `index: ${rel(INDEX_PATH)} matches its inputs.`,
+  ...[...unverified].map(
+    ([id, u]) =>
+      `UNVERIFIED: ${u.targets} crosswalk target(s) in ${id} (${[...u.labels].sort().join(', ')}): its data is not on this tree, so their labels are unchecked and they resolve to nothing.`,
+  ),
 ]);

@@ -17,7 +17,7 @@
   },
   "crosswalk": {
    "file": "packages/atlas-assets/crosswalk/crosswalk.json",
-   "sha256": "4225e6c502acc11ed66c6852cc99a17afc519432239cf6c57482fd3eebf22793"
+   "sha256": "c60ff2372f56a9c25ff6a723cfae901f625f6afcdb1c12743de41d685be15794"
   },
   "structures": {
    "file": "packages/atlas-assets/brain/zanatomy-2929e94/structures.json",
@@ -56,7 +56,7 @@
   "papersWithANamedStructure": 6
  },
  "datasetVersion": "research-seed-2026.10.1",
- "crosswalkVersion": "crosswalk-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
  "representations": [
   {
    "id": "zanatomy-gross-anatomy",
@@ -94,42 +94,42 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:brodmann-1909-localisation/area-44/hcp-mmp1-44"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:brodmann-1909-localisation/area-45/hcp-mmp1-45"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:brodmann-1909-localisation/area-17-striate/hcp-mmp1-v1"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:brodmann-1909-localisation/area-17-striate/atlas-label-occipital-lobe"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:brodmann-1909-localisation/area-4-giant-pyramidal/hcp-mmp1-4"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:brodmann-1909-localisation/area-4-giant-pyramidal/atlas-label-precentral-gyrus"
      ]
@@ -142,56 +142,56 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:55b (\"Area 55b\") is held by the asset owner: Middle frontal gyrus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:55b (\"Area 55b\") is held by the asset owner: Middle frontal gyrus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:glasser-2016-mmp1/parcels-per-hemisphere/hcp-mmp1-55b"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:SFL (\"Superior frontal language area\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:SFL (\"Superior frontal language area\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:glasser-2016-mmp1/parcels-per-hemisphere/hcp-mmp1-sfl"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:glasser-2016-mmp1/broca-subdivision/hcp-mmp1-44"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:glasser-2016-mmp1/broca-subdivision/hcp-mmp1-45"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:glasser-2016-mmp1/v1-delineation/hcp-mmp1-v1"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V2 (\"Second visual area (V2)\") is held by the asset owner: Cuneus; Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:V2 (\"Second visual area (V2)\") is held by the asset owner: Cuneus; Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:glasser-2016-mmp1/v1-delineation/hcp-mmp1-v2"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:10d (\"Area 10d (frontopolar)\") is held by the asset owner: Transverse frontopolar gyrus and sulcus*. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:10d (\"Area 10d (frontopolar)\") is held by the asset owner: Transverse frontopolar gyrus and sulcus*. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:glasser-2016-mmp1/frontopolar-parcels/hcp-mmp1-10d"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:glasser-2016-mmp1/frontopolar-parcels/hcp-mmp1-9-46d"
      ]
@@ -204,7 +204,7 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:amunts-1999-broca/area-44-variability/hcp-mmp1-44",
       "map:amunts-1999-broca/interhemispheric-asymmetry/hcp-mmp1-44"
@@ -219,21 +219,21 @@
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:amunts-1999-broca/area-44-variability/hcp-mmp1-45"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:amunts-1999-broca/gyrus-level/atlas-label-inferior-frontal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:amunts-1999-broca/borders-cross-sulci/atlas-label-precentral-gyrus"
      ]
@@ -262,42 +262,42 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:zilles-2010-brodmann-centenary/map-and-its-fate/hcp-mmp1-44"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:zilles-2010-brodmann-centenary/map-and-its-fate/hcp-mmp1-45"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:zilles-2010-brodmann-centenary/observer-independent-successors/hcp-mmp1-v1"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:zilles-2010-brodmann-centenary/borders-invisible-in-mri/atlas-label-precentral-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:zilles-2010-brodmann-centenary/borders-invisible-in-mri/atlas-label-postcentral-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:zilles-2010-brodmann-centenary/numbering-is-not-geometry/atlas-label-occipital-lobe"
      ]
@@ -310,42 +310,42 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:desikan-2006-gyral-parcellation/gyral-labels/atlas-label-superior-temporal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:desikan-2006-gyral-parcellation/gyral-labels/atlas-label-middle-temporal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:desikan-2006-gyral-parcellation/automated-labelling/atlas-label-inferior-frontal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:desikan-2006-gyral-parcellation/regions-per-hemisphere/atlas-label-precentral-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:desikan-2006-gyral-parcellation/regions-per-hemisphere/atlas-label-postcentral-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:desikan-2006-gyral-parcellation/sulcal-boundaries/atlas-label-fusiform-gyrus"
      ]
@@ -400,35 +400,35 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:yeo-2011-intrinsic-networks/seven-network-solution/atlas-label-posterior-cingulate-cortex"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:yeo-2011-intrinsic-networks/seven-network-solution/atlas-label-precuneus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:yeo-2011-intrinsic-networks/default-network-anterior/atlas-label-anterior-cingulate-cortex"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:yeo-2011-intrinsic-networks/networks-are-not-areas/hcp-mmp1-pgs"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:IPS1 (\"Intraparietal sulcus area 1\") is held by the asset owner: Intraparietal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:IPS1 (\"Intraparietal sulcus area 1\") is held by the asset owner: Intraparietal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:yeo-2011-intrinsic-networks/confidence-maps/hcp-mmp1-ips1"
      ]
@@ -467,35 +467,35 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:hagmann-2008-structural-core/posterior-medial-core/atlas-label-precuneus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:hagmann-2008-structural-core/posterior-medial-core/atlas-label-posterior-cingulate-cortex"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:superior-frontal-gyrus (\"superior frontal gyrus\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:superior-frontal-gyrus (\"superior frontal gyrus\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:hagmann-2008-structural-core/structural-hubs/atlas-label-superior-frontal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:RSC (\"Retrosplenial complex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:RSC (\"Retrosplenial complex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:hagmann-2008-structural-core/retrosplenial-participation/hcp-mmp1-rsc"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:7Pm (\"Area 7Pm (medial parietal)\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:7Pm (\"Area 7Pm (medial parietal)\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:hagmann-2008-structural-core/degree-distribution/hcp-mmp1-7pm"
      ]
@@ -508,28 +508,28 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:van-essen-2013-hcp/multimodal-acquisition/hcp-mmp1-v1"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:van-essen-2013-hcp/subject-count/atlas-label-inferior-frontal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:van-essen-2013-hcp/surface-based-registration/atlas-label-precentral-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:van-essen-2013-hcp/minimal-preprocessing/atlas-label-fusiform-gyrus"
      ]
@@ -613,42 +613,42 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-44"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-45"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-3b"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-4"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:eickhoff-2005-anatomy-toolbox/overlap-with-activation/hcp-mmp1-v1"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:eickhoff-2005-anatomy-toolbox/assignment-is-probabilistic/atlas-label-precentral-gyrus"
      ]
@@ -669,35 +669,35 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:raichle-2001-default-mode/default-activity/atlas-label-posterior-cingulate-cortex"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:raichle-2001-default-mode/default-activity/atlas-label-precuneus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:raichle-2001-default-mode/medial-prefrontal/atlas-label-anterior-cingulate-cortex"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:raichle-2001-default-mode/oxygen-extraction-fraction/atlas-label-occipital-lobe"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:raichle-2001-default-mode/task-induced-deactivation/hcp-mmp1-pgs"
      ]
@@ -718,56 +718,56 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:price-2012-language-review/heard-speech/hcp-mmp1-a1"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:A4 (\"Auditory area 4\") is held by the asset owner: Superior temporal gyrus (Lateral part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:A4 (\"Auditory area 4\") is held by the asset owner: Superior temporal gyrus (Lateral part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:price-2012-language-review/heard-speech/hcp-mmp1-a4"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:price-2012-language-review/speech-production/hcp-mmp1-44"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:price-2012-language-review/speech-production/hcp-mmp1-4"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:price-2012-language-review/reading/hcp-mmp1-ffc"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:lingual-gyrus (\"lingual gyrus\") is held by the asset owner: Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:lingual-gyrus (\"lingual gyrus\") is held by the asset owner: Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:price-2012-language-review/reading/atlas-label-lingual-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:TE1a (\"Area TE1a (anterior temporal)\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:TE1a (\"Area TE1a (anterior temporal)\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:price-2012-language-review/semantic-retrieval/hcp-mmp1-te1a"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:TGd (\"Area TGd (temporal pole, dorsal)\") is held by the asset owner: Temporal pole. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:TGd (\"Area TGd (temporal pole, dorsal)\") is held by the asset owner: Temporal pole. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:price-2012-language-review/semantic-retrieval/hcp-mmp1-tgd"
      ]
@@ -780,42 +780,42 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PFm (\"Area PFm (supramarginal)\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:PFm (\"Area PFm (supramarginal)\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-pfm"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-44"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:STSvp (\"Superior temporal sulcus, ventral posterior\") is held by the asset owner: Superior temporal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:STSvp (\"Superior temporal sulcus, ventral posterior\") is held by the asset owner: Superior temporal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:hickok-2007-dual-stream/ventral-stream/hcp-mmp1-stsvp"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:hickok-2007-dual-stream/ventral-stream/atlas-label-middle-temporal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:hickok-2007-dual-stream/bilateral-ventral/atlas-label-superior-temporal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:supramarginal-gyrus (\"supramarginal gyrus\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:supramarginal-gyrus (\"supramarginal gyrus\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:hickok-2007-dual-stream/sensorimotor-interface/atlas-label-supramarginal-gyrus"
      ]
@@ -835,7 +835,7 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:kanwisher-1997-fusiform-face-area/face-selective-region/hcp-mmp1-ffc",
       "map:kanwisher-1997-fusiform-face-area/peak-coordinate/hcp-mmp1-ffc"
@@ -843,14 +843,14 @@
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:kanwisher-1997-fusiform-face-area/right-lateralisation/atlas-label-fusiform-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:kanwisher-1997-fusiform-face-area/stimulus-contrast/atlas-label-occipital-lobe"
      ]
@@ -870,7 +870,7 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:epstein-1998-parahippocampal-place-area/scene-selective-region/hcp-mmp1-pha1",
       "map:epstein-1998-parahippocampal-place-area/peak-coordinate/hcp-mmp1-pha1"
@@ -878,14 +878,14 @@
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:epstein-1998-parahippocampal-place-area/parahippocampal-location/atlas-label-parahippocampal-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:epstein-1998-parahippocampal-place-area/not-object-selective/hcp-mmp1-ffc"
      ]
@@ -905,42 +905,42 @@
    "emptyBecause": [
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:penfield-1937-somatotopy/motor-strip/hcp-mmp1-4"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:penfield-1937-somatotopy/motor-strip/atlas-label-precentral-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:penfield-1937-somatotopy/sensory-strip/hcp-mmp1-3b"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
      "mappingIds": [
       "map:penfield-1937-somatotopy/sensory-strip/atlas-label-postcentral-gyrus"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:1 (\"Area 1 (somatosensory)\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:1 (\"Area 1 (somatosensory)\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:penfield-1937-somatotopy/disproportionate-representation/hcp-mmp1-1"
      ]
     },
     {
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FOP4 (\"Frontal opercular area 4\") is held by the asset owner: Circular sulcus of insula; Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+     "detail": "every supplied target of HCP-MMP1:FOP4 (\"Frontal opercular area 4\") is held by the asset owner: Circular sulcus of insula; Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
      "mappingIds": [
       "map:penfield-1937-somatotopy/stimulation-not-imaging/hcp-mmp1-fop4"
      ]
@@ -1552,7 +1552,7 @@
      "paperId": "paper:brodmann-1909-localisation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1568,7 +1568,7 @@
      "paperId": "paper:brodmann-1909-localisation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1584,7 +1584,7 @@
      "paperId": "paper:brodmann-1909-localisation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1600,7 +1600,7 @@
      "paperId": "paper:brodmann-1909-localisation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -1616,7 +1616,7 @@
      "paperId": "paper:brodmann-1909-localisation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1632,7 +1632,7 @@
      "paperId": "paper:brodmann-1909-localisation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -1648,7 +1648,7 @@
      "paperId": "paper:glasser-2016-mmp1",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:55b (\"Area 55b\") is held by the asset owner: Middle frontal gyrus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:55b (\"Area 55b\") is held by the asset owner: Middle frontal gyrus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1664,7 +1664,7 @@
      "paperId": "paper:glasser-2016-mmp1",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:SFL (\"Superior frontal language area\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:SFL (\"Superior frontal language area\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1680,7 +1680,7 @@
      "paperId": "paper:glasser-2016-mmp1",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1696,7 +1696,7 @@
      "paperId": "paper:glasser-2016-mmp1",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1712,7 +1712,7 @@
      "paperId": "paper:glasser-2016-mmp1",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1728,7 +1728,7 @@
      "paperId": "paper:glasser-2016-mmp1",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V2 (\"Second visual area (V2)\") is held by the asset owner: Cuneus; Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V2 (\"Second visual area (V2)\") is held by the asset owner: Cuneus; Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1744,7 +1744,7 @@
      "paperId": "paper:glasser-2016-mmp1",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:10d (\"Area 10d (frontopolar)\") is held by the asset owner: Transverse frontopolar gyrus and sulcus*. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:10d (\"Area 10d (frontopolar)\") is held by the asset owner: Transverse frontopolar gyrus and sulcus*. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1760,7 +1760,7 @@
      "paperId": "paper:glasser-2016-mmp1",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1776,7 +1776,7 @@
      "paperId": "paper:amunts-1999-broca",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     },
     {
      "mappingId": "map:amunts-1999-broca/area-44-variability/hcp-mmp1-44",
@@ -1800,7 +1800,7 @@
      "paperId": "paper:amunts-1999-broca",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1816,7 +1816,7 @@
      "paperId": "paper:amunts-1999-broca",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -1832,7 +1832,7 @@
      "paperId": "paper:amunts-1999-broca",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1848,7 +1848,7 @@
      "paperId": "paper:amunts-1999-broca",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -1864,7 +1864,7 @@
      "paperId": "paper:amunts-2020-julich-brain",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -1880,7 +1880,7 @@
      "paperId": "paper:amunts-2020-julich-brain",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -2150,7 +2150,7 @@
      "paperId": "paper:amunts-2020-julich-brain",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2166,7 +2166,7 @@
      "paperId": "paper:amunts-2020-julich-brain",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -2182,7 +2182,7 @@
      "paperId": "paper:amunts-2020-julich-brain",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V2 (\"Second visual area (V2)\") is held by the asset owner: Cuneus; Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V2 (\"Second visual area (V2)\") is held by the asset owner: Cuneus; Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -2198,7 +2198,7 @@
      "paperId": "paper:zilles-2010-brodmann-centenary",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -2214,7 +2214,7 @@
      "paperId": "paper:zilles-2010-brodmann-centenary",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -2230,7 +2230,7 @@
      "paperId": "paper:zilles-2010-brodmann-centenary",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -2246,7 +2246,7 @@
      "paperId": "paper:zilles-2010-brodmann-centenary",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2262,7 +2262,7 @@
      "paperId": "paper:zilles-2010-brodmann-centenary",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2278,7 +2278,7 @@
      "paperId": "paper:zilles-2010-brodmann-centenary",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2294,7 +2294,7 @@
      "paperId": "paper:desikan-2006-gyral-parcellation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2310,7 +2310,7 @@
      "paperId": "paper:desikan-2006-gyral-parcellation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2326,7 +2326,7 @@
      "paperId": "paper:desikan-2006-gyral-parcellation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2342,7 +2342,7 @@
      "paperId": "paper:desikan-2006-gyral-parcellation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2358,7 +2358,7 @@
      "paperId": "paper:desikan-2006-gyral-parcellation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2374,7 +2374,7 @@
      "paperId": "paper:desikan-2006-gyral-parcellation",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2390,7 +2390,7 @@
      "paperId": "paper:tzourio-mazoyer-2002-aal",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2406,7 +2406,7 @@
      "paperId": "paper:tzourio-mazoyer-2002-aal",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2422,7 +2422,7 @@
      "paperId": "paper:tzourio-mazoyer-2002-aal",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:insular-cortex (\"insular cortex\") is held by the asset owner: Circular sulcus of insula; Insula (Subcentral gyrus and ant. and post. sulci*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:insular-cortex (\"insular cortex\") is held by the asset owner: Circular sulcus of insula; Insula (Subcentral gyrus and ant. and post. sulci*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2546,7 +2546,7 @@
      "paperId": "paper:tzourio-mazoyer-2002-aal",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:angular-gyrus (\"angular gyrus\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:angular-gyrus (\"angular gyrus\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2562,7 +2562,7 @@
      "paperId": "paper:fan-2016-brainnetome",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -2578,7 +2578,7 @@
      "paperId": "paper:fan-2016-brainnetome",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3234,7 +3234,7 @@
      "paperId": "paper:yeo-2011-intrinsic-networks",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3250,7 +3250,7 @@
      "paperId": "paper:yeo-2011-intrinsic-networks",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3266,7 +3266,7 @@
      "paperId": "paper:yeo-2011-intrinsic-networks",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3282,7 +3282,7 @@
      "paperId": "paper:yeo-2011-intrinsic-networks",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -3298,7 +3298,7 @@
      "paperId": "paper:yeo-2011-intrinsic-networks",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:IPS1 (\"Intraparietal sulcus area 1\") is held by the asset owner: Intraparietal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:IPS1 (\"Intraparietal sulcus area 1\") is held by the asset owner: Intraparietal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -3314,7 +3314,7 @@
      "paperId": "paper:power-2011-functional-areas",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PFm (\"Area PFm (supramarginal)\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:PFm (\"Area PFm (supramarginal)\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -3330,7 +3330,7 @@
      "paperId": "paper:power-2011-functional-areas",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3840,7 +3840,7 @@
      "paperId": "paper:power-2011-functional-areas",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:angular-gyrus (\"angular gyrus\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:angular-gyrus (\"angular gyrus\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3856,7 +3856,7 @@
      "paperId": "paper:hagmann-2008-structural-core",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3872,7 +3872,7 @@
      "paperId": "paper:hagmann-2008-structural-core",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3888,7 +3888,7 @@
      "paperId": "paper:hagmann-2008-structural-core",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:superior-frontal-gyrus (\"superior frontal gyrus\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:superior-frontal-gyrus (\"superior frontal gyrus\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3904,7 +3904,7 @@
      "paperId": "paper:hagmann-2008-structural-core",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:RSC (\"Retrosplenial complex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:RSC (\"Retrosplenial complex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -3920,7 +3920,7 @@
      "paperId": "paper:hagmann-2008-structural-core",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:7Pm (\"Area 7Pm (medial parietal)\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:7Pm (\"Area 7Pm (medial parietal)\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -3936,7 +3936,7 @@
      "paperId": "paper:van-essen-2013-hcp",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -3952,7 +3952,7 @@
      "paperId": "paper:van-essen-2013-hcp",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3968,7 +3968,7 @@
      "paperId": "paper:van-essen-2013-hcp",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -3984,7 +3984,7 @@
      "paperId": "paper:van-essen-2013-hcp",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -4062,7 +4062,7 @@
      "paperId": "paper:mazziotta-2001-icbm",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -4078,7 +4078,7 @@
      "paperId": "paper:mazziotta-2001-icbm",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     },
     {
      "mappingId": "map:mazziotta-2001-icbm/peak-coordinates/hcp-mmp1-a1",
@@ -4569,7 +4569,7 @@
      "paperId": "paper:fonov-2011-unbiased-templates",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -4585,7 +4585,7 @@
      "paperId": "paper:fonov-2011-unbiased-templates",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -4709,7 +4709,7 @@
      "paperId": "paper:fischl-2012-freesurfer",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -4725,7 +4725,7 @@
      "paperId": "paper:fischl-2012-freesurfer",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -4741,7 +4741,7 @@
      "paperId": "paper:fischl-2012-freesurfer",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5451,7 +5451,7 @@
      "paperId": "paper:fischl-2012-freesurfer",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5467,7 +5467,7 @@
      "paperId": "paper:eickhoff-2005-anatomy-toolbox",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5483,7 +5483,7 @@
      "paperId": "paper:eickhoff-2005-anatomy-toolbox",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5499,7 +5499,7 @@
      "paperId": "paper:eickhoff-2005-anatomy-toolbox",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5515,7 +5515,7 @@
      "paperId": "paper:eickhoff-2005-anatomy-toolbox",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5531,7 +5531,7 @@
      "paperId": "paper:eickhoff-2005-anatomy-toolbox",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5547,7 +5547,7 @@
      "paperId": "paper:eickhoff-2005-anatomy-toolbox",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5563,7 +5563,7 @@
      "paperId": "paper:mesulam-1998-sensation-to-cognition",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:insular-cortex (\"insular cortex\") is held by the asset owner: Circular sulcus of insula; Insula (Subcentral gyrus and ant. and post. sulci*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:insular-cortex (\"insular cortex\") is held by the asset owner: Circular sulcus of insula; Insula (Subcentral gyrus and ant. and post. sulci*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5579,7 +5579,7 @@
      "paperId": "paper:mesulam-1998-sensation-to-cognition",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5595,7 +5595,7 @@
      "paperId": "paper:mesulam-1998-sensation-to-cognition",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5611,7 +5611,7 @@
      "paperId": "paper:mesulam-1998-sensation-to-cognition",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5681,7 +5681,7 @@
      "paperId": "paper:mesulam-1998-sensation-to-cognition",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5697,7 +5697,7 @@
      "paperId": "paper:mesulam-1998-sensation-to-cognition",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5713,7 +5713,7 @@
      "paperId": "paper:mesulam-1998-sensation-to-cognition",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5729,7 +5729,7 @@
      "paperId": "paper:raichle-2001-default-mode",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5745,7 +5745,7 @@
      "paperId": "paper:raichle-2001-default-mode",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5761,7 +5761,7 @@
      "paperId": "paper:raichle-2001-default-mode",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5777,7 +5777,7 @@
      "paperId": "paper:raichle-2001-default-mode",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5793,7 +5793,7 @@
      "paperId": "paper:raichle-2001-default-mode",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5809,7 +5809,7 @@
      "paperId": "paper:buckner-2008-default-network",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5825,7 +5825,7 @@
      "paperId": "paper:buckner-2008-default-network",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:RSC (\"Retrosplenial complex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:RSC (\"Retrosplenial complex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5895,7 +5895,7 @@
      "paperId": "paper:buckner-2008-default-network",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -5911,7 +5911,7 @@
      "paperId": "paper:buckner-2008-default-network",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5927,7 +5927,7 @@
      "paperId": "paper:buckner-2008-default-network",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5943,7 +5943,7 @@
      "paperId": "paper:price-2012-language-review",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:A1 (\"Primary auditory cortex (A1)\") is held by the asset owner: Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5959,7 +5959,7 @@
      "paperId": "paper:price-2012-language-review",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:A4 (\"Auditory area 4\") is held by the asset owner: Superior temporal gyrus (Lateral part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:A4 (\"Auditory area 4\") is held by the asset owner: Superior temporal gyrus (Lateral part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5975,7 +5975,7 @@
      "paperId": "paper:price-2012-language-review",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -5991,7 +5991,7 @@
      "paperId": "paper:price-2012-language-review",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6007,7 +6007,7 @@
      "paperId": "paper:price-2012-language-review",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6023,7 +6023,7 @@
      "paperId": "paper:price-2012-language-review",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:lingual-gyrus (\"lingual gyrus\") is held by the asset owner: Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:lingual-gyrus (\"lingual gyrus\") is held by the asset owner: Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6039,7 +6039,7 @@
      "paperId": "paper:price-2012-language-review",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:TE1a (\"Area TE1a (anterior temporal)\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:TE1a (\"Area TE1a (anterior temporal)\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6055,7 +6055,7 @@
      "paperId": "paper:price-2012-language-review",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:TGd (\"Area TGd (temporal pole, dorsal)\") is held by the asset owner: Temporal pole. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:TGd (\"Area TGd (temporal pole, dorsal)\") is held by the asset owner: Temporal pole. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6071,7 +6071,7 @@
      "paperId": "paper:hickok-2007-dual-stream",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PFm (\"Area PFm (supramarginal)\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:PFm (\"Area PFm (supramarginal)\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6087,7 +6087,7 @@
      "paperId": "paper:hickok-2007-dual-stream",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6103,7 +6103,7 @@
      "paperId": "paper:hickok-2007-dual-stream",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:STSvp (\"Superior temporal sulcus, ventral posterior\") is held by the asset owner: Superior temporal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:STSvp (\"Superior temporal sulcus, ventral posterior\") is held by the asset owner: Superior temporal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6119,7 +6119,7 @@
      "paperId": "paper:hickok-2007-dual-stream",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6135,7 +6135,7 @@
      "paperId": "paper:hickok-2007-dual-stream",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6151,7 +6151,7 @@
      "paperId": "paper:hickok-2007-dual-stream",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:supramarginal-gyrus (\"supramarginal gyrus\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:supramarginal-gyrus (\"supramarginal gyrus\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     },
     {
      "mappingId": "map:hickok-2007-dual-stream/sensorimotor-interface/atlas-label-supramarginal-gyrus",
@@ -6175,7 +6175,7 @@
      "paperId": "paper:kanwisher-1997-fusiform-face-area",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6191,7 +6191,7 @@
      "paperId": "paper:kanwisher-1997-fusiform-face-area",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6207,7 +6207,7 @@
      "paperId": "paper:kanwisher-1997-fusiform-face-area",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6223,7 +6223,7 @@
      "paperId": "paper:kanwisher-1997-fusiform-face-area",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     },
     {
      "mappingId": "map:kanwisher-1997-fusiform-face-area/peak-coordinate/hcp-mmp1-ffc",
@@ -6247,7 +6247,7 @@
      "paperId": "paper:epstein-1998-parahippocampal-place-area",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6263,7 +6263,7 @@
      "paperId": "paper:epstein-1998-parahippocampal-place-area",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:parahippocampal-gyrus (\"parahippocampal gyrus\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6279,7 +6279,7 @@
      "paperId": "paper:epstein-1998-parahippocampal-place-area",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:FFC (\"Fusiform face complex\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6295,7 +6295,7 @@
      "paperId": "paper:epstein-1998-parahippocampal-place-area",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:PHA1 (\"Parahippocampal area 1\") is held by the asset owner: Medial occipitotemporal gyrus (Parahippocampal*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     },
     {
      "mappingId": "map:epstein-1998-parahippocampal-place-area/peak-coordinate/hcp-mmp1-pha1",
@@ -6319,7 +6319,7 @@
      "paperId": "paper:penfield-1937-somatotopy",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:4 (\"Primary motor cortex (area 4)\") is held by the asset owner: Central sulcus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6335,7 +6335,7 @@
      "paperId": "paper:penfield-1937-somatotopy",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6351,7 +6351,7 @@
      "paperId": "paper:penfield-1937-somatotopy",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:3b (\"Primary somatosensory cortex (area 3b)\") is held by the asset owner: Central sulcus; Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6367,7 +6367,7 @@
      "paperId": "paper:penfield-1937-somatotopy",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6383,7 +6383,7 @@
      "paperId": "paper:penfield-1937-somatotopy",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:1 (\"Area 1 (somatosensory)\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:1 (\"Area 1 (somatosensory)\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6399,7 +6399,7 @@
      "paperId": "paper:penfield-1937-somatotopy",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:FOP4 (\"Frontal opercular area 4\") is held by the asset owner: Circular sulcus of insula; Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:FOP4 (\"Frontal opercular area 4\") is held by the asset owner: Circular sulcus of insula; Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6415,7 +6415,7 @@
      "paperId": "paper:catani-2008-virtual-dissection",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied."
     }
    ]
   },
@@ -6431,7 +6431,7 @@
      "paperId": "paper:catani-2008-virtual-dissection",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:supramarginal-gyrus (\"supramarginal gyrus\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:supramarginal-gyrus (\"supramarginal gyrus\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6447,7 +6447,7 @@
      "paperId": "paper:catani-2008-virtual-dissection",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },
@@ -6463,7 +6463,7 @@
      "paperId": "paper:catani-2008-virtual-dissection",
      "route": "term",
      "code": "structure-held",
-     "detail": "every target of ATLAS-LABEL:angular-gyrus (\"angular gyrus\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
+     "detail": "every supplied target of ATLAS-LABEL:angular-gyrus (\"angular gyrus\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`"
     }
    ]
   },

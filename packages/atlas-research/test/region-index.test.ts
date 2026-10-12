@@ -371,3 +371,79 @@ test('validateCrosswalk refuses an exact HCP-MMP1 entry, a misspelt target and a
   const missing = { ...crosswalk(), entries: crosswalk().entries.slice(1) };
   assert.ok(validateCrosswalk(missing, reps, dataset()).some((p) => /ATLAS-LABEL:putamen has no crosswalk entry/.test(p)));
 });
+
+// ---------------------------------------------------------------------------
+// The lobe-labelled cortex (owner card 6a774981, DOG-151)
+// ---------------------------------------------------------------------------
+
+/** A synthetic ICBM152 cortex with two lobes per side, in the shape DOG-151 was asked for. */
+const lobes: RepresentationData = {
+  representation: rep('icbm152-2009c-cortex-lobes'),
+  version: 'test-lobes',
+  structures: ['Frontal lobe', 'Parietal lobe'].flatMap((label, i) => [
+    { id: String(100 + i * 2), name: `${label}.l`, label, side: 'left' as const },
+    { id: String(101 + i * 2), name: `${label}.r`, label, side: 'right' as const },
+  ]),
+  held: [],
+};
+
+/** The crosswalk with area 4 also targeting its lobe, as the committed one does. */
+function crosswalkWithLobes(lobeLabel = 'Frontal lobe'): Crosswalk {
+  const c = crosswalk();
+  return {
+    ...c,
+    entries: c.entries.map((e) =>
+      e.term === 'HCP-MMP1:4' ? { ...e, targets: [...e.targets, { representation: 'icbm152-2009c-cortex-lobes', label: lobeLabel }] } : e,
+    ),
+  };
+}
+
+/** Area 4 reported with no coordinate: the case the owner's approval is about. */
+function datasetWithArea4(): ResearchDataset {
+  const ds = dataset();
+  return {
+    ...ds,
+    papers: [...ds.papers, paper('p:area4')],
+    findings: [...ds.findings, finding('f:area4', 'p:area4', [mapping('m:area4', 'HCP-MMP1', 'HCP-MMP1:4', 'Primary motor cortex (area 4)')])],
+  };
+}
+
+test('a coordinate-free HCP-MMP1 area reaches its lobe as crosswalk, approximate, with its own name, while its gyrus is held', () => {
+  const reps = [...world(), lobes];
+  const index = buildRegionIndex({ dataset: datasetWithArea4(), crosswalk: crosswalkWithLobes(), representations: reps });
+  const links = index.resolve('f:area4');
+  assert.deepEqual(
+    links.map((l) => [l.representation, l.structureName, l.how, l.precision.kind]),
+    [
+      ['icbm152-2009c-cortex-lobes', 'Frontal lobe.l', 'crosswalk', 'approximate'],
+      ['icbm152-2009c-cortex-lobes', 'Frontal lobe.r', 'crosswalk', 'approximate'],
+    ],
+  );
+  for (const l of links) {
+    assert.deepEqual(l.source, { scheme: 'HCP-MMP1', term: 'HCP-MMP1:4', label: 'Primary motor cortex (area 4)' });
+    // The finer target is held, and the lobe link says so rather than standing in for it silently.
+    assert.deepEqual(l.crosswalk?.heldTargets, ['Precentral gyrus']);
+  }
+  assert.deepEqual(checkRegionIndex(index, reps), []);
+  assert.deepEqual(validateCrosswalk(crosswalkWithLobes(), reps, datasetWithArea4()), []);
+});
+
+test('without the lobe data, the hold names the lobe targets that were not supplied', () => {
+  const index = buildRegionIndex({ dataset: datasetWithArea4(), crosswalk: crosswalkWithLobes(), representations: world() });
+  const o = index.mappings.find((x) => x.mappingId === 'm:area4')!;
+  assert.equal(o.links.length, 0);
+  assert.equal(o.unplaced[0].code, 'structure-held');
+  assert.match(o.unplaced[0].detail, /every supplied target of HCP-MMP1:4/);
+  assert.match(o.unplaced[0].detail, /Its targets in icbm152-2009c-cortex-lobes were not supplied\./);
+});
+
+test('validateCrosswalk refuses a lobe label the lobe cortex does not carry, once its data is supplied', () => {
+  const reps = [...world(), lobes];
+  assert.ok(
+    validateCrosswalk(crosswalkWithLobes('Frontal Lobe'), reps).some((p) =>
+      /target "Frontal Lobe" is not a structure of icbm152-2009c-cortex-lobes test-lobes/.test(p),
+    ),
+  );
+  // And it cannot check it without the data: that is what the gate reports as UNVERIFIED.
+  assert.deepEqual(validateCrosswalk(crosswalkWithLobes('Frontal Lobe'), world()), []);
+});

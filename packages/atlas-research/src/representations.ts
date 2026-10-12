@@ -56,7 +56,8 @@ export interface Representation {
  * The registry. v2 ships the two the plan names, *Z-Anatomy gross anatomy* and
  * *MNI coordinates*. The third is v1's BodyParts3D name index, already shipped
  * and already resolving the body papers. It is registered rather than special-
- * cased, so the body half goes through the same resolver as the brain half.
+ * cased, so the body half goes through the same resolver as the brain half. The
+ * fourth is the lobe-labelled cortex, approved after the plan.
  */
 export const REPRESENTATIONS: readonly Representation[] = Object.freeze([
   Object.freeze({
@@ -93,6 +94,20 @@ export const REPRESENTATIONS: readonly Representation[] = Object.freeze([
     idScheme: 'FMA',
     licenceClass: 'asset',
     shareAlike: true,
+  }),
+  // The cortex the owner approved on card 6a774981 (DOG-151): the ICBM152 2009c
+  // surface, natively MNI, with first-party lobe labels. Registered before its
+  // data lands, so crosswalk targets can name it; until then the gate reports
+  // those targets UNVERIFIED rather than checked.
+  Object.freeze({
+    id: 'icbm152-2009c-cortex-lobes',
+    title: 'ICBM152 2009c cortex, first-party lobe labels (DOG-151)',
+    geometry: 'surface-mesh',
+    space: 'MNI',
+    toMni: 'identity',
+    labels: 'named-structures',
+    licenceClass: 'asset',
+    shareAlike: false,
   }),
 ] as Representation[]);
 

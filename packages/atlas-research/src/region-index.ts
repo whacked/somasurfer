@@ -435,15 +435,19 @@ function termRoute(
     for (const h of data.held) if (h.label === t.label) held.push(h);
   }
   const heldTargets = [...new Set(held.map((h) => h.label))].sort();
+  const absentReps = [...new Set(absent)];
   if (found.length === 0) {
     if (held.length > 0) {
       const because = [...new Set(held.map((h) => h.because))].sort();
+      // "Every target is held" would be false while some targets sit in a
+      // representation nobody supplied, so the absent ones are named too.
       miss(
         'structure-held',
-        `every target of ${m.structureId} ("${m.structureLabel}") is held by the asset owner: ${heldTargets.join('; ')}. Held because: ${because.join(' | ')}`,
+        `every supplied target of ${m.structureId} ("${m.structureLabel}") is held by the asset owner: ${heldTargets.join('; ')}. Held because: ${because.join(' | ')}` +
+          (absentReps.length > 0 ? `. Its targets in ${absentReps.join(', ')} were not supplied.` : ''),
       );
     } else if (absent.length > 0) {
-      miss('representation-absent', `the crosswalk places ${m.structureId} in ${[...new Set(absent)].join(', ')}, which was not supplied.`);
+      miss('representation-absent', `the crosswalk places ${m.structureId} in ${absentReps.join(', ')}, which was not supplied.`);
     }
     return;
   }
