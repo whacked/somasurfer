@@ -194,6 +194,36 @@ function checkCommitted(regionDocs, attribution) {
 // 5. Self-test
 // ---------------------------------------------------------------------------
 
+/**
+ * A stand-in for the live index that agrees with `docs` by construction: the
+ * same queries, answered from the serialised index the documents were built
+ * from. The self-test's live-index cases run against it, so the staged change
+ * is the only difference. Against the real live index, real drift would fail
+ * each case for its own reason, and a case would read as caught on a message
+ * it never produced.
+ */
+function agreeingIndex(ri) {
+  const group = (keyOf) => {
+    const out = new Map();
+    for (const o of ri.mappings) {
+      for (const l of o.links) {
+        const [a, b] = keyOf(l);
+        const m = out.get(a) ?? out.set(a, new Map()).get(a);
+        (m.get(b) ?? m.set(b, []).get(b)).push(l);
+      }
+    }
+    return (a) => [...(out.get(a)?.entries() ?? [])].sort(([x], [y]) => (x < y ? -1 : 1));
+  };
+  const byRegion = group((l) => [`${l.representation}/${l.structureId}`, l.paperId]);
+  const byPaper = group((l) => [l.paperId, `${l.representation}/${l.structureId}`]);
+  return {
+    structures: ri.structures,
+    papers: ri.papers,
+    papersFor: (k) => byRegion(k).map(([paperId, links]) => ({ paperId, links })),
+    regionsFor: (id) => byPaper(id).map(([key, links]) => ({ key, links })),
+  };
+}
+
 function selfTest(docs, live) {
   const failures = [];
   const expectRed = (what, problems, pattern) => {
@@ -288,7 +318,7 @@ if (JSON.stringify(paperDocs) !== JSON.stringify(docs.filter((d) => d.tree === '
 // The live index: the same inputs check-crosswalk.mjs resolves, queried directly.
 const live = buildRegionIndex(loadRegionInputs());
 
-const selfFailures = selfTest(docs, live);
+const selfFailures = selfTest(docs, agreeingIndex(regionIndex));
 if (selfFailures.length > 0) fail('research api', ['self-test: the gate cannot go red on:', ...selfFailures.map((f) => `  ${f}`)]);
 
 problems.push(...checkDocuments(docs));
