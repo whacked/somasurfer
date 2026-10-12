@@ -302,3 +302,219 @@ Not a v1 blocker, and it must not be enabled to make a test pass.
 | verdict on the brain parcellation licence | **NOT CLEARED**, and now final rather than pending. `BV` ships coordinates without names; the owner's route is first-party labels; see §4 |
 | `BR` stays disabled | **done** — gated, see §5 |
 | D1 discrepancy | **decided by the owner 2026-10-09: share-alike is mandatory.** §3. There is no D1a. |
+
+---
+
+## 7. Atlas v2 upstreams — the W1 memo (DOG-126, 2026-10-11)
+
+**Scope:** DOG-123 D1 (the brain mesh), D2 (the full human) and D3 (Allen as `asset-nc`).
+**Method:** every licence was read at its **primary** source on 2026-10-11, where
+"primary" means the licensor's own record: the deposit's licence field, the
+licence file inside the distribution, or the licensor's own page. brainproject's
+statements about its inputs are claims, and they are checked here rather than
+relied on. Where a deposit's metadata and its own files disagree, both are
+recorded, and the stricter reading is held.
+
+The machine-readable form of this section is `upstreamSources` in
+`packages/atlas-assets/attribution.json`. That is where W2 and W3 cite these
+sources from, and the licence gate (rules 8 and 9) enforces it.
+
+### 7.1 Verdicts
+
+| source (`upstreamSources` id) | verdict | licence, as the primary source states it | primary source |
+| --- | --- | --- | --- |
+| brainproject `brain.glb` + `manifest.json` (`brainproject-brain-glb`) | **cleared, per structure only** | CC BY-SA 4.0 for the model; Apache-2.0 for the code | `LICENSE` and `README.md` at the pinned commit, <https://github.com/itayinbarr/brainproject> |
+| Z-Anatomy (`zanatomy`) | **cleared for its own work and the BodyParts3D meshes only** | CC BY-SA 4.0, with five third-party models listed separately | `License.txt` at the pinned commit, <https://github.com/Z-Anatomy/Models-of-human-anatomy> |
+| BodyParts3D / DBCLS (`bodyparts3d`) | cleared, share-alike mandatory (§3) | CC BY-SA **2.1 Japan** in the OBJ headers; CC BY 4.0 on the web page | <https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html> (re-read; still "Last updated 2025/02/27") |
+| Brainder, Brain for Blender (`brainder-brain-for-blender`) | cleared, but **not yet shown to be Z-Anatomy's "Brainder"** | CC BY-SA 3.0 Unported, Anderson Winkler | <https://brainder.org/research/brain-for-blender/> |
+| Z-Anatomy "Brainder" and "White matter (University of Washington)" materials (`zanatomy-undeclared-brain-materials`) | **NOT CLEARED** | none declared | Z-Anatomy `License.txt`; upstream question open as [Z-Anatomy#10](https://github.com/Z-Anatomy/Models-of-human-anatomy/issues/10) |
+| Dundee CAHID, Cranial Nerves and Foramina (`dundee-cranial-nerves`) | **UNVERIFIED** | Z-Anatomy says CC BY 4.0; the primary page states no licence and calls itself BodyParts3D-derived (BY-SA 2.1 JP) | <https://sketchfab.com/3d-models/cranial-nerves-and-foramina-a9358ee7a6dd4ea18a3622114405a4c7> |
+| Dundee, Anatomy of the Inner Ear (`dundee-inner-ear`) | **non-commercial**, asset-nc only | CC BY-NC-SA 4.0, as stated by Z-Anatomy | Z-Anatomy `License.txt` |
+| Cowley, Kidney (`cowley-kidney`) | **non-commercial**, asset-nc only | CC BY-NC 4.0, as stated by Z-Anatomy | Z-Anatomy `License.txt` |
+| CIT168 subcortical v1.1.0 (`cit168-subcortical`) | cleared | CC BY 4.0 | OSF node licence, <https://osf.io/jkzwp/> |
+| CIT168 amygdala v1.0.3 (`cit168-amygdala`) | cleared | CC BY-SA 4.0 (the distribution's own `LICENSE.txt`) | <https://osf.io/hksa6/>, file `LICENSE.txt` |
+| Najdenovska thalamus (`najdenovska-thalamus`) | cleared, with a note | CC BY-SA 4.0 | Zenodo record licence, <https://doi.org/10.5281/zenodo.1405484> |
+| Neudorfer hypothalamus (`neudorfer-hypothalamus`) | cleared | CC BY 4.0 | Zenodo record licence, <https://doi.org/10.5281/zenodo.3942115> |
+| HCP1065 tracts, Yeh 2022 (`hcp1065-yeh2022`) | cleared, plus the HCP acknowledgement | CC BY-SA 4.0 for `hcp1065_avg_tracts_nifti.zip` | release notes, <https://github.com/data-others/atlas/releases/tag/hcp1065> (formerly `frankyeh/data-atlas`) |
+| Allen Institute / brain-map.org (`allen-brain-map`) | **non-commercial**, asset-nc only (D3) | Terms of Use, "Updated: May 5, 2022"; citation policy | <https://alleninstitute.org/legal/terms-of-use>, <https://alleninstitute.org/legal/citation-policy> |
+
+Every BY and BY-SA input above is compatible with shipping the v2 geometry as
+**CC BY-SA 4.0**:
+- BY 4.0 permits an adapter's licence.
+- BY-SA 3.0 and BY-SA 2.1 Japan both permit a later version with the same elements.
+
+The rows that are not cleared, or are non-commercial, are the ones that decide
+what W2 and W3 can ship.
+
+### 7.2 Pins
+
+**brainproject**, commit `2929e94f521a8ddceab26bc100a98dc06b0da060` (2026-06-19):
+
+| artefact | SHA-256 |
+| --- | --- |
+| archive `codeload.github.com/itayinbarr/brainproject/tar.gz/2929e94…` | `f42f198812aab352bf5127b95a2821d3b5ecb42d4a6dfcd5464930987a1a3ed9` |
+| `brain-atlas/models/brain.glb` (4,650,816 B) | `76a49ea4526a4880613aec7a02756bd7301b0b9d0680d7cae33e197b672c5453` |
+| `brain-atlas/models/manifest.json` (232,455 B) | `66c32355e02c3ba5fadf3b3bdb61b18c619162d6c5ee2083262e59bed4274d93` |
+
+GitHub generates the archive digest and does not promise its bytes are stable,
+so W2 must verify against the **per-file** digests and use the archive digest
+only as a cross-check.
+
+**Z-Anatomy**, commit `9de5d6912a1b0df9cab739d57f00e036b0496ddc` (2026-10-10):
+- `License.txt` has SHA-256 `196b66b56551a862e59872f7cdb70e6d9a6ad84e9105962fca8ec28c14e97520`.
+- `Z-Anatomy.zip` (86,734,957 B) has git blob `f43cabc6f366b2a6058dd2ed4a2b3c7b9b2492cb`.
+- Its SHA-256 is recorded as `null` and not guessed: the download from this runner stopped at 22 MB after 8 minutes. The blob id content-addresses the same bytes, and W3 records the SHA-256 when it fetches the archive.
+
+brainproject does not say which Z-Anatomy commit its `.blend` came from. That is
+one more reason to read provenance from the glb itself (§7.3) and not from
+anyone's description of it.
+
+### 7.3 The finding that changes W2: 146 of 437 brain structures are not cleared
+
+Z-Anatomy's licence names five third-party models it "used as reference/included
+and adapted". Two of them ("Brainder" and "White matter" from the University of
+Washington) carry **no licence**. Someone else redistributing Z-Anatomy asked
+upstream about exactly this on 2026-10-06 ([Z-Anatomy#10](https://github.com/Z-Anatomy/Models-of-human-anatomy/issues/10),
+open, no reply). They currently exclude every object that uses the Z-Anatomy
+materials `Brain`, `Brain-Inner` or `White matter`.
+
+brain.glb keeps those material names, so the question can be measured rather
+than guessed. These counts come from walking each `bx_id` node to its
+primitives' materials in the glTF JSON chunk:
+
+| Blender material(s) | structures | brainproject `category` | provenance |
+| --- | ---: | --- | --- |
+| `Brain-Inner` + `Temporal lobe` | 124 | cortex | **undeclared** (Brainder candidate) |
+| `Brain` (± `Temporal lobe`) | 9 | 2 cortex, 5 brainstem (pons, medulla, interpeduncular fossa), 2 cerebellum (base of peduncle) | **undeclared** |
+| `White matter` | 10 | 6 white matter, 3 diencephalon, 1 ventricles (commissures, fornix, septum pellucidum, stria medullaris) | **undeclared**, no candidate source |
+| `Nerve` | 46 | 44 cranial nerves + 2 | Dundee CAHID per Z-Anatomy: **unverified** |
+| `Temporal lobe` alone | 3 | corpus callosum (white matter), midbrain ×2 (brainstem) | **undeclared**, held fail-closed |
+| `Artery`, `Cerebellum`, `Nucleus*`, `LCR`, `Cartilage`, `Bone-4` | 149 | arteries, cerebellum, nuclei, ventricles, … | Z-Anatomy / BodyParts3D: cleared, **by inference** |
+| none (imaging-registered) | 96 | 54 tracts (HCP1065), 14 thalamic (Najdenovska), 10 hypothalamic (Neudorfer), 10 CIT168, 8 amygdala | cleared |
+
+**Material names are a negative filter, not a positive one.** A structure
+carrying an undeclared material is held. A structure is *not* cleared merely for
+carrying none of them. That is why the three `Temporal lobe`-only structures are
+held. That material appears otherwise only on the undeclared cortex. Nothing
+ties it to Z-Anatomy's own work or to BodyParts3D, and the corpus callosum is
+exactly what a "White matter" model would supply. Even the 149 "cleared"
+structures clear by an inference from material names (`Artery`, `Nucleus`,
+`Cerebellum` and so on read as Z-Anatomy's own BodyParts3D-derived systems), not
+by a record of provenance. W2's manifest (below) is what turns that inference
+into a checked fact.
+
+**126 of the 128 cortical structures are in the undeclared group.** These are
+the gyri and sulci that §1 of the v2 plan relies on to give `BV` names. So the
+plan's premise holds only if this group clears.
+
+**What clears it, in order of cost:**
+
+1. **Measure it (W2).** Brainder's Brain for Blender is FreeSurfer cortex split by
+   the Destrieux and DKT atlases, under CC BY-SA 3.0. Z-Anatomy's cortex has
+   Destrieux names. Match the decoded brain.glb cortex against the Brainder
+   meshes, up to a similarity transform, and publish the per-structure residual.
+   A structure that matches moves to `brainder-brain-for-blender`, which is
+   cleared. This is the same discipline as the body template gate: a structure
+   clears on a published number, never on a resemblance.
+2. **Ask upstream.** Add to Z-Anatomy#10 rather than open a duplicate. An answer
+   naming a compatible licence clears whatever it names.
+3. **Ship without it.** W2 ships the 245 cleared structures (437 less these 146
+   and the 46 unverified nerves) and lists the excluded ones by name.
+
+Even if (1) succeeds, the 10 `White matter` structures have **no candidate
+source**, and nothing short of (2) clears them.
+
+**How the gate holds this, and what it cannot yet see.**
+- An entry that cites `zanatomy-undeclared-brain-materials` or
+  `dundee-cranial-nerves` fails rule 9.
+- An entry that is not first-party and cites **nothing** also fails rule 9.
+  Citing is mandatory, so an entry cannot avoid the refusal by leaving the
+  failing source out (staged as `licence-third-party-entry-cites-nothing`).
+- W2 should emit one file per clearance group, not one `meshes.bin`. A later
+  clearance then adds a file instead of re-cutting a shipped one, and the
+  uncleared group can never ride along inside a cleared file.
+
+**The residual:** the citation is still self-declared. An entry that cites only
+cleared sources while its file contains held structures is green today. Closing
+that is **a W2 acceptance criterion**, not this issue's. W2 commits a
+structure → material → source manifest generated from the pinned glb, and the
+gate cross-checks every entry's `sources` against the structures its file
+actually contains.
+
+**The cranial nerves** are unverified for a different reason:
+- Z-Anatomy says the Dundee model is CC BY 4.0.
+- Dundee's own page states no licence: the Sketchfab API returns an empty licence object.
+- That page describes the model as based on BodyParts3D under BY-SA 2.1 Japan, which would make it share-alike at least.
+
+The record holds the share-alike reading. It clears on a statement from Dundee
+CAHID, or if W2 shows the nerves are BodyParts3D's own.
+
+### 7.4 What the brief and brainproject said, against the primary sources
+
+| claim | primary source says | consequence |
+| --- | --- | --- |
+| "Z-Anatomy and BodyParts3D/DBCLS: CC BY-SA 4.0" | Z-Anatomy is BY-SA 4.0. BodyParts3D is **BY-SA 2.1 Japan** (file headers) or BY 4.0 (page); never BY-SA 4.0 | None for us: §3 already holds the share-alike reading, and Z-Anatomy and Dundee both cite 2.1 Japan. Attribution uses DBCLS's own wording. |
+| Z-Anatomy credits are complete | brainproject's attribution chain omits Brainder and the two NC models | Ours carries Brainder whenever a structure cites it. NC models never enter a BY-SA file (rule 8). |
+| CIT168 amygdala: CC BY-SA 4.0 | The distribution's `LICENSE.txt` says BY-SA 4.0 (changed in 1.0.1, 2016-08-01). The OSF node's licence field says **CC BY 4.0** | Hold BY-SA: the in-distribution file governs, and it is the stricter reading. |
+| Najdenovska: CC BY-SA 4.0 | The Zenodo record is BY-SA 4.0. Its `README.txt` says "Copyright (c) - All rights reserved. University of Lausanne. 2018." | Rely on the explicit licence grant on the record; reproduce the copyright line in the attribution. |
+| HCP1065 (Yeh 2022): CC BY-SA 4.0 | Correct for the averaged tracts. The same release's fiber templates are under HCP data use terms instead | Cleared for `hcp1065_avg_tracts_nifti.zip` only. |
+| imaging-registered structures "remain CC BY-SA 4.0" | CIT168 subcortical and Neudorfer are BY 4.0 | Permitted: BY content may ship inside a BY-SA work. Attribution still names each source. |
+
+**HCP acknowledgement.** CIT168 (both atlases), Najdenovska, Neudorfer and
+HCP1065 are all built from Human Connectome Project data. The HCP1065 release
+explicitly requires the WU-Minn acknowledgement. The others name HCP as their
+source. Every entry citing any of them carries the acknowledgement in its
+attribution (`hcp1065-yeh2022.attributionStatement` has the wording).
+
+### 7.5 Allen and the `asset-nc` class
+
+The Allen Terms of Use permit use, copying, distribution and derivative works
+"for research or other noncommercial purposes". Commercial redistribution needs
+written permission. The citation policy applies to any public display. There is
+also a non-assert clause on Improvements, and the trademarks need permission.
+
+None of that is compatible with CC BY-SA, which promises downstream users
+commercial use. D3's three conditions are now structural:
+
+| D3 condition | implemented as | enforced by |
+| --- | --- | --- |
+| a new licence class | per-entry `licenceClass: "asset" \| "asset-nc"` in `attribution.json`, mandatory, never inferred | rule 8 |
+| its own files, never merged into BY-SA geometry | an asset-nc entry may not claim a file a share-alike entry claims, and its bytes may not appear inside one | rule 8, by path and by content |
+| excluded from the build by default | asset-nc files live only under `atlas.ncPayloadDirs` (`nc/`); the build copies `payloadDirs` and nothing else; `dist/` must contain neither `assets/nc/` nor any NC payload's bytes | rule 8, static and on `dist/` |
+| (and its inputs travel) | an entry citing a non-commercial source must be asset-nc; one citing a share-alike source must be share-alike; one citing an uncleared source fails | rule 9 |
+
+`tools/verify-gates.mjs` stages each failure: `licence-nc-in-default-build`,
+`licence-nc-merged-into-share-alike`, `licence-nc-in-dist`,
+`licence-uncleared-source` and `licence-third-party-entry-cites-nothing`. A `mustPass` baseline,
+`licence-nc-segregated-is-not-a-failure`, proves that a correctly segregated NC
+layer is let through. The committed tree has no asset-nc entry, so a green run
+on the tree alone would say nothing about rule 8.
+
+**v2 lands no Allen bytes**, and there is deliberately no build switch yet.
+Whichever representation first ships NC content adds the switch, and with it an
+NC licence file beside `dist/assets/nc/`. A default build, which is the only
+one CI makes and deploys, still fails rule 8 if that directory appears.
+
+### 7.6 What W2 and W3 must cite
+
+| work item | ships | cites |
+| --- | --- | --- |
+| W2, brain, cleared group | the 245 structures outside §7.3's undeclared and unverified groups, as BY-SA 4.0 | `brainproject-brain-glb`, `zanatomy`, `bodyparts3d`, and per structure `cit168-subcortical`, `cit168-amygdala`, `najdenovska-thalamus`, `neudorfer-hypothalamus`, `hcp1065-yeh2022` |
+| W2, brain, cortex group | the 133 `Brain`/`Brain-Inner` structures, **only after** they move to `brainder-brain-for-blender` by measurement or upstream answer | as above, plus `brainder-brain-for-blender` |
+| W2, brain, held | the 10 `White matter` structures, the 3 `Temporal lobe`-only structures and the 46 `Nerve` structures | cannot ship: rule 9 refuses `zanatomy-undeclared-brain-materials` and `dundee-cranial-nerves` |
+| W3, body | Z-Anatomy/BodyParts3D whole-body meshes as BY-SA 4.0, **excluding** the inner ear (`dundee-inner-ear`), the kidney (`cowley-kidney`, so take BodyParts3D's own kidney), and every object with the `Brain`, `Brain-Inner`, `White matter` or `Nerve` materials until §7.3 clears them | `zanatomy`, `bodyparts3d` |
+
+"Excluded" must be measured, not asserted. W3 should publish the object names it
+dropped and the material that dropped each one. Z-Anatomy materials are a proxy
+for provenance, not a record of it; Z-Anatomy#10 asks that very question about
+`Pons`, `Medulla oblongata` and the spinal-cord horns.
+
+### 7.7 Summary
+
+| criterion (DOG-126) | status |
+| --- | --- |
+| every upstream licence verified at its primary source | **done**: §7.1. Three items are not cleared or unverified and are recorded as such, not rounded up |
+| brainproject commit pinned, archive SHA-256 recorded | **done**: §7.2, plus per-file digests, which are the durable pin |
+| `attribution.json` records for everything W2/W3 will ship | **done**: 16 `upstreamSources` with verdict, evidence and attribution wording. Every third-party entry must cite them by id (rule 9); the three existing ones now do |
+| `asset-nc` class and gate rule | **done**: rules 8 and 9 of `tools/check-licence-separation.mjs`, red on five staged breakages and green on the tree and on a segregated NC layer |
+| the v2 plan's §1 premise that the gyral mesh gives `BV` names | **at risk**: 146 of 437 structures held, including 126 of 128 cortical are in the undeclared group. Measurement route in §7.3; escalated to the CTO on DOG-123 |

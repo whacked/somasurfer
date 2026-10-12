@@ -29,13 +29,30 @@
  *      re-encodes an asset has adapted it, which is what a share-alike
  *      licence attaches to most firmly; copying it verbatim is aggregation.
  *
+ * Two more keep non-commercial content out of a default build (DOG-126):
+ *
+ *   8. Every attribution entry declares `licenceClass` as "asset" or
+ *      "asset-nc". An asset-nc entry's files live only under the package's
+ *      `atlas.ncPayloadDirs`, which the build never copies, so it is not
+ *      reachable in a default build; it never shares a file, or its bytes, with
+ *      a share-alike entry, because BY-SA promises downstream users the
+ *      commercial use an NC licence withholds; and if dist/ exists, none of it
+ *      is there.
+ *   9. Every entry that is not first-party cites its upstream sources, and
+ *      every source it cites is recorded in `upstreamSources` with a verdict
+ *      from docs/asset-licensing.md. An entry cannot ship from a source that is
+ *      not cleared, and it inherits the source's terms: a non-commercial source
+ *      makes it asset-nc, a share-alike source makes it share-alike. Citing is
+ *      mandatory, not opt-in: an entry that simply omits `sources` would
+ *      otherwise skip every one of these checks.
+ *
  * CI tooling under tools/ is deliberately out of scope: validating assets is
  * exactly what a CI gate is for, and tools/ is not published or linked into
  * any code package. Rules 2, 3 and 6 are about the shipped artefact.
  */
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, posix, relative } from 'node:path';
 import { REPO_ROOT, readPackages, sourceFiles, fail, pass, rel } from './lib/repo.mjs';
 
 const DEP_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
@@ -260,6 +277,239 @@ if (existsSync(DIST)) {
 } else {
   report.push(`dist/: not built, artefact rules skipped. Run \`npm run build\` first to check them.`);
 }
+
+// --- Rule 8: non-commercial content is segregated --------------------------
+// "Reachable in a default build" is decided by where a file lives, because
+// that is what the build decides by: it copies `payloadDirs` and nothing else.
+const ENTRY_CLASSES = ['asset', 'asset-nc'];
+const VERDICTS_THAT_SHIP = ['cleared', 'cleared-with-conditions'];
+
+/** Every file under `dirs` in `pkgDir`, relative to the package. */
+function filesUnder(pkgDir, dirs) {
+  const out = [];
+  for (const dir of dirs) {
+    const abs = join(pkgDir, dir);
+    if (!existsSync(abs)) continue;
+    const walk = (d) => {
+      for (const e of readdirSync(d, { withFileTypes: true })) {
+        const p = join(d, e.name);
+        if (e.isDirectory()) walk(p);
+        else out.push(relative(pkgDir, p).split('\\').join('/'));
+      }
+    };
+    walk(abs);
+  }
+  return out;
+}
+
+const within = (file, dir) => file === dir || file.startsWith(`${dir.replace(/\/+$/, '')}/`);
+
+/** An interior slice of a payload, as rule 6 takes it. Null if too short to be distinctive. */
+function probeOf(bytes) {
+  const mid = Math.floor(bytes.length / 2);
+  const probe = bytes.subarray(Math.max(0, mid - 80), mid + 80);
+  return probe.length >= 64 ? probe : null;
+}
+
+let ncEntryCount = 0;
+let citingEntryCount = 0;
+for (const a of assets) {
+  if (!existsSync(join(a.dir, 'attribution.json'))) continue;
+  const attribution = JSON.parse(readFileSync(join(a.dir, 'attribution.json'), 'utf8'));
+  const entries = attribution.entries ?? [];
+  const where = `${rel(a.dir)}/attribution.json`;
+  const payloadDirs = a.manifest.atlas?.payloadDirs ?? [];
+  const ncDirs = a.manifest.atlas?.ncPayloadDirs ?? [];
+
+  for (const e of entries) {
+    // Rule 8 decides by directory, so a path must mean what it says.
+    // `nc/../labels/x.json` sits in a shipped directory while looking like NC.
+    for (const f of e.files ?? []) {
+      const normal = posix.normalize(f);
+      if (normal !== f || normal.startsWith('..') || posix.isAbsolute(normal)) {
+        problems.push(
+          `${where}: entry ${e.id} lists ${JSON.stringify(f)}, which is not a normalised path inside the package.`,
+          `  Write it as ${JSON.stringify(normal)}: the directory checks compare paths literally.`,
+        );
+      }
+    }
+    if (!ENTRY_CLASSES.includes(e.licenceClass)) {
+      problems.push(
+        `${where}: entry ${e.id} has \`licenceClass\` ${JSON.stringify(e.licenceClass)}; must be "asset" or "asset-nc".`,
+        `  It is not inferred. A non-commercial asset that forgets to say so must not read as an ordinary one.`,
+      );
+    }
+  }
+
+  for (const nc of ncDirs) {
+    for (const d of payloadDirs) {
+      if (within(nc, d) || within(d, nc)) {
+        problems.push(
+          `${rel(a.dir)}/package.json: ncPayloadDirs entry ${JSON.stringify(nc)} overlaps payloadDirs entry ${JSON.stringify(d)}.`,
+          `  The build copies every payloadDir, so an overlapping NC directory ships in every default build.`,
+        );
+      }
+    }
+  }
+
+  const ncEntries = entries.filter((e) => e.licenceClass === 'asset-nc');
+  const byShareAlike = entries.filter((e) => e.licenceClass === 'asset' && e.shareAlike === true);
+  ncEntryCount += ncEntries.length;
+
+  for (const e of ncEntries) {
+    for (const f of e.files ?? []) {
+      if (payloadDirs.some((d) => within(f, d)) || !ncDirs.some((d) => within(f, d))) {
+        problems.push(
+          `${rel(a.dir)}/${f}: asset-nc entry ${e.id} is reachable in a default build.`,
+          `  It is not under \`atlas.ncPayloadDirs\` (${JSON.stringify(ncDirs)}), and the build copies every`,
+          `  payloadDir it is given. Non-commercial content lives in its own directory, off by default.`,
+        );
+      }
+      const sharer = byShareAlike.find((s) => (s.files ?? []).includes(f));
+      if (sharer) {
+        problems.push(
+          `${rel(a.dir)}/${f}: asset-nc entry ${e.id} shares a file with share-alike entry ${sharer.id}.`,
+          `  BY-SA promises downstream users the commercial use an NC licence withholds, so`,
+          `  non-commercial content can never be merged into a share-alike file.`,
+        );
+      }
+    }
+  }
+
+  // Only asset-nc entries may live in an NC directory. Anything else there is
+  // either misfiled or an NC payload nobody declared as one.
+  const ncFiles = new Set(ncEntries.flatMap((e) => e.files ?? []));
+  for (const f of filesUnder(a.dir, ncDirs)) {
+    if (!ncFiles.has(f)) {
+      problems.push(
+        `${rel(a.dir)}/${f}: file in an ncPayloadDir is not claimed by an asset-nc entry.`,
+        `  Declare it as asset-nc in attribution.json, or move it out of the non-commercial directory.`,
+      );
+    }
+  }
+
+  // The same merge, by content: an NC payload's bytes inside a share-alike file
+  // is the merge whatever the attribution says about either file.
+  const ncPayloads = [...ncFiles]
+    .filter((f) => existsSync(join(a.dir, f)))
+    .map((f) => ({ file: f, probe: probeOf(readFileSync(join(a.dir, f))) }))
+    .filter((p) => p.probe);
+  for (const s of byShareAlike) {
+    for (const f of s.files ?? []) {
+      if (!existsSync(join(a.dir, f))) continue;
+      const bytes = readFileSync(join(a.dir, f));
+      for (const nc of ncPayloads) {
+        if (bytes.includes(nc.probe)) {
+          problems.push(
+            `${rel(a.dir)}/${f}: share-alike entry ${s.id} contains bytes from asset-nc payload ${nc.file}.`,
+            `  Non-commercial content has been merged into a BY-SA file. Keep it in its own file.`,
+          );
+        }
+      }
+    }
+  }
+
+  if (existsSync(DIST)) {
+    for (const nc of ncDirs) {
+      if (existsSync(join(DIST, 'assets', nc))) {
+        problems.push(
+          `dist/assets/${nc}/ exists: the non-commercial directory reached a default build.`,
+          `  CI builds the default configuration, and the default never ships asset-nc content.`,
+        );
+      }
+    }
+    const distFiles = [];
+    const walkAll = (d) => {
+      for (const e of readdirSync(d, { withFileTypes: true })) {
+        const p = join(d, e.name);
+        if (e.isDirectory()) walkAll(p);
+        else distFiles.push(p);
+      }
+    };
+    walkAll(DIST);
+    for (const p of distFiles) {
+      const bytes = readFileSync(p);
+      for (const nc of ncPayloads) {
+        if (bytes.includes(nc.probe)) {
+          problems.push(
+            `${rel(p)}: contains bytes from asset-nc payload ${nc.file}.`,
+            `  Non-commercial content is reachable in a default build.`,
+          );
+        }
+      }
+    }
+  }
+
+  // --- Rule 9: entries cite cleared upstream sources and inherit their terms --
+  const sources = new Map((attribution.upstreamSources ?? []).map((s) => [s.id, s]));
+  for (const s of sources.values()) {
+    for (const key of ['id', 'title', 'licence', 'holder', 'source', 'verdict', 'verifiedAt']) {
+      if (!s[key]) problems.push(`${where}: upstream source ${s.id ?? '(no id)'} is missing \`${key}\`.`);
+    }
+    for (const key of ['shareAlike', 'nonCommercial']) {
+      if (typeof s[key] !== 'boolean') {
+        problems.push(`${where}: upstream source ${s.id} must state \`${key}\` explicitly.`);
+      }
+    }
+  }
+  // First-party means our own work and nothing else: a GStack holder that is
+  // also not share-alike. "Adaptation by GStack" of someone's mesh is not it.
+  const firstParty = (e) => e.holder === 'GStack' && e.shareAlike !== true;
+  for (const e of entries) {
+    // A malformed `sources` is a mistake, never "cites nothing": `"sources": "x"`
+    // for `["x"]` is a one-character slip, and read as absent it would wave a
+    // first-party entry past every check below.
+    if (
+      e.sources !== undefined &&
+      !(Array.isArray(e.sources) && e.sources.every((id) => typeof id === 'string' && id.length > 0))
+    ) {
+      problems.push(
+        `${where}: entry ${e.id} has \`sources\` ${JSON.stringify(e.sources)}; \`sources\` must be an array of source ids.`,
+        `  Write it as a list, even for one source. A malformed list is not read as citing nothing.`,
+      );
+      continue;
+    }
+    if (e.sources === undefined || e.sources.length === 0) {
+      if (!firstParty(e)) {
+        problems.push(
+          `${where}: entry ${e.id} is not first-party (holder ${JSON.stringify(e.holder)}) but cites no upstream source.`,
+          `  Name every source it derives from in \`sources\`. An entry that omits them would skip`,
+          `  every check on what it inherits, including the refusal of uncleared sources.`,
+        );
+      }
+      continue;
+    }
+    citingEntryCount += 1;
+    for (const id of e.sources) {
+      const s = sources.get(id);
+      if (!s) {
+        problems.push(`${where}: entry ${e.id} cites upstream source ${id}, which is not recorded in upstreamSources.`);
+        continue;
+      }
+      if (!VERDICTS_THAT_SHIP.includes(s.verdict)) {
+        problems.push(
+          `${where}: entry ${e.id} ships from upstream source ${id}, whose verdict is ${JSON.stringify(s.verdict)}.`,
+          `  An entry cannot ship from an uncleared source. See docs/asset-licensing.md for what clears it.`,
+        );
+      }
+      if (s.nonCommercial && e.licenceClass !== 'asset-nc') {
+        problems.push(
+          `${where}: entry ${e.id} derives from non-commercial source ${id} but is not asset-nc.`,
+          `  An NC licence travels with what is derived from it.`,
+        );
+      }
+      if (s.shareAlike && e.shareAlike !== true) {
+        problems.push(
+          `${where}: entry ${e.id} derives from share-alike source ${id} but does not declare \`shareAlike: true\`.`,
+        );
+      }
+    }
+  }
+}
+report.push(
+  `${ncEntryCount} asset-nc entr${ncEntryCount === 1 ? 'y' : 'ies'}, none reachable in a default build;` +
+    ` ${citingEntryCount} entr${citingEntryCount === 1 ? 'y' : 'ies'} citing upstream sources, all cleared.`,
+);
 
 if (problems.length > 0) fail('licence separation', problems);
 
