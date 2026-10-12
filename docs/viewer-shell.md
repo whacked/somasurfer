@@ -704,7 +704,7 @@ Paper → regions. All of the paper's structures, never narrowed by the selectio
 A paper with none prints the API's stated reasons (`emptyBecause`), code and
 detail verbatim. A structure in the other atlas is named there and is not
 opened: selection never switches the atlas. A region with no single drawn
-structure in this build is listed and says so. Six body regions (heart, liver,
+structure in this build is listed and says so. Five body regions (heart, liver,
 both lungs, spinal cord) are BodyParts3D wholes that the body mesh ships only
 as parts.
 

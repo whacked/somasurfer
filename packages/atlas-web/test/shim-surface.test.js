@@ -160,7 +160,7 @@ describe('the viewer, against the entry the browser is built from', () => {
     assert.ok(sites.length > 0, 'nothing in src/ imports atlas-research.js, so the surface check proves nothing');
     assert.deepEqual(
       sites.map((s) => `${s.file}:${s.line}`),
-      ['src/viewer/corpus.js:93'],
+      ['src/viewer/corpus.js:4'],
       'the set of modules that name the research layer has changed; confirm the new ones are intended',
     );
   });
