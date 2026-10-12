@@ -17,6 +17,9 @@
  *   minComponentTriangles           both steps decimate each connected piece of
  *                                   a structure on its own, keeping at least this
  *                                   many triangles of it, so no piece vanishes
+ *   compactVertices                 every vertex in either tier is drawn: none is
+ *                                   left behind by a triangle quantisation dropped
+ *                                   (DOG-173 F1)
  *   shapeMargin                     each step keeps at least the triangles that
  *                                   hold the structure's area and extents inside
  *                                   this margin. Stricter than the gate's [0.75,
@@ -33,6 +36,7 @@ export const BODY_MESH_BUILD = Object.freeze({
   ratio: 0.125,
   floorTriangles: 16,
   minComponentTriangles: 8,
+  compactVertices: true,
   shapeMargin: Object.freeze({
     full: Object.freeze({ area: 0.05, axis: 0.9 }),
     low: Object.freeze({ area: 0.15, axis: 0.6 }),

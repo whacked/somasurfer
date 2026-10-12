@@ -86,6 +86,38 @@ function quantise(mesh, frame) {
   return { q, oct, indices, dequantised: back };
 }
 
+/**
+ * Drop the vertices no triangle uses, keeping the rest in order. `quantise`
+ * drops triangles that collapse and keeps their vertices, so a structure can
+ * carry vertices that are never drawn; every per-vertex measure then counts
+ * them (DOG-173 F1: 1,922 in 120 body structures, and the right cornea
+ * published a 55.43 mm error whose drawn surface is 0.76 mm off). The body
+ * compacts; the brain does not, and is built exactly as it was reviewed.
+ */
+function compact(r) {
+  const n = r.q.length / 3;
+  const used = new Uint8Array(n);
+  for (let i = 0; i < r.indices.length; i += 1) used[r.indices[i]] = 1;
+  const remap = new Int32Array(n).fill(-1);
+  let m = 0;
+  for (let v = 0; v < n; v += 1) if (used[v]) remap[v] = m++;
+  if (m === n) return r;
+  const q = new Int16Array(m * 3);
+  const oct = new Int8Array(m * 2);
+  const dequantised = new Float64Array(m * 3);
+  for (let v = 0; v < n; v += 1) {
+    const to = remap[v];
+    if (to < 0) continue;
+    for (let a = 0; a < 3; a += 1) {
+      q[to * 3 + a] = r.q[v * 3 + a];
+      dequantised[to * 3 + a] = r.dequantised[v * 3 + a];
+    }
+    oct[to * 2] = r.oct[v * 2];
+    oct[to * 2 + 1] = r.oct[v * 2 + 1];
+  }
+  return { q, oct, indices: Uint32Array.from(r.indices, (i) => remap[i]), dequantised };
+}
+
 export function dequantise(q, frame) {
   const out = new Float64Array(q.length);
   for (let i = 0; i < q.length; i += 1) out[i] = frame.origin[i % 3] + frame.step[i % 3] * q[i];
@@ -257,14 +289,17 @@ export async function buildTiers({ nodes, structures, floorTriangles, ratio, rep
  * `shapeMargin`, if given (`{ full: { area, axis }, low: { area, axis } }`),
  * raises each structure's target to the least that keeps its shape inside the
  * margin (`shapeKeepingTarget`): the full tier against the source, the low tier
- * against the full tier. The brain sets neither, and is built exactly as it
- * was reviewed.
+ * against the full tier. `compactVertices` drops vertices no triangle uses.
+ * The brain sets none of these, and is built exactly as it was reviewed.
  */
 export async function buildMeshTiers({
   meshes, floorTriangles, ratio, mmPerUnit, fullRatio = 1, fullFloorTriangles = 0, minComponentTriangles = null, shapeMargin = null,
+  compactVertices = false,
 }) {
   const M = await meshoptimizer();
   const mm2 = mmPerUnit * mmPerUnit;
+  // `compactVertices`: every vertex in a tier is drawn (see `compact`).
+  const quantiseTier = compactVertices ? (mesh, f) => compact(quantise(mesh, f)) : quantise;
   const decimate = minComponentTriangles === null
     ? decimateWhole
     : (m, mesh, target) => decimateByComponent(m, mesh, target, minComponentTriangles);
@@ -303,7 +338,7 @@ export async function buildMeshTiers({
     let fullTarget = Math.min(sourceTris, Math.max(fullFloorTriangles, Math.ceil(sourceTris * fullRatio)));
     if (decimateFull && shapeMargin) fullTarget = shapeKeepingTarget(M, decimate, sourceMesh, fullTarget, shapeMargin.full);
     const fullMesh = decimateFull ? reorder(M, decimate(M, sourceMesh, fullTarget)) : sourceMesh;
-    const fq = quantise(fullMesh, frame);
+    const fq = quantiseTier(fullMesh, frame);
     const fullTris = fq.indices.length / 3;
     // The floor is a guarantee, not a target: the simplifier may stop short of
     // the count it is given, and quantisation may drop a sliver, so ask again
@@ -314,7 +349,7 @@ export async function buildMeshTiers({
     if (shapeMargin) target = shapeKeepingTarget(M, decimate, fullMesh, target, shapeMargin.low);
     let lq;
     for (;;) {
-      lq = quantise(reorder(M, decimate(M, fullMesh, target)), frame);
+      lq = quantiseTier(reorder(M, decimate(M, fullMesh, target)), frame);
       if (lq.indices.length / 3 >= required || target >= fullMesh.indices.length / 3) break;
       target += Math.max(1, required - lq.indices.length / 3);
     }

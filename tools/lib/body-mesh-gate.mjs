@@ -27,6 +27,7 @@ import { checkStructures, checkTables } from './mesh-tier-checks.mjs';
 import { BODY_MESH_BUILD, bodyAssetPaths } from './body-asset-paths.mjs';
 import { BD_LEVELS, SOURCE } from './bp3d.mjs';
 import { axisPoint } from './bd-template.mjs';
+import { BODY_EXCLUSIONS } from './body-structures.mjs';
 
 /**
  * How far a level point re-derived from the shipped mesh may sit from the one
@@ -70,6 +71,12 @@ export function checkBodyMeshes({ writeReport = false } = {}) {
       problems.push(`body structures.json was built with ${k} = ${JSON.stringify(doc.build?.[k])}, not ${JSON.stringify(BODY_MESH_BUILD[k])}.`);
     }
   }
+  // The exclusions are part of what the body is. A rebuild that dropped the
+  // brain's would ship `excluded: []` and pass rule 10, whose provenance is this
+  // file (DOG-173, non-blocking note).
+  if (JSON.stringify(doc.build?.exclusions) !== JSON.stringify(BODY_EXCLUSIONS)) {
+    problems.push(`body structures.json was built with exclusions ${JSON.stringify(doc.build?.exclusions)}, not tools/lib/body-structures.mjs's BODY_EXCLUSIONS.`);
+  }
   if (doc.registration?.frame !== 'BD' || doc.registration?.transform !== 'identity') {
     problems.push('body structures.json does not declare itself registered to BD by the identity; the registration check below measures exactly that claim.');
   }
@@ -92,7 +99,7 @@ export function checkBodyMeshes({ writeReport = false } = {}) {
   if (problems.length > 0) return { problems };
 
   // --- Per structure: the brain's checks ----------------------------------------
-  const checked = checkStructures({ doc, low, full, floorTriangles: BODY_MESH_BUILD.floorTriangles, mmPerUnit: 1 });
+  const checked = checkStructures({ doc, low, full, floorTriangles: BODY_MESH_BUILD.floorTriangles, mmPerUnit: 1, requireReferenced: true });
   problems.push(...checked.problems);
   const rows = checked.rows;
 

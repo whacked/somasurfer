@@ -9,7 +9,12 @@
  *   present         in both files, at the slot structures.json says
  *   floor           at least min(floorTriangles, its full-tier count) triangles
  *   not degenerate  no zero-area or repeated-vertex triangle; every index in range
- *   not a sliver    on every axis, at least half its full-tier extent
+ *   not a sliver    on every axis, at least half its full-tier extent, both taken
+ *                   over the vertices a triangle uses: an undrawn vertex at an
+ *                   extreme would otherwise hide a collapse (DOG-173 F1)
+ *   all drawn       with `requireReferenced`, no vertex in either tier that no
+ *                   triangle uses (the body sets it; the brain carries 5 and
+ *                   does not)
  *   same surface    area within [0.75, 1.25] of the full tier
  *   error is real   Hausdorff and mean deviation re-measured, equal to what
  *                   structures.json publishes
@@ -44,12 +49,25 @@ export function checkTables({ doc, low, full }) {
   return problems;
 }
 
+/** Bounds over the vertices that `indices` actually uses, and how many it does not. */
+export function drawnBounds(positions, indices) {
+  const used = new Uint8Array(positions.length / 3);
+  for (let i = 0; i < indices.length; i += 1) if (indices[i] < used.length) used[indices[i]] = 1;
+  const p = [];
+  let unused = 0;
+  for (let v = 0; v < used.length; v += 1) {
+    if (used[v]) p.push(positions[v * 3], positions[v * 3 + 1], positions[v * 3 + 2]);
+    else unused += 1;
+  }
+  return { ...bounds(Float64Array.from(p)), unused };
+}
+
 /**
  * Every per-structure check, for every structure in `doc`. `mmPerUnit` is the
  * frame's millimetres per unit (1000 for the brain's metres, 1 for the body).
  * Returns `{ problems, rows }`; each row carries what the report publishes.
  */
-export function checkStructures({ doc, low, full, floorTriangles, mmPerUnit }) {
+export function checkStructures({ doc, low, full, floorTriangles, mmPerUnit, requireReferenced = false }) {
   const problems = [];
   const rows = [];
   const mm2 = mmPerUnit * mmPerUnit;
@@ -71,8 +89,13 @@ export function checkStructures({ doc, low, full, floorTriangles, mmPerUnit }) {
     if (lowTris < required) {
       problems.push(`${name}: ${lowTris} triangles in the low tier, under the floor of ${required}.`);
     }
-    const lb = bounds(lg.positions);
-    const fb = bounds(fg.positions);
+    const lb = drawnBounds(lg.positions, lg.indices);
+    const fb = drawnBounds(fg.positions, fg.indices);
+    if (requireReferenced) {
+      for (const [tier, b] of [['low', lb], ['full', fb]]) {
+        if (b.unused > 0) problems.push(`${name}: ${b.unused} vertex(es) in the ${tier} tier that no triangle uses; every measure here must be of the drawn surface.`);
+      }
+    }
     for (const [a, axis] of ['x', 'y', 'z'].entries()) {
       if (fb.extent[a] > 0 && lb.extent[a] < MIN_AXIS_SHARE * fb.extent[a]) {
         problems.push(`${name}: the low tier keeps ${(lb.extent[a] * mmPerUnit).toFixed(2)} mm of its ${(fb.extent[a] * mmPerUnit).toFixed(2)} mm ${axis} extent; it has collapsed toward a sliver.`);
