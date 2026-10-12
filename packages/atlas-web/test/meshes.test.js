@@ -15,10 +15,12 @@ import { describe, it } from 'node:test';
 
 import { readMeshBin as gateReader } from '../../../tools/lib/meshbin.mjs';
 import { ASSET_MESH_SETS } from '../catalogue/asset-meshes.mjs';
+import { encodeBrainVolume } from '../src/alc.js';
 import { readMeshBin } from '../src/viewer/atlm.js';
 import { decodeView, encodeView } from '../src/viewer/deeplink.js';
 import { BANDS, boundsOfStructures, meshSetFrom, pickStructure, searchStructures } from '../src/viewer/meshset.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, structureLayers } from '../src/viewer/state.js';
+import { validateBrainVolumeTemplate } from '../src/viewer/template.js';
 import { ASSETS, REPO_ROOT } from './real-assets.js';
 
 const json = (rel) => JSON.parse(readFileSync(join(ASSETS, rel), 'utf8'));
@@ -212,6 +214,35 @@ describe('picking', () => {
     });
     assert.notEqual(faded.structure.category, 'cortex', 'a cortex faded below half is clicked through');
     assert.ok(faded.t > everything.t);
+  });
+
+  it('encodes a brain pick unclamped everywhere but the vessels, nerves and dura', () => {
+    // A click goes through encodeBrainVolume, so a pick outside the BV box
+    // reads as `clamped` to the user. Only what runs below the box may.
+    const bv = validateBrainVolumeTemplate(brainTemplate);
+    const outside = new Set(['arteries', 'cranial_nerves', 'meninges_dura', 'veins_sinuses']);
+    const clamped = (mesh, s) => {
+      const P = mesh.positions;
+      const out = [];
+      for (let i = s.firstTriangle * 3; i < (s.firstTriangle + s.triangleCount) * 3; i += 1) {
+        const v = mesh.triangles[i] * 3;
+        const p = [P[v], P[v + 1], P[v + 2]];
+        if (encodeBrainVolume(bv, p, bv.maxUsefulDigits).flags.clamped) out.push(p);
+      }
+      return out;
+    };
+    let picks = 0;
+    for (const mesh of [decoded(ICBM), za]) {
+      for (const s of mesh.structures) {
+        if (mesh === za && outside.has(s.category)) continue;
+        assert.deepEqual(clamped(mesh, s).slice(0, 1), [], `${s.name} (${s.category})`);
+        picks += 1;
+      }
+    }
+    assert.ok(picks > 100, `${picks} structures checked`);
+    // The check can see a clamp: an artery runs below the box.
+    const arteries = za.structures.filter((s) => s.category === 'arteries');
+    assert.ok(arteries.some((s) => clamped(za, s).length > 0), 'no artery vertex is clamped');
   });
 
   it('finds structures by any word of their title', () => {
