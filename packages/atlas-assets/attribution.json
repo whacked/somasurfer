@@ -174,6 +174,39 @@
       "shareAlike": false,
       "licenceClass": "asset",
       "note": "Our own fit, not brainproject's. It records centroid coordinates as measurements: of Z-Anatomy surfaces in the committed brain mesh, and of the CIT168 atlas (Pauli et al. 2018, CC BY 4.0, credited in the file). No mesh or atlas geometry is in it."
+    },
+    {
+      "id": "icbm152-cortex-surface",
+      "title": "Cerebral cortex surface, ICBM152 2009c (low tier)",
+      "files": [
+        "brain/icbm152-2009c/cortex.lowres.bin",
+        "brain/icbm152-2009c/structures.json"
+      ],
+      "licence": "MNI-BIC-permissive",
+      "licenceUrl": "https://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009",
+      "holder": "Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University; adaptation by GStack",
+      "source": "Derived by tools/build-icbm-cortex.mjs from the ICBM 152 non-linear 2009c asymmetric distribution (GM, WM, CSF and brain-mask maps), mni_icbm152_nlin_asym_09c_nifti.zip, https://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip",
+      "shareAlike": false,
+      "licenceClass": "asset",
+      "sources": [
+        "icbm152-2009c"
+      ],
+      "attributionStatement": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.",
+      "note": "Image-derived geometry: a cerebral surface extracted from the template's tissue maps, natively in MNI152 2009c asymmetric space. Unlike the BV template, this entry DOES redistribute geometry derived from that archive, so the archive's COPYING is reproduced verbatim in structures.json, which travels with the mesh. Permissive, not share-alike and not non-commercial, so it carries no obligation onto anything that reads it. Approved for v2 on card 6a774981 (DOG-151)."
+    },
+    {
+      "id": "icbm152-cortex-lobes",
+      "title": "First-party lobe labels for the ICBM152 2009c cortex",
+      "files": [
+        "brain/icbm152-2009c/lobes.json"
+      ],
+      "licence": "Apache-2.0",
+      "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+      "holder": "GStack",
+      "source": "First-party. Drawn by tools/build-icbm-cortex.mjs from landmarks we placed on the ICBM152 surface (tools/lib/icbm-lobe-landmarks.mjs).",
+      "shareAlike": false,
+      "licenceClass": "asset",
+      "note": "Frontal, parietal, temporal, occipital, insula and limbic, per hemisphere, as a per-vertex label of the cortex mesh. No parcellation was used to draw them; the file says so (`licence.thirdPartyParcellationsUsed: []`) and records, per boundary, the landmark, how it was placed and its MNI coordinates. A separate file from the geometry so that it can be one label set among several on a future mni152-2009c brain model."
     }
   ],
   "upstreamSources": [
@@ -312,7 +345,9 @@
       "verdict": "cleared",
       "verifiedAt": "2026-10-09",
       "attributionStatement": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.",
-      "evidence": "The archive's own COPYING file (archive SHA-256 804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4), quoted in docs/asset-licensing.md section 2. Recorded here in DOG-126 so the BV template can cite it."
+      "evidence": "The archive's own COPYING file (archive SHA-256 804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4), quoted in docs/asset-licensing.md section 2. Recorded here in DOG-126 so the BV template can cite it.",
+      "kind": "volume",
+      "kindNote": "An image volume. Brain sets extracted from it carry no glb provenance manifest; licence rule 10 judges them from their own structures.json, and only because this record says so (DOG-151, DOG-165)."
     },
     {
       "id": "uberon",

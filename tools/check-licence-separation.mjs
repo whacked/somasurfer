@@ -61,6 +61,16 @@
  *      fails here instead of clearing what it labels. No offline check can see
  *      whether those recorded inputs, or the geometry, really are the glb's:
  *      this checks what a structure is labelled, not what it is.
+ *      A set extracted from a volume (the ICBM152 cortex, DOG-151) has no glb
+ *      manifest, and its own structures.json is the record. That path is not
+ *      the set's to choose: a file saying `source.kind: "volume"` only takes it
+ *      when the upstream it names is itself recorded in upstreamSources with
+ *      `kind: "volume"` (a reviewed edit to the cleared-source registry), it
+ *      names no glb commit (a set that does is judged by its manifest,
+ *      whatever it calls itself), and no generated manifest exists for its id. Every
+ *      structure's sources must then be exactly that one upstream, whose
+ *      verdict must ship. Without these, a glb-derived set could relabel itself
+ *      a volume and ship a held structure green (DOG-165 F1).
  *
  *      Body files (DOG-128) are checked the same way, against the body's own
  *      structures.json: every structure an ATLM body file contains must be
@@ -428,6 +438,8 @@ function bodyProvenance(structuresDoc) {
   }
   return provenance;
 }
+let volumeFileCount = 0;
+let volumeSlotCount = 0;
 
 /**
  * The brain structure ids a file contains, read from the file itself, and the
@@ -436,7 +448,7 @@ function bodyProvenance(structuresDoc) {
  * that sits beside every mesh file; a mesh with no such sibling is an error,
  * never a pass.
  */
-function brainStructuresIn(abs) {
+function brainStructuresIn(abs, upstream) {
   const bytes = readFileSync(abs);
   let ids;
   let structuresDoc;
@@ -466,6 +478,8 @@ function brainStructuresIn(abs) {
   }
 
   const commit = structuresDoc?.source?.commit;
+  // A set that names a glb commit is judged by its manifest, whatever `kind` says.
+  if (structuresDoc?.source?.kind === 'volume' && commit === undefined) return volumeProvenance(structuresDoc, ids, upstream);
   if (typeof commit !== 'string') return { error: 'names no source commit, so its provenance cannot be found.' };
   const manifestPath = join(REPO_ROOT, brainAssetPaths(commit).provenance);
   if (!existsSync(manifestPath)) return { error: `has no provenance manifest at ${rel(manifestPath)}.` };
@@ -478,6 +492,33 @@ function brainStructuresIn(abs) {
   const drift = verifyProvenance(manifest, JSON.parse(readFileSync(originPath, 'utf8')));
   if (drift.length > 0) return { error: `has a provenance manifest that does not re-derive:\n    ${drift.join('\n    ')}` };
   return { ids, provenance: new Map(manifest.structures.map((s) => [s.id, s])) };
+}
+/**
+ * Provenance for a volume-derived set, from its own structures.json, after the
+ * registry has vouched that its upstream is a volume. A structure is cleared
+ * when its sources are exactly that upstream and the upstream's verdict ships.
+ */
+function volumeProvenance(doc, ids, upstream) {
+  const upstreamId = doc.source?.upstream;
+  const rec = upstream.get(upstreamId);
+  if (!rec || rec.kind !== 'volume') {
+    return { error: `says it is a volume-derived set, but its upstream ${JSON.stringify(upstreamId)} is not recorded in upstreamSources with kind "volume". The registry, not the set, decides which sets skip the generated manifest.` };
+  }
+  const manifestPath = join(REPO_ROOT, 'packages', 'atlas-assets', 'provenance', `brain-${doc.id}.json`);
+  if (existsSync(manifestPath)) return { error: `says it is a volume-derived set, but a generated provenance manifest exists for it at ${rel(manifestPath)}; it is judged by that.` };
+  const listed = new Set(doc.structures.map((s) => s.id));
+  for (const id of ids) {
+    if (!listed.has(id)) return { error: `holds structure id ${id}, which its structures.json does not list.` };
+  }
+  const provenance = new Map();
+  for (const s of doc.structures) {
+    const sources = Array.isArray(s.sources) ? s.sources : [];
+    const heldBecause = [];
+    if (sources.length !== 1 || sources[0] !== upstreamId) heldBecause.push(`its sources are ${JSON.stringify(sources)}, not exactly the set's one upstream, ${upstreamId}`);
+    if (!VERDICTS_THAT_SHIP.includes(rec.verdict)) heldBecause.push(`its upstream ${upstreamId} has verdict ${JSON.stringify(rec.verdict)}`);
+    provenance.set(s.id, { name: s.name, sources, group: heldBecause.length === 0 ? GROUPS.cleared : 'uncleared-source', heldBecause });
+  }
+  return { ids, provenance, volume: true };
 }
 for (const a of assets) {
   if (!existsSync(join(a.dir, 'attribution.json'))) continue;
@@ -677,9 +718,10 @@ for (const a of assets) {
     for (const f of e.files ?? []) {
       const abs = join(a.dir, f);
       if (!existsSync(abs)) continue;
-      const contained = brainStructuresIn(abs);
+      const contained = brainStructuresIn(abs, sources);
       if (contained === null) continue;
       if (contained.kind === 'body') bodyFileCount += 1;
+      else if (contained.volume) volumeFileCount += 1;
       else brainFileCount += 1;
       if (contained.error) {
         problems.push(`${rel(abs)}: ${contained.error}`, `  A mesh file whose contents cannot be checked against provenance is not shipped on trust.`);
@@ -688,6 +730,7 @@ for (const a of assets) {
       const cited = new Set(Array.isArray(e.sources) ? e.sources : []);
       for (const id of contained.ids) {
         if (contained.kind === 'body') bodySlotCount += 1;
+        else if (contained.volume) volumeSlotCount += 1;
         else brainSlotCount += 1;
         const rec = contained.provenance.get(id);
         if (!rec) {
@@ -712,7 +755,8 @@ for (const a of assets) {
 }
 report.push(
   `rule 10: ${brainFileCount} brain file(s), ${brainSlotCount} structure slot(s), each checked against the generated provenance manifest;`
-    + ` ${bodyFileCount} body file(s), ${bodySlotCount} structure slot(s), each checked against the body's structures.json.`,
+    + ` ${bodyFileCount} body file(s), ${bodySlotCount} structure slot(s), each checked against the body's structures.json;`
+    + ` ${volumeFileCount} volume-derived file(s), ${volumeSlotCount} slot(s), each checked against its set's record and a volume source in the registry.`,
 );
 report.push(
   `${ncEntryCount} asset-nc entr${ncEntryCount === 1 ? 'y' : 'ies'}, none reachable in a default build;` +
