@@ -326,6 +326,8 @@ function vertexTriangles(indices, n) {
  * nothing, and a vertex reached by walks for both lobes is dropped.
  */
 export const SIDE_MIN_WALK_MM = 3;
+/** Path vertices at each end of a segment that never start a walk: the ends are junctions. */
+export const SIDE_END_SKIP = 4;
 /**
  * A boundary is a band, not a line. A sulcal boundary covers the sulcus from its
  * fundus to its lips: every vertex within (depth at the nearest path vertex +
@@ -369,7 +371,7 @@ function band(P, pathVertices, radiusOf) {
   }
   return out;
 }
-function sideSeedsOf(path, { P, adj, barrier, onPath, bandRadius }, hint) {
+function sideSeedsOf(path, { P, adj, barrier, onPath, bandRadius, owner, self, cap }, hint) {
   const hn = Math.hypot(...hint) || 1;
   const h = hint.map((x) => x / hn);
   const ends = new Map();
@@ -386,7 +388,9 @@ function sideSeedsOf(path, { P, adj, barrier, onPath, bandRadius }, hint) {
       let gain = 1e-6;
       for (let e = adj.start[u]; e < adj.start[u + 1]; e += 1) {
         const v = adj.nbr[e];
-        if (onPath[v]) continue;
+        // Nor over the medial cap: where the two hemispheres touch, it can
+        // bridge the opening of a medial sulcus far above its fundus.
+        if (onPath[v] || cap[v]) continue;
         const g = (P[v * 3] - P[u * 3]) * dir[0] + (P[v * 3 + 1] - P[u * 3 + 1]) * dir[1] + (P[v * 3 + 2] - P[u * 3 + 2]) * dir[2];
         if (g > gain) { gain = g; best = v; }
       }
@@ -400,7 +404,19 @@ function sideSeedsOf(path, { P, adj, barrier, onPath, bandRadius }, hint) {
     }
     return !barrier[u] && outside >= SIDE_MIN_WALK_MM ? u : -1;
   };
-  for (const start of path) {
+  // A walk never starts at a junction: from a vertex another boundary shares
+  // or touches, a step can land on either side of that other boundary.
+  const nearOther = (u) => {
+    if (owner[u] !== self) return true;
+    for (let e = adj.start[u]; e < adj.start[u + 1]; e += 1) {
+      const v = adj.nbr[e];
+      if (onPath[v] && owner[v] !== self) return true;
+    }
+    return false;
+  };
+  for (let k = SIDE_END_SKIP; k < path.length - SIDE_END_SKIP; k += 1) {
+    const start = path[k];
+    if (nearOther(start)) { ambiguous += 1; continue; }
     const a = walk(start, h);
     const c = walk(start, h.map((x) => -x));
     if (a < 0 && c < 0) { ambiguous += 1; continue; }
@@ -449,6 +465,8 @@ export function labelHemisphere(gate, surface, landmarks) {
   const problems = [];
   const sideSeeds = [];
   const onPath = new Uint8Array(n);
+  // Which boundary a path vertex belongs to; -1 where two share it.
+  const owner = new Int32Array(n).fill(-1);
 
   for (const b of landmarks.boundaries) {
     const snapped = b.points.map((pt) => {
@@ -471,7 +489,7 @@ export function labelHemisphere(gate, surface, landmarks) {
       vertices.push(...(s === 0 ? path : path.slice(1)));
       segmentPaths.push({ s, path });
     }
-    for (const v of vertices) { barrier[v] = 1; onPath[v] = 1; }
+    for (const v of vertices) { barrier[v] = 1; if (onPath[v] && owner[v] !== boundaries.length) owner[v] = -1; else owner[v] = boundaries.length; onPath[v] = 1; }
     let depthSum = 0;
     for (const v of vertices) depthSum += surface.depth[v];
     boundaries.push({
@@ -519,7 +537,7 @@ export function labelHemisphere(gate, surface, landmarks) {
       if (lobes.length !== 2) fail(gate, [`${landmarks.side} ${b.key}: segment ${s} must name exactly two lobes in \`sides\`.`]);
       const [a, c] = lobes;
       const hint = spec[a].map((x, k) => x - spec[c][k]);
-      const { seeds: sides, ambiguous } = sideSeedsOf(path, { P, adj, barrier, onPath, bandRadius }, hint);
+      const { seeds: sides, ambiguous } = sideSeedsOf(path, { P, adj, barrier, onPath, bandRadius, owner, self: boundaries.indexOf(b), cap: surface.cut }, hint);
       for (const [w, isA] of sides) sideSeeds.push([w, LOBE_ID.get(isA ? a : c), b.key]);
       b.sideSeeds = (b.sideSeeds ?? 0) + sides.length;
       b.unseededVertices = (b.unseededVertices ?? 0) + ambiguous;

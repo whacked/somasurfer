@@ -192,7 +192,7 @@ const LEFT = {
       key: 'cingulateSulcus',
       landmark: 'cingulate sulcus',
       separates: ['limbic', 'frontal', 'parietal'],
-      sides: [{ frontal: [0, 0, 1], limbic: [0, 0, -1] }, { frontal: [0, 0, 1], limbic: [0, 0, -1] }, { frontal: [0, 1, 1], limbic: [0, -1, -1] }, { frontal: [0, 1, 0], limbic: [0, -1, 0] }, { frontal: [0, 1, 0], limbic: [0, -1, 0] }],
+      sides: [{ frontal: [0, 0, 1], limbic: [0, 0, -1] }, { frontal: [0, 0, 1], limbic: [0, 0, -1] }, { frontal: [0, 1, 1], limbic: [0, -1, -1] }, { frontal: [0, 1, 0], limbic: [0, -1, 0] }, { frontal: [0, 0, -1], limbic: [0, 0, 1] }],
       kind: 'sulcus',
       placement: 'fundus from the marginal ramus forward over the corpus callosum and round the genu to the subcallosal area, then to the medial wall',
       points: [
@@ -300,4 +300,79 @@ const LEFT = {
   ],
 };
 
-export const LANDMARKS = Object.freeze({ left: LEFT });
+/**
+ * The right hemisphere starts from the left placement mirrored (x -> -x), and
+ * every point is snapped on the right surface itself, so a sulcal point lands
+ * on the right hemisphere's own fundus within 5 mm. Where the asymmetric
+ * template put a right landmark further than that, or the result was checked
+ * and found wrong, the point is replaced in RIGHT_ADJUSTED, keyed by boundary
+ * and point index, and lobes.json says which points were adjusted.
+ */
+const SYLVIAN_END_RIGHT = { mni: [55, -33, 29], why: 'the right fissure is shorter; its posterior end is the most posterior vertex of the right fissure basin' };
+const RIGHT_ADJUSTED = {
+  'lateralFissureLip:5': { mni: [66, -31, 20], why: 'the right fissure ends at y -33, so the last opening point moves forward' },
+  'lateralFissureLip:6': SYLVIAN_END_RIGHT,
+  'lateralFissurePosterior:1': SYLVIAN_END_RIGHT,
+  'lateralFissureToOccipital:0': SYLVIAN_END_RIGHT,
+};
+const mirror = (p) => [-p[0], p[1], p[2]];
+/** Boundaries only the right needs. */
+const RIGHT_EXTRA = [
+  {
+    key: 'parietoOccipitalMedialSurface',
+    landmark: 'parieto-occipital sulcus, its course on the medial surface',
+    separates: ['occipital', 'parietal', 'limbic'],
+    sides: [
+      { parietal: [0, 1, 0], occipital: [0, -1, 0] },
+      { parietal: [0, 1, 0], occipital: [0, -1, 0] },
+      { limbic: [0, 1, 0], occipital: [0, -1, 0] },
+      { limbic: [0, 1, 0], occipital: [0, -1, 0] },
+    ],
+    kind: 'line',
+    bandMm: 5,
+    placement: 'on the right the parieto-occipital sulcus does not open onto the medial surface of the template: the surface passes over it, 15 to 20 mm from its fundus, and the fundus trace alone leaves that surface open. Its course there is a line on the medial surface over the fundus control points, each found as the most medial surface vertex at the fundus point\'s (y, z)',
+    points: [
+      P([2, -74, 51], 'surface', 'medial surface over the sulcus at the dorsal margin'),
+      P([3, -76, 35], 'surface', 'over the upper basin'),
+      P([0, -65, 25], 'surface', 'over the deepest vertex'),
+      P([1, -59, 15], 'surface', 'over the lower course'),
+      P([3, -59, 6], 'surface', 'over the calcarine junction'),
+    ],
+  },
+];
+/** Whole boundaries placed afresh on the right, where the mirrored course was wrong. */
+const RIGHT_REPLACED = {
+  subparietalSulcus: {
+    why: 'mirrored, the path climbed onto the right parieto-occipital sulcus and ran down beside it; a point between the two keeps it on the subparietal course',
+    points: [
+      P([14, -31, 41], 'sulcus', 'cingulate sulcus at the marginal ramus'),
+      P([11, -53, 41], 'sulcus', 'subparietal basin'),
+      P([13, -60, 33], 'surface', 'between the subparietal and parieto-occipital sulci'),
+      P([18, -68, 28], 'sulcus', 'parieto-occipital sulcus'),
+    ],
+    kind: 'line',
+  },
+};
+const RIGHT = {
+  side: 'right',
+  seeds: LEFT.seeds.map((s) => ({ ...s, mni: RIGHT_ADJUSTED[`seed:${s.lobe}`] ?? mirror(s.mni) })),
+  boundaries: LEFT.boundaries.map((b) => (RIGHT_REPLACED[b.key] ? {
+    ...b,
+    kind: RIGHT_REPLACED[b.key].kind ?? b.kind,
+    sides: mirrorSides(b.sides),
+    placement: `${b.placement}. On the right: ${RIGHT_REPLACED[b.key].why}`,
+    points: RIGHT_REPLACED[b.key].points,
+  } : {
+    ...b,
+    sides: Array.isArray(b.sides) ? b.sides.map((sd) => mirrorSides(sd)) : mirrorSides(b.sides),
+    points: b.points.map((pt, k) => {
+      const adjusted = RIGHT_ADJUSTED[`${b.key}:${k}`];
+      return adjusted ? { ...pt, mni: adjusted.mni, role: `${pt.role} (adjusted on the right: ${adjusted.why})` } : { ...pt, mni: mirror(pt.mni), role: `${pt.role} (mirrored from the left placement)` };
+    }),
+  })).concat(RIGHT_EXTRA),
+};
+function mirrorSides(sides) {
+  return Object.fromEntries(Object.entries(sides).map(([lobe, d]) => [lobe, mirror(d)]));
+}
+
+export const LANDMARKS = Object.freeze({ left: LEFT, right: RIGHT });
