@@ -20,9 +20,9 @@
  *   node packages/atlas-qa/browser/deeplinks-dom.mjs [--out qa-evidence]
  */
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ROOT, launch, openPage, row, serve } from './lib.mjs';
+import { ROOT, assertServesOwnDist, launch, openPage, row, serve } from './lib.mjs';
 import { DEEP_LINK_MATRIX, QA_URL_PARAMS } from '../src/matrix.ts';
 import { realAssets, realTemplates } from '../../atlas-web/test/real-assets.js';
 import { decodeView } from '../../atlas-web/src/viewer/deeplink.js';
@@ -56,10 +56,7 @@ function expected(url) {
 
 // QA_PORT: a fixed port has served another worktree's build (DOG-133 runs pick a free one).
 const server = await serve(Number(process.env.QA_PORT ?? 8937));
-const own = await fetch(`${server.base}/index.html`).then((r) => r.text()).catch(() => null);
-if (own !== readFileSync(join(ROOT, 'packages', 'atlas-web', 'dist', 'index.html'), 'utf8')) {
-  throw new Error(`${server.base} is not serving this worktree's dist/ (port taken by another build?)`);
-}
+await assertServesOwnDist(server.base);
 const browser = await launch();
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 

@@ -410,7 +410,11 @@ if (want('paper-regions') || want('region-papers')) {
         if (!s) {
           const drawnUnlinked = linked.find((x) => x.regionKey === r.key);
           if (drawnUnlinked) problems.push(`${pid} lists ${r.key}, which the page draws as ${drawnUnlinked.key}, but the region index has no document for it`);
-          continue; // otherwise a region this build does not draw: nothing to round-trip through
+          // "This build does not draw it" is the paper→regions answer's to make,
+          // not the page's: a region that names structures and has no drawn
+          // structure carrying its key is a broken link, not an absence.
+          else if ((r.structures ?? []).length) problems.push(`${pid} lists ${r.key} as drawn by ${JSON.stringify(r.structures)}, but no structure the page draws carries region key ${r.key}`);
+          continue;
         }
         if (!s.papers.includes(pid)) problems.push(`${pid} lists ${r.key}, but its region→papers does not list ${pid}`);
       }

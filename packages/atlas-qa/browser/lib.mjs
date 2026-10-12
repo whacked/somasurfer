@@ -8,6 +8,7 @@
  */
 
 import { spawn } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,14 +18,38 @@ const WEB = join(ROOT, 'packages', 'atlas-web');
 
 const { chromium } = await import('/paperclip/qa-browser/node_modules/playwright/index.mjs');
 
+/**
+ * Start `serve.mjs` on `port`, or throw. A child that exits before it prints
+ * (EADDRINUSE) means whatever answers on that port is someone else's build, so
+ * carrying on would test it.
+ */
 export async function serve(port) {
   const srv = spawn('node', [join(WEB, 'serve.mjs'), '--port', String(port), '--dir', 'dist'], { stdio: 'pipe' });
+  let stderr = '';
+  srv.stderr.on('data', (d) => { stderr += d; });
   await new Promise((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error('dist server did not start')), 5000);
+    const t = setTimeout(() => reject(new Error(`dist server did not start on port ${port} within 5 s`)), 5000);
     srv.stdout.on('data', () => { clearTimeout(t); resolve(); });
-    srv.on('exit', (code) => reject(new Error(`dist server exited ${code}`)));
-  }).catch(async () => { await new Promise((r) => setTimeout(r, 800)); });
+    srv.on('exit', (code) => { clearTimeout(t); reject(new Error(`dist server exited ${code} before it was serving on port ${port}: ${stderr.split('\n').find((l) => /Error/.test(l))?.trim() ?? stderr.trim()}`)); });
+  }).catch((e) => { srv.kill(); throw e; });
   return { base: `http://127.0.0.1:${port}`, close: () => srv.kill() };
+}
+
+/**
+ * Throw unless `base` serves this worktree's dist/ byte for byte. `index.html`
+ * alone cannot tell builds apart (its asset paths are unhashed), so this
+ * compares the files that change with the code and the data.
+ */
+export async function assertServesOwnDist(base) {
+  const dist = join(WEB, 'dist');
+  const optional = ['data/atlas-index.json', 'data/research.json', 'build-manifest.json'];
+  for (const f of ['index.html', 'app/app.js', ...optional.filter((o) => existsSync(join(dist, o)))]) {
+    const local = readFileSync(join(dist, f));
+    const served = await fetch(`${base}/${f}`).then((r) => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
+    if (!served || !local.equals(Buffer.from(served))) {
+      throw new Error(`${base} is not serving this worktree's dist/: /${f} differs (port taken by another build?)`);
+    }
+  }
 }
 
 export async function launch() {

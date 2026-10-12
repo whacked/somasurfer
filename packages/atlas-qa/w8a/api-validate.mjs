@@ -8,8 +8,9 @@
  *
  *   node packages/atlas-qa/w8a/api-validate.mjs [--dist packages/atlas-web/dist]
  *
- * Prints one JSON line and exits 1 on any invalid document, or if it found
- * none to validate (an empty tree is not a pass).
+ * Prints one JSON line and exits 1 on any invalid document, if either root has
+ * none to validate, or if any document kind is absent (an empty tree is not a
+ * pass, and neither is half of one).
  */
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
@@ -39,6 +40,16 @@ for (const [tree, root] of Object.entries(API_ROOTS)) {
 }
 const total = Object.values(out.roots).reduce((n, r) => n + r.files, 0);
 out.total = total;
-out.verdict = total > 0 && out.invalid.length === 0 ? 'pass' : 'fail';
+// The floor is per root and per kind: one full root must not carry an empty
+// other, and a tree with every `region` document gone is not a whole API.
+out.missing = [];
+for (const [tree, r] of Object.entries(out.roots)) {
+  if (r.files === 0) out.missing.push(`${tree} (${r.root}): no documents`);
+}
+const seenKinds = Object.assign({}, ...Object.values(out.roots).map((r) => r.kinds));
+for (const k of ['index', 'paper', 'region-index', 'region', 'paper-regions']) {
+  if (!seenKinds[k]) out.missing.push(`kind ${k}: no documents`);
+}
+out.verdict = out.missing.length === 0 && out.invalid.length === 0 ? 'pass' : 'fail';
 console.log(JSON.stringify(out));
 process.exit(out.verdict === 'pass' ? 0 : 1);
