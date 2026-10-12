@@ -69,6 +69,7 @@
   "ratio": 0.125,
   "floorTriangles": 16,
   "minComponentTriangles": 8,
+  "compactVertices": true,
   "shapeMargin": {
    "full": {
     "area": 0.05,
@@ -227,16 +228,16 @@
  "tiers": {
   "low": {
    "file": "body/bp3d-4066585/meshes.lowres.bin",
-   "bytes": 1771152,
-   "gzipBytes": 1171654,
-   "sha256": "84bd4aa10388fb9b6a18fc2e290030b5817793b9595ce30034fb449fe59b4985",
+   "bytes": 1755776,
+   "gzipBytes": 1167525,
+   "sha256": "27123c1e29ae5e3e41e6170345b5401c85c033f04969a66cac6358a055fc4e67",
    "loading": "eager"
   },
   "full": {
    "file": "body/bp3d-4066585/meshes.fullres.bin",
-   "bytes": 9025156,
-   "gzipBytes": 6525597,
-   "sha256": "2445446400a0629deb7702261f5540e33b46f324099aad78bd3f929e21a34ca0",
+   "bytes": 9009780,
+   "gzipBytes": 6518932,
+   "sha256": "0e8d8118aab669beb3495d09041e20fdc500099738349cd9d59f8e5fcc8e6796",
    "loading": "lazy"
   }
  },
@@ -6343,17 +6344,17 @@
    "sourceTriangles": 2376,
    "full": {
     "triangles": 588,
-    "vertices": 317,
+    "vertices": 314,
     "areaMm2": 2885.2
    },
    "low": {
     "triangles": 184,
-    "vertices": 115,
+    "vertices": 112,
     "areaMm2": 2454.9
    },
    "errorMm": {
-    "hausdorff": 13.871,
-    "mean": 0.429
+    "hausdorff": 9.663,
+    "mean": 0.307
    },
    "fullVsSourceMm": {
     "hausdorff": 4.322,
@@ -6697,17 +6698,17 @@
    "sourceTriangles": 197856,
    "full": {
     "triangles": 20646,
-    "vertices": 11005,
+    "vertices": 10969,
     "areaMm2": 201857
    },
    "low": {
     "triangles": 3478,
-    "vertices": 2456,
+    "vertices": 2420,
     "areaMm2": 189682.3
    },
    "errorMm": {
     "hausdorff": 7.261,
-    "mean": 0.398
+    "mean": 0.397
    },
    "fullVsSourceMm": {
     "hausdorff": 3.494,
@@ -6779,12 +6780,12 @@
    "sourceTriangles": 174436,
    "full": {
     "triangles": 17668,
-    "vertices": 9028,
+    "vertices": 9019,
     "areaMm2": 157607
    },
    "low": {
     "triangles": 2450,
-    "vertices": 1454,
+    "vertices": 1445,
     "areaMm2": 146918.6
    },
    "errorMm": {
@@ -8169,17 +8170,17 @@
    "sourceTriangles": 68522,
    "full": {
     "triangles": 6870,
-    "vertices": 3445,
+    "vertices": 3440,
     "areaMm2": 216939.7
    },
    "low": {
     "triangles": 878,
-    "vertices": 450,
+    "vertices": 445,
     "areaMm2": 215771.3
    },
    "errorMm": {
     "hausdorff": 2.436,
-    "mean": 0.586
+    "mean": 0.587
    },
    "fullVsSourceMm": {
     "hausdorff": 0.404,
@@ -8407,12 +8408,12 @@
    "sourceTriangles": 111826,
    "full": {
     "triangles": 11342,
-    "vertices": 5769,
+    "vertices": 5751,
     "areaMm2": 151409.2
    },
    "low": {
     "triangles": 1580,
-    "vertices": 887,
+    "vertices": 869,
     "areaMm2": 148679.4
    },
    "errorMm": {
@@ -8441,17 +8442,17 @@
    "sourceTriangles": 111826,
    "full": {
     "triangles": 11340,
-    "vertices": 5769,
+    "vertices": 5748,
     "areaMm2": 151330.4
    },
    "low": {
     "triangles": 1578,
-    "vertices": 887,
+    "vertices": 866,
     "areaMm2": 148821.3
    },
    "errorMm": {
     "hausdorff": 7.868,
-    "mean": 0.337
+    "mean": 0.336
    },
    "fullVsSourceMm": {
     "hausdorff": 0.662,
@@ -8679,17 +8680,17 @@
    "sourceTriangles": 1450,
    "full": {
     "triangles": 282,
-    "vertices": 166,
+    "vertices": 161,
     "areaMm2": 1171.2
    },
    "low": {
     "triangles": 64,
-    "vertices": 57,
+    "vertices": 52,
     "areaMm2": 1131.8
    },
    "errorMm": {
     "hausdorff": 1.754,
-    "mean": 0.248
+    "mean": 0.252
    },
    "fullVsSourceMm": {
     "hausdorff": 0.334,
@@ -9461,17 +9462,17 @@
    "sourceTriangles": 10344,
    "full": {
     "triangles": 1042,
-    "vertices": 535,
+    "vertices": 529,
     "areaMm2": 14762.5
    },
    "low": {
     "triangles": 140,
-    "vertices": 84,
+    "vertices": 78,
     "areaMm2": 14612.5
    },
    "errorMm": {
     "hausdorff": 3.931,
-    "mean": 0.412
+    "mean": 0.408
    },
    "fullVsSourceMm": {
     "hausdorff": 0.629,
@@ -10857,21 +10858,21 @@
    "sourceTriangles": 38274,
    "full": {
     "triangles": 4676,
-    "vertices": 3131,
+    "vertices": 2802,
     "areaMm2": 103072.2
    },
    "low": {
     "triangles": 1534,
-    "vertices": 1679,
+    "vertices": 1350,
     "areaMm2": 97023.6
    },
    "errorMm": {
     "hausdorff": 12.083,
-    "mean": 0.35
+    "mean": 0.358
    },
    "fullVsSourceMm": {
     "hausdorff": 1.012,
-    "mean": 0.109,
+    "mean": 0.11,
     "sourceAreaMm2": 103442.2
    }
   },
@@ -10891,21 +10892,21 @@
    "sourceTriangles": 1484,
    "full": {
     "triangles": 262,
-    "vertices": 144,
+    "vertices": 142,
     "areaMm2": 82633.5
    },
    "low": {
     "triangles": 178,
-    "vertices": 102,
+    "vertices": 100,
     "areaMm2": 70518.1
    },
    "errorMm": {
     "hausdorff": 22.282,
-    "mean": 0.817
+    "mean": 0.83
    },
    "fullVsSourceMm": {
     "hausdorff": 3.962,
-    "mean": 0.538,
+    "mean": 0.539,
     "sourceAreaMm2": 83685
    }
   },
@@ -12671,21 +12672,21 @@
    "sourceTriangles": 13342,
    "full": {
     "triangles": 1684,
-    "vertices": 1277,
+    "vertices": 1176,
     "areaMm2": 10229.8
    },
    "low": {
     "triangles": 588,
-    "vertices": 729,
+    "vertices": 628,
     "areaMm2": 8711.1
    },
    "errorMm": {
     "hausdorff": 2.294,
-    "mean": 0.253
+    "mean": 0.241
    },
    "fullVsSourceMm": {
     "hausdorff": 0.551,
-    "mean": 0.067,
+    "mean": 0.068,
     "sourceAreaMm2": 10298.2
    }
   },
@@ -12705,17 +12706,17 @@
    "sourceTriangles": 15922,
    "full": {
     "triangles": 1734,
-    "vertices": 949,
+    "vertices": 938,
     "areaMm2": 11671.7
    },
    "low": {
     "triangles": 362,
-    "vertices": 263,
+    "vertices": 252,
     "areaMm2": 9934.1
    },
    "errorMm": {
     "hausdorff": 2.705,
-    "mean": 0.462
+    "mean": 0.466
    },
    "fullVsSourceMm": {
     "hausdorff": 0.598,
@@ -12739,17 +12740,17 @@
    "sourceTriangles": 15244,
    "full": {
     "triangles": 1756,
-    "vertices": 1135,
+    "vertices": 1102,
     "areaMm2": 10951.1
    },
    "low": {
     "triangles": 468,
-    "vertices": 491,
+    "vertices": 458,
     "areaMm2": 9402.4
    },
    "errorMm": {
     "hausdorff": 2.187,
-    "mean": 0.324
+    "mean": 0.315
    },
    "fullVsSourceMm": {
     "hausdorff": 0.575,
@@ -13836,17 +13837,17 @@
    "sourceTriangles": 17942,
    "full": {
     "triangles": 1881,
-    "vertices": 981,
+    "vertices": 979,
     "areaMm2": 25413.9
    },
    "low": {
     "triangles": 339,
-    "vertices": 212,
+    "vertices": 210,
     "areaMm2": 24853.2
    },
    "errorMm": {
     "hausdorff": 2.537,
-    "mean": 0.348
+    "mean": 0.349
    },
    "fullVsSourceMm": {
     "hausdorff": 0.623,
@@ -13870,12 +13871,12 @@
    "sourceTriangles": 11442,
    "full": {
     "triangles": 1144,
-    "vertices": 579,
+    "vertices": 576,
     "areaMm2": 15728.7
    },
    "low": {
     "triangles": 144,
-    "vertices": 79,
+    "vertices": 76,
     "areaMm2": 15691.1
    },
    "errorMm": {
@@ -14810,21 +14811,21 @@
    "sourceTriangles": 1374,
    "full": {
     "triangles": 262,
-    "vertices": 142,
+    "vertices": 140,
     "areaMm2": 3069.4
    },
    "low": {
     "triangles": 54,
-    "vertices": 40,
+    "vertices": 38,
     "areaMm2": 2612.6
    },
    "errorMm": {
     "hausdorff": 3.232,
-    "mean": 0.772
+    "mean": 0.79
    },
    "fullVsSourceMm": {
     "hausdorff": 0.74,
-    "mean": 0.186,
+    "mean": 0.187,
     "sourceAreaMm2": 3140.8
    }
   },
@@ -16769,21 +16770,21 @@
    "sourceTriangles": 784,
    "full": {
     "triangles": 274,
-    "vertices": 170,
+    "vertices": 167,
     "areaMm2": 6734.9
    },
    "low": {
     "triangles": 64,
-    "vertices": 65,
+    "vertices": 62,
     "areaMm2": 6083.2
    },
    "errorMm": {
     "hausdorff": 7.151,
-    "mean": 0.726
+    "mean": 0.723
    },
    "fullVsSourceMm": {
     "hausdorff": 0.983,
-    "mean": 0.098,
+    "mean": 0.099,
     "sourceAreaMm2": 6762.9
    }
   },
@@ -16803,21 +16804,21 @@
    "sourceTriangles": 784,
    "full": {
     "triangles": 272,
-    "vertices": 170,
+    "vertices": 164,
     "areaMm2": 6730
    },
    "low": {
     "triangles": 62,
-    "vertices": 65,
+    "vertices": 59,
     "areaMm2": 6023.6
    },
    "errorMm": {
     "hausdorff": 7.331,
-    "mean": 0.773
+    "mean": 0.784
    },
    "fullVsSourceMm": {
     "hausdorff": 0.982,
-    "mean": 0.101,
+    "mean": 0.102,
     "sourceAreaMm2": 6762.9
    }
   },
@@ -16837,17 +16838,17 @@
    "sourceTriangles": 2376,
    "full": {
     "triangles": 282,
-    "vertices": 161,
+    "vertices": 160,
     "areaMm2": 54741.6
    },
    "low": {
     "triangles": 62,
-    "vertices": 51,
+    "vertices": 50,
     "areaMm2": 50858.9
    },
    "errorMm": {
     "hausdorff": 24.445,
-    "mean": 2.548
+    "mean": 2.572
    },
    "fullVsSourceMm": {
     "hausdorff": 2.58,
@@ -16871,21 +16872,21 @@
    "sourceTriangles": 2376,
    "full": {
     "triangles": 278,
-    "vertices": 161,
+    "vertices": 155,
     "areaMm2": 54616.5
    },
    "low": {
     "triangles": 56,
-    "vertices": 50,
+    "vertices": 44,
     "areaMm2": 49221.7
    },
    "errorMm": {
     "hausdorff": 28.522,
-    "mean": 2.979
+    "mean": 3.036
    },
    "fullVsSourceMm": {
     "hausdorff": 2.503,
-    "mean": 0.497,
+    "mean": 0.499,
     "sourceAreaMm2": 55326.7
    }
   },
@@ -17041,17 +17042,17 @@
    "sourceTriangles": 402,
    "full": {
     "triangles": 264,
-    "vertices": 170,
+    "vertices": 164,
     "areaMm2": 2481.1
    },
    "low": {
     "triangles": 68,
-    "vertices": 72,
+    "vertices": 66,
     "areaMm2": 2213.8
    },
    "errorMm": {
     "hausdorff": 1.734,
-    "mean": 0.294
+    "mean": 0.289
    },
    "fullVsSourceMm": {
     "hausdorff": 0.61,
@@ -17075,17 +17076,17 @@
    "sourceTriangles": 402,
    "full": {
     "triangles": 264,
-    "vertices": 170,
+    "vertices": 164,
     "areaMm2": 2480.1
    },
    "low": {
     "triangles": 68,
-    "vertices": 72,
+    "vertices": 66,
     "areaMm2": 2166.5
    },
    "errorMm": {
     "hausdorff": 2.517,
-    "mean": 0.308
+    "mean": 0.304
    },
    "fullVsSourceMm": {
     "hausdorff": 0.609,
@@ -17279,21 +17280,21 @@
    "sourceTriangles": 1092,
    "full": {
     "triangles": 266,
-    "vertices": 144,
+    "vertices": 141,
     "areaMm2": 8644.3
    },
    "low": {
     "triangles": 46,
-    "vertices": 34,
+    "vertices": 31,
     "areaMm2": 8454.4
    },
    "errorMm": {
     "hausdorff": 3.556,
-    "mean": 0.73
+    "mean": 0.718
    },
    "fullVsSourceMm": {
     "hausdorff": 1.014,
-    "mean": 0.122,
+    "mean": 0.123,
     "sourceAreaMm2": 8688.4
    }
   },
@@ -17993,17 +17994,17 @@
    "sourceTriangles": 2510,
    "full": {
     "triangles": 372,
-    "vertices": 241,
+    "vertices": 236,
     "areaMm2": 24583.8
    },
    "low": {
     "triangles": 164,
-    "vertices": 137,
+    "vertices": 132,
     "areaMm2": 21033.3
    },
    "errorMm": {
     "hausdorff": 7.43,
-    "mean": 0.73
+    "mean": 0.74
    },
    "fullVsSourceMm": {
     "hausdorff": 1.342,
@@ -18027,17 +18028,17 @@
    "sourceTriangles": 2510,
    "full": {
     "triangles": 370,
-    "vertices": 241,
+    "vertices": 235,
     "areaMm2": 24655.7
    },
    "low": {
     "triangles": 160,
-    "vertices": 136,
+    "vertices": 130,
     "areaMm2": 21886.2
    },
    "errorMm": {
     "hausdorff": 5.799,
-    "mean": 0.703
+    "mean": 0.712
    },
    "fullVsSourceMm": {
     "hausdorff": 1.443,
@@ -18061,17 +18062,17 @@
    "sourceTriangles": 1668,
    "full": {
     "triangles": 258,
-    "vertices": 136,
+    "vertices": 133,
     "areaMm2": 6156.9
    },
    "low": {
     "triangles": 34,
-    "vertices": 24,
+    "vertices": 21,
     "areaMm2": 5417.7
    },
    "errorMm": {
     "hausdorff": 11.178,
-    "mean": 0.976
+    "mean": 0.973
    },
    "fullVsSourceMm": {
     "hausdorff": 0.837,
@@ -18129,21 +18130,21 @@
    "sourceTriangles": 4546,
    "full": {
     "triangles": 511,
-    "vertices": 310,
+    "vertices": 291,
     "areaMm2": 18681.4
    },
    "low": {
     "triangles": 187,
-    "vertices": 152,
+    "vertices": 133,
     "areaMm2": 16127.3
    },
    "errorMm": {
     "hausdorff": 8.075,
-    "mean": 0.553
+    "mean": 0.538
    },
    "fullVsSourceMm": {
     "hausdorff": 1.39,
-    "mean": 0.212,
+    "mean": 0.214,
     "sourceAreaMm2": 18997.5
    }
   },
@@ -18163,21 +18164,21 @@
    "sourceTriangles": 4546,
    "full": {
     "triangles": 511,
-    "vertices": 309,
+    "vertices": 291,
     "areaMm2": 18669.6
    },
    "low": {
     "triangles": 181,
-    "vertices": 148,
+    "vertices": 130,
     "areaMm2": 15894.3
    },
    "errorMm": {
     "hausdorff": 17.419,
-    "mean": 0.918
+    "mean": 0.932
    },
    "fullVsSourceMm": {
     "hausdorff": 1.389,
-    "mean": 0.219,
+    "mean": 0.221,
     "sourceAreaMm2": 18997.2
    }
   },
@@ -18265,21 +18266,21 @@
    "sourceTriangles": 3860,
    "full": {
     "triangles": 456,
-    "vertices": 268,
+    "vertices": 262,
     "areaMm2": 19290.7
    },
    "low": {
     "triangles": 130,
-    "vertices": 107,
+    "vertices": 101,
     "areaMm2": 17311.7
    },
    "errorMm": {
     "hausdorff": 17.287,
-    "mean": 1.075
+    "mean": 1.092
    },
    "fullVsSourceMm": {
     "hausdorff": 1.352,
-    "mean": 0.222,
+    "mean": 0.223,
     "sourceAreaMm2": 19546.4
    }
   },
@@ -18299,21 +18300,21 @@
    "sourceTriangles": 3860,
    "full": {
     "triangles": 458,
-    "vertices": 269,
+    "vertices": 263,
     "areaMm2": 19435.3
    },
    "low": {
     "triangles": 132,
-    "vertices": 108,
+    "vertices": 102,
     "areaMm2": 18657.8
    },
    "errorMm": {
     "hausdorff": 13.875,
-    "mean": 0.807
+    "mean": 0.816
    },
    "fullVsSourceMm": {
     "hausdorff": 1.226,
-    "mean": 0.212,
+    "mean": 0.213,
     "sourceAreaMm2": 19546.5
    }
   },
@@ -18333,21 +18334,21 @@
    "sourceTriangles": 1766,
    "full": {
     "triangles": 278,
-    "vertices": 164,
+    "vertices": 161,
     "areaMm2": 7932.8
    },
    "low": {
     "triangles": 72,
-    "vertices": 61,
+    "vertices": 58,
     "areaMm2": 6782.3
    },
    "errorMm": {
     "hausdorff": 4.063,
-    "mean": 0.528
+    "mean": 0.534
    },
    "fullVsSourceMm": {
     "hausdorff": 1.186,
-    "mean": 0.135,
+    "mean": 0.136,
     "sourceAreaMm2": 8033.7
    }
   },
@@ -19423,17 +19424,17 @@
    "sourceTriangles": 6256,
    "full": {
     "triangles": 656,
-    "vertices": 346,
+    "vertices": 343,
     "areaMm2": 10709.6
    },
    "low": {
     "triangles": 114,
-    "vertices": 76,
+    "vertices": 73,
     "areaMm2": 10021.1
    },
    "errorMm": {
     "hausdorff": 4.148,
-    "mean": 0.502
+    "mean": 0.501
    },
    "fullVsSourceMm": {
     "hausdorff": 1.046,
@@ -19457,17 +19458,17 @@
    "sourceTriangles": 6256,
    "full": {
     "triangles": 656,
-    "vertices": 346,
+    "vertices": 343,
     "areaMm2": 10734.8
    },
    "low": {
     "triangles": 114,
-    "vertices": 76,
+    "vertices": 73,
     "areaMm2": 10001.1
    },
    "errorMm": {
     "hausdorff": 6.05,
-    "mean": 0.532
+    "mean": 0.535
    },
    "fullVsSourceMm": {
     "hausdorff": 1.166,
@@ -19831,21 +19832,21 @@
    "sourceTriangles": 15068,
    "full": {
     "triangles": 1530,
-    "vertices": 793,
+    "vertices": 792,
     "areaMm2": 40846.4
    },
    "low": {
     "triangles": 240,
-    "vertices": 151,
+    "vertices": 150,
     "areaMm2": 38256.2
    },
    "errorMm": {
     "hausdorff": 12.145,
-    "mean": 1.244
+    "mean": 1.246
    },
    "fullVsSourceMm": {
     "hausdorff": 1.541,
-    "mean": 0.212,
+    "mean": 0.213,
     "sourceAreaMm2": 41117.9
    }
   },
@@ -19865,17 +19866,17 @@
    "sourceTriangles": 15068,
    "full": {
     "triangles": 1532,
-    "vertices": 792,
+    "vertices": 791,
     "areaMm2": 40955.4
    },
    "low": {
     "triangles": 242,
-    "vertices": 152,
+    "vertices": 151,
     "areaMm2": 36480.1
    },
    "errorMm": {
     "hausdorff": 12.417,
-    "mean": 1.383
+    "mean": 1.386
    },
    "fullVsSourceMm": {
     "hausdorff": 2.29,
@@ -19967,17 +19968,17 @@
    "sourceTriangles": 2816,
    "full": {
     "triangles": 282,
-    "vertices": 146,
+    "vertices": 143,
     "areaMm2": 4594.3
    },
    "low": {
     "triangles": 42,
-    "vertices": 26,
+    "vertices": 23,
     "areaMm2": 3956.3
    },
    "errorMm": {
     "hausdorff": 3.374,
-    "mean": 0.824
+    "mean": 0.842
    },
    "fullVsSourceMm": {
     "hausdorff": 1.071,
@@ -20001,17 +20002,17 @@
    "sourceTriangles": 2816,
    "full": {
     "triangles": 282,
-    "vertices": 146,
+    "vertices": 143,
     "areaMm2": 4603.6
    },
    "low": {
     "triangles": 50,
-    "vertices": 30,
+    "vertices": 27,
     "areaMm2": 3951.9
    },
    "errorMm": {
     "hausdorff": 3.396,
-    "mean": 0.781
+    "mean": 0.79
    },
    "fullVsSourceMm": {
     "hausdorff": 1.765,
@@ -20241,17 +20242,17 @@
    "sourceTriangles": 7422,
    "full": {
     "triangles": 772,
-    "vertices": 413,
+    "vertices": 407,
     "areaMm2": 8166.1
    },
    "low": {
     "triangles": 134,
-    "vertices": 94,
+    "vertices": 88,
     "areaMm2": 7399.9
    },
    "errorMm": {
     "hausdorff": 2.684,
-    "mean": 0.524
+    "mean": 0.52
    },
    "fullVsSourceMm": {
     "hausdorff": 0.902,
@@ -20275,21 +20276,21 @@
    "sourceTriangles": 7422,
    "full": {
     "triangles": 770,
-    "vertices": 412,
+    "vertices": 403,
     "areaMm2": 8153.4
    },
    "low": {
     "triangles": 130,
-    "vertices": 93,
+    "vertices": 84,
     "areaMm2": 6957.6
    },
    "errorMm": {
     "hausdorff": 4.15,
-    "mean": 0.634
+    "mean": 0.638
    },
    "fullVsSourceMm": {
     "hausdorff": 0.986,
-    "mean": 0.126,
+    "mean": 0.127,
     "sourceAreaMm2": 8184.4
    }
   },
@@ -20901,21 +20902,21 @@
    "sourceTriangles": 3472,
    "full": {
     "triangles": 376,
-    "vertices": 222,
+    "vertices": 216,
     "areaMm2": 5126.8
    },
    "low": {
     "triangles": 116,
-    "vertices": 92,
+    "vertices": 86,
     "areaMm2": 4439.3
    },
    "errorMm": {
     "hausdorff": 3.163,
-    "mean": 0.468
+    "mean": 0.451
    },
    "fullVsSourceMm": {
     "hausdorff": 0.8,
-    "mean": 0.179,
+    "mean": 0.18,
     "sourceAreaMm2": 5295.3
    }
   },
@@ -21105,17 +21106,17 @@
    "sourceTriangles": 5176,
    "full": {
     "triangles": 512,
-    "vertices": 259,
+    "vertices": 253,
     "areaMm2": 12755.9
    },
    "low": {
     "triangles": 76,
-    "vertices": 48,
+    "vertices": 42,
     "areaMm2": 10869.8
    },
    "errorMm": {
     "hausdorff": 6.969,
-    "mean": 1.085
+    "mean": 1.03
    },
    "fullVsSourceMm": {
     "hausdorff": 1.677,
@@ -21139,21 +21140,21 @@
    "sourceTriangles": 5176,
    "full": {
     "triangles": 512,
-    "vertices": 261,
+    "vertices": 255,
     "areaMm2": 12705.2
    },
    "low": {
     "triangles": 68,
-    "vertices": 44,
+    "vertices": 38,
     "areaMm2": 10869
    },
    "errorMm": {
     "hausdorff": 6.437,
-    "mean": 1.207
+    "mean": 1.181
    },
    "fullVsSourceMm": {
     "hausdorff": 1.678,
-    "mean": 0.18,
+    "mean": 0.181,
     "sourceAreaMm2": 12861.1
    }
   },
@@ -22548,21 +22549,21 @@
    "sourceTriangles": 4742,
    "full": {
     "triangles": 510,
-    "vertices": 292,
+    "vertices": 282,
     "areaMm2": 5751.8
    },
    "low": {
     "triangles": 198,
-    "vertices": 141,
+    "vertices": 131,
     "areaMm2": 4988.6
    },
    "errorMm": {
     "hausdorff": 4.234,
-    "mean": 0.411
+    "mean": 0.38
    },
    "fullVsSourceMm": {
     "hausdorff": 3.447,
-    "mean": 0.193,
+    "mean": 0.194,
     "sourceAreaMm2": 5925.8
    }
   },
@@ -22582,21 +22583,21 @@
    "sourceTriangles": 4742,
    "full": {
     "triangles": 504,
-    "vertices": 291,
+    "vertices": 274,
     "areaMm2": 5733.3
    },
    "low": {
     "triangles": 204,
-    "vertices": 146,
+    "vertices": 129,
     "areaMm2": 4880.4
    },
    "errorMm": {
     "hausdorff": 5.539,
-    "mean": 0.408
+    "mean": 0.375
    },
    "fullVsSourceMm": {
     "hausdorff": 3.447,
-    "mean": 0.195,
+    "mean": 0.196,
     "sourceAreaMm2": 5926
    }
   },
@@ -26424,21 +26425,21 @@
    "sourceTriangles": 1042,
    "full": {
     "triangles": 274,
-    "vertices": 162,
+    "vertices": 159,
     "areaMm2": 9774.8
    },
    "low": {
     "triangles": 56,
-    "vertices": 53,
+    "vertices": 50,
     "areaMm2": 8961.3
    },
    "errorMm": {
     "hausdorff": 4.335,
-    "mean": 0.93
+    "mean": 0.906
    },
    "fullVsSourceMm": {
     "hausdorff": 0.678,
-    "mean": 0.089,
+    "mean": 0.09,
     "sourceAreaMm2": 9803.2
    }
   },
@@ -26458,21 +26459,21 @@
    "sourceTriangles": 1042,
    "full": {
     "triangles": 274,
-    "vertices": 162,
+    "vertices": 159,
     "areaMm2": 9761.8
    },
    "low": {
     "triangles": 56,
-    "vertices": 53,
+    "vertices": 50,
     "areaMm2": 8917.5
    },
    "errorMm": {
     "hausdorff": 5.575,
-    "mean": 0.927
+    "mean": 0.895
    },
    "fullVsSourceMm": {
     "hausdorff": 0.674,
-    "mean": 0.09,
+    "mean": 0.091,
     "sourceAreaMm2": 9803.5
    }
   },
@@ -27376,17 +27377,17 @@
    "sourceTriangles": 10530,
    "full": {
     "triangles": 1116,
-    "vertices": 610,
+    "vertices": 599,
     "areaMm2": 43067.4
    },
    "low": {
     "triangles": 210,
-    "vertices": 157,
+    "vertices": 146,
     "areaMm2": 41621.7
    },
    "errorMm": {
     "hausdorff": 9.002,
-    "mean": 0.654
+    "mean": 0.645
    },
    "fullVsSourceMm": {
     "hausdorff": 1.04,
@@ -27410,21 +27411,21 @@
    "sourceTriangles": 10530,
    "full": {
     "triangles": 1118,
-    "vertices": 611,
+    "vertices": 600,
     "areaMm2": 43175
    },
    "low": {
     "triangles": 208,
-    "vertices": 156,
+    "vertices": 145,
     "areaMm2": 41482.1
    },
    "errorMm": {
     "hausdorff": 5.092,
-    "mean": 0.552
+    "mean": 0.545
    },
    "fullVsSourceMm": {
     "hausdorff": 1.1,
-    "mean": 0.187,
+    "mean": 0.188,
     "sourceAreaMm2": 43486.5
    }
   },
@@ -27512,17 +27513,17 @@
    "sourceTriangles": 7108,
    "full": {
     "triangles": 722,
-    "vertices": 376,
+    "vertices": 371,
     "areaMm2": 27197.5
    },
    "low": {
     "triangles": 102,
-    "vertices": 66,
+    "vertices": 61,
     "areaMm2": 26309.4
    },
    "errorMm": {
     "hausdorff": 7.473,
-    "mean": 0.908
+    "mean": 0.904
    },
    "fullVsSourceMm": {
     "hausdorff": 1.075,
@@ -27546,17 +27547,17 @@
    "sourceTriangles": 7108,
    "full": {
     "triangles": 722,
-    "vertices": 376,
+    "vertices": 371,
     "areaMm2": 27234.2
    },
    "low": {
     "triangles": 102,
-    "vertices": 66,
+    "vertices": 61,
     "areaMm2": 26779.2
    },
    "errorMm": {
     "hausdorff": 5.699,
-    "mean": 0.754
+    "mean": 0.747
    },
    "fullVsSourceMm": {
     "hausdorff": 1.074,
@@ -27920,17 +27921,17 @@
    "sourceTriangles": 744,
    "full": {
     "triangles": 258,
-    "vertices": 138,
+    "vertices": 135,
     "areaMm2": 1481.8
    },
    "low": {
     "triangles": 38,
-    "vertices": 28,
+    "vertices": 25,
     "areaMm2": 1369.4
    },
    "errorMm": {
     "hausdorff": 2.169,
-    "mean": 0.42
+    "mean": 0.426
    },
    "fullVsSourceMm": {
     "hausdorff": 0.331,
@@ -27954,17 +27955,17 @@
    "sourceTriangles": 744,
    "full": {
     "triangles": 258,
-    "vertices": 138,
+    "vertices": 135,
     "areaMm2": 1482.9
    },
    "low": {
     "triangles": 38,
-    "vertices": 28,
+    "vertices": 25,
     "areaMm2": 1367.9
    },
    "errorMm": {
     "hausdorff": 2.169,
-    "mean": 0.432
+    "mean": 0.438
    },
    "fullVsSourceMm": {
     "hausdorff": 0.332,
@@ -28090,12 +28091,12 @@
    "sourceTriangles": 956,
    "full": {
     "triangles": 278,
-    "vertices": 175,
+    "vertices": 172,
     "areaMm2": 1906.5
    },
    "low": {
     "triangles": 62,
-    "vertices": 68,
+    "vertices": 65,
     "areaMm2": 1814
    },
    "errorMm": {
@@ -28260,17 +28261,17 @@
    "sourceTriangles": 484,
    "full": {
     "triangles": 256,
-    "vertices": 147,
+    "vertices": 144,
     "areaMm2": 1121.4
    },
    "low": {
     "triangles": 48,
-    "vertices": 43,
+    "vertices": 40,
     "areaMm2": 994.1
    },
    "errorMm": {
     "hausdorff": 2.417,
-    "mean": 0.311
+    "mean": 0.296
    },
    "fullVsSourceMm": {
     "hausdorff": 0.635,
@@ -28294,17 +28295,17 @@
    "sourceTriangles": 484,
    "full": {
     "triangles": 260,
-    "vertices": 147,
+    "vertices": 144,
     "areaMm2": 1121.5
    },
    "low": {
     "triangles": 54,
-    "vertices": 44,
+    "vertices": 41,
     "areaMm2": 1054.9
    },
    "errorMm": {
     "hausdorff": 1.306,
-    "mean": 0.224
+    "mean": 0.206
    },
    "fullVsSourceMm": {
     "hausdorff": 0.635,
@@ -28396,21 +28397,21 @@
    "sourceTriangles": 2436,
    "full": {
     "triangles": 256,
-    "vertices": 136,
+    "vertices": 130,
     "areaMm2": 8691
    },
    "low": {
     "triangles": 34,
-    "vertices": 26,
+    "vertices": 20,
     "areaMm2": 7418.1
    },
    "errorMm": {
     "hausdorff": 18.35,
-    "mean": 2.813
+    "mean": 2.999
    },
    "fullVsSourceMm": {
     "hausdorff": 1.524,
-    "mean": 0.244,
+    "mean": 0.246,
     "sourceAreaMm2": 8776.1
    }
   },
@@ -28430,21 +28431,21 @@
    "sourceTriangles": 2436,
    "full": {
     "triangles": 256,
-    "vertices": 136,
+    "vertices": 130,
     "areaMm2": 8694.5
    },
    "low": {
     "triangles": 34,
-    "vertices": 26,
+    "vertices": 20,
     "areaMm2": 7428.3
    },
    "errorMm": {
     "hausdorff": 15.26,
-    "mean": 2.096
+    "mean": 2.248
    },
    "fullVsSourceMm": {
     "hausdorff": 1.78,
-    "mean": 0.251,
+    "mean": 0.253,
     "sourceAreaMm2": 8776.1
    }
   },
@@ -28600,17 +28601,17 @@
    "sourceTriangles": 786,
    "full": {
     "triangles": 260,
-    "vertices": 141,
+    "vertices": 138,
     "areaMm2": 1243.2
    },
    "low": {
     "triangles": 38,
-    "vertices": 30,
+    "vertices": 27,
     "areaMm2": 1096.9
    },
    "errorMm": {
     "hausdorff": 6.438,
-    "mean": 0.517
+    "mean": 0.521
    },
    "fullVsSourceMm": {
     "hausdorff": 0.667,
@@ -28634,17 +28635,17 @@
    "sourceTriangles": 786,
    "full": {
     "triangles": 260,
-    "vertices": 141,
+    "vertices": 138,
     "areaMm2": 1243.3
    },
    "low": {
     "triangles": 38,
-    "vertices": 30,
+    "vertices": 27,
     "areaMm2": 1098.1
    },
    "errorMm": {
     "hausdorff": 2.448,
-    "mean": 0.416
+    "mean": 0.417
    },
    "fullVsSourceMm": {
     "hausdorff": 0.667,
@@ -28770,21 +28771,21 @@
    "sourceTriangles": 368,
    "full": {
     "triangles": 238,
-    "vertices": 126,
+    "vertices": 120,
     "areaMm2": 901.5
    },
    "low": {
     "triangles": 36,
-    "vertices": 28,
+    "vertices": 22,
     "areaMm2": 807.9
    },
    "errorMm": {
-    "hausdorff": 2.943,
-    "mean": 0.457
+    "hausdorff": 1.309,
+    "mean": 0.247
    },
    "fullVsSourceMm": {
     "hausdorff": 2.944,
-    "mean": 0.068,
+    "mean": 0.069,
     "sourceAreaMm2": 902.9
    }
   },
@@ -29008,21 +29009,21 @@
    "sourceTriangles": 1426,
    "full": {
     "triangles": 258,
-    "vertices": 138,
+    "vertices": 136,
     "areaMm2": 18624.7
    },
    "low": {
     "triangles": 36,
-    "vertices": 29,
+    "vertices": 27,
     "areaMm2": 16282.8
    },
    "errorMm": {
     "hausdorff": 9.272,
-    "mean": 1.686
+    "mean": 1.727
    },
    "fullVsSourceMm": {
     "hausdorff": 1.49,
-    "mean": 0.221,
+    "mean": 0.222,
     "sourceAreaMm2": 18838
    }
   },
@@ -29042,17 +29043,17 @@
    "sourceTriangles": 1426,
    "full": {
     "triangles": 258,
-    "vertices": 138,
+    "vertices": 137,
     "areaMm2": 18632.9
    },
    "low": {
     "triangles": 38,
-    "vertices": 31,
+    "vertices": 30,
     "areaMm2": 16036.2
    },
    "errorMm": {
     "hausdorff": 7.285,
-    "mean": 1.511
+    "mean": 1.529
    },
    "fullVsSourceMm": {
     "hausdorff": 1.337,
@@ -29688,21 +29689,21 @@
    "sourceTriangles": 1838,
    "full": {
     "triangles": 296,
-    "vertices": 211,
+    "vertices": 201,
     "areaMm2": 4009.2
    },
    "low": {
     "triangles": 94,
-    "vertices": 116,
+    "vertices": 106,
     "areaMm2": 3496.2
    },
    "errorMm": {
     "hausdorff": 6.92,
-    "mean": 0.329
+    "mean": 0.321
    },
    "fullVsSourceMm": {
     "hausdorff": 0.797,
-    "mean": 0.088,
+    "mean": 0.089,
     "sourceAreaMm2": 4016.2
    }
   },
@@ -29722,21 +29723,21 @@
    "sourceTriangles": 1838,
    "full": {
     "triangles": 294,
-    "vertices": 210,
+    "vertices": 199,
     "areaMm2": 3994.4
    },
    "low": {
     "triangles": 94,
-    "vertices": 117,
+    "vertices": 106,
     "areaMm2": 3448.3
    },
    "errorMm": {
     "hausdorff": 6.93,
-    "mean": 0.344
+    "mean": 0.342
    },
    "fullVsSourceMm": {
     "hausdorff": 0.595,
-    "mean": 0.085,
+    "mean": 0.086,
     "sourceAreaMm2": 4016.3
    }
   },
@@ -29962,17 +29963,17 @@
    "sourceTriangles": 4838,
    "full": {
     "triangles": 494,
-    "vertices": 258,
+    "vertices": 255,
     "areaMm2": 18094.6
    },
    "low": {
     "triangles": 178,
-    "vertices": 106,
+    "vertices": 103,
     "areaMm2": 15394.3
    },
    "errorMm": {
     "hausdorff": 32.142,
-    "mean": 1.675
+    "mean": 1.668
    },
    "fullVsSourceMm": {
     "hausdorff": 1.284,
@@ -29996,17 +29997,17 @@
    "sourceTriangles": 4838,
    "full": {
     "triangles": 494,
-    "vertices": 258,
+    "vertices": 255,
     "areaMm2": 17989.8
    },
    "low": {
     "triangles": 188,
-    "vertices": 111,
+    "vertices": 108,
     "areaMm2": 15390.3
    },
    "errorMm": {
     "hausdorff": 28.786,
-    "mean": 1.582
+    "mean": 1.574
    },
    "fullVsSourceMm": {
     "hausdorff": 1.772,
@@ -30030,17 +30031,17 @@
    "sourceTriangles": 1442,
    "full": {
     "triangles": 266,
-    "vertices": 152,
+    "vertices": 149,
     "areaMm2": 4975.4
    },
    "low": {
     "triangles": 60,
-    "vertices": 51,
+    "vertices": 48,
     "areaMm2": 4239.4
    },
    "errorMm": {
     "hausdorff": 2.808,
-    "mean": 0.483
+    "mean": 0.471
    },
    "fullVsSourceMm": {
     "hausdorff": 1.482,
@@ -30064,17 +30065,17 @@
    "sourceTriangles": 1442,
    "full": {
     "triangles": 266,
-    "vertices": 151,
+    "vertices": 148,
     "areaMm2": 4976.3
    },
    "low": {
     "triangles": 62,
-    "vertices": 52,
+    "vertices": 49,
     "areaMm2": 4365.2
    },
    "errorMm": {
     "hausdorff": 2.704,
-    "mean": 0.393
+    "mean": 0.379
    },
    "fullVsSourceMm": {
     "hausdorff": 1.483,
@@ -30166,17 +30167,17 @@
    "sourceTriangles": 2474,
    "full": {
     "triangles": 268,
-    "vertices": 149,
+    "vertices": 146,
     "areaMm2": 9837.7
    },
    "low": {
     "triangles": 50,
-    "vertices": 40,
+    "vertices": 37,
     "areaMm2": 8387
    },
    "errorMm": {
-    "hausdorff": 7.037,
-    "mean": 0.863
+    "hausdorff": 6.09,
+    "mean": 0.773
    },
    "fullVsSourceMm": {
     "hausdorff": 1.315,
@@ -30200,21 +30201,21 @@
    "sourceTriangles": 2474,
    "full": {
     "triangles": 268,
-    "vertices": 149,
+    "vertices": 146,
     "areaMm2": 9828.5
    },
    "low": {
     "triangles": 46,
-    "vertices": 38,
+    "vertices": 35,
     "areaMm2": 8384.3
    },
    "errorMm": {
-    "hausdorff": 7.037,
-    "mean": 0.935
+    "hausdorff": 6.093,
+    "mean": 0.847
    },
    "fullVsSourceMm": {
     "hausdorff": 1.316,
-    "mean": 0.159,
+    "mean": 0.16,
     "sourceAreaMm2": 9908.6
    }
   },
@@ -30439,21 +30440,21 @@
    "sourceTriangles": 3394,
    "full": {
     "triangles": 396,
-    "vertices": 438,
+    "vertices": 291,
     "areaMm2": 12301.1
    },
    "low": {
     "triangles": 170,
-    "vertices": 327,
+    "vertices": 180,
     "areaMm2": 10501.4
    },
    "errorMm": {
     "hausdorff": 3.132,
-    "mean": 0.2
+    "mean": 0.221
    },
    "fullVsSourceMm": {
     "hausdorff": 1.071,
-    "mean": 0.109,
+    "mean": 0.117,
     "sourceAreaMm2": 12591
    }
   },
@@ -30474,21 +30475,21 @@
    "sourceTriangles": 3394,
    "full": {
     "triangles": 393,
-    "vertices": 439,
+    "vertices": 282,
     "areaMm2": 12349.7
    },
    "low": {
     "triangles": 159,
-    "vertices": 323,
+    "vertices": 166,
     "areaMm2": 10538.1
    },
    "errorMm": {
     "hausdorff": 2.602,
-    "mean": 0.21
+    "mean": 0.239
    },
    "fullVsSourceMm": {
     "hausdorff": 1.072,
-    "mean": 0.111,
+    "mean": 0.119,
     "sourceAreaMm2": 12591.7
    }
   },
@@ -31460,17 +31461,17 @@
    "sourceTriangles": 2668,
    "full": {
     "triangles": 322,
-    "vertices": 233,
+    "vertices": 230,
     "areaMm2": 3585.7
    },
    "low": {
     "triangles": 194,
-    "vertices": 169,
+    "vertices": 166,
     "areaMm2": 3064.8
    },
    "errorMm": {
     "hausdorff": 21.22,
-    "mean": 0.441
+    "mean": 0.444
    },
    "fullVsSourceMm": {
     "hausdorff": 1.297,
@@ -31494,21 +31495,21 @@
    "sourceTriangles": 2668,
    "full": {
     "triangles": 322,
-    "vertices": 234,
+    "vertices": 228,
     "areaMm2": 3585.9
    },
    "low": {
     "triangles": 164,
-    "vertices": 155,
+    "vertices": 149,
     "areaMm2": 3051.6
    },
    "errorMm": {
     "hausdorff": 17.564,
-    "mean": 0.545
+    "mean": 0.551
    },
    "fullVsSourceMm": {
     "hausdorff": 1.298,
-    "mean": 0.184,
+    "mean": 0.185,
     "sourceAreaMm2": 3759.3
    }
   },
@@ -31528,21 +31529,21 @@
    "sourceTriangles": 966,
    "full": {
     "triangles": 290,
-    "vertices": 205,
+    "vertices": 199,
     "areaMm2": 1325
    },
    "low": {
     "triangles": 100,
-    "vertices": 110,
+    "vertices": 104,
     "areaMm2": 1134
    },
    "errorMm": {
     "hausdorff": 2.364,
-    "mean": 0.19
+    "mean": 0.177
    },
    "fullVsSourceMm": {
     "hausdorff": 0.58,
-    "mean": 0.06,
+    "mean": 0.061,
     "sourceAreaMm2": 1341.8
    }
   },
@@ -31562,17 +31563,17 @@
    "sourceTriangles": 966,
    "full": {
     "triangles": 288,
-    "vertices": 204,
+    "vertices": 198,
     "areaMm2": 1321.1
    },
    "low": {
     "triangles": 98,
-    "vertices": 109,
+    "vertices": 103,
     "areaMm2": 1132.5
    },
    "errorMm": {
     "hausdorff": 2.361,
-    "mean": 0.188
+    "mean": 0.174
    },
    "fullVsSourceMm": {
     "hausdorff": 0.577,
@@ -31596,21 +31597,21 @@
    "sourceTriangles": 2618,
    "full": {
     "triangles": 544,
-    "vertices": 560,
+    "vertices": 506,
     "areaMm2": 4044.9
    },
    "low": {
     "triangles": 422,
-    "vertices": 499,
+    "vertices": 445,
     "areaMm2": 3470.8
    },
    "errorMm": {
     "hausdorff": 4.753,
-    "mean": 0.118
+    "mean": 0.061
    },
    "fullVsSourceMm": {
     "hausdorff": 2.875,
-    "mean": 0.146,
+    "mean": 0.15,
     "sourceAreaMm2": 4201.4
    }
   },
@@ -31630,21 +31631,21 @@
    "sourceTriangles": 2618,
    "full": {
     "triangles": 546,
-    "vertices": 560,
+    "vertices": 510,
     "areaMm2": 4027
    },
    "low": {
     "triangles": 410,
-    "vertices": 492,
+    "vertices": 442,
     "areaMm2": 3471.2
    },
    "errorMm": {
     "hausdorff": 4.753,
-    "mean": 0.107
+    "mean": 0.074
    },
    "fullVsSourceMm": {
     "hausdorff": 1.356,
-    "mean": 0.125,
+    "mean": 0.128,
     "sourceAreaMm2": 4201.4
    }
   },
@@ -32583,21 +32584,21 @@
    "sourceTriangles": 2722,
    "full": {
     "triangles": 318,
-    "vertices": 225,
+    "vertices": 213,
     "areaMm2": 5244.7
    },
    "low": {
     "triangles": 92,
-    "vertices": 112,
+    "vertices": 100,
     "areaMm2": 4469.9
    },
    "errorMm": {
     "hausdorff": 5.052,
-    "mean": 0.418
+    "mean": 0.416
    },
    "fullVsSourceMm": {
     "hausdorff": 1.577,
-    "mean": 0.133,
+    "mean": 0.134,
     "sourceAreaMm2": 5266.5
    }
   },
@@ -32617,21 +32618,21 @@
    "sourceTriangles": 2722,
    "full": {
     "triangles": 318,
-    "vertices": 225,
+    "vertices": 213,
     "areaMm2": 5244
    },
    "low": {
     "triangles": 94,
-    "vertices": 113,
+    "vertices": 101,
     "areaMm2": 4493.4
    },
    "errorMm": {
     "hausdorff": 4.272,
-    "mean": 0.401
+    "mean": 0.403
    },
    "fullVsSourceMm": {
     "hausdorff": 1.577,
-    "mean": 0.139,
+    "mean": 0.14,
     "sourceAreaMm2": 5266.5
    }
   },
@@ -33725,21 +33726,21 @@
    "sourceTriangles": 4616,
    "full": {
     "triangles": 482,
-    "vertices": 271,
+    "vertices": 260,
     "areaMm2": 5825.4
    },
    "low": {
     "triangles": 84,
-    "vertices": 72,
+    "vertices": 61,
     "areaMm2": 5443.4
    },
    "errorMm": {
     "hausdorff": 4.274,
-    "mean": 0.483
+    "mean": 0.499
    },
    "fullVsSourceMm": {
     "hausdorff": 0.631,
-    "mean": 0.106,
+    "mean": 0.107,
     "sourceAreaMm2": 5873.4
    }
   },
@@ -33863,21 +33864,21 @@
    "sourceTriangles": 3864,
    "full": {
     "triangles": 436,
-    "vertices": 243,
+    "vertices": 237,
     "areaMm2": 4939.4
    },
    "low": {
     "triangles": 104,
-    "vertices": 78,
+    "vertices": 72,
     "areaMm2": 4539.7
    },
    "errorMm": {
     "hausdorff": 2.978,
-    "mean": 0.466
+    "mean": 0.412
    },
    "fullVsSourceMm": {
     "hausdorff": 1.865,
-    "mean": 0.127,
+    "mean": 0.128,
     "sourceAreaMm2": 4954.2
    }
   },
@@ -34340,12 +34341,12 @@
    "sourceTriangles": 1742,
    "full": {
     "triangles": 390,
-    "vertices": 290,
+    "vertices": 287,
     "areaMm2": 2676.3
    },
    "low": {
     "triangles": 196,
-    "vertices": 193,
+    "vertices": 190,
     "areaMm2": 2312.5
    },
    "errorMm": {
@@ -34544,21 +34545,21 @@
    "sourceTriangles": 658,
    "full": {
     "triangles": 270,
-    "vertices": 161,
+    "vertices": 155,
     "areaMm2": 1113.2
    },
    "low": {
     "triangles": 60,
-    "vertices": 56,
+    "vertices": 50,
     "areaMm2": 1025.2
    },
    "errorMm": {
     "hausdorff": 2.283,
-    "mean": 0.344
+    "mean": 0.34
    },
    "fullVsSourceMm": {
     "hausdorff": 0.384,
-    "mean": 0.039,
+    "mean": 0.04,
     "sourceAreaMm2": 1114.6
    }
   },
@@ -34578,17 +34579,17 @@
    "sourceTriangles": 658,
    "full": {
     "triangles": 272,
-    "vertices": 161,
+    "vertices": 159,
     "areaMm2": 1113.5
    },
    "low": {
     "triangles": 62,
-    "vertices": 56,
+    "vertices": 54,
     "areaMm2": 999.5
    },
    "errorMm": {
     "hausdorff": 1.821,
-    "mean": 0.319
+    "mean": 0.325
    },
    "fullVsSourceMm": {
     "hausdorff": 0.293,
@@ -34921,12 +34922,12 @@
    "sourceTriangles": 804,
    "full": {
     "triangles": 263,
-    "vertices": 147,
+    "vertices": 142,
     "areaMm2": 645.2
    },
    "low": {
     "triangles": 45,
-    "vertices": 38,
+    "vertices": 33,
     "areaMm2": 573.9
    },
    "errorMm": {
@@ -35441,17 +35442,17 @@
    "sourceTriangles": 6580,
    "full": {
     "triangles": 664,
-    "vertices": 339,
+    "vertices": 336,
     "areaMm2": 195
    },
    "low": {
     "triangles": 88,
-    "vertices": 51,
+    "vertices": 48,
     "areaMm2": 188.7
    },
    "errorMm": {
     "hausdorff": 0.379,
-    "mean": 0.084
+    "mean": 0.085
    },
    "fullVsSourceMm": {
     "hausdorff": 0.102,
@@ -35681,21 +35682,21 @@
    "sourceTriangles": 4366,
    "full": {
     "triangles": 483,
-    "vertices": 327,
+    "vertices": 271,
     "areaMm2": 116.4
    },
    "low": {
     "triangles": 129,
-    "vertices": 158,
+    "vertices": 102,
     "areaMm2": 99.3
    },
    "errorMm": {
-    "hausdorff": 15.15,
-    "mean": 0.63
+    "hausdorff": 0.384,
+    "mean": 0.066
    },
    "fullVsSourceMm": {
     "hausdorff": 15.061,
-    "mean": 0.072,
+    "mean": 0.073,
     "sourceAreaMm2": 118.9
    }
   },
@@ -35715,17 +35716,17 @@
    "sourceTriangles": 4510,
    "full": {
     "triangles": 452,
-    "vertices": 233,
+    "vertices": 226,
     "areaMm2": 115.6
    },
    "low": {
     "triangles": 70,
-    "vertices": 53,
+    "vertices": 46,
     "areaMm2": 107.6
    },
    "errorMm": {
     "hausdorff": 0.253,
-    "mean": 0.074
+    "mean": 0.076
    },
    "fullVsSourceMm": {
     "hausdorff": 0.113,
@@ -35749,17 +35750,17 @@
    "sourceTriangles": 3232,
    "full": {
     "triangles": 326,
-    "vertices": 178,
+    "vertices": 169,
     "areaMm2": 160.6
    },
    "low": {
     "triangles": 44,
-    "vertices": 37,
+    "vertices": 28,
     "areaMm2": 143.9
    },
    "errorMm": {
-    "hausdorff": 5.928,
-    "mean": 0.315
+    "hausdorff": 0.987,
+    "mean": 0.141
    },
    "fullVsSourceMm": {
     "hausdorff": 5.932,
@@ -36123,17 +36124,17 @@
    "sourceTriangles": 3268,
    "full": {
     "triangles": 326,
-    "vertices": 168,
+    "vertices": 165,
     "areaMm2": 995.6
    },
    "low": {
     "triangles": 40,
-    "vertices": 25,
+    "vertices": 22,
     "areaMm2": 958
    },
    "errorMm": {
     "hausdorff": 1.052,
-    "mean": 0.386
+    "mean": 0.392
    },
    "fullVsSourceMm": {
     "hausdorff": 0.28,
@@ -38204,21 +38205,21 @@
    "sourceTriangles": 1080,
    "full": {
     "triangles": 282,
-    "vertices": 162,
+    "vertices": 160,
     "areaMm2": 422.3
    },
    "low": {
     "triangles": 118,
-    "vertices": 80,
+    "vertices": 78,
     "areaMm2": 364.5
    },
    "errorMm": {
     "hausdorff": 5.614,
-    "mean": 0.25
+    "mean": 0.255
    },
    "fullVsSourceMm": {
     "hausdorff": 0.658,
-    "mean": 0.07,
+    "mean": 0.071,
     "sourceAreaMm2": 437.3
    }
   },
@@ -38238,21 +38239,21 @@
    "sourceTriangles": 1080,
    "full": {
     "triangles": 280,
-    "vertices": 162,
+    "vertices": 156,
     "areaMm2": 421.4
    },
    "low": {
     "triangles": 112,
-    "vertices": 78,
+    "vertices": 72,
     "areaMm2": 361.9
    },
    "errorMm": {
-    "hausdorff": 8.151,
-    "mean": 0.54
+    "hausdorff": 6.888,
+    "mean": 0.319
    },
    "fullVsSourceMm": {
     "hausdorff": 1.307,
-    "mean": 0.087,
+    "mean": 0.088,
     "sourceAreaMm2": 437.2
    }
   },
@@ -41243,17 +41244,17 @@
    "sourceTriangles": 1230,
    "full": {
     "triangles": 256,
-    "vertices": 133,
+    "vertices": 130,
     "areaMm2": 2757.7
    },
    "low": {
     "triangles": 32,
-    "vertices": 21,
+    "vertices": 18,
     "areaMm2": 2447.9
    },
    "errorMm": {
     "hausdorff": 5.061,
-    "mean": 0.997
+    "mean": 1.016
    },
    "fullVsSourceMm": {
     "hausdorff": 0.789,
@@ -42297,17 +42298,17 @@
    "sourceTriangles": 22276,
    "full": {
     "triangles": 2323,
-    "vertices": 1226,
+    "vertices": 1216,
     "areaMm2": 8171.2
    },
    "low": {
     "triangles": 425,
-    "vertices": 277,
+    "vertices": 267,
     "areaMm2": 7865.6
    },
    "errorMm": {
     "hausdorff": 2.381,
-    "mean": 0.371
+    "mean": 0.374
    },
    "fullVsSourceMm": {
     "hausdorff": 0.783,
@@ -42944,21 +42945,21 @@
    "sourceTriangles": 7912,
    "full": {
     "triangles": 2154,
-    "vertices": 2279,
+    "vertices": 2117,
     "areaMm2": 1431.1
    },
    "low": {
     "triangles": 1646,
-    "vertices": 2034,
+    "vertices": 1872,
     "areaMm2": 1243.3
    },
    "errorMm": {
     "hausdorff": 2.71,
-    "mean": 0.029
+    "mean": 0.019
    },
    "fullVsSourceMm": {
     "hausdorff": 0.698,
-    "mean": 0.03,
+    "mean": 0.031,
     "sourceAreaMm2": 1478.6
    }
   },
@@ -43148,21 +43149,21 @@
    "sourceTriangles": 12968,
    "full": {
     "triangles": 1320,
-    "vertices": 711,
+    "vertices": 684,
     "areaMm2": 1232.3
    },
    "low": {
     "triangles": 194,
-    "vertices": 147,
+    "vertices": 120,
     "areaMm2": 1205.3
    },
    "errorMm": {
-    "hausdorff": 0.757,
-    "mean": 0.053
+    "hausdorff": 0.748,
+    "mean": 0.048
    },
    "fullVsSourceMm": {
     "hausdorff": 0.759,
-    "mean": 0.026,
+    "mean": 0.027,
     "sourceAreaMm2": 1242.1
    }
   },
@@ -43624,12 +43625,12 @@
    "sourceTriangles": 2112,
    "full": {
     "triangles": 276,
-    "vertices": 163,
+    "vertices": 154,
     "areaMm2": 235.9
    },
    "low": {
     "triangles": 56,
-    "vertices": 53,
+    "vertices": 44,
     "areaMm2": 234
    },
    "errorMm": {
@@ -43638,7 +43639,7 @@
    },
    "fullVsSourceMm": {
     "hausdorff": 0.158,
-    "mean": 0.032,
+    "mean": 0.033,
     "sourceAreaMm2": 241.9
    }
   },
@@ -44406,17 +44407,17 @@
    "sourceTriangles": 1850,
    "full": {
     "triangles": 258,
-    "vertices": 135,
+    "vertices": 134,
     "areaMm2": 718.6
    },
    "low": {
     "triangles": 36,
-    "vertices": 24,
+    "vertices": 23,
     "areaMm2": 612.6
    },
    "errorMm": {
     "hausdorff": 1.75,
-    "mean": 0.543
+    "mean": 0.55
    },
    "fullVsSourceMm": {
     "hausdorff": 0.483,
@@ -45018,21 +45019,21 @@
    "sourceTriangles": 4606,
    "full": {
     "triangles": 490,
-    "vertices": 290,
+    "vertices": 271,
     "areaMm2": 428
    },
    "low": {
     "triangles": 90,
-    "vertices": 90,
+    "vertices": 71,
     "areaMm2": 395.9
    },
    "errorMm": {
-    "hausdorff": 55.43,
-    "mean": 3.764
+    "hausdorff": 0.76,
+    "mean": 0.211
    },
    "fullVsSourceMm": {
     "hausdorff": 55.316,
-    "mean": 0.29,
+    "mean": 0.292,
     "sourceAreaMm2": 431.1
    }
   },
@@ -45154,17 +45155,17 @@
    "sourceTriangles": 39524,
    "full": {
     "triangles": 3972,
-    "vertices": 2011,
+    "vertices": 2002,
     "areaMm2": 3669.9
    },
    "low": {
     "triangles": 518,
-    "vertices": 284,
+    "vertices": 275,
     "areaMm2": 3595.3
    },
    "errorMm": {
-    "hausdorff": 0.979,
-    "mean": 0.187
+    "hausdorff": 0.63,
+    "mean": 0.185
    },
    "fullVsSourceMm": {
     "hausdorff": 0.981,
@@ -45223,17 +45224,17 @@
    "sourceTriangles": 35586,
    "full": {
     "triangles": 3576,
-    "vertices": 1805,
+    "vertices": 1802,
     "areaMm2": 3582.7
    },
    "low": {
     "triangles": 462,
-    "vertices": 248,
+    "vertices": 245,
     "areaMm2": 3468.8
    },
    "errorMm": {
-    "hausdorff": 3.843,
-    "mean": 0.21
+    "hausdorff": 0.813,
+    "mean": 0.2
    },
    "fullVsSourceMm": {
     "hausdorff": 3.849,
@@ -45292,17 +45293,17 @@
    "sourceTriangles": 22692,
    "full": {
     "triangles": 4904,
-    "vertices": 2523,
+    "vertices": 2500,
     "areaMm2": 571.8
    },
    "low": {
     "triangles": 1612,
-    "vertices": 953,
+    "vertices": 930,
     "areaMm2": 488.6
    },
    "errorMm": {
     "hausdorff": 0.373,
-    "mean": 0.042
+    "mean": 0.043
    },
    "fullVsSourceMm": {
     "hausdorff": 0.128,
@@ -45326,12 +45327,12 @@
    "sourceTriangles": 17858,
    "full": {
     "triangles": 4133,
-    "vertices": 2192,
+    "vertices": 2141,
     "areaMm2": 542.2
    },
    "low": {
     "triangles": 1533,
-    "vertices": 926,
+    "vertices": 875,
     "areaMm2": 463.7
    },
    "errorMm": {
@@ -45564,17 +45565,17 @@
    "sourceTriangles": 7376,
    "full": {
     "triangles": 785,
-    "vertices": 513,
+    "vertices": 447,
     "areaMm2": 419.6
    },
    "low": {
     "triangles": 145,
-    "vertices": 193,
+    "vertices": 127,
     "areaMm2": 399.4
    },
    "errorMm": {
-    "hausdorff": 0.678,
-    "mean": 0.098
+    "hausdorff": 0.625,
+    "mean": 0.09
    },
    "fullVsSourceMm": {
     "hausdorff": 0.352,
@@ -45598,17 +45599,17 @@
    "sourceTriangles": 7256,
    "full": {
     "triangles": 726,
-    "vertices": 367,
+    "vertices": 363,
     "areaMm2": 418.3
    },
    "low": {
     "triangles": 90,
-    "vertices": 49,
+    "vertices": 45,
     "areaMm2": 402.7
    },
    "errorMm": {
     "hausdorff": 0.571,
-    "mean": 0.134
+    "mean": 0.132
    },
    "fullVsSourceMm": {
     "hausdorff": 0.163,
@@ -46482,17 +46483,17 @@
    "sourceTriangles": 1340,
    "full": {
     "triangles": 276,
-    "vertices": 164,
+    "vertices": 161,
     "areaMm2": 1472.4
    },
    "low": {
     "triangles": 74,
-    "vertices": 76,
+    "vertices": 73,
     "areaMm2": 1276.1
    },
    "errorMm": {
     "hausdorff": 2.839,
-    "mean": 0.267
+    "mean": 0.258
    },
    "fullVsSourceMm": {
     "hausdorff": 0.613,
@@ -46653,21 +46654,21 @@
    "sourceTriangles": 764,
    "full": {
     "triangles": 258,
-    "vertices": 145,
+    "vertices": 139,
     "areaMm2": 858
    },
    "low": {
     "triangles": 76,
-    "vertices": 54,
+    "vertices": 48,
     "areaMm2": 742.5
    },
    "errorMm": {
     "hausdorff": 5.98,
-    "mean": 0.476
+    "mean": 0.33
    },
    "fullVsSourceMm": {
     "hausdorff": 2.75,
-    "mean": 0.107,
+    "mean": 0.108,
     "sourceAreaMm2": 870.7
    }
   },
@@ -47133,21 +47134,21 @@
    "sourceTriangles": 4004,
    "full": {
     "triangles": 402,
-    "vertices": 210,
+    "vertices": 207,
     "areaMm2": 19128.4
    },
    "low": {
     "triangles": 144,
-    "vertices": 83,
+    "vertices": 80,
     "areaMm2": 16555.8
    },
    "errorMm": {
     "hausdorff": 14.677,
-    "mean": 0.968
+    "mean": 0.983
    },
    "fullVsSourceMm": {
     "hausdorff": 1.589,
-    "mean": 0.234,
+    "mean": 0.235,
     "sourceAreaMm2": 19331.2
    }
   },
@@ -47167,17 +47168,17 @@
    "sourceTriangles": 5136,
    "full": {
     "triangles": 532,
-    "vertices": 281,
+    "vertices": 275,
     "areaMm2": 18041.7
    },
    "low": {
     "triangles": 88,
-    "vertices": 68,
+    "vertices": 62,
     "areaMm2": 15800
    },
    "errorMm": {
     "hausdorff": 11.851,
-    "mean": 1.305
+    "mean": 1.309
    },
    "fullVsSourceMm": {
     "hausdorff": 2.171,
@@ -47201,17 +47202,17 @@
    "sourceTriangles": 5136,
    "full": {
     "triangles": 538,
-    "vertices": 286,
+    "vertices": 280,
     "areaMm2": 17968
    },
    "low": {
     "triangles": 96,
-    "vertices": 71,
+    "vertices": 65,
     "areaMm2": 15652.7
    },
    "errorMm": {
     "hausdorff": 22.247,
-    "mean": 1.409
+    "mean": 1.443
    },
    "fullVsSourceMm": {
     "hausdorff": 2.171,
@@ -47235,21 +47236,21 @@
    "sourceTriangles": 726,
    "full": {
     "triangles": 266,
-    "vertices": 167,
+    "vertices": 155,
     "areaMm2": 989.8
    },
    "low": {
     "triangles": 56,
-    "vertices": 64,
+    "vertices": 52,
     "areaMm2": 922.5
    },
    "errorMm": {
     "hausdorff": 1.161,
-    "mean": 0.193
+    "mean": 0.172
    },
    "fullVsSourceMm": {
     "hausdorff": 0.39,
-    "mean": 0.038,
+    "mean": 0.039,
     "sourceAreaMm2": 999.1
    }
   },
@@ -47269,17 +47270,17 @@
    "sourceTriangles": 726,
    "full": {
     "triangles": 268,
-    "vertices": 167,
+    "vertices": 158,
     "areaMm2": 989.5
    },
    "low": {
     "triangles": 58,
-    "vertices": 64,
+    "vertices": 55,
     "areaMm2": 905.2
    },
    "errorMm": {
     "hausdorff": 1.259,
-    "mean": 0.209
+    "mean": 0.193
    },
    "fullVsSourceMm": {
     "hausdorff": 0.389,
@@ -48618,21 +48619,21 @@
    "sourceTriangles": 4468,
    "full": {
     "triangles": 460,
-    "vertices": 248,
+    "vertices": 244,
     "areaMm2": 5611.5
    },
    "low": {
     "triangles": 70,
-    "vertices": 53,
+    "vertices": 49,
     "areaMm2": 5509.1
    },
    "errorMm": {
     "hausdorff": 5.264,
-    "mean": 0.709
+    "mean": 0.729
    },
    "fullVsSourceMm": {
     "hausdorff": 1.214,
-    "mean": 0.267,
+    "mean": 0.268,
     "sourceAreaMm2": 5864.7
    }
   },
@@ -49642,17 +49643,17 @@
    "sourceTriangles": 954,
    "full": {
     "triangles": 256,
-    "vertices": 133,
+    "vertices": 130,
     "areaMm2": 634.1
    },
    "low": {
     "triangles": 70,
-    "vertices": 40,
+    "vertices": 37,
     "areaMm2": 551.6
    },
    "errorMm": {
     "hausdorff": 4.21,
-    "mean": 0.328
+    "mean": 0.33
    },
    "fullVsSourceMm": {
     "hausdorff": 0.389,
@@ -50934,12 +50935,12 @@
    "sourceTriangles": 7940,
    "full": {
     "triangles": 1300,
-    "vertices": 697,
+    "vertices": 694,
     "areaMm2": 2896.1
    },
    "low": {
     "triangles": 412,
-    "vertices": 253,
+    "vertices": 250,
     "areaMm2": 2463.8
    },
    "errorMm": {
@@ -51448,12 +51449,12 @@
    "sourceTriangles": 8592,
    "full": {
     "triangles": 1262,
-    "vertices": 690,
+    "vertices": 687,
     "areaMm2": 2711
    },
    "low": {
     "triangles": 496,
-    "vertices": 307,
+    "vertices": 304,
     "areaMm2": 2306.3
    },
    "errorMm": {
@@ -52982,21 +52983,21 @@
    "sourceTriangles": 6050,
    "full": {
     "triangles": 708,
-    "vertices": 449,
+    "vertices": 436,
     "areaMm2": 7480.4
    },
    "low": {
     "triangles": 284,
-    "vertices": 237,
+    "vertices": 224,
     "areaMm2": 6370.6
    },
    "errorMm": {
     "hausdorff": 7.853,
-    "mean": 0.267
+    "mean": 0.254
    },
    "fullVsSourceMm": {
     "hausdorff": 0.833,
-    "mean": 0.127,
+    "mean": 0.128,
     "sourceAreaMm2": 7697.9
    }
   },
@@ -53016,21 +53017,21 @@
    "sourceTriangles": 6050,
    "full": {
     "triangles": 710,
-    "vertices": 449,
+    "vertices": 439,
     "areaMm2": 7474
    },
    "low": {
     "triangles": 270,
-    "vertices": 229,
+    "vertices": 219,
     "areaMm2": 6402
    },
    "errorMm": {
     "hausdorff": 8.204,
-    "mean": 0.283
+    "mean": 0.278
    },
    "fullVsSourceMm": {
     "hausdorff": 0.833,
-    "mean": 0.126,
+    "mean": 0.127,
     "sourceAreaMm2": 7698
    }
   },
@@ -53785,17 +53786,17 @@
    "sourceTriangles": 3534,
    "full": {
     "triangles": 402,
-    "vertices": 248,
+    "vertices": 242,
     "areaMm2": 3852.7
    },
    "low": {
     "triangles": 174,
-    "vertices": 144,
+    "vertices": 138,
     "areaMm2": 3302.2
    },
    "errorMm": {
     "hausdorff": 3.208,
-    "mean": 0.242
+    "mean": 0.241
    },
    "fullVsSourceMm": {
     "hausdorff": 1.241,

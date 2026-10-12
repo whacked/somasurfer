@@ -5,9 +5,9 @@ against them on every CI run. Do not edit; rebuild. Every figure but the source 
 
 - **Source:** BodyParts3D 4.0, archive SHA-256 `40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e`; 2,234 element files, 6,357,576 triangles shipped from.
 - **Structures:** 1,605, one per FMA concept an element file names itself (1318 sided by their own name). 60 element files excluded, each listed with its reason in `structures.json` `excluded`.
-- **Low tier (eager):** 1,171,654 B gzip, 161,463 triangles. **Full tier (lazy):** 6,525,597 B gzip, 887,936 triangles.
+- **Low tier (eager):** 1,167,525 B gzip, 161,463 triangles. **Full tier (lazy):** 6,518,932 B gzip, 887,936 triangles.
 - **Decimation:** source to full tier ratio 0.1, floor 256; full to low tier ratio 0.125, floor 16. Every structure meets the low floor.
-- **Geometric error, low vs full tier** (symmetric Hausdorff, mm): median 1.89, p95 13.30, max 61.73.
+- **Geometric error, low vs full tier** (symmetric Hausdorff, mm): median 1.87, p95 12.97, max 61.73.
 - **Geometric error, full tier vs source** (the build's figure; the source is not in the repository): median 0.36, p95 1.78, max 55.32.
 - **Quantisation step:** 0.0264 mm, both tiers.
 
@@ -57,9 +57,9 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | cardiovascular | 653 | 58,513 | 270,088 | 1.25 | 33.70 |
 | endocrine | 3 | 120 | 912 | 1.89 | 2.01 |
 | genital | 1 | 32 | 256 | 3.19 | 3.19 |
-| muscle | 380 | 40,863 | 260,735 | 4.23 | 61.73 |
+| muscle | 380 | 40,863 | 260,735 | 4.20 | 61.73 |
 | nervous | 34 | 1,878 | 9,036 | 0.42 | 2.74 |
-| other | 235 | 30,639 | 147,167 | 1.33 | 55.43 |
+| other | 235 | 30,639 | 147,167 | 1.31 | 38.33 |
 | respiratory | 23 | 2,022 | 8,496 | 2.85 | 12.91 |
 | skeleton | 236 | 18,982 | 148,514 | 2.01 | 19.82 |
 | skin | 1 | 2,542 | 20,338 | 7.32 | 7.32 |
@@ -309,7 +309,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 9425 | Right lateral basal segmental vein | cardiovascular | 4 | 256 | 64 | 1.371 | 0.312 | 0.872 |
 | 9428 | Right posterior basal segmental vein | cardiovascular | 9 | 480 | 140 | 1.727 | 0.277 | 0.852 |
 | 9437 | Left apical segmental vein | cardiovascular | 7 | 402 | 82 | 1.429 | 0.337 | 0.858 |
-| 9438 | Left posterior segmental vein | cardiovascular | 10 | 588 | 184 | 13.871 | 0.429 | 0.851 |
+| 9438 | Left posterior segmental vein | cardiovascular | 10 | 588 | 184 | 9.663 | 0.307 | 0.851 |
 | 9450 | Left lateral basal segmental vein | cardiovascular | 4 | 258 | 66 | 2.057 | 0.312 | 0.851 |
 | 9451 | Left posterior basal segmental vein | cardiovascular | 4 | 254 | 46 | 1.696 | 0.401 | 0.851 |
 | 9457 | Wall of right atrium | cardiovascular | 1 | 1778 | 222 | 2.212 | 0.565 | 0.984 |
@@ -319,7 +319,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 9600 | Prostate | genital | 1 | 256 | 32 | 3.187 | 1.221 | 0.871 |
 | 9615 | Cricoid cartilage | skeleton | 2 | 336 | 52 | 2.743 | 0.883 | 0.853 |
 | 9710 | Vomer | skeleton | 1 | 722 | 90 | 0.973 | 0.216 | 0.998 |
-| 9756 | External intercostal muscle | muscle | 2 | 20646 | 3478 | 7.261 | 0.398 | 0.940 |
+| 9756 | External intercostal muscle | muscle | 2 | 20646 | 3478 | 7.261 | 0.397 | 0.940 |
 | 9757 | Internal intercostal muscle | muscle | 2 | 18080 | 2378 | 4.051 | 0.422 | 0.939 |
 | 9758 | Innermost intercostal muscle | muscle | 2 | 17668 | 2450 | 6.107 | 0.400 | 0.932 |
 | 9761 | Right transversus thoracis | muscle | 1 | 422 | 132 | 8.725 | 0.728 | 0.852 |
@@ -364,7 +364,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 13075 | Fourth lumbar vertebra | skeleton | 1 | 3512 | 438 | 1.574 | 0.294 | 0.990 |
 | 13076 | Fifth lumbar vertebra | skeleton | 1 | 3892 | 486 | 1.563 | 0.309 | 0.994 |
 | 13279 | Left anterior segmental artery | cardiovascular | 8 | 404 | 162 | 3.591 | 0.321 | 0.866 |
-| 13295 | Diaphragm | muscle | 1 | 6870 | 878 | 2.436 | 0.586 | 0.995 |
+| 13295 | Diaphragm | muscle | 1 | 6870 | 878 | 2.436 | 0.587 | 0.995 |
 | 13322 | Right clavicle | skeleton | 1 | 256 | 32 | 9.214 | 1.864 | 0.921 |
 | 13323 | Left clavicle | skeleton | 1 | 256 | 32 | 6.793 | 1.515 | 0.909 |
 | 13325 | Right cephalic vein | cardiovascular | 1 | 2262 | 282 | 1.423 | 0.289 | 0.973 |
@@ -372,14 +372,14 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 13330 | Right axillary vein | cardiovascular | 1 | 256 | 32 | 2.936 | 0.843 | 0.903 |
 | 13331 | Left axillary vein | cardiovascular | 1 | 256 | 32 | 2.534 | 0.767 | 0.915 |
 | 13336 | Right external oblique | muscle | 1 | 11342 | 1580 | 8.328 | 0.334 | 0.982 |
-| 13337 | Left external oblique | muscle | 1 | 11340 | 1578 | 7.868 | 0.337 | 0.983 |
+| 13337 | Left external oblique | muscle | 1 | 11340 | 1578 | 7.868 | 0.336 | 0.983 |
 | 13346 | Right sternohyoid | muscle | 1 | 312 | 38 | 4.444 | 0.656 | 0.916 |
 | 13347 | Left sternohyoid | muscle | 1 | 308 | 38 | 3.637 | 0.659 | 0.941 |
 | 13348 | Right omohyoid | muscle | 1 | 546 | 72 | 3.155 | 0.478 | 0.910 |
 | 13349 | Left omohyoid | muscle | 1 | 536 | 66 | 1.910 | 0.499 | 0.895 |
 | 13350 | Right sternothyroid | muscle | 1 | 262 | 34 | 5.119 | 0.637 | 0.904 |
 | 13351 | Left sternothyroid | muscle | 1 | 258 | 32 | 3.615 | 0.693 | 0.911 |
-| 13352 | Right thyrohyoid | muscle | 1 | 282 | 64 | 1.754 | 0.248 | 0.966 |
+| 13352 | Right thyrohyoid | muscle | 1 | 282 | 64 | 1.754 | 0.252 | 0.966 |
 | 13353 | Left thyrohyoid | muscle | 1 | 258 | 34 | 1.940 | 0.316 | 0.941 |
 | 13365 | Caudate lobe of liver | cardiovascular | 1 | 502 | 62 | 2.461 | 0.665 | 0.946 |
 | 13375 | Right pectoralis minor | muscle | 1 | 1016 | 220 | 5.779 | 0.419 | 0.958 |
@@ -402,7 +402,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 13404 | Left serratus posterior superior | muscle | 1 | 962 | 176 | 7.868 | 0.602 | 0.928 |
 | 13405 | Right serratus posterior inferior | muscle | 1 | 1322 | 182 | 5.034 | 0.708 | 0.950 |
 | 13406 | Left serratus posterior inferior | muscle | 1 | 1322 | 182 | 4.465 | 0.699 | 0.958 |
-| 13408 | Right sternocleidomastoid | muscle | 1 | 1042 | 140 | 3.931 | 0.412 | 0.990 |
+| 13408 | Right sternocleidomastoid | muscle | 1 | 1042 | 140 | 3.931 | 0.408 | 0.990 |
 | 13409 | Left sternocleidomastoid | muscle | 1 | 1022 | 128 | 2.753 | 0.455 | 0.985 |
 | 13411 | Left subclavius | muscle | 1 | 264 | 44 | 2.195 | 0.430 | 0.857 |
 | 13412 | Right subclavius | muscle | 1 | 264 | 44 | 1.895 | 0.433 | 0.887 |
@@ -443,8 +443,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 14545 | Ascending colon | alimentary | 1 | 330 | 42 | 9.330 | 2.941 | 0.892 |
 | 14546 | Transverse colon | alimentary | 1 | 348 | 44 | 8.639 | 2.607 | 0.885 |
 | 14547 | Descending colon | alimentary | 1 | 558 | 70 | 9.646 | 2.474 | 0.928 |
-| 14643 | Mesentery of small intestine | alimentary | 1 | 4676 | 1534 | 12.083 | 0.350 | 0.941 |
-| 14647 | Transverse mesocolon | alimentary | 1 | 262 | 178 | 22.282 | 0.817 | 0.853 |
+| 14643 | Mesentery of small intestine | alimentary | 1 | 4676 | 1534 | 12.083 | 0.358 | 0.941 |
+| 14647 | Transverse mesocolon | alimentary | 1 | 262 | 178 | 22.282 | 0.830 | 0.853 |
 | 14668 | Common hepatic duct | alimentary | 1 | 256 | 54 | 2.080 | 0.597 | 0.858 |
 | 14669 | Right hepatic duct | cardiovascular | 1 | 226 | 28 | 0.749 | 0.261 | 0.859 |
 | 14670 | Left hepatic duct | cardiovascular | 1 | 256 | 32 | 1.304 | 0.417 | 0.904 |
@@ -495,9 +495,9 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 14964 | Proximal part of ileum | alimentary | 10 | 692 | 210 | 7.787 | 0.997 | 0.854 |
 | 14965 | Middle part of ileum | alimentary | 10 | 750 | 220 | 4.450 | 0.933 | 0.851 |
 | 14966 | Distal part of ileum | alimentary | 11 | 864 | 250 | 5.036 | 0.902 | 0.861 |
-| 15042 | Taenia mesocolica | alimentary | 1 | 1684 | 588 | 2.294 | 0.253 | 0.852 |
-| 15043 | Taenia omentalis | alimentary | 1 | 1734 | 362 | 2.705 | 0.462 | 0.851 |
-| 15044 | Taenia libera | alimentary | 1 | 1756 | 468 | 2.187 | 0.324 | 0.859 |
+| 15042 | Taenia mesocolica | alimentary | 1 | 1684 | 588 | 2.294 | 0.241 | 0.852 |
+| 15043 | Taenia omentalis | alimentary | 1 | 1734 | 362 | 2.705 | 0.466 | 0.851 |
+| 15044 | Taenia libera | alimentary | 1 | 1756 | 468 | 2.187 | 0.315 | 0.859 |
 | 15370 | Lumbar vein | cardiovascular | 2 | 1775 | 452 | 0.800 | 0.152 | 0.855 |
 | 15390 | Left gastroepiploic vein | cardiovascular | 1 | 256 | 52 | 0.808 | 0.238 | 0.852 |
 | 15391 | Inferior mesenteric vein | cardiovascular | 1 | 256 | 42 | 1.976 | 0.465 | 0.876 |
@@ -529,7 +529,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 15630 | Left adrenal gland | endocrine | 1 | 400 | 50 | 1.887 | 0.476 | 0.947 |
 | 15739 | Hepatovenous segment II | cardiovascular | 1 | 1432 | 178 | 1.846 | 0.432 | 0.981 |
 | 15741 | Hepatovenous segment III | cardiovascular | 1 | 1032 | 128 | 1.411 | 0.404 | 0.984 |
-| 15742 | Hepatovenous segment IV | cardiovascular | 1 | 1881 | 339 | 2.537 | 0.348 | 0.978 |
+| 15742 | Hepatovenous segment IV | cardiovascular | 1 | 1881 | 339 | 2.537 | 0.349 | 0.978 |
 | 15743 | Hepatovenous segment V | cardiovascular | 1 | 1144 | 144 | 0.875 | 0.230 | 0.998 |
 | 15744 | Hepatovenous segment VI | cardiovascular | 1 | 1944 | 242 | 1.431 | 0.284 | 0.994 |
 | 15745 | Hepatovenous segment VII | cardiovascular | 1 | 856 | 108 | 2.224 | 0.517 | 0.990 |
@@ -557,7 +557,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 16981 | Proximal part of jejunum | alimentary | 8 | 534 | 174 | 6.250 | 1.014 | 0.856 |
 | 16982 | Middle part of jejunum | alimentary | 5 | 346 | 102 | 6.772 | 1.123 | 0.851 |
 | 16983 | Distal part of jejunum | alimentary | 10 | 808 | 234 | 7.361 | 1.120 | 0.854 |
-| 18247 | Glans penis | other | 1 | 262 | 54 | 3.232 | 0.772 | 0.851 |
+| 18247 | Glans penis | other | 1 | 262 | 54 | 3.232 | 0.790 | 0.851 |
 | 18256 | Right epididymis | other | 1 | 76 | 20 | 1.893 | 0.497 | 0.864 |
 | 18257 | Left epididymis | other | 1 | 238 | 30 | 1.674 | 0.395 | 0.900 |
 | 18806 | Right external iliac artery | cardiovascular | 1 | 256 | 40 | 3.595 | 0.952 | 0.868 |
@@ -614,22 +614,22 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 22323 | Left iliacus | muscle | 1 | 328 | 84 | 7.500 | 0.993 | 0.896 |
 | 22324 | Right obturator internus | muscle | 1 | 260 | 36 | 6.056 | 1.410 | 0.874 |
 | 22325 | Left obturator internus | muscle | 1 | 260 | 38 | 4.931 | 1.241 | 0.852 |
-| 22326 | Right obturator externus | muscle | 1 | 274 | 64 | 7.151 | 0.726 | 0.903 |
-| 22327 | Left obturator externus | muscle | 1 | 272 | 62 | 7.331 | 0.773 | 0.895 |
-| 22328 | Right gluteus maximus | muscle | 1 | 282 | 62 | 24.445 | 2.548 | 0.929 |
-| 22329 | Left gluteus maximus | muscle | 1 | 278 | 56 | 28.522 | 2.979 | 0.901 |
+| 22326 | Right obturator externus | muscle | 1 | 274 | 64 | 7.151 | 0.723 | 0.903 |
+| 22327 | Left obturator externus | muscle | 1 | 272 | 62 | 7.331 | 0.784 | 0.895 |
+| 22328 | Right gluteus maximus | muscle | 1 | 282 | 62 | 24.445 | 2.572 | 0.929 |
+| 22329 | Left gluteus maximus | muscle | 1 | 278 | 56 | 28.522 | 3.036 | 0.901 |
 | 22330 | Right gluteus medius | muscle | 1 | 345 | 53 | 7.824 | 1.881 | 0.920 |
 | 22331 | Left gluteus medius | muscle | 1 | 345 | 53 | 6.488 | 1.902 | 0.927 |
 | 22332 | Right gluteus minimus | muscle | 1 | 416 | 52 | 4.624 | 1.116 | 0.955 |
 | 22333 | Left gluteus minimus | muscle | 1 | 418 | 52 | 5.986 | 1.208 | 0.949 |
-| 22334 | Right gemellus superior | muscle | 1 | 264 | 68 | 1.734 | 0.294 | 0.892 |
-| 22335 | Left gemellus superior | muscle | 1 | 264 | 68 | 2.517 | 0.308 | 0.874 |
+| 22334 | Right gemellus superior | muscle | 1 | 264 | 68 | 1.734 | 0.289 | 0.892 |
+| 22335 | Left gemellus superior | muscle | 1 | 264 | 68 | 2.517 | 0.304 | 0.874 |
 | 22336 | Right gemellus inferior | muscle | 1 | 256 | 32 | 2.436 | 0.636 | 0.942 |
 | 22337 | Left gemellus inferior | muscle | 1 | 256 | 32 | 2.496 | 0.647 | 0.955 |
 | 22338 | Right quadratus femoris | muscle | 1 | 258 | 34 | 5.943 | 0.946 | 0.892 |
 | 22339 | Left quadratus femoris | muscle | 1 | 258 | 34 | 5.107 | 0.911 | 0.885 |
 | 22340 | Right piriformis | muscle | 1 | 268 | 48 | 4.570 | 0.855 | 0.926 |
-| 22341 | Left piriformis | muscle | 1 | 266 | 46 | 3.556 | 0.730 | 0.978 |
+| 22341 | Left piriformis | muscle | 1 | 266 | 46 | 3.556 | 0.718 | 0.978 |
 | 22342 | Right psoas major | muscle | 1 | 518 | 98 | 18.910 | 1.994 | 0.851 |
 | 22343 | Left psoas major | muscle | 1 | 518 | 110 | 19.772 | 1.912 | 0.858 |
 | 22354 | Right sartorius | muscle | 1 | 374 | 74 | 10.496 | 0.891 | 0.959 |
@@ -650,17 +650,17 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 22460 | Left adductor magnus | muscle | 1 | 598 | 74 | 15.474 | 1.857 | 0.943 |
 | 22507 | Right descending genicular artery | cardiovascular | 1 | 654 | 82 | 2.245 | 0.551 | 0.881 |
 | 22508 | Left descending genicular artery | cardiovascular | 1 | 652 | 82 | 1.651 | 0.539 | 0.897 |
-| 22544 | Right tibialis anterior | muscle | 1 | 372 | 164 | 7.430 | 0.730 | 0.856 |
-| 22545 | Left tibialis anterior | muscle | 1 | 370 | 160 | 5.799 | 0.703 | 0.888 |
-| 22546 | Right extensor hallucis longus | muscle | 1 | 258 | 34 | 11.178 | 0.976 | 0.880 |
+| 22544 | Right tibialis anterior | muscle | 1 | 372 | 164 | 7.430 | 0.740 | 0.856 |
+| 22545 | Left tibialis anterior | muscle | 1 | 370 | 160 | 5.799 | 0.712 | 0.888 |
+| 22546 | Right extensor hallucis longus | muscle | 1 | 258 | 34 | 11.178 | 0.973 | 0.880 |
 | 22547 | Left extensor hallucis longus | muscle | 1 | 260 | 38 | 11.178 | 0.939 | 0.864 |
-| 22548 | Right extensor digitorum longus | muscle | 1 | 511 | 187 | 8.075 | 0.553 | 0.863 |
-| 22549 | Left extensor digitorum longus | muscle | 1 | 511 | 181 | 17.419 | 0.918 | 0.851 |
+| 22548 | Right extensor digitorum longus | muscle | 1 | 511 | 187 | 8.075 | 0.538 | 0.863 |
+| 22549 | Left extensor digitorum longus | muscle | 1 | 511 | 181 | 17.419 | 0.932 | 0.851 |
 | 22550 | Right fibularis tertius | muscle | 1 | 260 | 44 | 4.440 | 0.584 | 0.871 |
 | 22551 | Left fibularis tertius | muscle | 1 | 264 | 42 | 3.847 | 0.676 | 0.872 |
-| 22552 | Right fibularis longus | muscle | 1 | 456 | 130 | 17.287 | 1.075 | 0.897 |
-| 22553 | Left fibularis longus | muscle | 1 | 458 | 132 | 13.875 | 0.807 | 0.960 |
-| 22554 | Right fibularis brevis | muscle | 1 | 278 | 72 | 4.063 | 0.528 | 0.855 |
+| 22552 | Right fibularis longus | muscle | 1 | 456 | 130 | 17.287 | 1.092 | 0.897 |
+| 22553 | Left fibularis longus | muscle | 1 | 458 | 132 | 13.875 | 0.816 | 0.960 |
+| 22554 | Right fibularis brevis | muscle | 1 | 278 | 72 | 4.063 | 0.534 | 0.855 |
 | 22555 | Left fibularis brevis | muscle | 1 | 280 | 72 | 3.526 | 0.536 | 0.860 |
 | 22558 | Right soleus | muscle | 1 | 444 | 58 | 9.954 | 1.740 | 0.902 |
 | 22559 | Left soleus | muscle | 1 | 444 | 58 | 9.402 | 1.627 | 0.913 |
@@ -692,8 +692,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 22708 | Left superior ulnar collateral artery | cardiovascular | 1 | 256 | 44 | 0.783 | 0.238 | 0.853 |
 | 22712 | Right inferior ulnar collateral artery | cardiovascular | 1 | 256 | 52 | 0.799 | 0.195 | 0.856 |
 | 22713 | Left inferior ulnar collateral artery | cardiovascular | 1 | 256 | 48 | 0.811 | 0.214 | 0.855 |
-| 22726 | Right splenius cervicis | muscle | 1 | 656 | 114 | 4.148 | 0.502 | 0.936 |
-| 22727 | Left splenius cervicis | muscle | 1 | 656 | 114 | 6.050 | 0.532 | 0.932 |
+| 22726 | Right splenius cervicis | muscle | 1 | 656 | 114 | 4.148 | 0.501 | 0.936 |
+| 22727 | Left splenius cervicis | muscle | 1 | 656 | 114 | 6.050 | 0.535 | 0.932 |
 | 22728 | Right splenius capitis | muscle | 1 | 798 | 116 | 3.204 | 0.403 | 0.981 |
 | 22729 | Left splenius capitis | muscle | 1 | 798 | 116 | 3.672 | 0.414 | 0.974 |
 | 22733 | Right radial artery | cardiovascular | 1 | 748 | 94 | 1.474 | 0.411 | 0.881 |
@@ -704,20 +704,20 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 22743 | Left iliocostalis thoracis | muscle | 1 | 844 | 118 | 4.814 | 0.705 | 0.934 |
 | 22744 | Right iliocostalis cervicis | muscle | 1 | 328 | 62 | 4.194 | 0.849 | 0.854 |
 | 22745 | Left iliocostalis cervicis | muscle | 1 | 328 | 70 | 7.170 | 0.804 | 0.852 |
-| 22751 | Right longissimus thoracis | muscle | 1 | 1530 | 240 | 12.145 | 1.244 | 0.937 |
-| 22753 | Left longissimus thoracis | muscle | 1 | 1532 | 242 | 12.417 | 1.383 | 0.891 |
+| 22751 | Right longissimus thoracis | muscle | 1 | 1530 | 240 | 12.145 | 1.246 | 0.937 |
+| 22753 | Left longissimus thoracis | muscle | 1 | 1532 | 242 | 12.417 | 1.386 | 0.891 |
 | 22754 | Right longissimus capitis | muscle | 1 | 260 | 38 | 4.699 | 0.973 | 0.866 |
 | 22756 | Left longissimus capitis | muscle | 1 | 260 | 42 | 5.309 | 0.899 | 0.868 |
-| 22757 | Right longissimus cervicis | muscle | 1 | 282 | 42 | 3.374 | 0.824 | 0.861 |
-| 22758 | Left longissimus cervicis | muscle | 1 | 282 | 50 | 3.396 | 0.781 | 0.858 |
+| 22757 | Right longissimus cervicis | muscle | 1 | 282 | 42 | 3.374 | 0.842 | 0.861 |
+| 22758 | Left longissimus cervicis | muscle | 1 | 282 | 50 | 3.396 | 0.790 | 0.858 |
 | 22764 | Right radial recurrent artery | cardiovascular | 1 | 260 | 54 | 1.389 | 0.348 | 0.854 |
 | 22766 | Left radial recurrent artery | cardiovascular | 1 | 260 | 52 | 1.317 | 0.334 | 0.867 |
 | 22772 | Dorsal carpal branch of right radial artery | cardiovascular | 1 | 256 | 32 | 0.452 | 0.150 | 0.875 |
 | 22773 | Dorsal carpal branch of left radial artery | cardiovascular | 1 | 256 | 32 | 0.508 | 0.153 | 0.869 |
 | 22777 | Right arteria radialis indicis | cardiovascular | 2 | 256 | 64 | 0.696 | 0.178 | 0.852 |
 | 22778 | Left arteria radialis indicis | cardiovascular | 2 | 256 | 94 | 6.264 | 0.207 | 0.864 |
-| 22779 | Right spinalis thoracis | muscle | 1 | 772 | 134 | 2.684 | 0.524 | 0.906 |
-| 22780 | Left spinalis thoracis | muscle | 1 | 770 | 130 | 4.150 | 0.634 | 0.853 |
+| 22779 | Right spinalis thoracis | muscle | 1 | 772 | 134 | 2.684 | 0.520 | 0.906 |
+| 22780 | Left spinalis thoracis | muscle | 1 | 770 | 130 | 4.150 | 0.638 | 0.853 |
 | 22797 | Right ulnar artery | cardiovascular | 1 | 688 | 86 | 1.397 | 0.382 | 0.901 |
 | 22798 | Left ulnar artery | cardiovascular | 1 | 712 | 88 | 1.263 | 0.359 | 0.919 |
 | 22801 | Right anterior ulnar recurrent artery | cardiovascular | 1 | 256 | 32 | 0.283 | 0.106 | 0.899 |
@@ -735,14 +735,14 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 22839 | Right deep palmar arch | other | 1 | 256 | 62 | 1.024 | 0.299 | 0.850 |
 | 22840 | Left deep palmar arch | other | 1 | 256 | 70 | 0.969 | 0.280 | 0.860 |
 | 22850 | Lateral lumbar intertransversarius | muscle | 2 | 436 | 188 | 4.072 | 0.273 | 0.870 |
-| 22851 | Medial lumbar intertransversarius | muscle | 2 | 376 | 116 | 3.163 | 0.468 | 0.866 |
+| 22851 | Medial lumbar intertransversarius | muscle | 2 | 376 | 116 | 3.163 | 0.451 | 0.866 |
 | 22856 | Right first common palmar digital artery | cardiovascular | 1 | 256 | 32 | 0.443 | 0.153 | 0.885 |
 | 22858 | Lateral proper palmar digital artery of right middle finger | cardiovascular | 1 | 256 | 46 | 0.437 | 0.132 | 0.854 |
 | 22860 | Lateral proper palmar digital artery of left middle finger | cardiovascular | 1 | 256 | 36 | 0.480 | 0.166 | 0.857 |
 | 22864 | Right palmar metacarpal artery | cardiovascular | 1 | 292 | 116 | 0.707 | 0.113 | 0.866 |
 | 22865 | Left palmar metacarpal artery | cardiovascular | 1 | 330 | 110 | 0.818 | 0.142 | 0.863 |
-| 22872 | Right semispinalis thoracis | muscle | 1 | 512 | 76 | 6.969 | 1.085 | 0.852 |
-| 22873 | Left semispinalis thoracis | muscle | 1 | 512 | 68 | 6.437 | 1.207 | 0.855 |
+| 22872 | Right semispinalis thoracis | muscle | 1 | 512 | 76 | 6.969 | 1.030 | 0.852 |
+| 22873 | Left semispinalis thoracis | muscle | 1 | 512 | 68 | 6.437 | 1.181 | 0.855 |
 | 22874 | Right semispinalis cervicis | muscle | 1 | 348 | 96 | 5.075 | 0.565 | 0.863 |
 | 22875 | Left semispinalis cervicis | muscle | 1 | 348 | 74 | 5.411 | 0.758 | 0.859 |
 | 22876 | Right semispinalis capitis | muscle | 1 | 252 | 32 | 11.972 | 1.716 | 0.957 |
@@ -783,8 +783,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 23072 | Deltoid branch of right thoraco-acromial artery | cardiovascular | 1 | 256 | 38 | 0.874 | 0.224 | 0.856 |
 | 23073 | Deltoid branch of left thoraco-acromial artery | cardiovascular | 1 | 256 | 40 | 0.685 | 0.210 | 0.850 |
 | 23083 | Thoracic rotator | muscle | 2 | 2272 | 536 | 6.838 | 0.765 | 0.855 |
-| 23089 | Right lumbar rotator | muscle | 1 | 510 | 198 | 4.234 | 0.411 | 0.867 |
-| 23090 | Left lumbar rotator | muscle | 1 | 504 | 204 | 5.539 | 0.408 | 0.851 |
+| 23089 | Right lumbar rotator | muscle | 1 | 510 | 198 | 4.234 | 0.380 | 0.867 |
+| 23090 | Left lumbar rotator | muscle | 1 | 504 | 204 | 5.539 | 0.375 | 0.851 |
 | 23114 | Right subscapular vein | cardiovascular | 1 | 256 | 32 | 0.658 | 0.213 | 0.912 |
 | 23115 | Left subscapular vein | cardiovascular | 1 | 256 | 32 | 0.689 | 0.201 | 0.924 |
 | 23124 | Middle collateral branch of right deep brachial artery | cardiovascular | 1 | 256 | 34 | 0.988 | 0.307 | 0.877 |
@@ -897,8 +897,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 32545 | Left supraspinatus | muscle | 1 | 260 | 42 | 4.887 | 1.224 | 0.898 |
 | 32547 | Right infraspinatus muscle | muscle | 1 | 256 | 32 | 6.546 | 1.698 | 0.923 |
 | 32548 | Left infraspinatus muscle | muscle | 1 | 256 | 32 | 7.498 | 1.728 | 0.930 |
-| 32551 | Right teres major | muscle | 1 | 274 | 56 | 4.335 | 0.930 | 0.917 |
-| 32552 | Left teres major | muscle | 1 | 274 | 56 | 5.575 | 0.927 | 0.914 |
+| 32551 | Right teres major | muscle | 1 | 274 | 56 | 4.335 | 0.906 | 0.917 |
+| 32552 | Left teres major | muscle | 1 | 274 | 56 | 5.575 | 0.895 | 0.914 |
 | 32553 | Right teres minor | muscle | 1 | 256 | 32 | 3.547 | 1.225 | 0.897 |
 | 32554 | Left teres minor | muscle | 1 | 256 | 32 | 4.205 | 1.284 | 0.896 |
 | 32634 | Proximal phalanx of right second toe | skeleton | 1 | 256 | 32 | 1.810 | 0.493 | 0.944 |
@@ -925,12 +925,12 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 32657 | Distal phalanx of left fourth toe | skeleton | 1 | 226 | 28 | 0.958 | 0.254 | 0.929 |
 | 32658 | Distal phalanx of right little toe | skeleton | 1 | 210 | 34 | 0.934 | 0.214 | 0.917 |
 | 32659 | Distal phalanx of left little toe | skeleton | 1 | 217 | 31 | 0.992 | 0.287 | 0.861 |
-| 33581 | Ascending part of right trapezius | other | 1 | 1116 | 210 | 9.002 | 0.654 | 0.966 |
-| 33583 | Ascending part of left trapezius | other | 1 | 1118 | 208 | 5.092 | 0.552 | 0.961 |
+| 33581 | Ascending part of right trapezius | other | 1 | 1116 | 210 | 9.002 | 0.645 | 0.966 |
+| 33583 | Ascending part of left trapezius | other | 1 | 1118 | 208 | 5.092 | 0.545 | 0.961 |
 | 33584 | Transverse part of right trapezius | muscle | 1 | 506 | 122 | 7.195 | 0.556 | 1.014 |
 | 33585 | Transverse part of left trapezius | muscle | 1 | 504 | 120 | 5.878 | 0.737 | 0.936 |
-| 33586 | Descending part of right trapezius | other | 1 | 722 | 102 | 7.473 | 0.908 | 0.967 |
-| 33587 | Descending part of left trapezius | other | 1 | 722 | 102 | 5.699 | 0.754 | 0.983 |
+| 33586 | Descending part of right trapezius | other | 1 | 722 | 102 | 7.473 | 0.904 | 0.967 |
+| 33587 | Descending part of left trapezius | other | 1 | 722 | 102 | 5.699 | 0.747 | 0.983 |
 | 34680 | Clavicular part of right deltoid | muscle | 1 | 256 | 32 | 14.893 | 1.675 | 0.926 |
 | 34681 | Clavicular part of left deltoid | muscle | 1 | 256 | 32 | 14.892 | 1.849 | 0.908 |
 | 34682 | Acromial part of right deltoid | muscle | 1 | 260 | 38 | 7.470 | 1.738 | 0.927 |
@@ -941,8 +941,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 34691 | Clavicular part of left pectoralis major | muscle | 1 | 288 | 70 | 4.807 | 0.687 | 0.933 |
 | 35192 | Interosseous membrane of right leg | other | 1 | 564 | 70 | 2.534 | 0.470 | 0.980 |
 | 35193 | Interosseous membrane of left leg | other | 1 | 564 | 70 | 2.424 | 0.495 | 0.964 |
-| 37386 | Right abductor pollicis brevis | muscle | 1 | 258 | 38 | 2.169 | 0.420 | 0.924 |
-| 37387 | Left abductor pollicis brevis | muscle | 1 | 258 | 38 | 2.169 | 0.432 | 0.922 |
+| 37386 | Right abductor pollicis brevis | muscle | 1 | 258 | 38 | 2.169 | 0.426 | 0.924 |
+| 37387 | Left abductor pollicis brevis | muscle | 1 | 258 | 38 | 2.169 | 0.438 | 0.922 |
 | 37388 | Right flexor pollicis brevis | muscle | 1 | 270 | 54 | 1.615 | 0.241 | 0.997 |
 | 37389 | Left flexor pollicis brevis | muscle | 1 | 270 | 54 | 1.301 | 0.228 | 0.940 |
 | 37390 | Right opponens pollicis | muscle | 1 | 280 | 64 | 1.737 | 0.199 | 0.950 |
@@ -951,30 +951,30 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 37397 | Abductor digiti minimi of left hand | muscle | 1 | 252 | 32 | 2.824 | 0.460 | 0.897 |
 | 37398 | Flexor digiti minimi brevis of right hand | muscle | 1 | 258 | 38 | 1.037 | 0.214 | 0.931 |
 | 37399 | Flexor digiti minimi brevis of left hand | muscle | 1 | 258 | 38 | 1.037 | 0.212 | 0.931 |
-| 37400 | Opponens digiti minimi of right hand | muscle | 1 | 256 | 48 | 2.417 | 0.311 | 0.886 |
-| 37401 | Opponens digiti minimi of left hand | muscle | 1 | 260 | 54 | 1.306 | 0.224 | 0.941 |
+| 37400 | Opponens digiti minimi of right hand | muscle | 1 | 256 | 48 | 2.417 | 0.296 | 0.886 |
+| 37401 | Opponens digiti minimi of left hand | muscle | 1 | 260 | 54 | 1.306 | 0.206 | 0.941 |
 | 37459 | Right abductor hallucis | muscle | 1 | 264 | 42 | 3.816 | 0.541 | 0.962 |
 | 37460 | Left abductor hallucis | muscle | 1 | 264 | 42 | 4.213 | 0.573 | 0.919 |
-| 37461 | Right flexor digitorum brevis | muscle | 1 | 256 | 34 | 18.350 | 2.813 | 0.854 |
-| 37462 | Left flexor digitorum brevis | muscle | 1 | 256 | 34 | 15.260 | 2.096 | 0.854 |
+| 37461 | Right flexor digitorum brevis | muscle | 1 | 256 | 34 | 18.350 | 2.999 | 0.854 |
+| 37462 | Left flexor digitorum brevis | muscle | 1 | 256 | 34 | 15.260 | 2.248 | 0.854 |
 | 37463 | Abductor digiti minimi of right foot | muscle | 1 | 276 | 56 | 4.504 | 0.396 | 0.970 |
 | 37464 | Abductor digiti minimi of left foot | muscle | 1 | 270 | 54 | 4.501 | 0.396 | 1.038 |
 | 37465 | Right flexor accessorius | muscle | 1 | 256 | 34 | 1.943 | 0.485 | 0.958 |
 | 37466 | Left flexor accessorius | muscle | 1 | 256 | 34 | 3.797 | 0.601 | 0.916 |
-| 37471 | Flexor digiti minimi brevis of right foot | muscle | 1 | 260 | 38 | 6.438 | 0.517 | 0.882 |
-| 37472 | Flexor digiti minimi brevis of left foot | muscle | 1 | 260 | 38 | 2.448 | 0.416 | 0.883 |
+| 37471 | Flexor digiti minimi brevis of right foot | muscle | 1 | 260 | 38 | 6.438 | 0.521 | 0.882 |
+| 37472 | Flexor digiti minimi brevis of left foot | muscle | 1 | 260 | 38 | 2.448 | 0.417 | 0.883 |
 | 37483 | Fourth lumbrical of right foot | muscle | 1 | 264 | 60 | 2.178 | 0.265 | 0.913 |
 | 37484 | Fourth lumbrical of left foot | muscle | 1 | 264 | 60 | 2.178 | 0.310 | 0.886 |
 | 37485 | Third lumbrical of right foot | muscle | 1 | 242 | 36 | 2.335 | 0.375 | 0.869 |
-| 37486 | Third lumbrical of left foot | muscle | 1 | 238 | 36 | 2.943 | 0.457 | 0.896 |
+| 37486 | Third lumbrical of left foot | muscle | 1 | 238 | 36 | 1.309 | 0.247 | 0.896 |
 | 37665 | Right coracobrachialis | muscle | 1 | 258 | 36 | 2.515 | 0.564 | 0.929 |
 | 37666 | Left coracobrachialis | muscle | 1 | 256 | 36 | 2.515 | 0.559 | 0.932 |
 | 37668 | Right brachialis | muscle | 1 | 262 | 40 | 5.986 | 1.509 | 0.877 |
 | 37669 | Left brachialis | muscle | 1 | 262 | 40 | 5.527 | 1.503 | 0.891 |
 | 37684 | Short head of right biceps brachii | muscle | 1 | 268 | 46 | 7.466 | 1.238 | 0.865 |
 | 37685 | Short head of left biceps brachii | muscle | 1 | 268 | 46 | 6.899 | 1.313 | 0.878 |
-| 37686 | Long head of right biceps brachii | muscle | 1 | 258 | 36 | 9.272 | 1.686 | 0.874 |
-| 37687 | Long head of left biceps brachii | muscle | 1 | 258 | 38 | 7.285 | 1.511 | 0.861 |
+| 37686 | Long head of right biceps brachii | muscle | 1 | 258 | 36 | 9.272 | 1.727 | 0.874 |
+| 37687 | Long head of left biceps brachii | muscle | 1 | 258 | 38 | 7.285 | 1.529 | 0.861 |
 | 37695 | Medial head of right triceps brachii | muscle | 1 | 258 | 34 | 5.630 | 1.222 | 0.942 |
 | 37696 | Medial head of left triceps brachii | muscle | 1 | 258 | 34 | 6.011 | 1.310 | 0.885 |
 | 37697 | Lateral head of right triceps brachii | muscle | 1 | 264 | 36 | 7.103 | 1.419 | 0.911 |
@@ -993,30 +993,30 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 37744 | Second plantar interosseous of left foot | muscle | 1 | 258 | 36 | 1.383 | 0.282 | 0.865 |
 | 37745 | First plantar interosseous of right foot | muscle | 1 | 256 | 32 | 1.085 | 0.307 | 0.902 |
 | 37746 | First plantar interosseous of left foot | muscle | 1 | 256 | 32 | 1.249 | 0.272 | 0.921 |
-| 38454 | Right pronator quadratus | muscle | 1 | 296 | 94 | 6.920 | 0.329 | 0.872 |
-| 38455 | Left pronator quadratus | muscle | 1 | 294 | 94 | 6.930 | 0.344 | 0.863 |
+| 38454 | Right pronator quadratus | muscle | 1 | 296 | 94 | 6.920 | 0.321 | 0.872 |
+| 38455 | Left pronator quadratus | muscle | 1 | 294 | 94 | 6.930 | 0.342 | 0.863 |
 | 38460 | Right flexor carpi radialis | muscle | 1 | 264 | 42 | 3.935 | 0.751 | 0.903 |
 | 38461 | Left flexor carpi radialis | muscle | 1 | 264 | 42 | 5.275 | 0.836 | 0.861 |
 | 38463 | Right palmaris longus | muscle | 1 | 486 | 60 | 6.594 | 0.954 | 0.882 |
 | 38464 | Left palmaris longus | muscle | 1 | 492 | 64 | 5.321 | 0.934 | 0.860 |
 | 38470 | Right flexor digitorum superficialis | muscle | 2 | 954 | 160 | 15.461 | 1.433 | 0.856 |
 | 38471 | Left flexor digitorum superficialis | muscle | 2 | 956 | 144 | 27.235 | 2.493 | 0.854 |
-| 38479 | Right flexor digitorum profundus | muscle | 1 | 494 | 178 | 32.142 | 1.675 | 0.851 |
-| 38480 | Left flexor digitorum profundus | muscle | 1 | 494 | 188 | 28.786 | 1.582 | 0.856 |
-| 38482 | Right flexor pollicis longus | muscle | 1 | 266 | 60 | 2.808 | 0.483 | 0.852 |
-| 38484 | Left flexor pollicis longus | muscle | 1 | 266 | 62 | 2.704 | 0.393 | 0.877 |
+| 38479 | Right flexor digitorum profundus | muscle | 1 | 494 | 178 | 32.142 | 1.668 | 0.851 |
+| 38480 | Left flexor digitorum profundus | muscle | 1 | 494 | 188 | 28.786 | 1.574 | 0.856 |
+| 38482 | Right flexor pollicis longus | muscle | 1 | 266 | 60 | 2.808 | 0.471 | 0.852 |
+| 38484 | Left flexor pollicis longus | muscle | 1 | 266 | 62 | 2.704 | 0.379 | 0.877 |
 | 38486 | Right brachioradialis | muscle | 1 | 488 | 60 | 5.474 | 0.942 | 0.930 |
 | 38487 | Left brachioradialis | muscle | 1 | 488 | 60 | 5.474 | 0.968 | 0.932 |
-| 38495 | Right extensor carpi radialis longus | muscle | 1 | 268 | 50 | 7.037 | 0.863 | 0.853 |
-| 38496 | Left extensor carpi radialis longus | muscle | 1 | 268 | 46 | 7.037 | 0.935 | 0.853 |
+| 38495 | Right extensor carpi radialis longus | muscle | 1 | 268 | 50 | 6.090 | 0.773 | 0.853 |
+| 38496 | Left extensor carpi radialis longus | muscle | 1 | 268 | 46 | 6.093 | 0.847 | 0.853 |
 | 38498 | Right extensor carpi radialis brevis | muscle | 1 | 262 | 40 | 40.872 | 3.049 | 0.857 |
 | 38499 | Left extensor carpi radialis brevis | muscle | 1 | 262 | 38 | 40.872 | 3.200 | 0.854 |
 | 38501 | Right extensor digitorum | muscle | 1 | 428 | 104 | 16.962 | 0.982 | 0.857 |
 | 38502 | Left extensor digitorum | muscle | 1 | 428 | 82 | 9.421 | 0.893 | 0.853 |
 | 38504 | Right extensor digiti minimi | muscle | 1 | 260 | 40 | 11.510 | 1.196 | 0.865 |
 | 38505 | Left extensor digiti minimi | muscle | 1 | 260 | 42 | 13.998 | 1.326 | 0.858 |
-| 38507 | Right extensor carpi ulnaris | muscle | 2 | 396 | 170 | 3.132 | 0.200 | 0.854 |
-| 38508 | Left extensor carpi ulnaris | muscle | 2 | 393 | 159 | 2.602 | 0.210 | 0.853 |
+| 38507 | Right extensor carpi ulnaris | muscle | 2 | 396 | 170 | 3.132 | 0.221 | 0.854 |
+| 38508 | Left extensor carpi ulnaris | muscle | 2 | 393 | 159 | 2.602 | 0.239 | 0.853 |
 | 38513 | Right supinator | muscle | 1 | 324 | 54 | 13.528 | 0.932 | 0.874 |
 | 38514 | Left supinator | muscle | 1 | 324 | 54 | 5.186 | 0.599 | 0.930 |
 | 38516 | Right abductor pollicis longus | muscle | 1 | 254 | 32 | 3.736 | 0.873 | 0.899 |
@@ -1045,12 +1045,12 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 38935 | Left vastus intermedius | muscle | 1 | 426 | 54 | 36.780 | 2.809 | 0.894 |
 | 40120 | Flexor retinaculum of right wrist | other | 1 | 254 | 32 | 4.987 | 0.728 | 0.877 |
 | 40121 | Flexor retinaculum of left wrist | other | 1 | 256 | 32 | 4.294 | 0.736 | 0.944 |
-| 42398 | Set of lumbricals of right hand | other | 1 | 322 | 194 | 21.220 | 0.441 | 0.855 |
-| 42399 | Set of lumbricals of left hand | other | 1 | 322 | 164 | 17.564 | 0.545 | 0.851 |
-| 42402 | Set of palmar interossei of right hand | other | 1 | 290 | 100 | 2.364 | 0.190 | 0.856 |
-| 42403 | Set of palmar interossei of left hand | other | 1 | 288 | 98 | 2.361 | 0.188 | 0.857 |
-| 42404 | Set of dorsal interossei of right hand | other | 1 | 544 | 422 | 4.753 | 0.118 | 0.858 |
-| 42405 | Set of dorsal interossei of left hand | other | 1 | 546 | 410 | 4.753 | 0.107 | 0.862 |
+| 42398 | Set of lumbricals of right hand | other | 1 | 322 | 194 | 21.220 | 0.444 | 0.855 |
+| 42399 | Set of lumbricals of left hand | other | 1 | 322 | 164 | 17.564 | 0.551 | 0.851 |
+| 42402 | Set of palmar interossei of right hand | other | 1 | 290 | 100 | 2.364 | 0.177 | 0.856 |
+| 42403 | Set of palmar interossei of left hand | other | 1 | 288 | 98 | 2.361 | 0.174 | 0.857 |
+| 42404 | Set of dorsal interossei of right hand | other | 1 | 544 | 422 | 4.753 | 0.061 | 0.858 |
+| 42405 | Set of dorsal interossei of left hand | other | 1 | 546 | 410 | 4.753 | 0.074 | 0.862 |
 | 43253 | Proximal phalanx of right big toe | skeleton | 1 | 256 | 32 | 2.343 | 0.622 | 0.962 |
 | 43254 | Proximal phalanx of left big toe | skeleton | 1 | 256 | 32 | 3.506 | 0.701 | 0.935 |
 | 43883 | Right gracilis | muscle | 1 | 328 | 52 | 14.995 | 1.455 | 0.884 |
@@ -1078,8 +1078,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 43943 | Right plantar arch | cardiovascular | 1 | 256 | 44 | 0.755 | 0.237 | 0.854 |
 | 43944 | Left plantar arch | cardiovascular | 1 | 256 | 62 | 0.708 | 0.177 | 0.861 |
 | 43956 | Plantar metatarsal artery | cardiovascular | 2 | 534 | 218 | 0.861 | 0.140 | 0.853 |
-| 44249 | Right long plantar ligament | other | 1 | 318 | 92 | 5.052 | 0.418 | 0.852 |
-| 44250 | Left long plantar ligament | other | 1 | 318 | 94 | 4.272 | 0.401 | 0.857 |
+| 44249 | Right long plantar ligament | other | 1 | 318 | 92 | 5.052 | 0.416 | 0.852 |
+| 44250 | Left long plantar ligament | other | 1 | 318 | 94 | 4.272 | 0.403 | 0.857 |
 | 44328 | Right popliteal vein | cardiovascular | 1 | 1666 | 208 | 1.056 | 0.199 | 0.986 |
 | 44329 | Left popliteal vein | cardiovascular | 1 | 1660 | 208 | 0.999 | 0.204 | 0.982 |
 | 44334 | Right small saphenous vein | cardiovascular | 1 | 1634 | 204 | 0.861 | 0.257 | 0.960 |
@@ -1111,11 +1111,11 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 45740 | Left platysma | muscle | 1 | 1340 | 166 | 3.153 | 0.606 | 0.978 |
 | 45826 | Right stylohyoid | muscle | 1 | 258 | 36 | 2.067 | 0.427 | 0.864 |
 | 45827 | Left stylohyoid | muscle | 1 | 260 | 40 | 5.058 | 0.474 | 0.859 |
-| 45854 | Right pubococcygeus | muscle | 1 | 482 | 84 | 4.274 | 0.483 | 0.934 |
+| 45854 | Right pubococcygeus | muscle | 1 | 482 | 84 | 4.274 | 0.499 | 0.934 |
 | 45855 | Left pubococcygeus | muscle | 2 | 930 | 116 | 2.114 | 0.389 | 0.946 |
 | 45856 | Right puborectalis | muscle | 1 | 568 | 274 | 3.015 | 0.175 | 0.891 |
 | 45857 | Left puborectalis | muscle | 2 | 814 | 196 | 6.055 | 0.331 | 0.902 |
-| 45858 | Right iliococcygeus | muscle | 1 | 436 | 104 | 2.978 | 0.466 | 0.919 |
+| 45858 | Right iliococcygeus | muscle | 1 | 436 | 104 | 2.978 | 0.412 | 0.919 |
 | 45859 | Left iliococcygeus | muscle | 2 | 796 | 130 | 2.309 | 0.320 | 0.925 |
 | 45874 | Abdominal part of right pectoralis major | muscle | 1 | 260 | 36 | 6.043 | 1.138 | 0.890 |
 | 45875 | Abdominal part of left pectoralis major | muscle | 1 | 260 | 36 | 4.517 | 1.174 | 0.875 |
@@ -1135,8 +1135,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 46019 | Oblique head of left adductor hallucis | muscle | 1 | 256 | 32 | 5.327 | 0.787 | 0.928 |
 | 46020 | Transverse head of right adductor hallucis | muscle | 1 | 272 | 64 | 4.012 | 0.322 | 0.851 |
 | 46021 | Transverse head of left adductor hallucis | muscle | 1 | 272 | 58 | 4.240 | 0.358 | 0.856 |
-| 46121 | Oblique head of right adductor pollicis | muscle | 1 | 270 | 60 | 2.283 | 0.344 | 0.921 |
-| 46122 | Oblique head of left adductor pollicis | muscle | 1 | 272 | 62 | 1.821 | 0.319 | 0.898 |
+| 46121 | Oblique head of right adductor pollicis | muscle | 1 | 270 | 60 | 2.283 | 0.340 | 0.921 |
+| 46122 | Oblique head of left adductor pollicis | muscle | 1 | 272 | 62 | 1.821 | 0.325 | 0.898 |
 | 46123 | Transverse head of right adductor pollicis | muscle | 1 | 258 | 34 | 1.900 | 0.559 | 0.955 |
 | 46124 | Transverse head of left adductor pollicis | muscle | 1 | 258 | 34 | 2.065 | 0.602 | 0.936 |
 | 46284 | Superior oblique part of left longus colli | muscle | 1 | 256 | 36 | 3.271 | 0.721 | 0.851 |
@@ -1161,16 +1161,16 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 46578 | Left posterior crico-arytenoid | muscle | 1 | 484 | 60 | 0.594 | 0.115 | 0.951 |
 | 46580 | Right lateral crico-arytenoid | muscle | 1 | 620 | 78 | 0.314 | 0.066 | 0.935 |
 | 46581 | Left lateral crico-arytenoid | muscle | 1 | 622 | 78 | 0.334 | 0.082 | 0.923 |
-| 46582 | Transverse arytenoid | muscle | 1 | 664 | 88 | 0.379 | 0.084 | 0.967 |
+| 46582 | Transverse arytenoid | muscle | 1 | 664 | 88 | 0.379 | 0.085 | 0.967 |
 | 46584 | Right oblique arytenoid | muscle | 1 | 608 | 76 | 0.360 | 0.066 | 0.916 |
 | 46585 | Left oblique arytenoid | muscle | 1 | 630 | 78 | 0.255 | 0.063 | 0.913 |
 | 46589 | Right thyro-arytenoid | muscle | 2 | 1676 | 210 | 0.460 | 0.090 | 0.952 |
 | 46590 | Left thyro-arytenoid | muscle | 2 | 1540 | 192 | 0.428 | 0.098 | 0.954 |
 | 46592 | Right vocalis | muscle | 1 | 256 | 32 | 0.125 | 0.031 | 0.981 |
 | 46593 | Left vocalis | muscle | 1 | 256 | 32 | 0.223 | 0.039 | 0.991 |
-| 46604 | Right aryepiglotticus | muscle | 1 | 483 | 129 | 15.150 | 0.630 | 0.853 |
-| 46605 | Left aryepiglotticus | muscle | 1 | 452 | 70 | 0.253 | 0.074 | 0.930 |
-| 46611 | Straight part of right cricothyroid | muscle | 1 | 326 | 44 | 5.928 | 0.315 | 0.896 |
+| 46604 | Right aryepiglotticus | muscle | 1 | 483 | 129 | 0.384 | 0.066 | 0.853 |
+| 46605 | Left aryepiglotticus | muscle | 1 | 452 | 70 | 0.253 | 0.076 | 0.930 |
+| 46611 | Straight part of right cricothyroid | muscle | 1 | 326 | 44 | 0.987 | 0.141 | 0.896 |
 | 46612 | Straight part of left cricothyroid | muscle | 1 | 328 | 42 | 0.486 | 0.109 | 0.914 |
 | 46613 | Oblique part of right cricothyroid | muscle | 1 | 556 | 70 | 0.560 | 0.116 | 0.893 |
 | 46614 | Oblique part of left cricothyroid | muscle | 1 | 558 | 70 | 0.456 | 0.101 | 0.906 |
@@ -1181,7 +1181,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 46635 | Right inferior pharyngeal constrictor | muscle | 1 | 744 | 92 | 1.232 | 0.253 | 0.973 |
 | 46636 | Left inferior pharyngeal constrictor | muscle | 1 | 742 | 92 | 2.912 | 0.281 | 0.961 |
 | 46667 | Right stylopharyngeus | muscle | 1 | 2576 | 322 | 0.369 | 0.090 | 0.939 |
-| 46668 | Left stylopharyngeus | muscle | 1 | 326 | 40 | 1.052 | 0.386 | 0.962 |
+| 46668 | Left stylopharyngeus | muscle | 1 | 326 | 40 | 1.052 | 0.392 | 0.962 |
 | 46669 | Right salpingopharyngeus | muscle | 1 | 916 | 114 | 0.512 | 0.099 | 0.923 |
 | 46670 | Left salpingopharyngeus | muscle | 1 | 916 | 114 | 0.440 | 0.093 | 0.929 |
 | 46671 | Right palatopharyngeus | muscle | 1 | 4140 | 518 | 0.324 | 0.072 | 0.994 |
@@ -1242,8 +1242,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 50354 | Posteromedial branch of left callosomarginal artery | cardiovascular | 1 | 256 | 56 | 0.772 | 0.223 | 0.862 |
 | 50357 | Paracentral branch of right callosomarginal artery | cardiovascular | 3 | 570 | 238 | 7.828 | 0.164 | 0.856 |
 | 50358 | Paracentral branch of left callosomarginal artery | cardiovascular | 3 | 594 | 242 | 3.472 | 0.085 | 0.853 |
-| 50359 | Right pericallosal artery | cardiovascular | 1 | 282 | 118 | 5.614 | 0.250 | 0.863 |
-| 50360 | Left pericallosal artery | cardiovascular | 1 | 280 | 112 | 8.151 | 0.540 | 0.859 |
+| 50359 | Right pericallosal artery | cardiovascular | 1 | 282 | 118 | 5.614 | 0.255 | 0.863 |
+| 50360 | Left pericallosal artery | cardiovascular | 1 | 280 | 112 | 6.888 | 0.319 | 0.859 |
 | 50361 | Precuneal branch of right pericallosal artery | cardiovascular | 1 | 256 | 74 | 2.691 | 0.151 | 0.853 |
 | 50362 | Precuneal branch of left pericallosal artery | cardiovascular | 1 | 256 | 54 | 9.605 | 0.717 | 0.851 |
 | 50366 | Sphenoid part of right middle cerebral artery | cardiovascular | 1 | 256 | 32 | 0.963 | 0.356 | 0.898 |
@@ -1330,7 +1330,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 50882 | Left trochlear nerve | other | 1 | 272 | 60 | 0.535 | 0.146 | 0.859 |
 | 51042 | Right deep femoral vein | cardiovascular | 1 | 634 | 96 | 2.321 | 0.609 | 0.851 |
 | 51043 | Left deep femoral vein | cardiovascular | 1 | 634 | 80 | 2.073 | 0.678 | 0.898 |
-| 51144 | Right extensor hallucis brevis | muscle | 1 | 256 | 32 | 5.061 | 0.997 | 0.888 |
+| 51144 | Right extensor hallucis brevis | muscle | 1 | 256 | 32 | 5.061 | 1.016 | 0.888 |
 | 51145 | Left extensor hallucis brevis | muscle | 1 | 258 | 34 | 5.045 | 0.846 | 0.965 |
 | 52574 | Superior branch of right oculomotor nerve | nervous | 1 | 256 | 84 | 0.305 | 0.076 | 0.848 |
 | 52575 | Superior branch of left oculomotor nerve | nervous | 1 | 256 | 94 | 0.376 | 0.066 | 0.852 |
@@ -1361,7 +1361,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 52736 | Sphenoid bone | skeleton | 1 | 814 | 126 | 12.226 | 1.634 | 0.859 |
 | 52738 | Right temporal bone | skeleton | 1 | 492 | 68 | 17.254 | 1.581 | 0.883 |
 | 52739 | Left temporal bone | skeleton | 1 | 494 | 64 | 16.604 | 1.794 | 0.855 |
-| 52740 | Ethmoid | skeleton | 1 | 2323 | 425 | 2.381 | 0.371 | 0.963 |
+| 52740 | Ethmoid | skeleton | 1 | 2323 | 425 | 2.381 | 0.374 | 0.963 |
 | 52748 | Mandible | skeleton | 1 | 558 | 68 | 17.242 | 1.557 | 0.917 |
 | 52749 | Hyoid bone | skeleton | 2 | 224 | 56 | 4.426 | 0.658 | 0.895 |
 | 52781 | External ear | other | 1 | 292 | 60 | 6.464 | 1.313 | 0.851 |
@@ -1380,13 +1380,13 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 53655 | Right palatine bone | skeleton | 1 | 256 | 42 | 5.173 | 0.912 | 0.852 |
 | 53656 | Left palatine bone | skeleton | 1 | 256 | 42 | 4.132 | 0.992 | 0.859 |
 | 54159 | Tendon of right levator palpebrae superioris | other | 1 | 276 | 34 | 0.889 | 0.303 | 0.935 |
-| 54237 | Eyebrow | other | 1 | 2154 | 1646 | 2.710 | 0.029 | 0.869 |
+| 54237 | Eyebrow | other | 1 | 2154 | 1646 | 2.710 | 0.019 | 0.869 |
 | 54241 | Hair of head | other | 1 | 1788 | 224 | 25.674 | 1.961 | 0.949 |
 | 54319 | Pubic hair | other | 1 | 290 | 36 | 28.227 | 3.397 | 0.860 |
 | 54640 | Tongue | alimentary | 1 | 256 | 32 | 4.491 | 1.498 | 0.901 |
 | 54737 | Right inferior nasal concha | skeleton | 1 | 254 | 32 | 2.463 | 0.492 | 0.913 |
 | 54738 | Left inferior nasal concha | skeleton | 1 | 256 | 32 | 1.614 | 0.381 | 1.008 |
-| 55077 | Pharyngeal raphe | other | 1 | 1320 | 194 | 0.757 | 0.053 | 0.978 |
+| 55077 | Pharyngeal raphe | other | 1 | 1320 | 194 | 0.748 | 0.048 | 0.978 |
 | 55099 | Thyroid cartilage | skeleton | 1 | 260 | 32 | 9.337 | 1.327 | 0.865 |
 | 55113 | Right arytenoid cartilage | skeleton | 1 | 256 | 32 | 0.654 | 0.142 | 0.965 |
 | 55114 | Left arytenoid cartilage | skeleton | 1 | 256 | 32 | 0.638 | 0.176 | 0.914 |
@@ -1423,7 +1423,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 55693 | Left lower first secondary premolar tooth | other | 1 | 256 | 32 | 1.305 | 0.390 | 0.888 |
 | 55694 | Right lower first secondary premolar tooth | other | 1 | 256 | 32 | 1.181 | 0.313 | 0.931 |
 | 55695 | Right lower second secondary premolar tooth | other | 1 | 256 | 32 | 1.321 | 0.404 | 0.867 |
-| 55697 | Right upper second secondary molar tooth | other | 1 | 258 | 36 | 1.750 | 0.543 | 0.852 |
+| 55697 | Right upper second secondary molar tooth | other | 1 | 258 | 36 | 1.750 | 0.550 | 0.852 |
 | 55698 | Right upper first secondary molar tooth | other | 1 | 256 | 32 | 2.153 | 0.603 | 0.850 |
 | 55699 | Left upper first secondary molar tooth | other | 1 | 256 | 32 | 2.370 | 0.570 | 0.887 |
 | 55700 | Left upper second secondary molar tooth | other | 1 | 260 | 36 | 2.932 | 0.566 | 0.857 |
@@ -1441,15 +1441,15 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 58082 | Anterior chamber of left eyeball | other | 1 | 306 | 38 | 0.770 | 0.253 | 0.909 |
 | 58236 | Right iris | other | 1 | 324 | 40 | 1.012 | 0.315 | 0.911 |
 | 58237 | Left iris | other | 1 | 328 | 40 | 0.934 | 0.282 | 0.907 |
-| 58239 | Right cornea | other | 1 | 490 | 90 | 55.430 | 3.764 | 0.925 |
+| 58239 | Right cornea | other | 1 | 490 | 90 | 0.760 | 0.211 | 0.925 |
 | 58240 | Left cornea | other | 1 | 460 | 58 | 1.048 | 0.281 | 0.913 |
 | 58242 | Right lens | other | 1 | 256 | 32 | 0.955 | 0.363 | 0.862 |
 | 58243 | Left lens | other | 1 | 256 | 32 | 0.886 | 0.364 | 0.857 |
-| 58271 | Right sclera | other | 1 | 3972 | 518 | 0.979 | 0.187 | 0.980 |
+| 58271 | Right sclera | other | 1 | 3972 | 518 | 0.630 | 0.185 | 0.980 |
 | 58272 | Left sclera | other | 1 | 3950 | 494 | 0.620 | 0.191 | 0.980 |
-| 58299 | Right choroid | other | 2 | 3576 | 462 | 3.843 | 0.210 | 0.968 |
+| 58299 | Right choroid | other | 2 | 3576 | 462 | 0.813 | 0.200 | 0.968 |
 | 58300 | Left choroid | other | 2 | 3562 | 446 | 0.810 | 0.194 | 0.976 |
-| 58483 | Right corona ciliaris | other | 1 | 4904 | 1612 | 0.373 | 0.042 | 0.854 |
+| 58483 | Right corona ciliaris | other | 1 | 4904 | 1612 | 0.373 | 0.043 | 0.854 |
 | 58484 | Left corona ciliaris | other | 1 | 4133 | 1533 | 0.453 | 0.042 | 0.855 |
 | 58607 | Optic part of right retina | other | 1 | 2340 | 292 | 0.676 | 0.200 | 0.969 |
 | 58608 | Optic part of left retina | other | 1 | 2340 | 292 | 0.645 | 0.198 | 0.968 |
@@ -1457,8 +1457,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 58777 | Left iliotibial tract | other | 1 | 1724 | 222 | 3.257 | 0.565 | 0.972 |
 | 58828 | Right vitreous body | other | 1 | 544 | 68 | 1.279 | 0.445 | 0.929 |
 | 58829 | Left vitreous body | other | 1 | 544 | 68 | 2.035 | 0.487 | 0.916 |
-| 58839 | Suspensory ligament of right lens | other | 1 | 785 | 145 | 0.678 | 0.098 | 0.952 |
-| 58840 | Suspensory ligament of left lens | other | 1 | 726 | 90 | 0.571 | 0.134 | 0.963 |
+| 58839 | Suspensory ligament of right lens | other | 1 | 785 | 145 | 0.625 | 0.090 | 0.952 |
+| 58840 | Suspensory ligament of left lens | other | 1 | 726 | 90 | 0.571 | 0.132 | 0.963 |
 | 59089 | Tarsal plate of right lower eyelid | other | 1 | 256 | 32 | 0.610 | 0.189 | 0.917 |
 | 59090 | Tarsal plate of left lower eyelid | other | 1 | 256 | 32 | 0.550 | 0.180 | 0.943 |
 | 59091 | Tarsal plate of right upper eyelid | other | 1 | 256 | 32 | 0.748 | 0.257 | 0.911 |
@@ -1484,12 +1484,12 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 59803 | Left submandibular gland | alimentary | 1 | 228 | 28 | 1.546 | 0.497 | 0.891 |
 | 59804 | Right sublingual gland | other | 1 | 244 | 30 | 1.087 | 0.271 | 0.913 |
 | 59805 | Left sublingual gland | other | 1 | 230 | 28 | 1.050 | 0.305 | 0.906 |
-| 59816 | Lip | other | 1 | 276 | 74 | 2.839 | 0.267 | 0.867 |
+| 59816 | Lip | other | 1 | 276 | 74 | 2.839 | 0.258 | 0.867 |
 | 61842 | Septum of telencephalon | other | 1 | 574 | 76 | 1.723 | 0.322 | 0.945 |
 | 61934 | Choroid plexus of cerebral hemisphere | other | 2 | 988 | 128 | 8.883 | 0.635 | 0.851 |
 | 61961 | Anterior commissure | other | 1 | 256 | 32 | 0.888 | 0.263 | 0.928 |
 | 61970 | Commissure of fornix of forebrain | other | 1 | 1064 | 132 | 0.637 | 0.121 | 0.977 |
-| 61974 | Stria terminalis | other | 1 | 258 | 76 | 5.980 | 0.476 | 0.865 |
+| 61974 | Stria terminalis | other | 1 | 258 | 76 | 5.980 | 0.330 | 0.865 |
 | 61975 | Lamina terminalis | other | 2 | 256 | 32 | 0.535 | 0.113 | 0.973 |
 | 62045 | Optic chiasm | nervous | 2 | 256 | 36 | 1.484 | 0.397 | 0.872 |
 | 62072 | Posterior commissure | other | 1 | 256 | 32 | 0.546 | 0.162 | 0.913 |
@@ -1503,11 +1503,11 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 65014 | Right flexor hallucis longus | muscle | 1 | 276 | 48 | 46.577 | 3.418 | 0.876 |
 | 65015 | Left flexor hallucis longus | muscle | 1 | 276 | 44 | 31.103 | 2.019 | 0.861 |
 | 65016 | Right flexor digitorum longus | muscle | 1 | 406 | 112 | 17.724 | 1.847 | 0.858 |
-| 65017 | Left flexor digitorum longus | muscle | 1 | 402 | 144 | 14.677 | 0.968 | 0.866 |
-| 65018 | Right tibialis posterior | muscle | 1 | 532 | 88 | 11.851 | 1.305 | 0.876 |
-| 65019 | Left tibialis posterior | muscle | 1 | 538 | 96 | 22.247 | 1.409 | 0.871 |
-| 65198 | Superficial head of right flexor pollicis brevis | muscle | 1 | 266 | 56 | 1.161 | 0.193 | 0.932 |
-| 65199 | Superficial head of left flexor pollicis brevis | muscle | 1 | 268 | 58 | 1.259 | 0.209 | 0.915 |
+| 65017 | Left flexor digitorum longus | muscle | 1 | 402 | 144 | 14.677 | 0.983 | 0.866 |
+| 65018 | Right tibialis posterior | muscle | 1 | 532 | 88 | 11.851 | 1.309 | 0.876 |
+| 65019 | Left tibialis posterior | muscle | 1 | 538 | 96 | 22.247 | 1.443 | 0.871 |
+| 65198 | Superficial head of right flexor pollicis brevis | muscle | 1 | 266 | 56 | 1.161 | 0.172 | 0.932 |
+| 65199 | Superficial head of left flexor pollicis brevis | muscle | 1 | 268 | 58 | 1.259 | 0.193 | 0.915 |
 | 65470 | Proximal phalanx of left thumb | skeleton | 1 | 256 | 32 | 1.943 | 0.441 | 0.981 |
 | 66242 | Right first posterior intercostal artery | cardiovascular | 1 | 256 | 60 | 1.023 | 0.295 | 0.850 |
 | 66243 | Left first posterior intercostal artery | cardiovascular | 1 | 256 | 32 | 4.953 | 0.728 | 0.857 |
@@ -1544,7 +1544,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 68232 | Left lateral basal segmental bronchial tree | respiratory | 4 | 258 | 66 | 8.987 | 0.583 | 0.850 |
 | 68233 | Left posterior basal segmental bronchial tree | respiratory | 6 | 252 | 92 | 2.306 | 0.339 | 0.851 |
 | 68321 | Right anterior basal segmental bronchial tree | respiratory | 3 | 256 | 76 | 2.847 | 0.257 | 0.852 |
-| 68418 | Right main bronchus proper | respiratory | 1 | 460 | 70 | 5.264 | 0.709 | 0.982 |
+| 68418 | Right main bronchus proper | respiratory | 1 | 460 | 70 | 5.264 | 0.729 | 0.982 |
 | 68662 | Apical part of right apical segmental artery | cardiovascular | 4 | 316 | 92 | 2.045 | 0.229 | 0.878 |
 | 68665 | Anterior part of right apical segmental artery | cardiovascular | 4 | 258 | 98 | 1.661 | 0.151 | 0.860 |
 | 68670 | Apical part of right posterior segmental artery | cardiovascular | 3 | 256 | 64 | 1.848 | 0.427 | 0.850 |
@@ -1573,7 +1573,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 68982 | Superior part of medial segmental vein | cardiovascular | 1 | 256 | 40 | 2.099 | 0.516 | 0.863 |
 | 68983 | Inferior part of medial segmental vein | cardiovascular | 2 | 256 | 38 | 2.290 | 0.574 | 0.875 |
 | 69265 | Right inferior suprarenal artery | cardiovascular | 1 | 256 | 80 | 0.915 | 0.175 | 0.861 |
-| 69266 | Left inferior suprarenal artery | cardiovascular | 1 | 256 | 70 | 4.210 | 0.328 | 0.870 |
+| 69266 | Left inferior suprarenal artery | cardiovascular | 1 | 256 | 70 | 4.210 | 0.330 | 0.870 |
 | 69490 | Right lateral tarsal artery | cardiovascular | 1 | 256 | 38 | 1.258 | 0.316 | 0.862 |
 | 69491 | Left lateral tarsal artery | cardiovascular | 1 | 256 | 38 | 0.768 | 0.307 | 0.860 |
 | 69494 | Right arcuate artery | cardiovascular | 1 | 256 | 40 | 0.780 | 0.272 | 0.863 |
@@ -1669,8 +1669,8 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 73464 | Brachium of left inferior colliculus | other | 1 | 256 | 32 | 0.773 | 0.271 | 0.875 |
 | 74075 | Set of right levatores costarum longi | other | 1 | 1246 | 188 | 5.992 | 0.543 | 0.884 |
 | 74076 | Set of left levatores costarum longi | other | 1 | 1246 | 188 | 3.604 | 0.588 | 0.872 |
-| 74077 | Set of right levatores costarum breves | other | 1 | 708 | 284 | 7.853 | 0.267 | 0.852 |
-| 74078 | Set of left levatores costarum breves | other | 1 | 710 | 270 | 8.204 | 0.283 | 0.857 |
+| 74077 | Set of right levatores costarum breves | other | 1 | 708 | 284 | 7.853 | 0.254 | 0.852 |
+| 74078 | Set of left levatores costarum breves | other | 1 | 710 | 270 | 8.204 | 0.278 | 0.857 |
 | 74877 | Mammillary body | other | 2 | 256 | 54 | 0.601 | 0.206 | 0.851 |
 | 74912 | Trunk of anterior interventricular branch of left coronary artery | cardiovascular | 1 | 304 | 64 | 3.608 | 0.444 | 0.852 |
 | 75351 | Interventricular foramen | other | 1 | 256 | 34 | 1.049 | 0.269 | 0.858 |
@@ -1692,7 +1692,7 @@ and nothing more. A limb frame would be an ALC-1 spec change (`docs/alc-1-spec.m
 | 78497 | Central canal of spinal cord | nervous | 1 | 256 | 32 | 0.349 | 0.080 | 0.996 |
 | 79979 | Sternocostal part of right pectoralis major | muscle | 1 | 722 | 102 | 8.665 | 1.320 | 0.935 |
 | 79980 | Sternocostal part of left pectoralis major | muscle | 1 | 720 | 100 | 8.341 | 1.413 | 0.943 |
-| 81752 | Right cervical rotator | muscle | 1 | 402 | 174 | 3.208 | 0.242 | 0.857 |
+| 81752 | Right cervical rotator | muscle | 1 | 402 | 174 | 3.208 | 0.241 | 0.857 |
 | 81753 | Left cervical rotator | muscle | 1 | 412 | 188 | 3.179 | 0.215 | 0.858 |
 | 82695 | Trunk of right portal vein | cardiovascular | 1 | 206 | 28 | 0.964 | 0.381 | 0.857 |
 | 82697 | Trunk of left portal vein | cardiovascular | 1 | 256 | 32 | 1.871 | 0.588 | 0.900 |

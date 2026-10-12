@@ -108,9 +108,9 @@ holds it there. The body's lazy tier gets a line of its own, as the brain's does
 | share | gzip | of its own line |
 | --- | ---: | ---: |
 | brain, low tier | 806.9 KiB | 79% of 1.00 MiB |
-| body, low tier | 1,240.0 KiB | 97% of 1.25 MiB |
+| body, low tier | 1,236.0 KiB | 97% of 1.25 MiB |
 | v1 templates and labels | 114.3 KiB | of the 0.25 MiB left |
-| **all low-resolution assets** | **2,161.2 KiB** | **84% of 2.5 MiB** |
+| **all low-resolution assets** | **2,157.2 KiB** | **84% of 2.5 MiB** |
 
 These are a reading, not a contract: the gate re-measures them on every run, and
 only the limits are fixed. The body sits at 97% of its share because the build spends
@@ -123,7 +123,8 @@ not borrowing the brain's room.
 2026-10-12 from the first body full tier that passed the mesh gate, which read
 6,525,597 B: 1.10 × that, rounded up to the next 256 KiB. That is the brain's rule. It is
 not re-derived at gate time. At 25 Mbit/s it is about 2.3 s of transfer after the
-low tier has drawn.
+low tier has drawn. The tier the gate passed after review (DOG-173 F1, undrawn
+vertices compacted away) reads 6,518,932 B, 89% of the line. The literal stays as derived.
 
 ### The name index is an index, not an asset (DOG-80)
 

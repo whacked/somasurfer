@@ -114,6 +114,42 @@ border lock and error measure. The parameters were chosen by dry run
 (`tools/build-body-meshes.mjs --dry-run`) against the body's share of the
 low-resolution budget; see `docs/performance-budget.md` under "Body meshes".
 
+## What the eager tier gets wrong, accepted and counted (DOG-173 F2)
+
+The shape floor and the gate hold each structure's **area and extents**. They do
+not set a ceiling on **local deviation**. In the low tier, 32 structures are more
+than 20 mm off the full tier somewhere, and 111 are more than 10 mm off. The worst
+is the left vastus lateralis at 61.7 mm, with 98 low triangles. Most of them are
+large limb muscles cut to a few dozen triangles. Their mean deviation stays at
+2–4 mm, so these are local folds, not displaced structures. The brain's worst, for
+comparison, is 1.26 mm.
+
+**Decision: accepted, and disclosed rather than gated.** It affects the eager tier
+only; the lazy full tier, at 0.35 mm median from the source, replaces it about 2 s
+later. Holding those structures under about 10 mm would cost roughly 10k triangles,
+about 70 KB, and the body's share has about 40 KiB left. Making room would mean
+taking bytes from `structures.json` or from other structures, which is a separate
+change. The per-structure figures are in `docs/body-mesh-report.md`, which CI
+regenerates and compares. The counts above therefore cannot grow without the
+report changing in a reviewed diff.
+
+## Two figures that are about the source, not the pipeline
+
+**Every measure is of the drawn surface.** Quantisation drops triangles that
+collapse below its step. The body build then drops their vertices too
+(`compactVertices`), and the gate fails any tier that holds a vertex no triangle
+uses (DOG-173 F1). Before that, undrawn vertices were measured as if drawn: the
+right cornea published a 55.43 mm low-vs-full error, while its drawn surface is
+0.76 mm off.
+
+The build's own **full-vs-source** figure still reads 55.3 mm for the right
+cornea. That is measured, and it is correct. BodyParts3D's right-cornea file
+(FJ1340) carries 17 micro-fragments of zero area besides the cornea itself, and
+some of them lie at x = +22.8 to +30.9 mm, about 55 mm away on the subject's
+left. Every one of them is smaller than the 0.03 mm quantisation step, so no tier
+carries them, and the figure records exactly that. The right aryepiglotticus
+(15.1 mm, 34 such fragments) is the same case.
+
 ## The format and the gates are W2's
 
 The files are ATLM (`tools/lib/meshbin.mjs`), read by the same reader in the
