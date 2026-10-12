@@ -1916,6 +1916,40 @@ const CASES = [
     check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
   },
 
+  {
+    name: 'perf-first-brain-frame-reads-the-built-brain',
+    gate: 'performance budget',
+    criterion: 'the first-brain-frame line costs the brain files the build declares, not none',
+    mustPass: true,
+    expect: [/first brain frame: \d+ files, [\d.]+ KiB gzip, the viewer's decode [\d.]+ ms raw/],
+    describe: 'the build as it stands',
+    // DOG-129: a build whose atlas index lost `meshSets` would report the line
+    // as absent and stay green, which is the DOG-80 shape. This pins that the
+    // gate found the brain's files and ran the viewer's decode over them.
+    break: () => {
+      requireBuild();
+      return () => {};
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+  {
+    name: 'perf-first-brain-frame-reds-over-its-limit',
+    gate: 'performance budget',
+    criterion: 'a first brain frame slower than its limit fails the gate',
+    expect: () => [
+      new RegExp(`derivedFirstBrainFrameMs: [\\d.]+ ms against a budget of ${shown(staged.brainFrame)} ms`),
+    ],
+    describe: 'a first-brain-frame limit staged well under this runner\'s own reading',
+    // Staged from the reading, in the band (calibration 120 scales by 1), so it
+    // is a breakage on any runner and not only on one slower than a literal.
+    break: () => {
+      requireBuild();
+      staged.brainFrame = limitBelow(perfReading(perfReport(120), 'derivedFirstBrainFrameMs'));
+      return withBudgetLimit('derivedFirstBrainFrameMs', staged.brainFrame);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120']),
+  },
+
   // -------------------------------------------------------------------------
   // A non-root base (DOG-120).
   //

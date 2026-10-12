@@ -972,7 +972,7 @@ function renderStructure() {
     }));
     return;
   }
-  box.append(el('h3', { id: 'structure-name', textContent: s.name }));
+  box.append(el('h3', { id: 'structure-name', textContent: s.title }));
   box.append(el('p', { className: 'muted', textContent: `${layerLabel(s.category)} · ${s.set}${s.lobe ? ` · ${s.labelSet}` : ''}` }));
   if (s.placedBy) {
     box.append(el('p', {
@@ -1291,7 +1291,7 @@ function wireControls() {
     if (search.value.trim().length < 2) return;
     // Structures drawn in this atlas first: choosing one selects and frames it.
     for (const s of searchStructures(ui.sets[viewer.atlas].flatMap((set) => set.structures), search.value, 8)) {
-      const go = el('button', { type: 'button', className: 'link', textContent: s.name });
+      const go = el('button', { type: 'button', className: 'link', textContent: s.title });
       go.dataset.structureKey = s.key;
       go.addEventListener('click', () => {
         viewer.selectStructure(s.key);
@@ -1514,7 +1514,7 @@ window.__atlas = {
   /** DOG-129: which tier each atlas is drawing, and the selected mesh structure. */
   meshStatus: () => ({ ...ui.meshStatus }),
   meshesLoaded,
-  structures: (atlas = viewer.atlas) => ui.sets[atlas].flatMap((set) => set.structures.map((s) => ({ key: s.key, name: s.name, category: s.category, parts: s.parts }))),
+  structures: (atlas = viewer.atlas) => ui.sets[atlas].flatMap((set) => set.structures.map((s) => ({ key: s.key, name: s.name, title: s.title, label: s.label, category: s.category, parts: s.parts }))),
   structure: () => viewer.structureOf(),
   selectStructure: (key) => {
     viewer.selectStructure(key);

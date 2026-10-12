@@ -130,8 +130,11 @@ export function meshSetFrom(entry, { structures: doc, labels = null, registratio
   const byId = new Map(doc.structures.map((s) => [s.id, s]));
   const meta = (s, extra = {}) => {
     const category = entry.atlas === 'body' && !BODY_CATEGORIES.has(s.category) ? 'other' : s.category;
-    const parts = extra.parts ?? (s.side === 'left' || s.side === 'right' ? [s.side] : ['left', 'right']);
-    return { key: structureKey(entry.id, s.id), id: s.id, set: entry.id, name: s.name, label: s.label ?? null, category, side: s.side ?? null, parts, group: `${category}|${parts.join('+')}`, ...extra };
+    const sided = s.side === 'left' || s.side === 'right';
+    const parts = extra.parts ?? (sided ? [s.side] : ['left', 'right']);
+    // `name` is the source's (`Caudate nucleus.l`); `title` is what a reader sees.
+    const title = s.label ? `${s.label}${sided ? ` (${s.side})` : ''}` : s.name;
+    return { key: structureKey(entry.id, s.id), id: s.id, set: entry.id, name: s.name, title, label: s.label ?? null, category, side: s.side ?? null, parts, group: `${category}|${parts.join('+')}`, ...extra };
   };
   const placedBy = registration
     ? { errorMm: Math.max(...registration.heldOut.map((h) => h.errorMm)), registration: registration.id }
@@ -157,7 +160,7 @@ export function meshSetFrom(entry, { structures: doc, labels = null, registratio
           // Unlabelled surface (the medial wall, the cut faces) keeps the
           // geometry's id and says what it is rather than calling it cortex.
           const v = labels.values.find((x) => x.value === Number(value));
-          return v ? meta({ ...own, name: `${v.label}, ${own.side}` }) : null;
+          return v ? meta({ ...own, name: `${v.label}, ${own.side}`, label: v.label }) : null;
         },
       };
     };
@@ -261,15 +264,15 @@ function hitTriangle(o, d, P, a, b, c) {
 }
 
 /**
- * Structures whose name or label contains every word of `query`, best first:
- * a name that starts with the query, then shorter names. Case-insensitive.
+ * Structures whose title contains every word of `query`, best first: a title
+ * that starts with the query, then shorter titles. Case-insensitive.
  */
 export function searchStructures(structures, query, limit = 12) {
   const words = String(query).toLowerCase().split(/\s+/).filter(Boolean);
   if (words.length === 0) return [];
   const q = words.join(' ');
   return structures
-    .filter((s) => words.every((w) => s.name.toLowerCase().includes(w)))
-    .sort((a, b) => Number(!a.name.toLowerCase().startsWith(q)) - Number(!b.name.toLowerCase().startsWith(q)) || a.name.length - b.name.length || (a.name < b.name ? -1 : 1))
+    .filter((s) => words.every((w) => s.title.toLowerCase().includes(w)))
+    .sort((a, b) => Number(!a.title.toLowerCase().startsWith(q)) - Number(!b.title.toLowerCase().startsWith(q)) || a.title.length - b.title.length || (a.title < b.title ? -1 : 1))
     .slice(0, limit);
 }
