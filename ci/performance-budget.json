@@ -62,6 +62,11 @@
       "covers": "dist/assets/body/**, gzipped, less the lazily fetched tier: the body's share of lowResAssetGzipBytes, counted in that line as well",
       "why": "The body's 1.25 MiB of the 2.5 MiB low-resolution line, as agreed in W2 (DOG-127) and recorded in docs/performance-budget.md: brain 1.00 MiB, body 1.25 MiB, v1 templates and labels 0.25 MiB. It holds the full-body human (DOG-128, W3) to its share, so a body that grows cannot spend the brain's room."
     },
+    "fullResBodyAssetGzipBytes": {
+      "limit": 7340032,
+      "covers": "the body mesh files declared `loading: \"lazy\"` in their structures.json (the full-resolution tier), gzipped",
+      "why": "Derived once, on 2026-10-12, from the first body full tier that passed the mesh gate (DOG-128 at 34196ea, 6,525,597 B gzip), by the brain's rule: 1.10 x that, rounded up to the next 256 KiB, = 7.00 MiB. A committed literal, not re-derived at gate time, so it cannot ratchet. At 25 Mbit/s it is about 2.3 s of background transfer after the low tier has drawn. The full tier is itself decimated (source 6.4 million triangles is ~46 MB), except the 25 BD vertebrae, which ship at source resolution because the registration gate measures BD from them."
+    },
     "indexParseMsNormalised": {
       "limit": 40,
       "covers": "JSON.parse of data/*.json plus building the lookup maps, normalised to the reference machine",

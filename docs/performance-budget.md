@@ -45,6 +45,8 @@ library added to the page shell.
 | `lowResAssetGzipBytes` | 2.5 MiB | `dist/assets/**`, gzipped, less LICENSE, ATTRIBUTION.md, the name index and every file a mesh set declares lazy |
 | `lowResBrainAssetGzipBytes` | 1.00 MiB | the brain's share of the line above (DOG-127), counted in both |
 | `fullResBrainAssetGzipBytes` | 5.25 MiB | the lazily fetched full-resolution brain tier (DOG-127) |
+| `lowResBodyAssetGzipBytes` | 1.25 MiB | the body's share of `lowResAssetGzipBytes` (DOG-128), counted in both |
+| `fullResBodyAssetGzipBytes` | 7.00 MiB | the lazily fetched full-resolution body tier (DOG-128) |
 | `indexParseMsNormalised` | 40 ms | parse `data/*.json` and build the lookup maps |
 | `nameIndexBuildMsNormalised` | 100 ms | build the name index: `joinNameIndex` + `buildNameIndex` over the emitted documents |
 | `nameIndexBuildUsPerCell` | 28 us/cell | the same measurement, per cell the index binds |
@@ -63,7 +65,7 @@ The real brain (W2, DOG-127) and the full-body human (W3, DOG-128) share the
 | share | gzip | what it holds | today |
 | --- | ---: | --- | ---: |
 | brain, low tier | 1.00 MiB | `assets/brain/**` that is not declared lazy: the low mesh file and its `structures.json` | 810.4 KiB |
-| body, low tier | 1.25 MiB | W3's equivalent; W3 adds its own line | — |
+| body, low tier | 1.25 MiB | `assets/body/**` that is not declared lazy: the low mesh file and its `structures.json` (`lowResBodyAssetGzipBytes`, DOG-128) | see below |
 | v1 templates and labels | 0.25 MiB | everything else under `assets/` | about 0.13 MiB |
 
 The body gets the larger share because it has more structures in view at once.
@@ -94,6 +96,34 @@ is the single definition of the ATLM format. The gate recognises an ATLM file by
 its magic bytes, reads it with that module, and walks positions and indices
 once, which is the same work a JSON mesh gets. Before this, `JSON.parse` on a
 binary asset threw and took the gate down with it.
+
+### Body meshes: the body's share, and its lazy tier (DOG-128)
+
+The full-body human (W3) takes the 1.25 MiB share agreed in W2. `lowResBodyAssetGzipBytes`
+holds it there. The body's lazy tier gets a line of its own, as the brain's does.
+
+**The split of the 2.5 MiB line, as the perf gate read it** when the body landed
+(`tools/perf-budget.mjs` on the build of DOG-128's branch, 2026-10-12):
+
+| share | gzip | of its own line |
+| --- | ---: | ---: |
+| brain, low tier | 806.9 KiB | 79% of 1.00 MiB |
+| body, low tier | 1,240.0 KiB | 97% of 1.25 MiB |
+| v1 templates and labels | 114.3 KiB | of the 0.25 MiB left |
+| **all low-resolution assets** | **2,161.2 KiB** | **84% of 2.5 MiB** |
+
+These are a reading, not a contract: the gate re-measures them on every run, and
+only the limits are fixed. The body sits at 97% of its share because the build spends
+the share on purpose. Its ratio is tuned to the budget, and its shape floor
+(`docs/body-meshes.md`) gives thin vessels and nerves the triangles a plain ratio
+would take from them. Growing the body means shrinking something inside the body,
+not borrowing the brain's room.
+
+`fullResBodyAssetGzipBytes` is **7,340,032 B (7.00 MiB), a literal derived once** on
+2026-10-12 from the first body full tier that passed the mesh gate, which read
+6,525,597 B: 1.10 × that, rounded up to the next 256 KiB. That is the brain's rule. It is
+not re-derived at gate time. At 25 Mbit/s it is about 2.3 s of transfer after the
+low tier has drawn.
 
 ### The name index is an index, not an asset (DOG-80)
 
