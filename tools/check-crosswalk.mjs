@@ -37,43 +37,23 @@
 
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
 
-import { REPO_ROOT, fail, pass, rel } from './lib/repo.mjs';
-import { brainAssetPaths } from './lib/brain-asset-paths.mjs';
-import { brainLocator } from './lib/brain-locate.mjs';
+import { fail, pass, rel } from './lib/repo.mjs';
+import { BRAIN, REGION_INDEX_PATH, REGION_INPUT_PATHS as PATHS, loadRegionInputs, readRepoFile } from './lib/region-inputs.mjs';
 import { buildNameIndex } from '../packages/alc/src/index.ts';
 import {
-  REPRESENTATIONS,
   buildRegionIndex,
   buildResearchIndex,
   checkRegionIndex,
-  loadDataset,
   serialiseRegionIndex,
   validateCrosswalk,
 } from '../packages/atlas-research/src/index.ts';
 
-const ASSETS = join(REPO_ROOT, 'packages', 'atlas-assets');
-const BRAIN_COMMIT = '2929e94f521a8ddceab26bc100a98dc06b0da060';
-const BRAIN = brainAssetPaths(BRAIN_COMMIT);
-const PATHS = {
-  seed: 'packages/atlas-research/data/research-seed.json',
-  crosswalk: 'packages/atlas-assets/crosswalk/crosswalk.json',
-  structures: `packages/atlas-assets/${BRAIN.structuresFile}`,
-  meshes: `packages/atlas-assets/${BRAIN.fullFile}`,
-  registration: `packages/atlas-assets/registration/mni-to-${BRAIN.id}.json`,
-  names: 'packages/atlas-assets/labels/names.json',
-  coverings: 'packages/atlas-assets/labels/coverings.json',
-  bodyTemplate: 'packages/atlas-assets/templates/bp3d-4.0-adult-body-centroid.body.json',
-  brainTemplate: 'packages/atlas-assets/templates/icbm152-2009c-asym.brain-volume.json',
-};
-const INDEX_PATH = join(ASSETS, 'crosswalk', `region-index-${BRAIN.id}.json`);
+const INDEX_PATH = REGION_INDEX_PATH;
 
-const bytes = (p) => readFileSync(join(REPO_ROOT, p));
+const bytes = readRepoFile;
 const json = (p) => JSON.parse(bytes(p).toString('utf8'));
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
-const rep = (id) => REPRESENTATIONS.find((r) => r.id === id);
-const SIDES = { left: 'left', right: 'right', median: 'median' };
 
 /**
  * Committed literals, not readings (CTO review of 4f58f93). A floor taken from
@@ -93,59 +73,6 @@ const SIDES = { left: 'left', right: 'right', median: 'median' };
 const PRECISION_FLOOR_MM = 7;
 const MIN_HELD_OUT = 2;
 const COVERAGE_FLOOR = Object.freeze({ mappings: 44, papers: 15 });
-
-// ---------------------------------------------------------------------------
-// Inputs
-// ---------------------------------------------------------------------------
-
-function loadInputs() {
-  const structures = json(PATHS.structures);
-  const registration = json(PATHS.registration);
-  const names = json(PATHS.names);
-  const reg = registration.summary.heldOut;
-  const heldOutIds = registration.heldOut.map((h) => h.id).join(', ');
-  // Every word of the basis comes from the registration file, so a refit
-  // changes the precision without an edit here.
-  const precision = {
-    mm: reg.maxMm,
-    basis:
-      `held-out error of ${registration.id} at ${heldOutIds} (n=${registration.heldOut.length}, never in the fit); ` +
-      `measured near the deep grey nuclei only and unmeasured elsewhere; MNI152 read as ICBM152 2009c, template differences not included`,
-  };
-  const locate = brainLocator(bytes(PATHS.meshes), structures, registration);
-
-  const zanatomy = {
-    representation: rep('zanatomy-gross-anatomy'),
-    version: structures.id,
-    structures: structures.structures.map((s) => ({ id: String(s.id), name: s.name, label: s.label, side: SIDES[s.side] ?? null })),
-    held: structures.excluded.map((s) => ({
-      name: s.name,
-      label: s.name.replace(/\.(l|r)$/, ''),
-      side: SIDES[s.side] ?? null,
-      because: `${s.group}: ${s.heldBecause.join('; ')}`,
-    })),
-    locate,
-    coordinatePrecision: precision,
-  };
-  const body = {
-    representation: rep('bodyparts3d-bd'),
-    version: names.version,
-    structures: names.structures.map((s) => ({ id: s.id, name: s.name, label: s.name, side: null })),
-    held: [],
-  };
-  const mni = { representation: rep('mni-coordinates'), version: 'icbm152-2009c', structures: [], held: [] };
-
-  return {
-    dataset: loadDataset(json(PATHS.seed)),
-    crosswalk: json(PATHS.crosswalk),
-    representations: [zanatomy, mni, body],
-    templates: { body: json(PATHS.bodyTemplate), brainVolume: json(PATHS.brainTemplate) },
-    registration,
-    structures,
-    names,
-    locate,
-  };
-}
 
 /** The v1 figure, measured the way the 31/170 baseline was measured. */
 function baseline(inputs) {
@@ -290,7 +217,7 @@ const write = process.argv.includes('--write');
 const problems = [];
 const report = [];
 
-const inputs = loadInputs();
+const inputs = loadRegionInputs();
 
 // 1. Crosswalk.
 problems.push(...validateCrosswalk(inputs.crosswalk, inputs.representations, inputs.dataset));

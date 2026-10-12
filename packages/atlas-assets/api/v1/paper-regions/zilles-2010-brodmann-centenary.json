@@ -1,0 +1,54 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:zilles-2010-brodmann-centenary",
+ "paperHref": "../../../../data/api/v1/papers/zilles-2010-brodmann-centenary.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:zilles-2010-brodmann-centenary/map-and-its-fate/hcp-mmp1-44"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:zilles-2010-brodmann-centenary/map-and-its-fate/hcp-mmp1-45"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:zilles-2010-brodmann-centenary/observer-independent-successors/hcp-mmp1-v1"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:zilles-2010-brodmann-centenary/borders-invisible-in-mri/atlas-label-precentral-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:zilles-2010-brodmann-centenary/borders-invisible-in-mri/atlas-label-postcentral-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:zilles-2010-brodmann-centenary/numbering-is-not-geometry/atlas-label-occipital-lobe"
+   ]
+  }
+ ]
+}

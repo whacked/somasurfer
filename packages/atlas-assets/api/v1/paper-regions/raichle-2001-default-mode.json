@@ -1,0 +1,47 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:raichle-2001-default-mode",
+ "paperHref": "../../../../data/api/v1/papers/raichle-2001-default-mode.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:raichle-2001-default-mode/default-activity/atlas-label-posterior-cingulate-cortex"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:raichle-2001-default-mode/default-activity/atlas-label-precuneus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:anterior-cingulate-cortex (\"anterior cingulate cortex\") is held by the asset owner: Cingulate gyrus and sulcus (Middle anterior part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:raichle-2001-default-mode/medial-prefrontal/atlas-label-anterior-cingulate-cortex"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:occipital-lobe (\"occipital lobe\") is held by the asset owner: Anterior occipital sulcus*; Calcarine sulcus; Cuneus; Inferior occipital gyrus and sulcus*; Lateral occipital gyrus (Middle occipital gyrus*); Lingual gyrus; Lunate sulcus; Occipital pole; Superior occipital gyri; Transverse occipital sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:raichle-2001-default-mode/oxygen-extraction-fraction/atlas-label-occipital-lobe"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:PGs (\"Area PGs (angular gyrus)\") is held by the asset owner: Angular gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:raichle-2001-default-mode/task-induced-deactivation/hcp-mmp1-pgs"
+   ]
+  }
+ ]
+}

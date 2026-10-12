@@ -1,0 +1,82 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "key": "bodyparts3d-bd/FMA9968",
+ "representation": "bodyparts3d-bd",
+ "structureId": "FMA9968",
+ "structureName": "seventh thoracic vertebra",
+ "papers": [
+  {
+   "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+   "href": "../../../../../data/api/v1/papers/mitsuhashi-2009-bodyparts3d.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/skeletal-parts/fma9968",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/skeletal-parts",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA9968",
+     "structureName": "seventh thoracic vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA9968",
+      "label": "seventh thoracic vertebra"
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:panjabi-1991-thoracic-morphometry",
+   "href": "../../../../../data/api/v1/papers/panjabi-1991-thoracic-morphometry.json",
+   "links": [
+    {
+     "mappingId": "map:panjabi-1991-thoracic-morphometry/vertebral-dimensions/fma9968",
+     "findingId": "finding:panjabi-1991-thoracic-morphometry/vertebral-dimensions",
+     "paperId": "paper:panjabi-1991-thoracic-morphometry",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA9968",
+     "structureName": "seventh thoracic vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA9968",
+      "label": "seventh thoracic vertebra"
+     }
+    },
+    {
+     "mappingId": "map:panjabi-1991-thoracic-morphometry/pedicle-geometry/fma9968",
+     "findingId": "finding:panjabi-1991-thoracic-morphometry/pedicle-geometry",
+     "paperId": "paper:panjabi-1991-thoracic-morphometry",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA9968",
+     "structureName": "seventh thoracic vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA9968",
+      "label": "seventh thoracic vertebra"
+     }
+    }
+   ]
+  }
+ ]
+}

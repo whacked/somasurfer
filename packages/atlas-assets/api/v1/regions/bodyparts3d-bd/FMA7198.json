@@ -1,0 +1,38 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "key": "bodyparts3d-bd/FMA7198",
+ "representation": "bodyparts3d-bd",
+ "structureId": "FMA7198",
+ "structureName": "pancreas",
+ "papers": [
+  {
+   "paperId": "paper:rosse-2003-fma",
+   "href": "../../../../../data/api/v1/papers/rosse-2003-fma.json",
+   "links": [
+    {
+     "mappingId": "map:rosse-2003-fma/canonical-anatomy/fma7198",
+     "findingId": "finding:rosse-2003-fma/canonical-anatomy",
+     "paperId": "paper:rosse-2003-fma",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7198",
+     "structureName": "pancreas",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7198",
+      "label": "pancreas"
+     }
+    }
+   ]
+  }
+ ]
+}

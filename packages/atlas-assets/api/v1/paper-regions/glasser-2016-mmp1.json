@@ -1,0 +1,68 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:glasser-2016-mmp1",
+ "paperHref": "../../../../data/api/v1/papers/glasser-2016-mmp1.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:55b (\"Area 55b\") is held by the asset owner: Middle frontal gyrus; Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:glasser-2016-mmp1/parcels-per-hemisphere/hcp-mmp1-55b"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:SFL (\"Superior frontal language area\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:glasser-2016-mmp1/parcels-per-hemisphere/hcp-mmp1-sfl"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:glasser-2016-mmp1/broca-subdivision/hcp-mmp1-44"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:45 (\"Area 45 (pars triangularis)\") is held by the asset owner: Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:glasser-2016-mmp1/broca-subdivision/hcp-mmp1-45"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:V1 (\"Primary visual cortex (V1)\") is held by the asset owner: Calcarine sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:glasser-2016-mmp1/v1-delineation/hcp-mmp1-v1"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:V2 (\"Second visual area (V2)\") is held by the asset owner: Cuneus; Lingual gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:glasser-2016-mmp1/v1-delineation/hcp-mmp1-v2"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:10d (\"Area 10d (frontopolar)\") is held by the asset owner: Transverse frontopolar gyrus and sulcus*. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:glasser-2016-mmp1/frontopolar-parcels/hcp-mmp1-10d"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:9-46d (\"Area 9-46d (dorsolateral prefrontal)\") is held by the asset owner: Middle frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:glasser-2016-mmp1/frontopolar-parcels/hcp-mmp1-9-46d"
+   ]
+  }
+ ]
+}

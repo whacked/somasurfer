@@ -89,6 +89,34 @@ export {
   type UnplacedCode,
 } from './region-index.ts';
 
+export {
+  API_LICENCES,
+  API_ROOTS,
+  API_SCHEMA,
+  API_VERSION,
+  apiDocuments,
+  apiHref,
+  apiPaths,
+  createPaperApi,
+  createRegionApi,
+  createResearchApi,
+  createStaticApiClient,
+  paperSlug,
+  validateApiDocument,
+  type ApiDocument,
+  type ApiIndex,
+  type ApiPaper,
+  type ApiPaperRegions,
+  type ApiRegion,
+  type ApiRegionIndex,
+  type ApiTree,
+  type PaperApi,
+  type RegionApi,
+  type ResearchApi,
+  type ResearchApiClient,
+  type SerialisedRegionIndex,
+} from './api.ts';
+
 export type {
   AuthoredAgainst,
   Confidence,

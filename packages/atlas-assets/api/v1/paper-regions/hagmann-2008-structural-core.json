@@ -1,0 +1,47 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:hagmann-2008-structural-core",
+ "paperHref": "../../../../data/api/v1/papers/hagmann-2008-structural-core.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:precuneus (\"precuneus\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:hagmann-2008-structural-core/posterior-medial-core/atlas-label-precuneus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:posterior-cingulate-cortex (\"posterior cingulate cortex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*); Cingulate gyrus and sulcus (Posterior dorsal part). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:hagmann-2008-structural-core/posterior-medial-core/atlas-label-posterior-cingulate-cortex"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:superior-frontal-gyrus (\"superior frontal gyrus\") is held by the asset owner: Superior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:hagmann-2008-structural-core/structural-hubs/atlas-label-superior-frontal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:RSC (\"Retrosplenial complex\") is held by the asset owner: Cingulate gyrus (Posteroventral part*). Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:hagmann-2008-structural-core/retrosplenial-participation/hcp-mmp1-rsc"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:7Pm (\"Area 7Pm (medial parietal)\") is held by the asset owner: Precuneus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:hagmann-2008-structural-core/degree-distribution/hcp-mmp1-7pm"
+   ]
+  }
+ ]
+}

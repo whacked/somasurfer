@@ -1,0 +1,61 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.2",
+ "paperId": "paper:hickok-2007-dual-stream",
+ "paperHref": "../../../../data/api/v1/papers/hickok-2007-dual-stream.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:PFm (\"Area PFm (supramarginal)\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-pfm"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:44 (\"Area 44 (pars opercularis)\") is held by the asset owner: Opercular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-44"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of HCP-MMP1:STSvp (\"Superior temporal sulcus, ventral posterior\") is held by the asset owner: Superior temporal sulcus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`. Its targets in icbm152-2009c-cortex-lobes were not supplied.",
+   "mappingIds": [
+    "map:hickok-2007-dual-stream/ventral-stream/hcp-mmp1-stsvp"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:hickok-2007-dual-stream/ventral-stream/atlas-label-middle-temporal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:hickok-2007-dual-stream/bilateral-ventral/atlas-label-superior-temporal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:supramarginal-gyrus (\"supramarginal gyrus\") is held by the asset owner: Supramarginal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:hickok-2007-dual-stream/sensorimotor-interface/atlas-label-supramarginal-gyrus"
+   ]
+  },
+  {
+   "code": "coordinate-outside-shipped-structures",
+   "detail": "BV-L-5103 lies inside no shipped structure of zanatomy-gross-anatomy zanatomy-2929e94; the nearest is Superior sagittal sinus, 42.91 mm away in the mesh frame. Not linked: nearest is not containing, and the structure that does contain it may be held.",
+   "mappingIds": [
+    "map:hickok-2007-dual-stream/sensorimotor-interface/atlas-label-supramarginal-gyrus"
+   ]
+  }
+ ]
+}
