@@ -19,7 +19,9 @@
  * between that view with and without the entry selected (selection draws the
  * structure through whatever is in front). A pick passes only if a click on
  * one of those pixels, through the page's own pointer path, selects that
- * entry's key and the panel names `expect.name`.
+ * entry's key and the panel names `expect.name`. Clicking the same spot again
+ * reaches the structure behind (DOG-192), so a pick may take several clicks on
+ * one pixel; the count is recorded, and 1 means the first click.
  */
 
 import { createServer } from 'node:http';
@@ -227,10 +229,19 @@ if (want('picking')) {
       r.views.push({ view: view.name, ownPixels: mask.changed });
       if (!r.selectedShot && mask.changed) r.selectedShot = selected;
       for (const p of mask.points) {
-        const got = await page.evaluate(([x, y]) => window.__atlas.pickAt(x, y), [p.x, p.y]);
+        // A click again on the same spot, with the camera still, takes the next
+        // structure behind (DOG-192). Up to one click per structure under the
+        // pixel; a build without `under` gets the single click it supports.
+        let got = await page.evaluate(([x, y]) => window.__atlas.pickAt(x, y), [p.x, p.y]);
+        const under = got.under ?? null;
+        let clicks = 1;
+        while (got.structure !== key && under && clicks < under.length) {
+          got = await page.evaluate(([x, y]) => window.__atlas.pickAt(x, y), [p.x, p.y]);
+          clicks += 1;
+        }
         await settle(page);
         const panel = await page.textContent('#structure-name').catch(() => null);
-        r.attempts.push({ view: view.name, x: p.x, y: p.y, depth: p.depth, picked: got.structure, panel });
+        r.attempts.push({ view: view.name, x: p.x, y: p.y, depth: p.depth, picked: got.structure, clicks, under, panel });
         if (got.structure === key) break;
       }
       if (r.attempts.at(-1)?.picked === key) break;
@@ -241,6 +252,7 @@ if (want('picking')) {
     const label = hit ? drawn.find((s) => s.key === hit.picked)?.label : null;
     r.pickedName = label;
     r.view = hit?.view ?? null;
+    r.clicksAtPixel = hit?.clicks ?? null;
     r.panel = hit?.panel ?? null;
     if (!hit) { r.status = 'fail'; r.why = `none of ${r.attempts.length} clicks on its own pixels picked it (got ${[...new Set(r.attempts.map((a) => a.picked))].join(', ')})`; continue; }
     if (label !== e.expect.name || !String(hit.panel ?? '').startsWith(e.expect.name)) { r.status = 'fail'; r.why = `picked its key but named "${label}" / panel "${hit.panel}"`; continue; }
@@ -254,9 +266,10 @@ if (want('picking')) {
   const perCategory = {};
   for (const r of results) { const c = (perCategory[r.category] ??= { sample: 0, pass: 0 }); c.sample += 1; if (r.status === 'pass') c.pass += 1; }
   const distinct = new Set(passed.map((r) => r.expect)).size;
-  console.error(results.map((r) => `${r.status} ${r.id} ${r.name} px=${r.ownPixels ?? '-'} clicks=${r.attempts?.length ?? '-'} ${r.why ?? ''}`).join('\n'));
+  const firstClick = passed.filter((r) => r.clicksAtPixel === 1).length;
+  console.error(results.map((r) => `${r.status} ${r.id} ${r.name} px=${r.ownPixels ?? '-'} points=${r.attempts?.length ?? '-'} clicksAtPixel=${r.clicksAtPixel ?? '-'} view=${r.view ?? '-'} ${r.why ?? ''}`).join('\n'));
   row('picking', passed.length === FIXTURE.sample.length ? 'pass' : 'fail',
-    `${passed.length}/${FIXTURE.sample.length} picked back to their own key and name (${distinct} distinct structures); brain ${status.brain} tier, ${overall.painted} px painted against an all-hidden view`,
+    `${passed.length}/${FIXTURE.sample.length} picked back to their own key and name (${distinct} distinct structures; ${firstClick} on the first click, ${passed.length - firstClick} by clicking the same spot again); brain ${status.brain} tier, ${overall.painted} px painted against an all-hidden view`,
     { meshStatus: status, painted: overall.painted, perCategory, results: results.map(({ attempts, ...r }) => ({ ...r, clicks: attempts?.length ?? 0, attempts })), errors });
 
   // Withheld controls: must not be drawn, must not be pickable, and the page should say why.
