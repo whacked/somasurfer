@@ -15,7 +15,7 @@ import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
 import { curatedModel, paperSource } from './viewer/corpus.js';
 import { comparePapers, comparisonLayers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
 import { checkApiDocument, listedHref, overlayOf, paperRegions, regionPapers, treeUrl } from './viewer/regionpapers.js';
-import { boundsOfStructures, meshSetFrom, nextPick, pickStructures, searchStructures } from './viewer/meshset.js';
+import { boundsOfStructures, meshSetFrom, nextPick, pickStructures, searchStructures, withheldOf } from './viewer/meshset.js';
 import { nameIndexFrames, selectAddress } from './viewer/select.js';
 import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity, structureLayers } from './viewer/state.js';
 import {
@@ -120,6 +120,10 @@ const tierBytes = (entry, tier) => once(`${entry.id}/${tier}`, async () => {
   if (!response.ok) throw new Error(`${file} returned ${response.status}`);
   return new Uint8Array(await response.arrayBuffer());
 });
+// The structures an atlas's sets hold back, for search to explain. Needs no renderer.
+const withheldIn = (atlas) => once(`withheld:${atlas}`, async () => (await Promise.all(meshEntries
+  .filter((e) => e.atlas === atlas)
+  .map((e) => setDocs(e).then((d) => withheldOf(e, d.structures), () => [])))).flat());
 for (const entry of meshEntries.filter((e) => e.atlas === decodeView(location.search).view.atlas)) {
   tierBytes(entry, 'low').catch(() => {});
 }
@@ -1490,6 +1494,23 @@ function wireControls() {
       });
       results.append(el('li', {}, [go, el('span', { className: 'muted', textContent: ` ${layerLabel(s.category)}` })]));
     }
+    // Then what this atlas holds back, as text and not a button: it is not
+    // drawn, so there is nothing to select, but the page says why.
+    const query = search.value;
+    const anchor = el('li', { hidden: true });
+    results.append(anchor);
+    withheldIn(viewer.atlas).then((held) => {
+      if (search.value !== query) return;
+      for (const w of searchStructures(held, query, 4)) {
+        const row = el('li', {}, [w.title, el('span', {
+          className: 'muted',
+          textContent: ` is held back and not drawn: ${w.reasons.join('; ') || 'no reason given'}${w.group ? ` (${w.group})` : ''}.`,
+        })]);
+        row.dataset.withheld = w.group ?? w.set;
+        anchor.before(row);
+      }
+      anchor.remove();
+    });
     if (!nameIndex) return;
     for (const structure of findStructures(search.value, nameIndex, 12)) {
       const cells = coveringOf(structure.id);
