@@ -1,6 +1,6 @@
 {
  "schema": "atlas-crosswalk/1",
- "version": "crosswalk-2026.10.2",
+ "version": "crosswalk-2026.10.3",
  "comment": [
   "Hand-authored. Maps every term the research seed uses that is not a representation's own id onto",
   "named structures of a registered representation (packages/atlas-research/src/representations.ts).",
@@ -11,12 +11,12 @@
   "later resolves with no edit here. tools/check-crosswalk.mjs refuses a target that is not a",
   "structure of the representation, shipped or held, and a seed term with no entry.",
   "Every HCP-MMP1 entry also targets the lobe of icbm152-2009c-cortex-lobes (owner card 6a774981, DOG-151):",
-  "an area is smaller than its lobe, so the lobe link is a crosswalk too. Its labels are the contract posted on",
-  "DOG-151; until that label file is on the tree, tools/check-crosswalk.mjs reports these targets UNVERIFIED."
+  "an area is smaller than its lobe, so the lobe link is a crosswalk too. Its labels are those of",
+  "brain/icbm152-2009c/lobes.json, and tools/check-crosswalk.mjs checks them against that file (DOG-157)."
  ],
  "licence": "Apache-2.0, first-party (GStack). Names Z-Anatomy structures by label, as identifiers, the way registration/mni-to-zanatomy-2929e94.json does; carries no geometry. Not in payloadDirs, so it does not ship; whoever ships it adds an attribution.json entry, and licence rule 5 refuses it until they do.",
  "assertedBy": "Staff Engineer (DOG-130)",
- "assertedOn": "2026-10-11",
+ "assertedOn": "2026-10-12",
  "entries": [
   {
    "term": "HCP-MMP1:1",
@@ -334,14 +334,10 @@
     },
     {
      "representation": "icbm152-2009c-cortex-lobes",
-     "label": "Limbic lobe"
-    },
-    {
-     "representation": "icbm152-2009c-cortex-lobes",
      "label": "Temporal lobe"
     }
    ],
-   "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under both the limbic and the temporal lobe, because conventions differ on where the parahippocampal gyrus belongs.",
+   "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under the temporal lobe only: that cortex draws the limbic lobe to the cingulate sulcus (cingulate gyrus and isthmus) and labels the parahippocampal gyrus temporal (lobes.json conventions.limbic, DOG-151), so a limbic target would contradict the label set it names.",
    "reference": "Glasser MF et al. (2016) A multi-modal parcellation of human cerebral cortex. Nature 536:171-178, doi:10.1038/nature18933; Supplementary Neuroanatomical Results, area descriptions"
   },
   {
