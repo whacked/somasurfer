@@ -1,82 +1,4 @@
-/**
- * The viewer's state machine. No DOM, no WebGL, no fetch.
- *
- * Everything the §7 journey asserts about *behaviour* lives here, which is what
- * lets the journey be driven in Node: open the body atlas, change layers,
- * select a structure, navigate explicitly to the brain atlas, come back and
- * find the previous view intact. The browser shell is a renderer of this
- * object, not a second implementation of it.
- *
- * ## Selection never switches the atlas
- *
- * This is the rule with the most ways to get violated by accident, so it is
- * structural here rather than a convention. `select()` cannot change
- * `state.atlas` — there is no code path from it to the assignment. An address
- * belonging to the other atlas still selects, still resolves, still reports its
- * names and flags; what it does *not* do is move the camera somewhere else and
- * swap the geometry out from under the user. Instead the selection carries
- * `elsewhere`, naming the atlas the address lives in, and the shell offers the
- * explicit action. A viewer that teleports on click makes the body's brain and
- * the brain atlas feel like one continuous space, which is exactly the
- * confusion the plan's §2 refuses.
- *
- * The only transitions that change the atlas are `openAtlas()` and
- * `returnToPrevious()`, both of which are user actions.
- *
- * ## Not switching is not enough: it must not DRAW there either
- *
- * Reporting `elsewhere` and leaving `state.atlas` alone was only the first half,
- * and for a while the second half was missing: the selection still carried its
- * mesh and its millimetres, so the shell uploaded a brain cell into the body
- * scene and flew the body camera to brain coordinates while the panel said the
- * view had not changed. Those numbers are the other template's; next to a view
- * of this one they are not a smaller truth but a different coordinate system,
- * and the camera move is the teleport this rule exists to refuse.
- *
- * So an address whose frame lives in the other atlas has NO geometry in this
- * view. `cell`, `pointMm`, `extentMm` and `templateId` come back null and the
- * resolution is kept under `elsewhereCell`, where the panel reports it as that
- * atlas's answer and nothing that draws can pick it up by accident. The guard
- * is here and not in the shell because this object is the behaviour of record —
- * a rule the shell implements privately is a rule the journey cannot measure,
- * and that is exactly how the two halves came apart (DOG-75).
- *
- * ## A cross-atlas selection is still a view, so it is still a link
- *
- * `state.address[a]` means "the address atlas `a` is showing", not "an address
- * belonging to frame `a`". It used to mean the second, which made the first
- * unrepresentable: `toView()` reads the current atlas's slot, so the brain
- * address you had just selected in the body atlas was missing from the URL the
- * page then showed, and copying that link lost the selection (plan §7: every
- * view is linkable). Filing it under the atlas being viewed also makes the
- * return stack's snapshot true — it restores what you were looking at.
- *
- * The destination atlas's own slot is therefore not written on selection. The
- * address rides to it through `openAtlas`, which is where the move actually
- * happens, so the offer still lands on the cell it offered.
- *
- * ## Camera and layers are per atlas, and the return is a snapshot
- *
- * Two mechanisms, because they answer two different questions. Per-atlas
- * `camera`, `layers` and `labels` mean each atlas remembers how you were
- * looking at it, so switching back and forth does not reset anything. The
- * `returnStack` additionally snapshots the whole view — atlas, camera, layers,
- * label visibility and the selected address — at the moment of an explicit
- * switch, which is what the "route back that restores the previous camera and
- * layer state" requirement actually asks for: not "the body atlas's current
- * state" but "the state you left".
- *
- * ## Label visibility is view state, not shell state
- *
- * It used to live in `app.js` as one boolean on the DOM shell, which made it
- * invisible in three ways at once: one flag shared by both atlases, so turning
- * the markers off in the brain atlas turned them off in the body atlas you came
- * back to; absent from `toView()`, so no link carried it and "every link
- * restores the same view" was false by one facet; and unreachable from anything
- * driving the viewer in Node, so the §7 label behaviour could not be measured
- * at all — the gap DOG-71 was filed for. Whether labels are showing is part of
- * what you are looking at, so it is here with the rest of the view.
- */
+/** The viewer's state machine. (docs/viewer-shell.md) */
 
 import { parse } from '../alc.js';
 import { DEFAULT_CAMERA, DEFAULT_LABELS, hasAddress, labelsVisible } from './deeplink.js';
@@ -89,26 +11,39 @@ export function atlasForFrame(frame) {
   return null;
 }
 
-/**
- * The layers each atlas offers, in display order.
- *
- * Body layers are the four vertebral regions plus the spine axis. They are
- * groups of levels rather than arbitrary buckets, because that is what a
- * clinician reads and what the solid region colour mode paints.
- */
+/** The layers each atlas offers, in display order, on two independent axes. (docs/viewer-shell.md) */
+const layer = (axis) => ([id, label]) => Object.freeze({ id, label, axis });
 export const ATLAS_LAYERS = Object.freeze({
   body: Object.freeze([
-    { id: 'cervical', label: 'Cervical (C01–C07)' },
-    { id: 'thoracic', label: 'Thoracic (T01–T12)' },
-    { id: 'lumbar', label: 'Lumbar (L01–L05)' },
-    { id: 'sacral', label: 'Sacral' },
-    { id: 'spine', label: 'Spine axis' },
+    ...[
+      ['cranial', 'Above C01 (head)'],
+      ['cervical', 'Cervical (C01–C07)'],
+      ['thoracic', 'Thoracic (T01–T12)'],
+      ['lumbar', 'Lumbar (L01–L05)'],
+      ['sacral', 'Sacral'],
+      ['caudal', 'Below the sacrum'],
+      ['spine', 'Spine axis'],
+    ].map(layer('region')),
+    ...[
+      ['skin', 'Skin'], ['muscle', 'Muscles'], ['skeleton', 'Skeleton'],
+      ['cardiovascular', 'Heart and vessels'], ['nervous', 'Nervous system'],
+      ['respiratory', 'Respiratory'], ['alimentary', 'Digestive'], ['urinary', 'Urinary'],
+      ['genital', 'Genital'], ['endocrine', 'Endocrine'], ['other', 'Other'],
+    ].map(layer('category')),
   ]),
   brain: Object.freeze([
-    { id: 'left', label: 'Left hemisphere' },
-    { id: 'right', label: 'Right hemisphere' },
+    ...[['left', 'Left hemisphere'], ['right', 'Right hemisphere']].map(layer('hemisphere')),
+    ...[
+      ['cortex', 'Cortex'], ['deep_grey', 'Deep grey nuclei'], ['diencephalon', 'Diencephalon'],
+      ['brainstem', 'Brainstem'], ['cerebellum', 'Cerebellum'], ['white_matter', 'White matter'],
+      ['tracts', 'Tracts'], ['ventricles', 'Ventricles'], ['arteries', 'Arteries'],
+      ['veins_sinuses', 'Veins and sinuses'], ['cranial_nerves', 'Cranial nerves'],
+      ['meninges_dura', 'Dura'],
+    ].map(layer('category')),
   ]),
 });
+
+const AXIS = new Map(Object.values(ATLAS_LAYERS).flat().map((l) => [l.id, l.axis]));
 
 const freshLayers = () => ({ hidden: [], isolated: null, opacity: {} });
 
@@ -120,16 +55,9 @@ const cloneLayers = (l) => ({
 
 const cloneCamera = (c) => ({ ...c, target: [...c.target] });
 
-/**
- * Whether a layer is drawn, given the layer state.
- *
- * Isolate is not "hide all the others" written into `hidden`. It is a separate,
- * reversible mode, so turning it off restores whatever show/hide state the user
- * had built up rather than leaving them with everything hidden. Making isolate
- * destructive is the standard way this control becomes annoying.
- */
+/** Whether a layer is drawn, given the layer state. (docs/viewer-shell.md) */
 export function isLayerVisible(layers, id) {
-  if (layers.isolated !== null) return layers.isolated === id;
+  if (layers.isolated !== null && AXIS.get(layers.isolated) === AXIS.get(id)) return layers.isolated === id;
   return !layers.hidden.includes(id);
 }
 
@@ -137,6 +65,15 @@ export function isLayerVisible(layers, id) {
 export function layerOpacity(layers, id) {
   const v = layers.opacity[id];
   return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 1;
+}
+
+/** Whether a mesh structure is drawn, and how opaque: category layer times its most opaque visible `parts` layer (docs/viewer-shell.md). */
+export function structureLayers(layers, structure) {
+  const parts = structure.parts.filter((p) => isLayerVisible(layers, p));
+  return {
+    visible: parts.length > 0 && isLayerVisible(layers, structure.category),
+    opacity: layerOpacity(layers, structure.category) * Math.max(0, ...parts.map((p) => layerOpacity(layers, p))),
+  };
 }
 
 export function createViewer(options = {}) {
@@ -147,14 +84,12 @@ export function createViewer(options = {}) {
     /** Per atlas, so each remembers its own view. */
     camera: { body: { ...cloneCamera(DEFAULT_CAMERA) }, brain: { ...cloneCamera(DEFAULT_CAMERA) } },
     layers: { body: freshLayers(), brain: freshLayers() },
-    /**
-     * Per atlas too, and for the same reason: the body atlas's level markers
-     * and the brain atlas's hemisphere markers are different enough that
-     * wanting one is not wanting the other.
-     */
+    /** Per atlas too: wanting one atlas's markers is not wanting the other's (docs/viewer-shell.md). */
     labels: { body: DEFAULT_LABELS, brain: DEFAULT_LABELS },
     /** Per atlas, so an address selected in one is still there on return. */
     address: { body: null, brain: null },
+    /** The mesh structure each atlas has selected, by `set.id` key, or null. */
+    structure: { body: null, brain: null },
     selection: null,
     returnStack: [],
     /** atlas id -> reason, when geometry failed to load. */
@@ -199,16 +134,7 @@ export function createViewer(options = {}) {
 
     // --- selection --------------------------------------------------------
 
-    /**
-     * Select an address.
-     *
-     * Returns the selection model. On rejection nothing in `state` moves except
-     * `selection`, which holds the rejection so the shell can render the
-     * message inline — the address that was showing stays showing, the camera
-     * does not move, and the layers are untouched.
-     *
-     * Never changes `state.atlas`. See the module header.
-     */
+    /** Select an address. (docs/viewer-shell.md) */
     select(input, { encodeFlags } = {}) {
       const model = selectAddress(input, {
         templates: state.templates,
@@ -247,6 +173,16 @@ export function createViewer(options = {}) {
       // happens, in `openAtlas`.
       state.address[state.atlas] = model.address;
       return model;
+    },
+
+    structureOf(atlas = state.atlas) {
+      return state.structure[atlas];
+    },
+
+    /** Select a mesh structure (a key, or null). Like labels, it moves nothing else. */
+    selectStructure(key, atlas = state.atlas) {
+      state.structure[atlas] = typeof key === 'string' && key !== '' ? key : null;
+      return state.structure[atlas];
     },
 
     clearSelection() {
@@ -306,14 +242,7 @@ export function createViewer(options = {}) {
 
     // --- labels -----------------------------------------------------------
 
-    /**
-     * Show or hide the labels in the current atlas.
-     *
-     * Changes nothing else. Labels are an annotation over the view, so toggling
-     * them is not a navigation and not a selection: the camera, the layers and
-     * the selected address are all untouched, which is what the §7 row asserts
-     * and the reason this is not folded into the layer state.
-     */
+    /** Show or hide the labels in the current atlas. (docs/viewer-shell.md) */
     setLabels(visible, atlas = state.atlas) {
       if (!(atlas in state.labels)) throw new Error(`unknown atlas ${JSON.stringify(atlas)}`);
       // `Boolean`, not the `!== false` the view normaliser uses: a setter is
@@ -329,13 +258,7 @@ export function createViewer(options = {}) {
 
     // --- atlas navigation, the only thing that changes `atlas` ------------
 
-    /**
-     * Move to another atlas, explicitly.
-     *
-     * Snapshots the view being left onto the return stack first. The snapshot
-     * is a deep copy: the whole point is that it still describes the old view
-     * after the new atlas has been panned and had its layers changed.
-     */
+    /** Move to another atlas, explicitly. (docs/viewer-shell.md) */
     openAtlas(atlas) {
       if (!(atlas in state.layers)) throw new Error(`unknown atlas ${JSON.stringify(atlas)}`);
       if (atlas === state.atlas) return state.atlas;
@@ -351,6 +274,7 @@ export function createViewer(options = {}) {
         layers: cloneLayers(state.layers[state.atlas]),
         labels: state.labels[state.atlas],
         address: state.address[state.atlas],
+        structure: state.structure[state.atlas],
       });
       state.atlas = atlas;
       // Re-select the address this atlas was last showing, so its own panel is
@@ -384,6 +308,7 @@ export function createViewer(options = {}) {
       state.layers[previous.atlas] = cloneLayers(previous.layers);
       state.labels[previous.atlas] = labelsVisible(previous.labels);
       state.address[previous.atlas] = previous.address;
+      state.structure[previous.atlas] = previous.structure ?? null;
       state.selection = null;
       if (previous.address) api.select(previous.address);
       return previous.atlas;
@@ -399,28 +324,13 @@ export function createViewer(options = {}) {
         camera: state.camera[state.atlas],
         layers: state.layers[state.atlas],
         labels: state.labels[state.atlas],
-        /**
-         * Say the atlas out loud when the address does not imply it.
-         *
-         * `encodeView` omits a default, so a brain address selected in the
-         * body atlas would otherwise encode as a bare `?a=BV-…`, and which
-         * atlas that link reopens in would depend on a rule rather than on
-         * what it says. One link, one meaning: the view that is only half
-         * about this atlas is the one that states it.
-         */
+        structure: state.structure[state.atlas],
+        /** Say the atlas out loud when the address does not imply it. (docs/viewer-shell.md) */
         atlasExplicit: state.selection?.ok === true && state.selection.elsewhere !== null,
       };
     },
 
-    /**
-     * Apply a decoded view.
-     *
-     * The atlas comes from the URL, which is not a selection-driven switch: a
-     * link is an explicit act by whoever followed it. The address is applied
-     * after the atlas, so a brain address in a `atlas=brain` link lands in the
-     * atlas that can draw it, and a brain address in a body link selects
-     * without switching — same rule as a click.
-     */
+    /** Apply a decoded view. (docs/viewer-shell.md) */
     applyView(view, problems = []) {
       state.viewProblems = [...problems];
       if (view.atlas in state.layers) state.atlas = view.atlas;
@@ -430,6 +340,7 @@ export function createViewer(options = {}) {
       // already been through `decodeView`, but one assembled by a caller may
       // simply not mention labels, and that is the default, not "off".
       state.labels[state.atlas] = labelsVisible(view.labels);
+      state.structure[state.atlas] = view.structure ?? null;
       state.selection = null;
       if (hasAddress(view.address)) {
         // Still goes through select(), so an address out of a URL is validated
@@ -446,13 +357,7 @@ export function createViewer(options = {}) {
   return api;
 }
 
-/**
- * The atlas an address would be drawn in, without selecting it.
- *
- * Used by the shell to label the cross-atlas offer before the user commits.
- * Returns `null` for an address that does not parse — the caller shows the
- * rejection instead, and this must not be the thing that throws.
- */
+/** The atlas an address would be drawn in, without selecting it. (docs/viewer-shell.md) */
 export function atlasForAddress(address) {
   try {
     return atlasForFrame(parse(address).frame);

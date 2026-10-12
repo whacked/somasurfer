@@ -1,45 +1,4 @@
-/**
- * The renderer. WebGL2, no dependency, loaded by dynamic `import()`.
- *
- * ## Why this is not three.js, for now
- *
- * `docs/viewer-bundle-budget.md` measured the renderer options and ruled out
- * React Three Fiber on cost: three.js tree-shaken to the stage-A surface is
- * 126,469 bytes gzipped against a 153,600-byte line, and react-dom's 42.8 KiB
- * on top does not fit. That measurement assumed a bundler.
- *
- * This repository has no bundler, and that is not an oversight that can be
- * fixed in passing:
- *
- *   - `packages/atlas-web/build.mjs` copies `src/*.js` verbatim as native ES
- *     modules. There is no tree-shaking and no minification step.
- *   - `.github/workflows/ci.yml` never runs `npm ci` or `npm install`, so
- *     `node_modules` does not exist on the runner and the build cannot copy a
- *     dependency out of it.
- *   - `ci.yml` asserts that the root `package.json` has gained no runtime
- *     `dependencies`, failing with "root gained runtime dependencies; update
- *     CI". Adding one is a deliberate decision point, by design.
- *
- * So shipping three.js here means committing its build into the repository and
- * serving it unminified and un-tree-shaken: 2.1 MB raw, ~407 KiB gzipped —
- * three times the figure the budget decision was based on. That is a
- * cross-cutting change to the build spine, the licence gate and the budget, and
- * it belongs with Release Engineering alongside DOG-41, not bolted onto this
- * commit.
- *
- * The seam is the point. This module's whole interface is `createRenderer`
- * returning the handful of methods below. Nothing above it knows what draws:
- * `app.js` loads it with `await import()` and runs without it. Replacing the
- * body of this file with three.js calls changes no other file.
- *
- * ## It is loaded lazily, and that is a requirement rather than a nicety
- *
- * Stage A requires that a failure to load geometry leaves addresses parsing and
- * resolving to names. If the address bar sat behind the renderer, that
- * requirement would be unsatisfiable by construction. So the renderer is
- * imported after first paint, and every entry point here is allowed to fail
- * without taking the shell down.
- */
+/** The renderer. (docs/viewer-shell.md) */
 
 import { FOV_Y, UP, eyeOf } from './camera.js';
 import { lookAt, multiply, perspective } from './vec.js';
@@ -56,15 +15,7 @@ void main() {
   gl_Position = viewProjection * vec4(position, 1.0);
 }`;
 
-/**
- * Solid region colour mode: one flat colour per region, shaded only enough to
- * read as a solid. No texture, no specular, no gradient — the one display mode
- * v1 ships, and the colour has to mean "this region" rather than "this light".
- *
- * Two headlights rather than one, because a single light leaves the half of the
- * body facing away from it unreadably dark, and a user reads a dark region as a
- * different colour.
- */
+/** Solid region colour mode: one flat colour per region, shaded only enough to read as a solid. (docs/viewer-shell.md) */
 const SOLID_FRAGMENT = `#version 300 es
 precision highp float;
 in vec3 vNormal;
@@ -104,13 +55,7 @@ uniform float alpha;
 out vec4 fragColour;
 void main() { fragColour = vec4(colour, alpha); }`;
 
-/**
- * The solid region palette.
- *
- * Chosen for distinguishability rather than realism — these are regions of an
- * address space, not tissue. The cell highlight is deliberately the only warm
- * colour, so what you selected never competes with the anatomy around it.
- */
+/** The solid region palette. (docs/viewer-shell.md) */
 export const REGION_COLOURS = Object.freeze({
   cervical: [0.44, 0.60, 0.80],
   thoracic: [0.36, 0.69, 0.66],
@@ -122,6 +67,20 @@ export const REGION_COLOURS = Object.freeze({
   right: [0.40, 0.72, 0.70],
 });
 
+/** Anatomy, by layer id (viewer/state.js) and, for the cortex lobes, by label. (docs/viewer-shell.md) */
+export const ANATOMY_COLOURS = Object.freeze({
+  cortex: [0.82, 0.74, 0.70], deep_grey: [0.56, 0.62, 0.84], diencephalon: [0.60, 0.76, 0.62],
+  brainstem: [0.78, 0.70, 0.56], cerebellum: [0.70, 0.62, 0.80], white_matter: [0.90, 0.90, 0.86],
+  tracts: [0.62, 0.80, 0.86], ventricles: [0.42, 0.66, 0.90], arteries: [0.82, 0.36, 0.36],
+  veins_sinuses: [0.40, 0.46, 0.80], cranial_nerves: [0.94, 0.86, 0.48], meninges_dura: [0.66, 0.66, 0.62],
+  'Frontal lobe': [0.80, 0.72, 0.62], 'Parietal lobe': [0.70, 0.76, 0.66], 'Temporal lobe': [0.66, 0.72, 0.82],
+  'Occipital lobe': [0.80, 0.68, 0.78], Insula: [0.88, 0.80, 0.56], 'Limbic lobe': [0.62, 0.80, 0.78],
+  skin: [0.86, 0.73, 0.64], muscle: [0.74, 0.40, 0.38], skeleton: [0.90, 0.88, 0.80],
+  cardiovascular: [0.80, 0.30, 0.32], nervous: [0.94, 0.86, 0.48], respiratory: [0.62, 0.76, 0.86],
+  alimentary: [0.80, 0.62, 0.46], urinary: [0.86, 0.76, 0.42], genital: [0.80, 0.56, 0.70],
+  endocrine: [0.60, 0.80, 0.56], other: [0.62, 0.62, 0.66], chosen: [0.30, 0.95, 0.84],
+});
+
 export const CELL_COLOUR = [0.98, 0.62, 0.21];
 export const CELL_EDGE_COLOUR = [1.0, 0.84, 0.42];
 /** Per-highlight-group colours, for research findings. */
@@ -129,11 +88,7 @@ export const GROUP_COLOURS = [
   [0.94, 0.46, 0.38], [0.46, 0.64, 0.94], [0.96, 0.76, 0.32],
   [0.58, 0.82, 0.50], [0.80, 0.54, 0.88],
 ];
-/**
- * One colour per paper when two are compared: blue and magenta, far apart in
- * hue from each other, from the selection's orange and from the body's
- * blue-green region tones. Their overlap is hatched in both.
- */
+/** One colour per paper when two are compared; their overlap is hatched in both (docs/viewer-shell.md). */
 export const PAPER_COLOURS = [[0.28, 0.52, 1.0], [0.93, 0.30, 0.72]];
 
 function compile(gl, vertexSource, fragmentSource) {
@@ -158,13 +113,7 @@ function compile(gl, vertexSource, fragmentSource) {
   return program;
 }
 
-/**
- * Create a renderer on a canvas.
- *
- * Throws if WebGL2 is unavailable, which the caller turns into a visible
- * "3D view unavailable" rather than a blank canvas. A blank canvas is the worst
- * outcome: it looks like the atlas has no content.
- */
+/** Create a renderer on a canvas. (docs/viewer-shell.md) */
 export function createRenderer(canvas) {
   const gl = canvas.getContext('webgl2', {
     antialias: true,
@@ -263,14 +212,7 @@ export function createRenderer(canvas) {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, uploaded.index);
   }
 
-  /**
-   * Draw a frame.
-   *
-   * `scene` is plain data assembled by `app.js` from viewer state — uploaded
-   * meshes, which layers are visible and at what opacity, and the selected
-   * cell. The renderer makes no decisions about what should be visible; that
-   * belongs to the state machine, where it is testable.
-   */
+  /** Draw a frame. (docs/viewer-shell.md) */
   function render(scene) {
     const { camera, width, height } = scene;
     const dpr = Math.min(globalThis.devicePixelRatio ?? 1, 2);
@@ -284,8 +226,10 @@ export function createRenderer(canvas) {
     gl.clearColor(0.071, 0.082, 0.102, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
+    // No culling: the anatomy includes open sheets (dura, skin, the cortex's
+    // cut faces) and is not wound consistently across sources, and the shader
+    // already lights whichever face is toward the eye.
+    gl.disable(gl.CULL_FACE);
 
     const eye = eyeOf(camera);
     // `far` is derived from the camera distance rather than fixed, because the
@@ -325,6 +269,18 @@ export function createRenderer(canvas) {
       gl.disable(gl.BLEND);
     }
 
+    // --- the selected structure, through whatever is in front of it --------
+    if (scene.xray) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.disable(gl.DEPTH_TEST);
+      gl.depthMask(false);
+      drawSolidRanges({ ...scene.xray, opacity: 0.3 });
+      gl.depthMask(true);
+      gl.enable(gl.DEPTH_TEST);
+      gl.disable(gl.BLEND);
+    }
+
     function drawSolidRanges(item) {
       bindSolid(item.mesh);
       gl.uniform1f(loc.solid.alpha, item.opacity);
@@ -339,16 +295,7 @@ export function createRenderer(canvas) {
       }
     }
 
-    // --- research highlights, then the selected cell -----------------------
-    // Drawn last, blended, with culling off so each reads as a volume from
-    // both inside and outside, and with depth writes off so none of them hides
-    // the anatomy it is meant to locate.
-    //
-    // Highlights go FIRST so a selection inside a highlighted group still
-    // reads as the selection, and each carries its own colour: a highlight
-    // that looked like the selection would make "the address you are at" and
-    // "somewhere a paper reported" indistinguishable, which is the whole value
-    // of the research panel.
+    // --- research highlights, then the selected cell (docs/viewer-shell.md) ---
     const volumes = [
       ...(scene.highlights ?? []).map((h) => ({
         cell: h.cell,
@@ -398,7 +345,6 @@ export function createRenderer(canvas) {
 
       gl.depthMask(true);
       gl.disable(gl.BLEND);
-      gl.enable(gl.CULL_FACE);
     }
 
     // --- polylines: the spine axis, research highlights -------------------
@@ -417,15 +363,7 @@ export function createRenderer(canvas) {
     }
   }
 
-  /**
-   * World millimetres -> canvas CSS pixels, or `null` when behind the camera.
-   *
-   * Lives here rather than in the shell so labels are projected with the same
-   * matrices the geometry was drawn with. A label derived from an independently
-   * re-derived projection drifts from the thing it labels as soon as either
-   * side's near plane or field of view changes, and a label a few pixels off
-   * the structure it names is worse than no label.
-   */
+  /** World millimetres -> canvas CSS pixels, or `null` when behind the camera. (docs/viewer-shell.md) */
   function projectPoint(point, camera, width, height) {
     const eye = eyeOf(camera);
     const far = camera.distance * 4 + 2000;

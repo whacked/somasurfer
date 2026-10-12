@@ -20,7 +20,8 @@ import {
   isLayerVisible,
   layerOpacity,
 } from '../src/viewer/state.js';
-import { bodySurfaceMesh, meshBounds } from '../src/viewer/template.js';
+import { meshBounds } from '../src/viewer/template.js';
+import { bodySurfaceMesh } from './frame-surface.js';
 import { nameIndex, templates } from './support.js';
 
 const viewer = () => createViewer({ templates: templates(), nameIndex: nameIndex() });

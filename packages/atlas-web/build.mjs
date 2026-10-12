@@ -42,6 +42,7 @@ import {
   CURATED_CORPUS_RESOLUTION,
   NAME_INDEX_FILES,
 } from './catalogue/asset-templates.mjs';
+import { ASSET_MESH_SETS } from './catalogue/asset-meshes.mjs';
 import { buildTemplates } from './fixtures/fixtures.mjs';
 // The one value the build shares with the client: the roles a research corpus
 // may declare. Imported from the validator that enforces it rather than
@@ -201,6 +202,27 @@ for (const definition of buildTemplates()) {
     path: `${BASE}${path}`,
   });
 }
+
+/**
+ * The mesh sets the page draws (DOG-129). Paths only, from the declaration in
+ * catalogue/asset-meshes.mjs; each is checked against what was copied, so a
+ * renamed asset fails here and not as a 404. The tiers inside each
+ * structures.json are asset content and the browser reads them itself.
+ */
+const meshSetEntries = ASSET_MESH_SETS.map((declaration) => {
+  const entry = { id: declaration.id, atlas: declaration.atlas };
+  for (const key of ['structures', 'labels', 'registration']) {
+    if (!declaration[key]) continue;
+    if (!assetFiles.some((a) => a.path === `assets/${declaration[key]}`)) {
+      throw new Error(
+        `the catalogue declares mesh set ${declaration.id} ${key} ${declaration[key]}, but no such payload `
+        + 'was copied from packages/atlas-assets; the page must not be sent to fetch a file the build did not ship.',
+      );
+    }
+    entry[key] = `${BASE}assets/${declaration[key]}`;
+  }
+  return entry;
+});
 
 /**
  * The naming layer, as the two asset documents it actually is.
@@ -384,6 +406,8 @@ const atlasIndex = {
   })),
   /** Templates the viewer may bind. It is built against this, not one of them. */
   templates: templateEntries,
+  /** Mesh sets per atlas (DOG-129). Display and picking geometry; the templates stay the frames. */
+  meshSets: meshSetEntries,
   /**
    * Two paths, joined at runtime by `viewer/nameindex.js`. `source: 'asset'`
    * is the discriminator the loader branches on, so a future first-party index

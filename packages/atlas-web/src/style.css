@@ -144,3 +144,10 @@ footer { padding: 14px 16px; border-top: 1px solid var(--edge); font-size: 12px;
 .compare select { flex: 1; min-width: 0; background: #222932; color: var(--ink); border: 1px solid var(--edge); border-radius: 6px; }
 .legend { list-style: none; padding: 0; margin: 6px 0; }
 .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; }
+
+.atlas-nav { display: flex; gap: 0.25rem; margin: 0.25rem 0; }
+.atlas-nav a { padding: 0.25rem 0.75rem; border-radius: 4px; color: inherit; text-decoration: none; border: 1px solid #3a4150; }
+.atlas-nav a[aria-current='page'] { background: #2c3443; border-color: #6d7a92; font-weight: 600; }
+.layers h3 { font-size: 0.8rem; margin: 0.5rem 0 0.2rem; opacity: 0.75; }
+.structure-panel { border-left: 3px solid rgb(77 242 214); padding-left: 0.5rem; margin: 0.5rem 0; }
+.structure-panel h3 { margin: 0; }

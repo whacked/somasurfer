@@ -17,6 +17,10 @@
     <div id="shell" hidden>
       <header>
         <h1>Linked 3D Atlas Explorer</h1>
+        <nav class="atlas-nav" aria-label="Atlases">
+          <a id="nav-body" href="{{BASE}}?atlas=body" data-testid="nav-body">Body</a>
+          <a id="nav-brain" href="{{BASE}}?atlas=brain" data-testid="nav-brain">Brain</a>
+        </nav>
         <div class="atlas-bar">
           <strong id="atlas-name">Body atlas</strong>
           <span id="template-id" class="muted"></span>
@@ -50,7 +54,7 @@
               <input id="precision" type="range" min="0" max="5" step="1" value="3" data-testid="precision" />
               <output id="precision-value">3</output> digits
             </label>
-            <p class="hint">Drag to rotate · shift-drag or right-drag to pan · wheel to zoom · click to address</p>
+            <p class="hint">Drag to rotate · shift-drag or right-drag to pan · wheel to zoom · click to name and address · layers under half opacity are not clicked</p>
             <p id="precision-note" class="hint"></p>
           </div>
         </section>
@@ -71,6 +75,7 @@
 
           <div id="notices" class="notices" hidden role="status"></div>
           <div id="address-panel" class="address-panel"></div>
+          <section id="structure-panel" class="structure-panel" data-testid="structure-panel" hidden></section>
 
           <section class="search">
             <label for="search-input">Find a structure</label>
@@ -110,11 +115,9 @@
           their own licence and attribution; neither obligation reaches the other.
         </p>
         <p class="note">
-          Templates and structure names in this build are <strong>synthetic fixtures</strong>,
-          not anatomy. Where names exist, the list shows the index version they came from.
-          The brain frame <code>BV</code> ships <strong>without names</strong> — no brain
-          parcellation cleared licensing for redistribution — so a brain selection is a
-          location, not a named structure.
+          The meshes name what you click. Address names come from a separate index, with its
+          version beside them; the brain frame <code>BV</code> has no such index, so a brain
+          address is a location and the structure under the pointer is named separately.
         </p>
       </footer>
     </div>
