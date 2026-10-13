@@ -11,7 +11,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { fitCamera, flyToCell, pan, rotate, zoom } from '../src/viewer/camera.js';
+import { eyeOf, fitCamera, flyToCell, orbitByDrag, pan, rotate, UP, zoom } from '../src/viewer/camera.js';
+import { cross, dot, sub, unit } from '../src/viewer/vec.js';
 import { ATLASES, DEFAULT_LABELS, decodeView, encodeView, viewHref } from '../src/viewer/deeplink.js';
 import {
   atlasForAddress,
@@ -510,6 +511,25 @@ describe('camera controls', () => {
     assert.equal(rotate(base, 0.5, 0).yaw, 0.5);
     assert.ok(Math.abs(rotate(base, 0, 99).pitch) < Math.PI / 2);
     assert.ok(Math.abs(rotate(base, 0, -99).pitch) < Math.PI / 2);
+  });
+
+  it('orbits so the model follows the drag, and inverts both axes on request', () => {
+    // Where a point on the model's near face lands on screen, in the camera's
+    // own right/up basis: the point the user would have grabbed.
+    const screen = (camera, point) => {
+      const eye = eyeOf(camera);
+      const forward = unit(sub(camera.target, eye));
+      const right = unit(cross(forward, UP));
+      const rel = sub(point, eye);
+      return { x: dot(rel, right) / dot(rel, forward), y: dot(rel, cross(right, forward)) / dot(rel, forward) };
+    };
+    const near = unit(eyeOf(base)).map((c) => c * 100);
+    const at = screen(base, near);
+    // Screen y is up here, the drag's dy is down.
+    assert.ok(screen(orbitByDrag(base, 40, 0), near).x > at.x, 'a drag right moves the grabbed face right');
+    assert.ok(screen(orbitByDrag(base, 0, 40), near).y < at.y, 'a drag down moves the grabbed face down');
+    assert.ok(screen(orbitByDrag(base, 40, 0, { invert: true }), near).x < at.x, 'inverted: right moves it left');
+    assert.ok(screen(orbitByDrag(base, 0, 40, { invert: true }), near).y > at.y, 'inverted: down moves it up');
   });
 
   it('zooms multiplicatively within the scene', () => {
