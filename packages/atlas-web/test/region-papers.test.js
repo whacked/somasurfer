@@ -18,11 +18,14 @@ import { describe, it } from 'node:test';
 
 import { ASSET_MESH_SETS } from '../catalogue/asset-meshes.mjs';
 import { meshSetFrom } from '../src/viewer/meshset.js';
+import { createViewer, meshDraws } from '../src/viewer/state.js';
 import {
+  apiModel,
   checkApiDocument,
   describeLink,
   listedHref,
   overlayOf,
+  paperFrame,
   paperRegions,
   regionPapers,
   treeUrl,
@@ -248,11 +251,87 @@ describe('paper → regions', () => {
   });
 });
 
+describe('the camera and the x-ray pass', () => {
+  const models = regionIndex.papers.map((p) => paperRegions(checkApiDocument(doc(p.href), 'paper-regions'), ASSET_MESH_SETS, sets));
+  const both = models.find((m) => m.paperId === 'paper:mazziotta-2001-icbm');
+
+  it('frames a revealed paper once, on its structures in this atlas, and waits only while they are still coming', () => {
+    const brain = paperFrame(both, 'brain', 'loading', 'brain');
+    assert.deepEqual(brain.drawn.map((s) => s.key), [...overlayOf(both, 'brain').keys()]);
+    assert.equal(brain.done, true, 'framed as soon as anything here is drawn, so a later commit never refits');
+    // Its body region is the spinal cord, drawn only as parts: nothing to frame.
+    // While the body meshes are coming, the reveal waits; once they are in, or failed, it is spent.
+    assert.deepEqual(paperFrame(both, 'body', 'loading', 'body'), { drawn: [], done: false });
+    assert.deepEqual(paperFrame(both, 'body', 'pending', 'body'), { drawn: [], done: false });
+    for (const status of ['low', 'full', 'failed', 'none']) assert.deepEqual(paperFrame(both, 'body', status, 'body'), { drawn: [], done: true }, status);
+    // Chosen by what it is, not by name: DOG-157's lobe targets gave glasser-2016-mmp1 structures.
+    const none = models.find((m) => m.regions.length === 0);
+    assert.ok(none, 'the tree still has a paper that maps no region');
+    assert.deepEqual(paperFrame(none, 'brain', 'loading', 'brain'), { drawn: [], done: true }, 'a paper with no structures waits for nothing');
+  });
+
+  it('never frames in an atlas the paper was not revealed in, however the view got there', () => {
+    // Revealed in the body, answered after a switch to the brain (a button, a return or browser Back):
+    // the brain structures are drawn, and still nothing is framed, and the reveal is spent.
+    assert.deepEqual(paperFrame(both, 'brain', 'full', 'body'), { drawn: [], done: true });
+    assert.deepEqual(paperFrame(both, 'brain', 'loading', 'body'), { drawn: [], done: true }, 'not kept waiting for the old atlas either');
+    assert.deepEqual(paperFrame(both, 'body', 'loading', 'brain'), { drawn: [], done: true });
+  });
+
+  it('draws a paper\'s structures through any layer, and the selected one last', () => {
+    const v = createViewer();
+    v.openAtlas('brain');
+    v.setLayerHidden('cortex', true);
+    const palette = { chosen: '#c', paper: '#p', paperStripe: '#s', cortex: '#1', deep_grey: '#2', other: '#o' };
+    const at = (key, category, firstTriangle) => ({ key, category, parts: ['left'], firstTriangle, triangleCount: 10 });
+    const gpu = { id: 'set' };
+    const set = { gpu, structures: [at('a', 'cortex', 0), at('b', 'deep_grey', 10), at('c', 'deep_grey', 20), at('d', 'deep_grey', 30)] };
+    const overlay = new Map([['a', 'exact'], ['b', 'approximate']]);
+    const draws = (chosen, layers = v.layersOf()) => meshDraws([{ structures: set.structures }, set], { layers, chosen, overlay, palette });
+
+    const { solids, xray } = draws('c');
+    // a's cortex layer is hidden: it is not a solid, and still shows, in the paper colour.
+    assert.deepEqual(solids, [{ mesh: gpu, visible: true, opacity: 1, ranges: [
+      { firstTriangle: 10, triangleCount: 10, colour: '#p', hatch: '#s' },
+      { firstTriangle: 20, triangleCount: 10, colour: '#c', hatch: null },
+      { firstTriangle: 30, triangleCount: 10, colour: '#2', hatch: null },
+    ] }]);
+    assert.deepEqual(xray, [
+      { mesh: gpu, ranges: [
+        { firstTriangle: 0, triangleCount: 10, colour: '#p', hatch: null },
+        { firstTriangle: 10, triangleCount: 10, colour: '#p', hatch: '#s' },
+      ] },
+      { mesh: gpu, ranges: [{ firstTriangle: 20, triangleCount: 10, colour: '#c' }] },
+    ], 'exact solid, approximate striped, the selection on top; a set not yet on the GPU draws nothing');
+
+    // A selected paper structure is drawn as the selection, once, not also as the paper's.
+    assert.deepEqual(draws('b').xray.map((x) => x.ranges.map((r) => [r.firstTriangle, r.colour])), [[[0, '#p']], [[10, '#c']]]);
+    // A faded selection keeps its fade: no x-ray for it.
+    v.setLayerOpacity('deep_grey', 0.4);
+    assert.deepEqual(draws('c').xray.map((x) => x.ranges.length), [2]);
+    assert.deepEqual(draws(null).xray.map((x) => x.ranges.length), [2]);
+    assert.deepEqual(meshDraws([set], { layers: v.layersOf(), chosen: null, overlay: new Map(), palette }).xray, [], 'no paper, no selection: no x-ray');
+  });
+});
+
 describe('what the page trusts', () => {
   it('refuses a document of another kind or schema', () => {
     assert.throws(() => checkApiDocument(doc('index.json'), 'region'), /region document/);
     assert.throws(() => checkApiDocument({ ...doc('index.json'), schema: 'atlas-research-api/2' }, 'region-index'), /atlas-research-api\/1/);
     assert.throws(() => checkApiDocument(null, 'region'), /region document/);
+  });
+
+  it('reads a document that passes the kind check but is malformed inside as the API failing, not a throw', () => {
+    // A stale cached copy, say: right schema and kind, wrong body.
+    const region = checkApiDocument({ schema: 'atlas-research-api/1', kind: 'region', papers: null }, 'region');
+    assert.match(apiModel({ doc: region }, (d) => regionPapers(d, research)).error, /^malformed document: /);
+    const paper = checkApiDocument({ schema: 'atlas-research-api/1', kind: 'paper-regions', paperId: 'paper:x', regions: [{ key: 'a/1' }] }, 'paper-regions');
+    assert.match(apiModel({ doc: paper }, (d) => paperRegions(d, ASSET_MESH_SETS, sets)).error, /^malformed document: /);
+    // Loading and failed answers pass through untouched; a well-formed one is built.
+    assert.deepEqual(apiModel({ pending: true }, () => assert.fail('built while pending')), { pending: true });
+    assert.deepEqual(apiModel({ error: 'x returned 404' }, () => assert.fail('built on a failure')), { error: 'x returned 404' });
+    const served = doc(regionIndex.regions[0].href);
+    assert.deepEqual(apiModel({ doc: served }, (d) => regionPapers(d, research)).model, regionPapers(served, research));
   });
 
   it('refuses an href that leaves the region tree', () => {

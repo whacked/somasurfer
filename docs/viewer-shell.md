@@ -6,7 +6,9 @@ comment in it is counted by `bundleGzipBytes`. So the longer explanations of
 line of code it explains, and the code keeps a one-line summary that points back
 to this file. They were moved verbatim by DOG-129 when the mesh viewer took the
 bundle over its line; nothing was reworded. DOG-132 moved `viewer/corpus.js`'s
-header the same way, verbatim, when the region↔paper panels did the same.
+header the same way, verbatim, when the region↔paper panels did the same. DOG-210 moved
+`viewer/research.js`'s header the same way, verbatim, when DOG-184's W7
+follow-ups landed on top of the W8a fix.
 
 Search this file for the code line to find its note.
 
@@ -678,6 +680,75 @@ rendered identically to an index name is a quiet upgrade of one to the other.
 Three states, then, not two: placed and named (26), placed but unnameable
 (5), not placed (139).
 
+## `viewer/research.js`
+
+### Module header
+
+Research papers over addresses: the filter, the reveal, and the comparison.
+
+Stage A loaded the research document and exposed it on `window.__atlas`
+without doing anything with it — the highlight seam, named as such. This is
+the behaviour the §7 journey's middle three steps ask for: find papers that
+mapped a region, reveal one paper's mappings, compare two papers.
+
+#### The filter narrows the LIST, never a selected paper's own mappings
+
+This is the rule with the most tempting wrong implementation, so it is
+structural rather than a convention, in the same way `select()` structurally
+cannot change the atlas:
+
+  `papersOverlapping()` takes a filter and returns papers.
+  `revealPaper()`       takes NO filter and returns every mapping.
+
+There is no filter argument to pass to `revealPaper`, so a caller cannot
+accidentally narrow a reveal, and a future caller cannot be talked into it
+by a convenient parameter. A paper that mapped five regions mapped five
+regions; showing three of them because the user had a thoracic filter on
+would misrepresent the paper, and it is exactly the sort of helpfulness that
+turns a citation into a false claim about what somebody published.
+
+Revealed cells are *annotated* with whether they fell inside the active
+filter — `withinFilter` — so the UI can draw attention without withholding
+anything. Annotating is not filtering: the row is there either way.
+
+#### Overlap, never string equality
+
+A paper maps `BD-T07-06O`; the user has `BD-T07` selected. Those are not the
+same string and they are not unrelated — one contains the other — and the
+only correct test is the library's. Every comparison here goes through
+`overlaps()`, which is also what the standing address-equality guard over
+this package exists to enforce.
+
+#### A finding that was never placed is shown, not dropped
+
+A finding whose mappings could not be placed has no cells at all. Silently
+omitting it would let the atlas imply the literature is more spatially
+precise than it is. It carries `placed: false` and its own `regionOnly`
+sentence, and it is counted in the paper's finding total either way.
+
+On the curated corpus this is the common case, not the edge one: 96 of the
+120 findings have no placed geometry, because the brain parcellation that
+would locate them is not licence-cleared. `viewer/corpus.js` is where that
+residue acquires its explanation.
+
+#### A corpus that does not say what it is does not load
+
+Every resolution result in this viewer carries the name-index version it came
+from, and the UI shows it beside every name list, because a name with no
+stated provenance is a claim the reader cannot check. A *paper* with no
+stated provenance is the same claim and a worse one: a titled, dated, venued
+entry reads as literature whether or not it is.
+
+So `role` is required and validated here, at load, alongside the addresses —
+`'fixture'` for an invented corpus, `'curated'` for one whose papers are real
+— and `researchModel` throws without it. Required rather than defaulted
+because every available default is a lie about something: defaulting to
+`fixture` would label the curated corpus invented, and defaulting to
+`curated` would present invented papers as literature. The shell turns the
+throw into the degraded-research notice, which costs the research panel and
+nothing else; that is the correct price for a document that will not say
+whether its papers exist.
+
 ## `viewer/regionpapers.js` and the region↔paper panels (DOG-132)
 
 ### Module header
@@ -742,4 +813,17 @@ hidden layer: a layer setting never hides a paper's mapping.
 
 The camera is framed on the paper's structures in this atlas once, on reveal,
 as soon as they are drawn. A reveal before the meshes arrive frames when they
-do. It never refits afterwards, so the user's own camera moves stand.
+do. It never refits afterwards, so the user's own camera moves stand. A
+pending frame belongs to the atlas the paper was revealed in. It is recorded
+with that atlas, so if the view is in any other atlas when the API answers, the
+frame is dropped unframed. That holds whichever path switched the view: the
+Open button, Back to, or browser Back through `popstate`.
+
+Both rules live outside `app.js`, so `test/region-papers.test.js` can reach
+them: `paperFrame()` in `viewer/regionpapers.js` decides when the frame is
+spent, and `meshDraws()` in `viewer/state.js` builds the solid and x-ray lists.
+
+A document can pass the kind and schema checks and still be malformed inside,
+for example a stale cached copy. `apiModel()` turns a throw while reading it
+into the panel's "could not be read" state, so nothing throws inside every
+later `commit()`.
