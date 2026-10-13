@@ -84,17 +84,20 @@ const visibleNotices = (page) => page.$$eval('[data-notice]', (ns) => ns.filter(
   const statuses = latest ? await gh(`deployments/${latest.id}/statuses?per_page=1`).catch(() => []) : [];
   const main = await gh('commits/main').catch((e) => ({ error: e.message }));
   // The unauthenticated API allows 60 requests an hour per IP, shared by every
-  // agent on this runner: a refusal is an unread record, not a wrong one.
-  const limited = [deployments, statuses, main].some((x) => /rate limit/i.test(x?.message ?? ''));
+  // agent on this runner: a refusal is an unread record, not a wrong one. Each
+  // read is decided on its own, so one refusal never hides another read's answer.
+  const refused = (x) => /rate limit/i.test(x?.message ?? '');
   const unread = [];
   if (!SHA) p.push('no --sha given: nothing to confirm the deployment against');
-  if (limited) unread.push('the GitHub API refused the deployment record and main (rate limit), so only the bytes were checked');
+  if (refused(deployments)) unread.push('the GitHub API refused the github-pages deployment record (rate limit), so neither it nor its status was read');
+  else if (!latest) p.push(`no github-pages deployment record: ${JSON.stringify(deployments).slice(0, 200)}`);
   else {
-    if (!latest) p.push(`no github-pages deployment record: ${JSON.stringify(deployments).slice(0, 200)}`);
-    else if (latest.sha !== SHA) p.push(`latest github-pages deployment is ${latest.sha}, not ${SHA}`);
-    if (statuses[0]?.state !== 'success') p.push(`deployment ${latest?.id} status is ${statuses[0]?.state}`);
-    if (main.sha !== SHA) p.push(`main is at ${main.sha}, not ${SHA}`);
+    if (latest.sha !== SHA) p.push(`latest github-pages deployment is ${latest.sha}, not ${SHA}`);
+    if (refused(statuses)) unread.push(`the GitHub API refused the status of deployment ${latest.id} (rate limit)`);
+    else if (statuses[0]?.state !== 'success') p.push(`deployment ${latest.id} status is ${statuses[0]?.state}`);
   }
+  if (refused(main)) unread.push('the GitHub API refused main (rate limit)');
+  else if (main.sha !== SHA) p.push(`main is at ${main.sha}, not ${SHA}`);
 
   // Every file the local build of SHA emits, against what the site serves.
   const walk = (dir) => readdirSync(dir).flatMap((n) => { const f = join(dir, n); return statSync(f).isDirectory() ? walk(f) : [f]; });
@@ -111,9 +114,10 @@ const visibleNotices = (page) => page.$$eval('[data-notice]', (ns) => ns.filter(
   if (manifest.base !== '/somasurfer/') p.push(`--dist was built with base ${manifest.base}, not /somasurfer/`);
   if (files.length === 0) p.push(`--dist ${DIST} is empty`);
   if (differ.length) p.push(`${differ.length}/${files.length} built files differ from the live site: ${differ.slice(0, 5).map((d) => `${d.file} (${d.status})`).join(', ')}`);
-  if (!p.length && unread.length) row('deployed-sha', 'unverified', [...unread, `all ${files.length} files of a local --base /somasurfer/ build of ${SHA?.slice(0, 7)} served byte for byte`], { sha: SHA, files: files.length, differ });
+  if (!p.length && unread.length) row('deployed-sha', 'unverified', [...unread, `the reads that answered agree, and all ${files.length} files of a local --base /somasurfer/ build of ${SHA?.slice(0, 7)} are served byte for byte`],
+    { sha: SHA, unread, deployment: latest && { id: latest.id, sha: latest.sha, created_at: latest.created_at, state: statuses[0]?.state }, main: main.sha, files: files.length, differ });
   else rec('deployed-sha', p, `github-pages deployment ${latest?.id} at ${latest?.sha?.slice(0, 7)} (${statuses[0]?.state}, ${latest?.created_at}); main at ${main.sha?.slice(0, 7)}; all ${files.length} files of a local --base /somasurfer/ build of it served byte for byte`,
-    { sha: SHA, deployment: latest && { id: latest.id, sha: latest.sha, created_at: latest.created_at, state: statuses[0]?.state }, main: main.sha, files: files.length, differ });
+    { sha: SHA, unread, deployment: latest && { id: latest.id, sha: latest.sha, created_at: latest.created_at, state: statuses[0]?.state }, main: main.sha, files: files.length, differ });
 }
 
 const browser = await launch();
@@ -132,8 +136,6 @@ async function openBrain(query = '') {
   await settle(opened.page);
   return opened;
 }
-let picked = null;
-
 // ---------------------------------------------------------------------------
 // region-papers: structure panel → a paper → that paper revealed, structure listed back
 // ---------------------------------------------------------------------------
@@ -146,14 +148,13 @@ let journeyPaper = null; let journeyRegion = null;
 {
   const p = [];
   const { page, errors } = await openBrain();
-  // The structure the tap picked, if papers link it; otherwise the first drawn
-  // brain structure that has some. Selection is set through the page's own
-  // selectStructure (the path a pick ends in); the journey under test is the
-  // panel, from there on.
+  // The first drawn brain structure that papers link. This row runs before
+  // brain-pick, so it does not depend on a tap: selection is set through the
+  // page's own selectStructure (the path a pick ends in), and the journey under
+  // test is the panel, from there on.
   const linked = await page.evaluate(() => window.__atlas.structures('brain').filter((s) => s.regionKey));
-  const order = [...linked.filter((s) => s.key === picked?.key), ...linked.filter((s) => s.key !== picked?.key)];
   let s = null; let listed = null;
-  for (const c of order) {
+  for (const c of linked) {
     const got = await answer(page, 'regionPapers', c.regionKey);
     if (Array.isArray(got) && got.length) { s = c; listed = got; break; }
   }
@@ -348,7 +349,9 @@ const unreadable = /The research API could not be read \(.+\)\. Names, addresses
         await page.waitForFunction(() => document.querySelector('[data-testid=region-papers]')?.dataset.state !== 'loading', null, { timeout: 30000 }).catch(() => {});
         e.after = { key: drawnOther.key, selected: await page.evaluate(() => window.__atlas.structure()), name: (await page.textContent('#structure-name').catch(() => null))?.trim(), regionPapers: await panelOf(page, 'region-papers'), urlChanged: page.url() !== urlBefore };
       }
-      e.errors = errors.filter((x) => !/Failed to load resource/.test(x));
+      // Neither mode should log anything: ?fail=api rejects before any fetch, and
+      // the malformed documents are served 200. So every console error counts.
+      e.errors = errors;
       const why = mode === 'failed' ? /forced by \?fail=api/ : /malformed document/;
       const tag = `${mode}:`;
       if (e.regionPapers?.state !== 'failed' || !unreadable.test(e.regionPapers.text) || !why.test(e.regionPapers.text)) p.push(`${tag} "Papers on this structure" is ${e.regionPapers?.state}: ${e.regionPapers?.text.slice(0, 200)}`);
@@ -451,6 +454,7 @@ const unreadable = /The research API could not be read \(.+\)\. Names, addresses
 // brain-pick: a real tap on the brain selects a structure, and the panel names it
 // ---------------------------------------------------------------------------
 {
+  let picked = null;
   const { page, errors } = await openBrain();
   const status = await page.evaluate(() => window.__atlas.meshStatus());
   const drawn = await page.evaluate(() => window.__atlas.structures('brain'));
