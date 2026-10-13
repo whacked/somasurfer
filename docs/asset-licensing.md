@@ -509,6 +509,18 @@ dropped and the material that dropped each one. Z-Anatomy materials are a proxy
 for provenance, not a record of it; Z-Anatomy#10 asks that very question about
 `Pons`, `Medulla oblongata` and the spinal-cord horns.
 
+**W3 as built (DOG-128): BodyParts3D only, citing `bodyparts3d` alone.** Z-Anatomy
+ships its body only as a Blender scene, which nothing in CI can read, so W3 reads
+no Z-Anatomy object at all. It builds from the pinned BodyParts3D 4.0 set
+(`bodyparts3d.pinned`, a SHA-256 per file) under the licence D1 already decided.
+Every exclusion in the W3 row above therefore holds by construction rather than by
+filter. Neither non-commercial model and no undeclared-material object is in
+BodyParts3D, and the kidney and inner ear that ship are DBCLS's own. Because no
+Z-Anatomy object was read, there are no dropped objects to publish. W3 excludes
+one thing on its own account, the brain, which W2 ships. Its element files are
+listed with the reason in the body's `structures.json`. W3 does not fetch
+`Z-Anatomy.zip`, so its SHA-256 in §7.2 stays `null`. See `docs/body-meshes.md`.
+
 ### 7.7 Summary
 
 | criterion (DOG-126) | status |
@@ -518,3 +530,82 @@ for provenance, not a record of it; Z-Anatomy#10 asks that very question about
 | `attribution.json` records for everything W2/W3 will ship | **done**: 16 `upstreamSources` with verdict, evidence and attribution wording. Every third-party entry must cite them by id (rule 9); the three existing ones now do |
 | `asset-nc` class and gate rule | **done**: rules 8 and 9 of `tools/check-licence-separation.mjs`, red on five staged breakages and green on the tree and on a segregated NC layer |
 | the v2 plan's §1 premise that the gyral mesh gives `BV` names | **at risk**: 146 of 437 structures held, including 126 of 128 cortical are in the undeclared group. Measurement route in §7.3; escalated to the CTO on DOG-123 |
+
+### 7.8 Cortex, condition (b): the upstream title behind Brainder — **NOT ESTABLISHED** (DOG-127, 2026-10-11)
+
+The CTO's decision on DOG-127 clears the held cortex only if **both** of these
+hold:
+- **(a)** the geometry measurably *is* Brainder's;
+- **(b)** Brainder's upstream terms let Anderson Winkler grant CC BY-SA 3.0 on it.
+
+"Could not read the terms" means not cleared (§4). **(b) is not established, so
+(a) cannot clear any structure**, whatever it measures. `brainder-brain-for-blender`
+is now `not-established` in `upstreamSources`, so rule 9 refuses any entry that
+cites it.
+
+**The premise was wrong in a way that matters.** Brain for Blender is not
+FreeSurfer `fsaverage`. Winkler's page says the meshes are "a true human brain,
+which were constructed from 12 volumes acquired using magnetic resonance
+imaging", from the Research Imaging Institute (UTHSCSA), and that "the
+generation of the cortical meshes and subcortical segmentations used FreeSurfer
+5.2.0".
+- The geometry is therefore one individual's brain.
+- What FreeSurfer contributes is the reconstruction, plus the parcel borders,
+  which come from its classifier atlases: Desikan-Killiany, Destrieux and DKT.
+- The page states no upstream permission.
+
+| upstream | primary source (read 2026-10-11) | what it says | verdict |
+| --- | --- | --- | --- |
+| FreeSurfer Software License, Version 1.0 (February 2011) | `LICENSE.txt` in <https://github.com/freesurfer/freesurfer> (`dev`); the same text on the fswiki FreeSurferSoftwareLicense page (Wayback, 2026-08-25) | It covers "software and/or data from FreeSurfer". It permits derivative works and distribution, and commercial use is "at the sole risk" of the user. But **B.1(b)**: "in connection with any copy of or sublicense of all or any portion of the Software, all of the terms and conditions in this Software License shall appear in and shall apply to such copy and such sublicense". **B.2(iii)** allows "additional or different" terms on modifications "provided that … [it] otherwise complies with the conditions stated in this Software License". The terms that must travel include an indemnity (B.5), a ban on using names (B.6) and automatic revocation (B.7) | A bare CC BY-SA grant does not carry these terms, and CC BY-SA forbids adding them downstream. Whether a classifier's *output* on another person's brain is a "portion" of the Software is **not settled by any text read** |
+| Destrieux atlas (`aparc.a2009s`) | fswiki CorticalParcellation and DestrieuxAtlasChanges (Wayback) | No terms of its own; only the licence above applies | **not established** |
+| DKT atlas (`DKTatlas40`) | `README-DKT40.txt`, attached to fswiki CorticalParcellation (Wayback, 2026-08-24) | "Copyright 2012, Mindboggle team … Creative Commons License (http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US)". Mindboggle's own page now says CC BY 4.0 ("v3 on 2019-04-03"), but it does not say whether that covers the 2012 DKT40 data | **not established**, and the only licensor-hosted notice is **non-commercial** |
+| `fsaverage` | fswiki FsAverage (Wayback) | No terms; it points to a README inside the 320 MB subject archive, which **was not read** | **not established** (moot for Brain for Blender, which contains no fsaverage geometry) |
+
+**Fetch failures, stated rather than smoothed over:**
+- `surfer.nmr.mgh.harvard.edu` timed out directly, so every fswiki page above was read from the Wayback Machine.
+- `fswiki/License` has no snapshot and was not read.
+- The fsaverage subject README was not read.
+- That FreeSurfer 5.2.0 shipped this same Version 1.0 licence is assumed and **unverified**.
+
+**What this changes:**
+- **The cortex stays held.** 126 of 128 cortical structures remain in `zanatomy-undeclared-brain-materials`. W2 ships the 245 cleared structures without them.
+- **The cortex fallback is now the live route.** The fallback the CTO decided in advance is a first-party cortical surface extracted from ICBM152 2009c, which is permissive, already our `BV` template and natively MNI. W2 builds it; whether to ship it is the owner's decision, which the CTO takes via DOG-123.
+- **The origin test stays useful, but it cannot clear anything.** The test in `docs/brain-origin-test.md` can still settle whether Z-Anatomy's cortex is Brainder's. That would only matter if a licensor later answered (b).
+- **What would clear (b):** a statement from Anderson Winkler or MGH that FreeSurfer outputs are not "portions" of the Software, or an MGH grant.
+
+### 7.9 What W2's measurements moved (DOG-127, 2026-10-11)
+
+The pre-registered origin test (`docs/brain-origin-test.md`) ran against
+BodyParts3D 4.0. Its negative control discriminated: 0 of 17 mismatched pairs
+passed. It moved three structures out of `zanatomy-undeclared-brain-materials`:
+
+| structure | test result | ships from | cites |
+| --- | --- | --- | --- |
+| Midbrain.l, Midbrain.r | **pass**: BodyParts3D's own mesh, p95 0.14 mm | brain.glb | `brainproject-brain-glb`, `zanatomy`, `bodyparts3d` |
+| Corpus callosum | **fail** on label agreement (0.77, threshold 0.90) | BodyParts3D FMA86464 directly, placed by the test's transform | `bodyparts3d` |
+
+The same run found that the four colliculi do **not** match BodyParts3D's
+colliculi. Only the inference from their `Nucleus` material had cleared them,
+and that inference is about *which* cleared source they come from. It is now
+known to be wrong as to BodyParts3D. The CTO decided (DOG-127, 2026-10-11
+19:54) to hold them fail-closed: an unsettled source does not ship. They are in
+the group `held-by-decision`, held by name in `DECISION_HOLDS`
+(`tools/lib/brain-provenance.mjs`) with the decision cited.
+
+**W2 therefore ships 244 structures:** 245 + 3 − 4. Held: 143 in
+`zanatomy-undeclared-brain-materials`, including 126 of the 128 cortical ones;
+46 Dundee nerves, still unverified; and the 4 colliculi. 145 of the 244 are still
+cleared by the material inference alone; `docs/brain-origin-test.md` lists them.
+
+**What CI checks, and what it cannot.** The provenance manifest records each
+move per structure (`shipsFrom`, `formerlyHeldBecause`, `heldBecause`). Both the
+licence gate (rule 10) and the mesh gate re-derive every record from the inputs
+the manifest records: materials, `bx_source`, `bx_parent`. They apply §7.3, the
+committed origin result (re-judged against the pre-registered thresholds) and
+the decision holds, so a hand-edited group or source fails. What no offline gate
+can check is the recorded inputs themselves, or the geometry. For example,
+nothing in CI can confirm that the corpus callosum's bytes are BodyParts3D's
+FMA86464 (`shipsFrom`) rather than the glb's: that needs the glb and the
+BodyParts3D archive, which are not in the repository. The gates check what each
+structure is *labelled*. Rebuilding with `tools/build-meshes.mjs` from the
+pinned inputs is what checks what it *is*.

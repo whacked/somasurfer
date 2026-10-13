@@ -1,0 +1,194 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+ "paperHref": "../../../../data/api/v1/papers/mitsuhashi-2009-bodyparts3d.json",
+ "regions": [
+  {
+   "key": "bodyparts3d-bd/FMA13295",
+   "structureName": "diaphragm",
+   "href": "../regions/bodyparts3d-bd/FMA13295.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/whole-body-coverage/fma13295",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/whole-body-coverage",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA13295",
+     "structureName": "diaphragm",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA13295",
+      "label": "diaphragm"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7088",
+   "structureName": "heart",
+   "href": "../regions/bodyparts3d-bd/FMA7088.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7088",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/per-part-meshes",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7088",
+     "structureName": "heart",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7088",
+      "label": "heart"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7197",
+   "structureName": "liver",
+   "href": "../regions/bodyparts3d-bd/FMA7197.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7197",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/per-part-meshes",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7197",
+     "structureName": "liver",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7197",
+      "label": "liver"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7204",
+   "structureName": "right kidney",
+   "href": "../regions/bodyparts3d-bd/FMA7204.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/concept-ids/fma7204",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/concept-ids",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7204",
+     "structureName": "right kidney",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7204",
+      "label": "right kidney"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7205",
+   "structureName": "left kidney",
+   "href": "../regions/bodyparts3d-bd/FMA7205.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/concept-ids/fma7205",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/concept-ids",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7205",
+     "structureName": "left kidney",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7205",
+      "label": "left kidney"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7310",
+   "structureName": "left lung",
+   "href": "../regions/bodyparts3d-bd/FMA7310.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7310",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/per-part-meshes",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7310",
+     "structureName": "left lung",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7310",
+      "label": "left lung"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA9968",
+   "structureName": "seventh thoracic vertebra",
+   "href": "../regions/bodyparts3d-bd/FMA9968.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/skeletal-parts/fma9968",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/skeletal-parts",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA9968",
+     "structureName": "seventh thoracic vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA9968",
+      "label": "seventh thoracic vertebra"
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

@@ -65,9 +65,12 @@ export function parseNifti(buf) {
   const voxOffset = Math.round(buf.readFloatLE(108));
   const [, nx, ny, nz] = dim;
   const voxels = nx * ny * nz;
-  if (voxOffset + voxels * datatype.size > buf.length) {
+  // A 4D file (the CIT168 probability atlas: one volume per structure) is a
+  // stack of 3D volumes; `at` reads the first and `atT` any of them.
+  const volumes = dim[0] >= 4 ? Math.max(1, dim[4]) : 1;
+  if (voxOffset + voxels * volumes * datatype.size > buf.length) {
     throw new Error(
-      `NIfTI data is truncated: need ${voxOffset + voxels * datatype.size} bytes, have ${buf.length}`,
+      `NIfTI data is truncated: need ${voxOffset + voxels * volumes * datatype.size} bytes, have ${buf.length}`,
     );
   }
 
@@ -87,6 +90,9 @@ export function parseNifti(buf) {
     ],
     /** Voxel value at an index. */
     at: (i, j, k) => datatype.read(buf, voxOffset + ((k * ny + j) * nx + i) * datatype.size),
+    /** Voxel value at an index of volume `t` of a 4D file. */
+    atT: (i, j, k, t) => datatype.read(buf, voxOffset + (((t * nz + k) * ny + j) * nx + i) * datatype.size),
+    volumes,
     voxels,
   };
 }

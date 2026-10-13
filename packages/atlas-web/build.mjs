@@ -8,6 +8,8 @@
  *   dist/index.html          page shell, attribution rendered in
  *   dist/app/*.js|css        client bundle, served as native ES modules
  *   dist/data/*.json         prebuilt indexes, derived from @gstack/alc only
+ *   dist/data/api/v1/**      the research API's paper tree: the curated
+ *                            dataset alone (its region tree is an asset)
  *   dist/assets/**           asset payloads, byte-identical copies, with the
  *                            asset package's own LICENSE and ATTRIBUTION.md
  *   dist/build-manifest.json what was emitted, for the performance budget
@@ -42,11 +44,22 @@ import {
   CURATED_CORPUS_RESOLUTION,
   NAME_INDEX_FILES,
 } from './catalogue/asset-templates.mjs';
+import { ASSET_MESH_SETS } from './catalogue/asset-meshes.mjs';
 import { buildTemplates } from './fixtures/fixtures.mjs';
 // The one value the build shares with the client: the roles a research corpus
 // may declare. Imported from the validator that enforces it rather than
 // restated, so the build cannot emit a role the viewer will reject.
 import { RESEARCH_ROLES } from './src/viewer/research.js';
+// The paper half of the static research API: the dataset alone, so ours.
+import {
+  API_LICENCES,
+  API_ROOTS,
+  API_SCHEMA,
+  API_VERSION,
+  apiDocuments,
+  createPaperApi,
+  loadDataset,
+} from '../atlas-research/src/index.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
@@ -203,6 +216,28 @@ for (const definition of buildTemplates()) {
 }
 
 /**
+ * The mesh sets the page draws (DOG-129). Paths only, from the declaration in
+ * catalogue/asset-meshes.mjs; each is checked against what was copied, so a
+ * renamed asset fails here and not as a 404. The tiers inside each
+ * structures.json are asset content and the browser reads them itself.
+ */
+const meshSetEntries = ASSET_MESH_SETS.map((declaration) => {
+  const entry = { id: declaration.id, atlas: declaration.atlas };
+  for (const key of ['structures', 'labels', 'registration']) {
+    if (!declaration[key]) continue;
+    if (!assetFiles.some((a) => a.path === `assets/${declaration[key]}`)) {
+      throw new Error(
+        `the catalogue declares mesh set ${declaration.id} ${key} ${declaration[key]}, but no such payload `
+        + 'was copied from packages/atlas-assets; the page must not be sent to fetch a file the build did not ship.',
+      );
+    }
+    entry[key] = `${BASE}assets/${declaration[key]}`;
+  }
+  if (declaration.research) entry.research = { ...declaration.research };
+  return entry;
+});
+
+/**
  * The naming layer, as the two asset documents it actually is.
  *
  * `version` and `structureCount` are absent for the same reason
@@ -328,6 +363,36 @@ if (/fixture/i.test(researchDoc.version) !== (researchDoc.role === 'fixture')) {
 emit('data/research.json', JSON.stringify(researchDoc) + '\n');
 
 /**
+ * The static research API, v1 (DOG-131). `packages/atlas-research/schema/api-1.md`.
+ *
+ * Two trees. The paper tree is the curated dataset alone, so it is ours and is
+ * emitted here, under dist/data/, from `createPaperApi` — the same function the
+ * library answers with. The region tree is joined with BY-SA structure names,
+ * so it is asset content: it is committed in packages/atlas-assets/api/v1/ by
+ * tools/build-research-api.mjs and arrives above as a byte copy, like every
+ * other payload. This build only checks that it arrived; it never reads it,
+ * which is what keeps rule 6 true of dist/data/api/.
+ *
+ * Every link inside both trees is relative, so neither embeds the base. The
+ * two roots are published, under the base, in `atlas-index.json`.
+ */
+const researchApiDocs = apiDocuments(createPaperApi(loadDataset(curatedSeed)));
+for (const d of researchApiDocs) emit(`${API_ROOTS.data}${d.path}`, JSON.stringify(d.body) + '\n');
+if (!assetFiles.some((a) => a.path === `${API_ROOTS.assets}index.json`)) {
+  throw new Error(
+    `the paper tree links the region tree at ${API_ROOTS.assets}index.json, and no such payload was copied. `
+    + 'Run node tools/build-research-api.mjs --write, or check that payloadDirs still covers api/.',
+  );
+}
+const researchApi = {
+  schema: API_SCHEMA,
+  version: API_VERSION,
+  dataRoot: `${BASE}${API_ROOTS.data}`,
+  assetsRoot: `${BASE}${API_ROOTS.assets}`,
+  licences: API_LICENCES,
+};
+
+/**
  * What the page says about the corpus it serves.
  *
  * Everything here except `resolution` is read straight off the dataset, so it
@@ -384,6 +449,8 @@ const atlasIndex = {
   })),
   /** Templates the viewer may bind. It is built against this, not one of them. */
   templates: templateEntries,
+  /** Mesh sets per atlas (DOG-129). Display and picking geometry; the templates stay the frames. */
+  meshSets: meshSetEntries,
   /**
    * Two paths, joined at runtime by `viewer/nameindex.js`. `source: 'asset'`
    * is the discriminator the loader branches on, so a future first-party index
@@ -398,6 +465,8 @@ const atlasIndex = {
     structureCount: null,
   },
   research,
+  /** The static research API's two roots; `createStaticApiClient` takes them as they are. */
+  researchApi,
   assets: assetFiles.map((a) => ({
     path: `${BASE}${a.path}`,
     bytes: a.bytes,

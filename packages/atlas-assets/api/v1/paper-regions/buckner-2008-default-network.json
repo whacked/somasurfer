@@ -1,0 +1,270 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:buckner-2008-default-network",
+ "paperHref": "../../../../data/api/v1/papers/buckner-2008-default-network.json",
+ "regions": [
+  {
+   "key": "icbm152-2009c-cortex-lobes/101",
+   "structureName": "Frontal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/101.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/prefrontal-hub/hcp-mmp1-9-46d",
+     "findingId": "finding:buckner-2008-default-network/prefrontal-hub",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "101",
+     "structureName": "Frontal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:9-46d",
+      "label": "Area 9-46d (dorsolateral prefrontal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Middle frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/103",
+   "structureName": "Temporal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/103.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/relevance-to-disease/hcp-mmp1-pha1",
+     "findingId": "finding:buckner-2008-default-network/relevance-to-disease",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "103",
+     "structureName": "Temporal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under the temporal lobe only: that cortex draws the limbic lobe to the cingulate sulcus (cingulate gyrus and isthmus) and labels the parahippocampal gyrus temporal (lobes.json conventions.limbic, DOG-151), so a limbic target would contradict the label set it names."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PHA1",
+      "label": "Parahippocampal area 1"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Medial occipitotemporal gyrus (Parahippocampal*)"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/106",
+   "structureName": "Limbic lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/106.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/network-anatomy/hcp-mmp1-rsc",
+     "findingId": "finding:buckner-2008-default-network/network-anatomy",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "106",
+     "structureName": "Limbic lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. RSC lies behind the splenium on the isthmus of the cingulate gyrus, which is Z-Anatomy's posteroventral cingulate part."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:RSC",
+      "label": "Retrosplenial complex"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Cingulate gyrus (Posteroventral part*)"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/201",
+   "structureName": "Frontal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/201.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/prefrontal-hub/hcp-mmp1-9-46d",
+     "findingId": "finding:buckner-2008-default-network/prefrontal-hub",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:9-46d",
+      "label": "Area 9-46d (dorsolateral prefrontal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Middle frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/203",
+   "structureName": "Temporal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/203.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/relevance-to-disease/hcp-mmp1-pha1",
+     "findingId": "finding:buckner-2008-default-network/relevance-to-disease",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "203",
+     "structureName": "Temporal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under the temporal lobe only: that cortex draws the limbic lobe to the cingulate sulcus (cingulate gyrus and isthmus) and labels the parahippocampal gyrus temporal (lobes.json conventions.limbic, DOG-151), so a limbic target would contradict the label set it names."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PHA1",
+      "label": "Parahippocampal area 1"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Medial occipitotemporal gyrus (Parahippocampal*)"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/206",
+   "structureName": "Limbic lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/206.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/network-anatomy/hcp-mmp1-rsc",
+     "findingId": "finding:buckner-2008-default-network/network-anatomy",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "206",
+     "structureName": "Limbic lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. RSC lies behind the splenium on the isthmus of the cingulate gyrus, which is Z-Anatomy's posteroventral cingulate part."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:RSC",
+      "label": "Retrosplenial complex"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Cingulate gyrus (Posteroventral part*)"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/122",
+   "structureName": "Hippocampus.l",
+   "href": "../regions/zanatomy-gross-anatomy/122.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/medial-temporal-subsystem/atlas-label-hippocampus",
+     "findingId": "finding:buckner-2008-default-network/medial-temporal-subsystem",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/123",
+   "structureName": "Hippocampus.r",
+   "href": "../regions/zanatomy-gross-anatomy/123.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/medial-temporal-subsystem/atlas-label-hippocampus",
+     "findingId": "finding:buckner-2008-default-network/medial-temporal-subsystem",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "123",
+     "structureName": "Hippocampus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

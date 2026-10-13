@@ -1,37 +1,8 @@
-/**
- * The browser shell: DOM wiring over the viewer core.
- *
- * This file owns the DOM and nothing else. Every decision it renders — what is
- * visible, what an address resolves to, which messages apply, what the URL
- * says — is made in `viewer/`, where it is testable in Node without a browser.
- * The rule that keeps it that way: no module under `viewer/` imports this file,
- * and this file holds no state that `viewer/state.js` does not.
- *
- * ## Loading order is a requirement, not a preference
- *
- * The shell paints, then loads indexes, then loads the renderer — in that
- * order, because that is what makes the stage-A degradation criterion true:
- *
- *   1. DOM, address bar, name resolution. Needs `@gstack/alc` and the name
- *      index, and nothing else.
- *   2. Templates. A failure marks that atlas unavailable and leaves (1) working.
- *   3. The renderer, by `await import()`. A failure reports "3D view
- *      unavailable" and leaves (1) and (2) working.
- *
- * Each of those three failures has its own message, and `?fail=index,names,
- * templates,renderer` forces them, so the degraded states are demonstrable
- * rather than theoretical. QA should not have to break a server to test them.
- *
- * ## `window.__atlas`
- *
- * A deliberate, documented test handle. The §7 harness has to drive the viewer
- * and read what it concluded, and scraping rendered text for that produces
- * false passes. It exposes the state machine and the last selection; nothing in
- * the shell reads it, so it cannot drift into being a second code path.
- */
+/** The browser shell: DOM wiring over the viewer core. Loading order, `?fail=` and `window.__atlas`: docs/viewer-shell.md. */
 
 import {
   buildNameIndex,
+  bvLocalToMm,
   encodeBody,
   encodeBrainVolume,
   findStructures,
@@ -43,17 +14,16 @@ import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flag
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
 import { curatedModel, paperSource } from './viewer/corpus.js';
 import { comparePapers, comparisonLayers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
+import { checkApiDocument, listedHref, overlayOf, paperRegions, regionPapers, treeUrl } from './viewer/regionpapers.js';
+import { boundsOfStructures, meshSetFrom, nextPick, pickStructures, searchStructures, withheldOf } from './viewer/meshset.js';
 import { nameIndexFrames, selectAddress } from './viewer/select.js';
-import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity } from './viewer/state.js';
+import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity, structureLayers } from './viewer/state.js';
 import {
   TemplateError,
   bodySpinePolyline,
-  bodySurfaceMesh,
   boundsOf,
-  brainHemisphereMesh,
   levelRegion,
   meshBounds,
-  pickMesh,
   validateBodyTemplate,
   validateBrainVolumeTemplate,
 } from './viewer/template.js';
@@ -87,14 +57,7 @@ async function loadJson(path, what) {
 /** Index paths are absolute (they carry the deploy base); fetch them as given. */
 const relative = (path) => String(path).replace(BASE, '');
 
-/**
- * Shell-only state: the things that are not part of the view.
- *
- * Label visibility used to be here, as `ui.labels`. It is in the viewer now —
- * it is one of the facets a link restores, so it has to be somewhere the state
- * machine and the URL can both see. Anything left in here is either a loaded
- * asset or a transient of the DOM, and nothing in here belongs in a deep link.
- */
+/** Shell-only state: loaded assets and DOM transients, nothing a link restores (docs/viewer-shell.md). */
 const ui = {
   notices: [],
   renderer: null,
@@ -109,6 +72,16 @@ const ui = {
   revealed: null,
   comparedTo: null,
   comparison: null,
+  /** Decoded mesh sets per atlas (viewer/meshset.js), each with `gpu` once uploaded. */
+  sets: { body: [], brain: [] },
+  meshStatus: { body: 'pending', brain: 'pending' },
+  /** Per atlas, the camera last fitted automatically, so arriving meshes may refit it. */
+  autoFit: {},
+  /** DOG-132: the revealed paper's structures, key -> exact|approximate, and a paper waiting to be framed. */
+  overlay: new Map(),
+  framePaper: null,
+  /** DOG-192: the last click, and every structure under it. */
+  pickedAt: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -129,12 +102,33 @@ if (!index) throw new Error('atlas index unavailable');
 let viewer = createViewer();
 const templates = {};
 
-// --- 1. names, which need no geometry --------------------------------------
-//
-// Two documents with two different shapes, joined by id. Neither is a name
-// index on its own, so the join is explicit and validated — see
-// `viewer/nameindex.js`, which also explains why a version mismatch between
-// them is refused rather than reconciled.
+// --- 0. anatomy meshes (DOG-129), fetched now and decoded once the renderer is
+// up. The URL's atlas goes first, so a brain link is not queued behind the body.
+// Geometry is never on the path to an address: a failure here costs the meshes.
+const meshEntries = index.meshSets ?? [];
+const fetches = new Map();
+const once = (key, start) => fetches.get(key) ?? fetches.set(key, start()).get(key);
+const setDocs = (entry) => once(entry.id, async () => {
+  const [structures, labels, registration] = await Promise.all(['structures', 'labels', 'registration']
+    .map((k) => (entry[k] ? loadJson(relative(entry[k]), 'meshes') : null)));
+  return { structures, labels, registration };
+});
+const tierBytes = (entry, tier) => once(`${entry.id}/${tier}`, async () => {
+  const file = (await setDocs(entry)).structures.tiers?.[tier]?.file;
+  if (!file) return null;
+  const response = await fetch(`${BASE}assets/${file}`);
+  if (!response.ok) throw new Error(`${file} returned ${response.status}`);
+  return new Uint8Array(await response.arrayBuffer());
+});
+// The structures an atlas's sets hold back, for search to explain. Needs no renderer.
+const withheldIn = (atlas) => once(`withheld:${atlas}`, async () => (await Promise.all(meshEntries
+  .filter((e) => e.atlas === atlas)
+  .map((e) => setDocs(e).then((d) => withheldOf(e, d.structures), () => [])))).flat());
+for (const entry of meshEntries.filter((e) => e.atlas === decodeView(location.search).view.atlas)) {
+  tierBytes(entry, 'low').catch(() => {});
+}
+
+// --- 1. names, which need no geometry (docs/viewer-shell.md)
 let nameIndex = null;
 let nameIndexSource = null;
 try {
@@ -157,32 +151,17 @@ try {
 // --- 2. templates ----------------------------------------------------------
 ui.catalogue = index.templates ?? [];
 
-/**
- * Which template to bind, by id, from `?template=`.
- *
- * The catalogue ships the synthetic templates alongside the real ones because
- * three of `locate()`'s five findings need a template that produces them and
- * the real body template produces none of the three — it is admissible, it
- * does not fold, and it realises every level it claims. Without a way to bind
- * `anat-hyperkyphotic-short-wide`, the `folded` message is reachable only in
- * the suite, and QA cannot see it in a running build.
- *
- * Read straight off the query string rather than through `deeplink.js`, and
- * deliberately NOT part of the encoded view. Which template is bound is a
- * property of the build you loaded, not of the view you are looking at; if it
- * round-tripped through `encodeView` then every link anyone copied would pin a
- * template id, and the deep-link matrix would have to prove that a link made
- * against a retired template still restores the same view. It cannot.
- */
+/** Which template to bind, by id, from `?template=`. (docs/viewer-shell.md) */
 const requestedTemplate = new URLSearchParams(location.search).get('template');
 
 async function bindBody(entry) {
   if (!entry) return;
   try {
     templates.body = validateBodyTemplate(await loadJson(relative(entry.path), 'templates'));
-    ui.meshes.body = bodySurfaceMesh(templates.body);
     ui.meshes.spine = bodySpinePolyline(templates.body);
-    ui.bounds.body = meshBounds(ui.meshes.body);
+    // Until the meshes arrive: the spine, widened by the frame's widest radius.
+    const spine = boundsOf(ui.meshes.spine);
+    ui.bounds.body = { ...spine, radius: spine.radius + Math.max(...templates.body.slabs.flatMap((s) => s.surfaceRadiiMm)) };
   } catch (error) {
     delete templates.body;
     ui.unavailableBody = error instanceof TemplateError
@@ -197,9 +176,10 @@ async function bindBrain(entry) {
     templates.brainVolume = validateBrainVolumeTemplate(
       await loadJson(relative(entry.path), 'templates'),
     );
-    ui.meshes.left = brainHemisphereMesh(templates.brainVolume, 'L');
-    ui.meshes.right = brainHemisphereMesh(templates.brainVolume, 'R');
-    ui.bounds.brain = boundsOf([...ui.meshes.left.corners, ...ui.meshes.right.corners]);
+    // The frame's two hemisphere boxes: label anchors, and bounds until the meshes arrive.
+    const box = (h, k) => bvLocalToMm(templates.brainVolume, h, { a: k & 1, b: (k >> 1) & 1, c: (k >> 2) & 1 });
+    ui.hemispheres = ['L', 'R'].map((h) => [h, boundsOf([...Array(8).keys()].map((k) => box(h, k)))]);
+    ui.bounds.brain = boundsOf(ui.hemispheres.flatMap(([, b]) => [b.lo, b.hi]));
   } catch (error) {
     delete templates.brainVolume;
     ui.unavailableBrain = `The brain template could not be loaded (${error.message}).`;
@@ -229,36 +209,12 @@ if (requestedTemplate && !ui.catalogue.some((t) => t.id === requestedTemplate)) 
 
 await Promise.all([bindBody(entryFor(bodyEntries)), bindBrain(entryFor(brainEntries))]);
 
-// The name index's cells were sampled against one body's meshes. Binding a
-// different body still resolves — fractions are frame measure, so they stay
-// exact — but the structure boundaries then describe anatomy that is not on
-// screen, and that has to be said. Unreachable in the default build, where the
-// bound body IS the template the index was derived from; reachable the moment
-// `?template=` binds another.
+// The name index's cells were sampled against one body's meshes. (docs/viewer-shell.md)
 if (nameIndex && nameIndexSource && templates.body && templates.body.id !== nameIndexSource) {
   ui.notices.push(nameIndexProvenanceNotice(nameIndexSource, templates.body.id));
 }
 
-// --- 3. the research corpus, RESOLVED HERE against the real name index ------
-//
-// Validated at load, like every other fetched document: a malformed mapped
-// address must surface here rather than inside a render loop. A failure costs
-// the research panel and nothing else.
-//
-// Two shapes arrive through this one slot, and `role` is the discriminator:
-//
-//   curated   a `research/1` dataset — papers, findings, structure ids, no
-//             geometry. The geometry is decided HERE, by `curatedModel()`,
-//             against the name index joined above and both bound templates.
-//             It cannot be decided in the build: resolving a structure id
-//             means reading the index, the index is an asset payload, and rule
-//             6 holds `dist/data/` to deriving nothing from asset content.
-//   fixture   a pre-resolved document, carrying cells. Still what the viewer's
-//             own suite drives, no longer what the page serves.
-//
-// The templates are passed deliberately and it is worth 3 mappings and 2
-// papers: without a BV template the three `coordinates` mappings resolve
-// `no-template`, and a locus we cannot place is not the same claim as a region.
+// --- 3. the research corpus, resolved here against the real name index (docs/viewer-shell.md)
 try {
   const doc = await loadJson(relative(index.research?.path ?? 'data/research.json'), 'research');
   ui.research = doc?.role === 'curated'
@@ -270,20 +226,7 @@ try {
     + 'Addresses, names and geometry are unaffected.';
 }
 
-/**
- * What the page resolved, against what the build said it would.
- *
- * This comparison is the only thing that can tell a broken join from an honest
- * one. 20 of the 30 curated papers have no placed geometry at all, so a paper
- * list with nothing painted is the CORRECT rendering for two thirds of the
- * corpus — and is pixel-for-pixel what a join that silently resolved nothing
- * would produce. Without a number, the two are indistinguishable; with one,
- * the disagreement is a notice instead of a shrug.
- *
- * Reported, not enforced. A mismatch means the declaration is stale or the join
- * changed, and neither is a reason to withhold the research panel from a reader
- * — but it is a reason not to let a §7 row report pass on it.
- */
+/** What the page resolved, against what the build said it would. (docs/viewer-shell.md) */
 if (ui.research?.role === 'curated') {
   const declared = index.research?.expectedResolution ?? null;
   const measured = ui.research.resolution;
@@ -310,6 +253,48 @@ if (ui.research?.role === 'curated') {
   }
 }
 
+// --- 4. the research API's region tree (DOG-132), fetched on first need, never for the first frame
+const API_ROOT = index.researchApi ? new URL(index.researchApi.assetsRoot, location.href).href : null;
+const apiDocs = new Map();
+
+/** A region-tree document: `{ doc }`, `{ none }` when no paper links it, `{ error }` or `{ pending }`. (docs/viewer-shell.md) */
+function apiAnswer(kind, id) {
+  if (!API_ROOT) return { error: 'this build publishes no research API' };
+  const indexUrl = `${API_ROOT}index.json`;
+  const tree = apiGet(indexUrl, 'region-index');
+  if (!tree.doc) return tree;
+  const href = listedHref(tree.doc, kind, id);
+  if (!href) return { none: true };
+  try {
+    return apiGet(treeUrl(API_ROOT, indexUrl, href), kind);
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+function apiGet(url, kind) {
+  if (!apiDocs.has(url)) {
+    apiDocs.set(url, { pending: true });
+    (failing('api') ? Promise.reject(new Error('forced by ?fail=api')) : fetch(url))
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`${url} returned ${response.status}`);
+        return { doc: checkApiDocument(await response.json(), kind) };
+      })
+      .catch((error) => ({ error: error.message }))
+      .then((got) => {
+        apiDocs.set(url, got);
+        commit({ push: false });
+      });
+  }
+  return apiDocs.get(url);
+}
+
+/** The revealed paper's regions against what is drawn, or the API's answer while there is none. */
+function paperRegionsOf(paperId) {
+  const got = apiAnswer('paper-regions', paperId);
+  return got.doc ? { model: paperRegions(got.doc, meshEntries, ui.sets) } : got;
+}
+
 viewer = createViewer({ templates, nameIndex });
 if (ui.unavailableBody) viewer.markUnavailable('body', ui.unavailableBody);
 if (ui.unavailableBrain) viewer.markUnavailable('brain', ui.unavailableBrain);
@@ -318,10 +303,13 @@ if (ui.unavailableBrain) viewer.markUnavailable('brain', ui.unavailableBrain);
 {
   const { view, problems } = decodeView(location.search);
   viewer.applyView(view, problems);
-  for (const atlas of ['body', 'brain']) {
-    if (ui.bounds[atlas] && !(viewer.cameraOf(atlas).distance > 0)) {
-      viewer.setCamera(fitCamera(ui.bounds[atlas]), atlas);
-    }
+  for (const atlas of ['body', 'brain']) fitIfUnset(atlas);
+}
+
+/** Fit the camera to an atlas that has none yet, remembering it was automatic. */
+function fitIfUnset(atlas) {
+  if (ui.bounds[atlas] && !(viewer.cameraOf(atlas).distance > 0)) {
+    ui.autoFit[atlas] = viewer.setCamera(fitCamera(ui.bounds[atlas]), atlas);
   }
 }
 
@@ -337,7 +325,7 @@ function renderNotices() {
   const box = $('notices');
   box.replaceChildren();
   const selection = viewer.state.selection;
-  const all = [...ui.notices];
+  const all = [...ui.notices, ...(ui.meshNotices?.[viewer.atlas] ? [ui.meshNotices[viewer.atlas]] : [])];
   if (!viewer.isAvailable()) {
     all.push(atlasUnavailableNotice(viewer.state.unavailable[viewer.atlas]));
   }
@@ -438,14 +426,7 @@ function renderAddressPanel() {
 
   const facts = el('dl', { className: 'facts' });
   facts.dataset.testid = 'cell-extent';
-  /**
-   * An address that lives in the other atlas has no millimetres HERE.
-   *
-   * The viewer withholds them, so these read from `elsewhereCell` and say
-   * whose answer they are. "not placed in this template" would be the wrong
-   * sentence twice over: a template did place this cell, and the reason the
-   * numbers are not this view's is not the reason that sentence reports.
-   */
+  /** An address that lives in the other atlas has no millimetres HERE. (docs/viewer-shell.md) */
   const away = selection.elsewhere ? ` in the ${selection.elsewhere} atlas` : '';
   const placed = selection.elsewhereCell ?? selection;
   const extent = placed.extentMm ?? [NaN, NaN, NaN];
@@ -495,15 +476,7 @@ function renderNames(selection) {
     return names;
   }
 
-  /**
-   * A frame with no index gets its own presentation, not an empty list.
-   *
-   * No heading citing a version — no index spoke, so quoting the `BD` index's
-   * version here would borrow its provenance for a frame it says nothing
-   * about. No "0 structures overlap", no fraction language, no spinner: those
-   * all imply a lookup that ran and came back empty, and would read as a gap
-   * about to close. What the viewer has here is a location, and it says so.
-   */
+  /** A frame with no index gets its own presentation, not an empty list. (docs/viewer-shell.md) */
   if (selection.names.covered === false) {
     names.dataset.covered = 'false';
     names.append(el('h3', { textContent: 'Location only' }));
@@ -571,20 +544,7 @@ function renderNames(selection) {
   return names;
 }
 
-/**
- * The research panel: which papers mapped here, and what one paper mapped.
- *
- * Two lists with deliberately different rules, and the difference is the whole
- * point (see `viewer/research.js`):
- *
- *   the LIST    narrowed by the current selection. A paper that mapped nothing
- *               near here is not shown.
- *   the REVEAL  every mapping of the selected paper, including ones outside
- *               the current selection and ones in the other atlas. Nothing is
- *               withheld; cells outside the filter are marked, and the count
- *               is stated so the user can see that the filter was ignored on
- *               purpose rather than wonder what it did.
- */
+/** The research panel: the list is narrowed by the selection, a revealed paper never is (docs/viewer-shell.md). */
 function renderResearch() {
   const scope = $('research-scope');
   const provenance = $('research-provenance');
@@ -601,14 +561,7 @@ function renderResearch() {
     return;
   }
 
-  // The corpus, named. Written before the counts for the same reason the name
-  // index version is written beside a name list rather than under it: the
-  // reader needs to know what they are reading before they read it, and a
-  // fixture paper is indistinguishable from a real one row by row.
-  //
-  // `dataset.role` carries the machine-readable half, so the §7 harness can
-  // assert which corpus a row measured instead of inferring it from a paper
-  // id — the false green DOG-68 exists to close.
+  // The corpus, named before anything is listed (docs/viewer-shell.md).
   provenance.dataset.role = ui.research.role;
   provenance.dataset.version = ui.research.version;
   provenance.textContent = ui.research.role === 'fixture'
@@ -630,13 +583,7 @@ function renderResearch() {
     row.dataset.paper = paper.id;
     const open = el('button', { type: 'button', className: 'link', textContent: paper.title });
     open.dataset.testid = `research-paper-${paper.id}`;
-    open.addEventListener('click', () => {
-      ui.revealed = ui.revealed === paper.id ? null : paper.id;
-      // A different paper ends the comparison rather than re-anchoring it.
-      if (!comparing()) ui.comparison = null;
-      uploadHighlights();
-      commit({ push: false });
-    });
+    open.addEventListener('click', () => revealResearchPaper(ui.revealed === paper.id ? null : paper.id));
     row.append(open);
     row.append(el('span', {
       className: 'muted',
@@ -697,6 +644,7 @@ function renderResearch() {
       + `${revealed.atlases.length > 1 ? ' and mappings in both atlases' : ''}. `
       + 'A filter narrows the list of papers, never a paper’s own mappings.';
   reveal.append(summary);
+  reveal.append(paperRegionsSection(revealed.paper.id));
 
   const cellList = (cellsOf) => {
     const cells = el('ul', { className: 'cells' });
@@ -724,15 +672,7 @@ function renderResearch() {
     return cells;
   };
 
-  /**
-   * One curated mapping: what it claims, and either where it is or why not.
-   *
-   * An unresolved mapping is a row like any other. It is listed, it is
-   * described, and it has no cell list — nothing is placed that the index did
-   * not place, so there is nothing here to click and nothing to paint. The
-   * reason comes from the dataset's own partition and never says "unknown
-   * structure"; `viewer/corpus.js` has the argument.
-   */
+  /** One curated mapping: what it claims, and either where it is or why not (docs/viewer-shell.md). */
   const mappingRow = (mapping) => {
     const row = el('li', { className: mapping.placed ? 'mapping' : 'mapping unresolved' });
     row.dataset.mapping = mapping.id;
@@ -871,6 +811,112 @@ function renderResearch() {
   }
 }
 
+/** Reveal a paper (null hides it) and frame its structures once they can be. */
+function revealResearchPaper(paperId) {
+  ui.revealed = paperId;
+  ui.framePaper = paperId;
+  // A different paper ends the comparison rather than re-anchoring it.
+  if (!comparing()) ui.comparison = null;
+  uploadHighlights();
+  commit({ push: false });
+}
+
+/** Each link's provenance and precision; an approximate one says so in words and in its class. */
+function linkList(links) {
+  const list = el('ul', { className: 'links' });
+  for (const l of links) {
+    const row = el('li', { className: l.approximate ? 'approximate' : 'exact' }, [
+      el('span', { className: 'how', textContent: l.how }),
+      ` ${l.source}: ${l.precision}`,
+      ...l.notes.map((n) => el('span', { className: 'muted', textContent: `; ${n}` })),
+    ]);
+    row.dataset.how = l.how;
+    row.dataset.mapping = l.mappingId;
+    list.append(row);
+  }
+  return list;
+}
+
+/** A panel section that is still loading, failed or has nothing to list: said, never left blank. */
+function apiState(box, got, none) {
+  box.dataset.state = got.pending ? 'loading' : got.error ? 'failed' : 'none';
+  box.append(el('p', {
+    className: 'muted',
+    textContent: got.pending ? 'Loading from the research API…'
+      : got.error ? `The research API could not be read (${got.error}). Names, addresses and geometry are unaffected.`
+        : none,
+  }));
+  return box;
+}
+
+/** Region -> papers: every paper and finding linked to a drawn structure, from its region document. */
+function regionPapersSection(s) {
+  const box = el('section', { className: 'region-papers' }, [el('h4', { textContent: 'Papers on this structure' })]);
+  box.dataset.testid = 'region-papers';
+  if (!s.regionKey) return apiState(box, {}, `No research API representation covers the ${s.set} set yet, so no paper links its structures.`);
+  const got = apiAnswer('region', s.regionKey);
+  if (!got.doc) return apiState(box, got, `No paper in this corpus links ${s.regionKey}.`);
+  box.dataset.state = 'listed';
+  box.append(el('p', { className: 'muted', textContent: `${s.regionKey}, linked by ${got.doc.papers.length} paper(s) through ${got.doc.crosswalkVersion}.` }));
+  for (const p of regionPapers(got.doc, ui.research)) {
+    const open = el('button', { type: 'button', className: 'link', textContent: p.title });
+    open.addEventListener('click', () => revealResearchPaper(p.paperId));
+    const item = el('div', { className: 'region-paper' }, [open, el('span', { className: 'muted', textContent: ` ${p.year ?? ''}` })]);
+    item.dataset.paper = p.paperId;
+    for (const f of p.findings) item.append(el('p', { className: 'finding-label', textContent: f.label }), linkList(f.links));
+    box.append(item);
+  }
+  return box;
+}
+
+/** Paper -> regions: every structure the paper maps to, where it is drawn, or the stated reasons for none. */
+function paperRegionsSection(paperId) {
+  const box = el('section', { className: 'paper-regions' }, [el('h4', { textContent: 'Structures this paper maps to' })]);
+  box.dataset.testid = 'paper-regions';
+  const got = paperRegionsOf(paperId);
+  if (!got.model) return apiState(box, got, 'This paper is not in the research API.');
+  const { regions, emptyBecause } = got.model;
+  if (regions.length === 0) {
+    box.dataset.state = 'empty';
+    box.append(el('p', { textContent: 'It reaches no structure in this build. The reasons, as the research API states them:' }));
+    for (const e of emptyBecause) {
+      const why = el('p', { className: 'region-only' }, [el('span', { className: 'how', textContent: e.code }), ` ${e.detail}`]);
+      why.dataset.code = e.code;
+      box.append(why);
+    }
+    return box;
+  }
+  box.dataset.state = 'listed';
+  const here = regions.filter((r) => r.atlas === viewer.atlas);
+  box.append(el('p', {
+    textContent: `${regions.length} structure(s); ${here.length} in this atlas, highlighted and framed: solid where a link is exact, `
+      + `striped where every link is approximate. ${regions.length - here.length} in the other atlas, which this does not open.`,
+  }));
+  for (const r of regions) {
+    const row = el('div', { className: r.exact ? 'paper-region' : 'paper-region approximate' });
+    row.dataset.region = r.key;
+    const drawn = r.structures[0];
+    if (drawn && r.atlas === viewer.atlas) {
+      const go = el('button', { type: 'button', className: 'link', textContent: r.name });
+      go.addEventListener('click', () => {
+        viewer.selectStructure(drawn.key);
+        viewer.setCamera(flyToCell(viewer.cameraOf(), drawn));
+        commit({ push: true });
+      });
+      row.append(go);
+    } else {
+      row.append(el('span', { className: 'structure-label', textContent: r.name }));
+    }
+    row.append(el('span', {
+      className: 'muted',
+      textContent: ` ${r.key}${r.atlas !== viewer.atlas ? `, in the ${r.atlas} atlas` : ''}${drawn ? '' : ', not drawn as one structure in this build'}`,
+    }));
+    row.append(linkList(r.links));
+    box.append(row);
+  }
+  return box;
+}
+
 /** A comparison is live only while its first paper is the revealed one. */
 const comparing = () => Boolean(ui.comparison && ui.comparison.a.id === ui.revealed);
 
@@ -881,20 +927,7 @@ function compareWith(paperId) {
   commit({ push: false });
 }
 
-/**
- * Upload the revealed paper's cells as highlight volumes — or, while two
- * papers are compared, both papers' cells in one colour each and their
- * covering intersection hatched in both.
- *
- * Every uploaded highlight names its paper and finding (an overlap cell names
- * the findings of both papers that contain it), so `__atlas.highlights()` can
- * trace any volume on screen back to what was reported.
- *
- * Only the cells of the CURRENT atlas are uploaded, because a `BV` cell has no
- * geometry in the body template and there is nothing to draw. That is a
- * rendering fact, not a filter: every mapping is still listed in the panel,
- * and the ones belonging elsewhere say so.
- */
+/** Upload the revealed paper's cells as highlight volumes — or, while two papers are compared, both papers' cells in one colour each and their covering intersection hatched in both. (docs/viewer-shell.md) */
 function uploadHighlights() {
   for (const h of ui.uploaded.highlights ?? []) ui.renderer?.release(h.cell);
   ui.uploaded.highlights = [];
@@ -964,13 +997,18 @@ function renderLayers() {
   const box = $('layers');
   box.replaceChildren();
   const layers = viewer.layersOf();
+  let axis = null;
   for (const layer of ATLAS_LAYERS[viewer.atlas]) {
+    if (layer.axis !== axis) {
+      axis = layer.axis;
+      box.append(el('h3', { textContent: { region: 'Regions (by spine level)', hemisphere: 'Hemispheres', category: 'Systems' }[axis] }));
+    }
     const row = el('div', { className: 'layer' });
     row.dataset.layer = layer.id;
 
     const toggle = el('input', { type: 'checkbox', checked: isLayerVisible(layers, layer.id) });
     toggle.dataset.testid = `layer-toggle-${layer.id}`;
-    toggle.disabled = layers.isolated !== null;
+    toggle.disabled = layers.isolated !== null && ATLAS_LAYERS[viewer.atlas].some((l) => l.id === layers.isolated && l.axis === axis);
     toggle.addEventListener('change', () => {
       viewer.setLayerHidden(layer.id, !toggle.checked);
       commit({ push: true });
@@ -1050,18 +1088,74 @@ function renderChrome() {
   // anyone having clicked it.
   $('labels-toggle').checked = viewer.labelsOf();
 
-  // Structure search spans every indexed frame, which on the brain atlas means
-  // it finds body structures and nothing local. Said plainly, because a search
-  // box that returns ribs while you are looking at a brain otherwise looks
-  // broken rather than correctly scoped.
+  for (const atlas of ['body', 'brain']) {
+    if (atlas === viewer.atlas) $(`nav-${atlas}`).setAttribute('aria-current', 'page');
+    else $(`nav-${atlas}`).removeAttribute('aria-current');
+  }
+
+  // Search finds the structures drawn here, then index names for addresses,
+  // which on the brain atlas are body names: said, so a rib in a brain search
+  // reads as scoped rather than broken.
+  const drawn = ui.sets[viewer.atlas].reduce((n, set) => n + set.structures.length, 0);
   const searchable = [...nameIndexFrames(nameIndex)];
   const localFrame = viewer.atlas === 'body' ? 'BD' : 'BV';
-  $('search-scope').textContent = searchable.length === 0
-    ? 'No name index is loaded, so there is nothing to search.'
-    : searchable.includes(localFrame)
-      ? `Searching ${searchable.join(', ')}.`
-      : `No names exist for ${localFrame}, so results come from ${searchable.join(', ')} and `
-        + 'selecting one will not leave this atlas.';
+  $('search-scope').textContent = `${drawn} structures drawn in this atlas`
+    + (searchable.length === 0 ? '; no name index is loaded.'
+      : searchable.includes(localFrame) ? `, then ${searchable.join(', ')} names.`
+        : `, then ${searchable.join(', ')} names; no names exist for ${localFrame}, and choosing one of those will not leave this atlas.`);
+}
+
+const layerLabel = (id) => Object.values(ATLAS_LAYERS).flat().find((l) => l.id === id)?.label ?? id;
+
+/** The selected mesh structure: its name, what it is, and how far to trust where it is drawn. */
+function renderStructure() {
+  const box = $('structure-panel');
+  box.replaceChildren();
+  const key = viewer.structureOf();
+  box.hidden = key === null;
+  if (key === null) return;
+  const s = ui.sets[viewer.atlas].flatMap((set) => set.structures).find((x) => x.key === key);
+  box.dataset.structureKey = key;
+  if (!s) {
+    box.append(el('p', {
+      className: 'muted',
+      textContent: ['pending', 'loading'].includes(ui.meshStatus[viewer.atlas])
+        ? `Structure ${key}: loading the ${viewer.atlas} meshes…`
+        : `Structure ${key} is not drawn in the ${viewer.atlas} atlas of this build.`,
+    }));
+    return;
+  }
+  box.append(el('h3', { id: 'structure-name', textContent: s.title }));
+  box.append(el('p', { className: 'muted', textContent: `${layerLabel(s.category)} · ${s.set}${s.lobe ? ` · ${s.labelSet}` : ''}` }));
+  const under = ui.pickedAt;
+  const depth = under ? under.keys.indexOf(key) : -1;
+  if (depth >= 0 && under.keys.length > 1 && under.atlas === viewer.atlas && under.camera === JSON.stringify(viewer.cameraOf())) {
+    const next = under.keys[(depth + 1) % under.keys.length];
+    const title = ui.sets[viewer.atlas].flatMap((set) => set.structures).find((x) => x.key === next)?.title ?? next;
+    box.append(el('p', {
+      className: 'muted',
+      id: 'structure-depth',
+      textContent: `${depth + 1} of ${under.keys.length} structures under the pointer. Click the same spot again for `
+        + `${depth + 1 === under.keys.length ? 'the nearest again' : 'the one behind'}: ${title}.`,
+    }));
+  }
+  if (s.placedBy) {
+    box.append(el('p', {
+      className: 'note',
+      textContent: `Drawn in MNI space through ${s.placedBy.registration}, whose held-out error is `
+        + `${s.placedBy.errorMm} mm: an address clicked on this surface is no closer to the anatomy than that.`,
+    }));
+  }
+  if (s.lobe) {
+    box.append(el('p', { className: 'note', textContent: 'A first-party lobe label drawn from landmarks; how precisely its boundary lies is unstated.' }));
+  }
+  box.append(regionPapersSection(s));
+  const clear = el('button', { type: 'button', className: 'link', textContent: 'Clear structure' });
+  clear.addEventListener('click', () => {
+    viewer.selectStructure(null);
+    commit({ push: true });
+  });
+  box.append(clear);
 }
 
 // ---------------------------------------------------------------------------
@@ -1074,49 +1168,45 @@ function scene() {
   const solids = [];
   const lines = [];
 
-  if (viewer.atlas === 'body' && ui.uploaded.body) {
-    for (const layer of ATLAS_LAYERS.body) {
-      if (layer.id === 'spine') continue;
-      const ranges = ui.uploaded.body.levels
-        .filter((l) => l.region === layer.id)
-        .map((l) => ({
-          firstTriangle: l.firstTriangle,
-          triangleCount: l.triangleCount,
-          colour: ui.regionColour[layer.id] ?? ui.regionColour.other,
-        }));
-      if (ranges.length === 0) continue;
-      solids.push({
-        mesh: ui.uploaded.body,
-        ranges,
-        visible: isLayerVisible(layers, layer.id),
-        opacity: layerOpacity(layers, layer.id),
-      });
+  let xray = null;
+  const xrays = [];
+  for (const set of ui.sets[viewer.atlas]) {
+    if (!set.gpu) continue;
+    // A paper's structures also show through what is in front of them, whatever their layer.
+    const marked = [];
+    // One draw per run of equally opaque, same-coloured structures: the sets
+    // are laid out by layer, so a frame is a few dozen draws, not 1,605.
+    const byOpacity = new Map();
+    for (const s of set.structures) {
+      // The selected structure keeps its layer's opacity, so a faded skin stays
+      // faded. Opaque or hidden, an x-ray pass shows it through what is in front.
+      const chosen = s.key === viewer.structureOf();
+      const mark = ui.overlay.get(s.key);
+      const colour = chosen ? ui.palette.chosen : mark ? ui.palette.paper : ui.palette[s.lobe ? s.label : s.category] ?? ui.palette.other;
+      const hatch = !chosen && mark === 'approximate' ? ui.palette.paperStripe : null;
+      const { visible, opacity } = structureLayers(layers, s);
+      if (chosen && (!visible || opacity >= 1)) {
+        xray = { mesh: set.gpu, ranges: [{ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour }] };
+      } else if (mark) {
+        marked.push({ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour, hatch });
+      }
+      if (!visible || !(opacity > 0)) continue;
+      if (!byOpacity.has(opacity)) byOpacity.set(opacity, []);
+      const ranges = byOpacity.get(opacity);
+      const last = ranges[ranges.length - 1];
+      if (last && last.colour === colour && last.hatch === hatch && last.firstTriangle + last.triangleCount === s.firstTriangle) last.triangleCount += s.triangleCount;
+      else ranges.push({ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour, hatch });
     }
-    if (ui.uploaded.spine) {
-      lines.push({
-        ...ui.uploaded.spine,
-        colour: ui.regionColour.spine,
-        visible: isLayerVisible(layers, 'spine'),
-        opacity: layerOpacity(layers, 'spine'),
-      });
-    }
+    for (const [opacity, ranges] of byOpacity) solids.push({ mesh: set.gpu, ranges, visible: true, opacity });
+    if (marked.length > 0) xrays.push({ mesh: set.gpu, ranges: marked });
   }
-
-  if (viewer.atlas === 'brain') {
-    for (const id of ['left', 'right']) {
-      const uploaded = ui.uploaded[id];
-      if (!uploaded) continue;
-      solids.push({
-        mesh: uploaded,
-        ranges: [{
-          firstTriangle: 0,
-          triangleCount: uploaded.count / 3,
-          colour: ui.regionColour[id],
-        }],
-        visible: isLayerVisible(layers, id),
-        opacity: layerOpacity(layers, id),
-      });
-    }
+  if (viewer.atlas === 'body' && ui.uploaded.spine) {
+    lines.push({
+      ...ui.uploaded.spine,
+      colour: ui.regionColour.spine,
+      visible: isLayerVisible(layers, 'spine'),
+      opacity: layerOpacity(layers, 'spine'),
+    });
   }
 
   return {
@@ -1125,6 +1215,8 @@ function scene() {
     height: Math.max(1, canvas.clientHeight),
     solids,
     lines,
+    // The selected structure last, so it reads on top of a paper's.
+    xray: xray ? [...xrays, xray] : xrays,
     cell: ui.uploaded.cell,
     highlights: ui.uploaded.highlights ?? [],
   };
@@ -1149,25 +1241,7 @@ function showCanvasMessage(text, code) {
   box.hidden = false;
 }
 
-/**
- * Labels as a DOM overlay rather than in GL.
- *
- * Text in a WebGL scene means a glyph atlas and a pile of code; text in the DOM
- * is selectable and styleable for free. The cost is that labels are not
- * occluded by geometry — which for level markers along a spine is what you want
- * anyway, since the point of the label is to find the level you cannot
- * currently see.
- *
- * The overlay stays `aria-hidden`, and that is not an oversight to fix later. A
- * label here carries its meaning in where it sits on a canvas nobody reading by
- * screen reader can see; flattened into the accessibility tree it is 29
- * context-free level codes between the canvas and the address panel. The
- * non-visual route to the same information is the address panel's ranked names
- * and the structure search, which are real DOM with real text.
- *
- * Visibility is `viewer.labelsOf()`, per atlas and in the URL — see the header
- * of `viewer/state.js` for why it is not a field on `ui`.
- */
+/** Labels as a DOM overlay rather than in GL. (docs/viewer-shell.md) */
 function renderLabels() {
   const box = $('labels');
   box.replaceChildren();
@@ -1194,13 +1268,10 @@ function renderLabels() {
     });
   }
 
-  if (viewer.atlas === 'brain' && templates.brainVolume) {
-    for (const [id, hemisphere] of [['left', 'L'], ['right', 'R']]) {
-      if (!isLayerVisible(layers, id)) continue;
-      const mesh = ui.meshes[id];
-      if (!mesh) continue;
-      const centre = boundsOf(mesh.corners).centre;
-      const at = ui.renderer.projectPoint(centre, camera, width, height);
+  if (viewer.atlas === 'brain' && ui.hemispheres) {
+    for (const [hemisphere, bounds] of ui.hemispheres) {
+      if (!isLayerVisible(layers, hemisphere === 'L' ? 'left' : 'right')) continue;
+      const at = ui.renderer.projectPoint(bounds.centre, camera, width, height);
       if (!at) continue;
       const tag = el('span', { className: 'label', textContent: `BV-${hemisphere}` });
       tag.dataset.level = `BV-${hemisphere}`;
@@ -1230,12 +1301,7 @@ function select(input, { fly = false, push = true, encodeFlags } = {}) {
     uploadSelectedCell();
     // The filter moved, so the faint/bright split on the highlights moved.
     uploadHighlights();
-    // There is deliberately no `elsewhere` branch here: an address living in
-    // the other atlas comes back from the viewer with no `cell`, so there is
-    // nothing to upload and nothing to fly to. Keeping the rule in the viewer
-    // instead of copying it into the shell is the point — a second copy is how
-    // this panel came to say "the view has not been changed" while the camera
-    // was already at the other atlas's coordinates (DOG-75).
+    // No `elsewhere` branch: the viewer withholds a cross-atlas cell, so nothing is flown to (DOG-75, docs/viewer-shell.md).
     if (fly && model.cell) {
       viewer.setCamera(flyToCell(viewer.cameraOf(), meshBounds(model.cell)));
     }
@@ -1251,9 +1317,8 @@ function openAtlas(atlas) {
 
 function afterAtlasChange() {
   const atlas = viewer.atlas;
-  if (ui.bounds[atlas] && !(viewer.cameraOf(atlas).distance > 0)) {
-    viewer.setCamera(fitCamera(ui.bounds[atlas]), atlas);
-  }
+  fitIfUnset(atlas);
+  loadMeshes(atlas, 'low').then(() => loadMeshes(atlas, 'full'));
   uploadSelectedCell();
   uploadHighlights();
   commit({ push: true });
@@ -1261,9 +1326,19 @@ function afterAtlasChange() {
 
 /** Re-render everything and sync the URL. One funnel, so nothing drifts. */
 function commit({ push = false } = {}) {
+  const regions = ui.revealed ? paperRegionsOf(ui.revealed).model : null;
+  ui.overlay = overlayOf(regions, viewer.atlas);
+  if (ui.framePaper && ui.framePaper === ui.revealed && regions) {
+    // Framed once, on reveal, as soon as its structures here are drawn; never by switching atlas.
+    const here = regions.regions.filter((r) => r.atlas === viewer.atlas);
+    const drawn = here.flatMap((r) => r.structures);
+    if (drawn.length > 0) viewer.setCamera(flyToCell(viewer.cameraOf(), boundsOfStructures(drawn)));
+    if (drawn.length > 0 || here.length === 0 || !['pending', 'loading'].includes(ui.meshStatus[viewer.atlas])) ui.framePaper = null;
+  }
   renderChrome();
   renderLayers();
   renderAddressPanel();
+  renderStructure();
   renderResearch();
   renderNotices();
   draw();
@@ -1275,15 +1350,12 @@ function commit({ push = false } = {}) {
   if (window.__atlas) window.__atlas.selection = viewer.state.selection;
 }
 
-/**
- * Click -> address.
- *
- * The millimetre point goes back through the frame's own encoder, never through
- * the level the triangle belongs to. `encodeBody` is what produces the flags,
- * including `folded` — which is exactly the case where the triangle's level and
- * the frame's answer differ, so trusting the triangle would hide the one defect
- * the flag exists to show.
- */
+function sameSpot(before, now) {
+  return Boolean(before) && before.atlas === now.atlas && before.camera === now.camera
+    && Math.abs(before.x - now.x) <= 4 && Math.abs(before.y - now.y) <= 4;
+}
+
+/** Click -> address. (docs/viewer-shell.md) */
 function pick(event) {
   const canvas = $('canvas');
   const rect = canvas.getBoundingClientRect();
@@ -1299,27 +1371,31 @@ function pick(event) {
   // Always clamped to the bound template's own limit; never a literal.
   const digits = Math.min(bound.maxUsefulDigits, Number($('precision').value));
 
+  // No geometry, nothing to click: an address is still a paste away.
+  if (!ui.sets[viewer.atlas].some((set) => set.gpu)) return;
+  // A layer faded below half is see-through to the pointer, so a faded skin
+  // lets you click the organ behind it.
+  const layers = viewer.layersOf();
+  const hits = pickStructures(ui.sets[viewer.atlas], ray.origin, ray.direction, (s) => {
+    const { visible, opacity } = structureLayers(layers, s);
+    return visible && opacity >= 0.5;
+  });
+  // A click again on the same spot goes one deeper (docs/viewer-shell.md).
+  const at = { atlas: viewer.atlas, x: event.clientX - rect.left, y: event.clientY - rect.top, camera: JSON.stringify(viewer.cameraOf()) };
+  const hit = nextPick(hits, { again: sameSpot(ui.pickedAt, at), current: viewer.structureOf() });
+  ui.pickedAt = { ...at, keys: hits.map((h) => h.structure.key) };
+  viewer.selectStructure(hit?.structure.key ?? null);
+
+  // The address comes from the frame's own encoder, never the structure, so its flags reach the user (docs/viewer-shell.md).
   if (viewer.atlas === 'body') {
-    if (!ui.meshes.body) return;
-    // A miss is not ignored: it is encoded where it points, and the encoder's
-    // flags ride along so the clamp it raises reaches the user (DOG-116).
-    const hit = pickMesh(ui.meshes.body, ray.origin, ray.direction);
     const enc = encodeBody(bound, hit ? hit.pointMm : missPoint(ray, ui.bounds.body), digits);
     select(enc.address, { push: true, encodeFlags: enc.flags });
-    return;
+  } else if (hit) {
+    const enc = encodeBrainVolume(bound, hit.pointMm, digits);
+    select(enc.address, { push: true, encodeFlags: enc.flags });
+  } else {
+    commit({ push: true });
   }
-
-  let best = null;
-  for (const id of ['left', 'right']) {
-    const mesh = ui.meshes[id];
-    if (!mesh) continue;
-    const hit = pickMesh(mesh, ray.origin, ray.direction);
-    if (hit && (!best || hit.distanceMm < best.distanceMm)) best = hit;
-  }
-  // Address only, unlike the body: the hemisphere mesh's vertices sit on the
-  // template's own boundary, so about half of all on-surface hits encode as
-  // `clamped` by rounding alone, and carrying that would be a false warning.
-  if (best) select(encodeBrainVolume(bound, best.pointMm, digits).address, { push: true });
 }
 
 function wireCanvas() {
@@ -1328,7 +1404,7 @@ function wireCanvas() {
 
   canvas.addEventListener('pointerdown', (event) => {
     canvas.setPointerCapture(event.pointerId);
-    drag = { x: event.clientX, y: event.clientY, moved: 0, button: event.button, shift: event.shiftKey };
+    drag = { x: event.clientX, y: event.clientY, moved: 0, button: event.button, shift: event.shiftKey, camera: viewer.cameraOf(), at: { clientX: event.clientX, clientY: event.clientY } };
   });
   canvas.addEventListener('pointermove', (event) => {
     if (!drag) return;
@@ -1346,11 +1422,13 @@ function wireCanvas() {
     draw();
   });
   canvas.addEventListener('pointerup', (event) => {
-    const travelled = drag && drag.moved > 4;
+    const press = drag;
     drag = null;
-    // A camera move is not a selection. Only a click without travel picks.
-    if (travelled) commit({ push: false });
-    else pick(event);
+    // A camera move is not a selection. Only a click without travel picks, at
+    // the camera and point it was pressed with, so a jittery click again still goes deeper.
+    if (press?.moved > 4) return commit({ push: false });
+    if (press) viewer.setCamera(press.camera);
+    pick(press?.at ?? event);
   });
   canvas.addEventListener('pointercancel', () => { drag = null; });
   canvas.addEventListener('contextmenu', (event) => event.preventDefault());
@@ -1366,6 +1444,16 @@ function wireCanvas() {
 }
 
 function wireControls() {
+  // The top-level nav. Real links, so they open in a new tab as `?atlas=`;
+  // a plain click is the explicit move, with the route back.
+  for (const atlas of ['body', 'brain']) {
+    $(`nav-${atlas}`).addEventListener('click', (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
+      event.preventDefault();
+      openAtlas(atlas);
+    });
+  }
+
   $('address-form').addEventListener('submit', (event) => {
     event.preventDefault();
     const raw = $('address-input').value.trim();
@@ -1395,7 +1483,37 @@ function wireControls() {
   const results = $('search-results');
   search.addEventListener('input', () => {
     results.replaceChildren();
-    if (!nameIndex || search.value.trim().length < 2) return;
+    if (search.value.trim().length < 2) return;
+    // Structures drawn in this atlas first: choosing one selects and frames it.
+    for (const s of searchStructures(ui.sets[viewer.atlas].flatMap((set) => set.structures), search.value, 8)) {
+      const go = el('button', { type: 'button', className: 'link', textContent: s.title });
+      go.dataset.structureKey = s.key;
+      go.addEventListener('click', () => {
+        viewer.selectStructure(s.key);
+        viewer.setCamera(flyToCell(viewer.cameraOf(), s));
+        results.replaceChildren();
+        commit({ push: true });
+      });
+      results.append(el('li', {}, [go, el('span', { className: 'muted', textContent: ` ${layerLabel(s.category)}` })]));
+    }
+    // Then what this atlas holds back, as text and not a button: it is not
+    // drawn, so there is nothing to select, but the page says why.
+    const query = search.value;
+    const anchor = el('li', { hidden: true });
+    results.append(anchor);
+    withheldIn(viewer.atlas).then((held) => {
+      if (search.value !== query) return;
+      for (const w of searchStructures(held, query, 4)) {
+        const row = el('li', {}, [w.title, el('span', {
+          className: 'muted',
+          textContent: ` is held back and not drawn: ${w.reasons.join('; ') || 'no reason given'}${w.group ? ` (${w.group})` : ''}.`,
+        })]);
+        row.dataset.withheld = w.group ?? w.set;
+        anchor.before(row);
+      }
+      anchor.remove();
+    });
+    if (!nameIndex) return;
     for (const structure of findStructures(search.value, nameIndex, 12)) {
       const cells = coveringOf(structure.id);
       const row = el('li');
@@ -1420,9 +1538,7 @@ function wireControls() {
   addEventListener('popstate', () => {
     const { view, problems } = decodeView(location.search);
     viewer.applyView(view, problems);
-    if (ui.bounds[viewer.atlas] && !(viewer.cameraOf().distance > 0)) {
-      viewer.setCamera(fitCamera(ui.bounds[viewer.atlas]));
-    }
+    fitIfUnset(viewer.atlas);
     uploadSelectedCell();
     commit({ push: false });
   });
@@ -1450,13 +1566,11 @@ try {
   if (failing('renderer')) throw new Error('forced by ?fail=renderer');
   const module = await import('./viewer/renderer.js');
   ui.regionColour = module.REGION_COLOURS;
+  ui.palette = module.ANATOMY_COLOURS;
   GROUP_COLOURS = module.GROUP_COLOURS;
   PAPER_COLOURS = module.PAPER_COLOURS;
   ui.renderer = module.createRenderer($('canvas'));
-  if (ui.meshes.body) ui.uploaded.body = ui.renderer.uploadSurface(ui.meshes.body);
   if (ui.meshes.spine) ui.uploaded.spine = ui.renderer.uploadPolyline(ui.meshes.spine);
-  if (ui.meshes.left) ui.uploaded.left = ui.renderer.uploadSurface(ui.meshes.left);
-  if (ui.meshes.right) ui.uploaded.right = ui.renderer.uploadSurface(ui.meshes.right);
   uploadSelectedCell();
   uploadHighlights();
   $('canvas-message').hidden = true;
@@ -1472,6 +1586,70 @@ try {
 
 commit({ push: false });
 
+/** One tier of an atlas's mesh sets, decoded and uploaded, replacing what was drawn. (docs/viewer-shell.md) */
+function loadMeshes(atlas, tier) {
+  return ui.renderer ? once(`drawn:${atlas}/${tier}`, () => drawTier(atlas, tier)) : Promise.resolve();
+}
+
+async function drawTier(atlas, tier) {
+  const entries = meshEntries.filter((e) => e.atlas === atlas);
+  if (tier === 'low') ui.meshStatus[atlas] = entries.length === 0 ? 'none' : 'loading';
+  const failed = [];
+  await Promise.all(entries.map(async (entry) => {
+    try {
+      const bytes = await tierBytes(entry, tier);
+      if (!bytes) return;
+      const mesh = meshSetFrom(entry, await setDocs(entry), bytes, templates.body);
+      mesh.tier = tier;
+      mesh.gpu = ui.renderer.uploadSurface(mesh);
+      const at = ui.sets[atlas].findIndex((m) => m.id === entry.id);
+      // Never trade a full tier back for a low one.
+      if (at >= 0 && ui.sets[atlas][at].tier === 'full') return ui.renderer.release(mesh.gpu);
+      if (at >= 0) ui.renderer.release(ui.sets[atlas][at].gpu);
+      ui.sets[atlas].splice(at >= 0 ? at : ui.sets[atlas].length, at >= 0 ? 1 : 0, mesh);
+    } catch (error) {
+      failed.push(`${entry.id} (${error.message})`);
+    }
+  }));
+  if (failed.length > 0) {
+    (ui.meshNotices ??= {})[atlas] = {
+      code: 'meshes-unavailable',
+      severity: 'warning',
+      title: `Some ${atlas} anatomy could not be drawn`,
+      detail: `The ${tier}-resolution meshes of ${failed.join(', ')} failed to load. Addresses still `
+        + 'parse and resolve to names, and cells are still drawn at their true extent.',
+    };
+  }
+  if (ui.sets[atlas].length > 0) {
+    // Sets that declare a full tier at all: the ICBM cortex ships only a low
+    // one. This atlas's own documents only, so the brain never waits on the body's.
+    const docs = await Promise.allSettled(entries.map(setDocs));
+    const fullTiers = new Set(entries.filter((e, i) => docs[i].value?.structures.tiers?.full).map((e) => e.id));
+    ui.meshStatus[atlas] = ui.sets[atlas].every((m) => m.tier === 'full' || !fullTiers.has(m.id)) ? 'full' : 'low';
+    // The brain is framed on the BV template's box, not on the arteries and
+    // nerves that run far below it; the body on all of its anatomy.
+    if (atlas === 'body' || !ui.hemispheres) ui.bounds[atlas] = boundsOfStructures(ui.sets[atlas].flatMap((m) => m.structures));
+    // An automatic fit is refitted to the anatomy; a camera from a link or a drag is left alone.
+    if (ui.autoFit[atlas] && ui.autoFit[atlas] === viewer.cameraOf(atlas)) {
+      ui.autoFit[atlas] = viewer.setCamera(fitCamera(ui.bounds[atlas]), atlas);
+    }
+  } else if (tier === 'low') {
+    ui.meshStatus[atlas] = entries.length === 0 ? 'none' : 'failed';
+  }
+  commit({ push: false });
+}
+
+const meshesLoaded = (async () => {
+  if (!ui.renderer) {
+    ui.meshStatus = { body: 'no-renderer', brain: 'no-renderer' };
+    return;
+  }
+  const first = viewer.atlas;
+  await loadMeshes(first, 'low');
+  await loadMeshes(first === 'body' ? 'brain' : 'body', 'low');
+  await loadMeshes(viewer.atlas, 'full');
+})().catch(() => {});
+
 /** The documented test handle. See the module header. */
 window.__atlas = {
   viewer,
@@ -1485,13 +1663,7 @@ window.__atlas = {
     if (ui.bounds[viewer.atlas]) viewer.setCamera(fitCamera(ui.bounds[viewer.atlas]));
     commit({ push: false });
   },
-  /**
-   * Labels, through the same path the checkbox takes.
-   *
-   * Deliberately not `viewer.setLabels` straight: a hook that skipped `commit`
-   * would report the new state while the overlay and the URL still showed the
-   * old one, and a QA pass on that proves nothing about the page.
-   */
+  /** Labels, through the same path the checkbox takes. (docs/viewer-shell.md) */
   setLabels: (visible) => {
     viewer.setLabels(visible);
     commit({ push: true });
@@ -1515,25 +1687,7 @@ window.__atlas = {
   rendererAvailable: () => Boolean(ui.renderer),
   atlasAvailable: (atlas) => viewer.isAvailable(atlas),
   research: () => ui.research,
-  /**
-   * Which corpus the page is actually serving — one call, no inference.
-   *
-   * DOG-68: a §7 row that drove the page, found a fixture paper and reported
-   * **pass** would be measuring the invented corpus while the Node-side oracle
-   * measured the curated seed set, and nothing in the surface made the two
-   * distinguishable without recognising a paper id. A row can now name its
-   * dataset, and a row that forgot to is visibly a row that did not ask.
-   *
-   * `null` rather than a guess when the document failed to load: "no corpus"
-   * and "the fixture corpus" are different results and must not print alike.
-   *
-   * On a curated corpus the counts alone are not enough to judge a row by.
-   * Twenty of the thirty papers have no placed geometry, so `resolution` —
-   * measured from the join that just ran, not declared — is what tells an
-   * honestly empty panel from a broken one. `nameIndexVersion` is carried for
-   * the same reason it is carried beside every name list: a resolution is only
-   * true relative to the index it came from.
-   */
+  /** Which corpus the page is actually serving — one call, no inference. (docs/viewer-shell.md) */
   researchCorpus: () => (ui.research
     ? {
       version: ui.research.version,
@@ -1551,9 +1705,7 @@ window.__atlas = {
   researchDeclared: () => index.research ?? null,
   /** Stage B: the research panel, so QA can drive the paper journey. */
   revealPaper: (paperId) => {
-    ui.revealed = paperId;
-    uploadHighlights();
-    commit({ push: false });
+    revealResearchPaper(paperId);
     return revealPaper(ui.research, paperId, viewer.state.selection?.displayAddress ?? null);
   },
   papersHere: () => papersOverlapping(
@@ -1566,9 +1718,36 @@ window.__atlas = {
     compareWith(paperId);
     return ui.comparison;
   },
+  /** DOG-132: what the panels read, as the API answered it; `pending` until it has. */
+  regionPapers: (key) => {
+    const got = apiAnswer('region', key);
+    return got.doc ? regionPapers(got.doc, ui.research) : got;
+  },
+  paperRegions: (paperId) => {
+    const got = paperRegionsOf(paperId);
+    return got.model ? { ...got.model, regions: got.model.regions.map((r) => ({ ...r, structures: r.structures.map((s) => s.key) })) } : got;
+  },
+  /** The structures the revealed paper highlights in this atlas, key -> exact|approximate. */
+  paperOverlay: () => Object.fromEntries(ui.overlay),
   /** What is drawn, each volume with its paper and finding; no GL handles. */
   highlights: () => (ui.uploaded.highlights ?? []).map(({ cell, ...h }) => h),
   highlightCount: () => (ui.uploaded.highlights ?? []).length,
   selection: viewer.state.selection,
+  /** DOG-129: which tier each atlas is drawing, and the selected mesh structure. */
+  meshStatus: () => ({ ...ui.meshStatus }),
+  meshesLoaded,
+  structures: (atlas = viewer.atlas) => ui.sets[atlas].flatMap((set) => set.structures.map((s) => ({ key: s.key, name: s.name, title: s.title, label: s.label, category: s.category, parts: s.parts, regionKey: s.regionKey }))),
+  structure: () => viewer.structureOf(),
+  selectStructure: (key) => {
+    viewer.selectStructure(key);
+    commit({ push: true });
+    return viewer.structureOf();
+  },
+  /** A click at canvas CSS pixels, through the same path a pointer takes. */
+  pickAt: (x, y) => {
+    const rect = $('canvas').getBoundingClientRect();
+    pick({ clientX: rect.left + x, clientY: rect.top + y });
+    return { structure: viewer.structureOf(), address: viewer.state.selection?.address ?? null, under: ui.pickedAt?.keys ?? [] };
+  },
   ready: true,
 };

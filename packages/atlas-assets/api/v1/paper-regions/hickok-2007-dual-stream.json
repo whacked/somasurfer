@@ -1,0 +1,210 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:hickok-2007-dual-stream",
+ "paperHref": "../../../../data/api/v1/papers/hickok-2007-dual-stream.json",
+ "regions": [
+  {
+   "key": "icbm152-2009c-cortex-lobes/101",
+   "structureName": "Frontal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/101.json",
+   "links": [
+    {
+     "mappingId": "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-44",
+     "findingId": "finding:hickok-2007-dual-stream/dorsal-stream",
+     "paperId": "paper:hickok-2007-dual-stream",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "101",
+     "structureName": "Frontal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/102",
+   "structureName": "Parietal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/102.json",
+   "links": [
+    {
+     "mappingId": "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-pfm",
+     "findingId": "finding:hickok-2007-dual-stream/dorsal-stream",
+     "paperId": "paper:hickok-2007-dual-stream",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "102",
+     "structureName": "Parietal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PFm lies on the posterior supramarginal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PFm",
+      "label": "Area PFm (supramarginal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Supramarginal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/103",
+   "structureName": "Temporal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/103.json",
+   "links": [
+    {
+     "mappingId": "map:hickok-2007-dual-stream/ventral-stream/hcp-mmp1-stsvp",
+     "findingId": "finding:hickok-2007-dual-stream/ventral-stream",
+     "paperId": "paper:hickok-2007-dual-stream",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "103",
+     "structureName": "Temporal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. STSvp lies in the lower bank of the posterior superior temporal sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:STSvp",
+      "label": "Superior temporal sulcus, ventral posterior"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Superior temporal sulcus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/201",
+   "structureName": "Frontal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/201.json",
+   "links": [
+    {
+     "mappingId": "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-44",
+     "findingId": "finding:hickok-2007-dual-stream/dorsal-stream",
+     "paperId": "paper:hickok-2007-dual-stream",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/202",
+   "structureName": "Parietal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/202.json",
+   "links": [
+    {
+     "mappingId": "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-pfm",
+     "findingId": "finding:hickok-2007-dual-stream/dorsal-stream",
+     "paperId": "paper:hickok-2007-dual-stream",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "202",
+     "structureName": "Parietal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PFm lies on the posterior supramarginal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PFm",
+      "label": "Area PFm (supramarginal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Supramarginal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/203",
+   "structureName": "Temporal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/203.json",
+   "links": [
+    {
+     "mappingId": "map:hickok-2007-dual-stream/ventral-stream/hcp-mmp1-stsvp",
+     "findingId": "finding:hickok-2007-dual-stream/ventral-stream",
+     "paperId": "paper:hickok-2007-dual-stream",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "203",
+     "structureName": "Temporal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. STSvp lies in the lower bank of the posterior superior temporal sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:STSvp",
+      "label": "Superior temporal sulcus, ventral posterior"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Superior temporal sulcus"
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

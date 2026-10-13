@@ -9,7 +9,10 @@
     "label": "mid-range laptop, 2026",
     "cpu": "4 physical cores, ~2.4 GHz sustained, no discrete GPU",
     "memoryGb": 8,
-    "network": { "downlinkMbps": 25, "rttMs": 40 },
+    "network": {
+      "downlinkMbps": 25,
+      "rttMs": 40
+    },
     "browser": "current Chrome or Firefox, cold HTTP cache, warm DNS",
     "note": "Deliberately not a developer machine. The atlas is for clinicians and students on institutional hardware."
   },
@@ -23,7 +26,10 @@
       "The model is pessimistic about bandwidth (no compression beyond gzip, no",
       "CDN edge) and optimistic about nothing. It is a budget, not a prediction."
     ],
-    "roundTrips": { "criticalPath": 2, "assets": 1 }
+    "roundTrips": {
+      "criticalPath": 2,
+      "assets": 1
+    }
   },
   "budgets": {
     "bundleGzipBytes": {
@@ -38,8 +44,28 @@
     },
     "lowResAssetGzipBytes": {
       "limit": 2621440,
-      "covers": "dist/assets/**, gzipped, excluding LICENSE and ATTRIBUTION.md",
+      "covers": "dist/assets/**, gzipped, excluding LICENSE, ATTRIBUTION.md, the name index and every file a mesh set declares as lazily fetched",
       "why": "2.5 MiB at 25 Mbit/s is ~0.84 s of transfer, which fits the 2.5 s low-resolution asset budget with room for parse. It is also about the size a 20k-triangle body shell plus label sets lands at, so it constrains the asset pipeline without being unachievable."
+    },
+    "lowResBrainAssetGzipBytes": {
+      "limit": 1048576,
+      "covers": "dist/assets/brain/**, gzipped, less the lazily fetched tier: the brain's share of lowResAssetGzipBytes, counted in that line as well",
+      "why": "The 2.5 MiB low-resolution line is shared by the brain (DOG-127, W2) and the full-body human (DOG-128, W3). The split, agreed in W2 and recorded in docs/performance-budget.md: brain 1.00 MiB, body 1.25 MiB, and 0.25 MiB for the v1 templates and labels (about 0.13 MiB today). The body gets the larger share because it has more structures to show at once. This line holds the brain to its share, so a brain that grows cannot spend the body's room."
+    },
+    "fullResBrainAssetGzipBytes": {
+      "limit": 5505024,
+      "covers": "the brain mesh files declared `loading: \"lazy\"` in their structures.json (the full-resolution tier), gzipped",
+      "why": "Derived once, on 2026-10-11, from the first full-tier build (DOG-127, 4,972,008 B gzip): 1.10 x that, rounded up to the next 256 KiB, = 5.25 MiB. It is a committed literal, not re-derived at gate time, so it cannot ratchet to whatever the next build happens to weigh. At 25 Mbit/s it is about 1.8 s of background transfer after the low tier is already drawn. The 10% was margin for re-encoding the set it was derived from. The origin-test moves (midbrain x2 from the glb, the corpus callosum from BodyParts3D) then added about 349 KB, and holding the 4 colliculi took some of it back, so the 244 structures that ship now leave about 3.6%, not 10% (docs/brain-mesh-report.md has the current reading). The literal stays as derived. Adding a clearance group (the cortex, if it clears) is a new decision about this line, not headroom inside it."
+    },
+    "lowResBodyAssetGzipBytes": {
+      "limit": 1310720,
+      "covers": "dist/assets/body/**, gzipped, less the lazily fetched tier: the body's share of lowResAssetGzipBytes, counted in that line as well",
+      "why": "The body's 1.25 MiB of the 2.5 MiB low-resolution line, as agreed in W2 (DOG-127) and recorded in docs/performance-budget.md: brain 1.00 MiB, body 1.25 MiB, v1 templates and labels 0.25 MiB. It holds the full-body human (DOG-128, W3) to its share, so a body that grows cannot spend the brain's room."
+    },
+    "fullResBodyAssetGzipBytes": {
+      "limit": 7340032,
+      "covers": "the body mesh files declared `loading: \"lazy\"` in their structures.json (the full-resolution tier), gzipped",
+      "why": "Derived once, on 2026-10-12, from the first body full tier that passed the mesh gate (DOG-128 at 34196ea, 6,525,597 B gzip), by the brain's rule: 1.10 x that, rounded up to the next 256 KiB, = 7.00 MiB. A committed literal, not re-derived at gate time, so it cannot ratchet. At 25 Mbit/s it is about 2.3 s of background transfer after the low tier has drawn. The full tier is itself decimated (source 6.4 million triangles is ~46 MB), except the 25 BD vertebrae, which ship at source resolution because the registration gate measures BD from them."
     },
     "indexParseMsNormalised": {
       "limit": 40,
@@ -58,7 +84,7 @@
     },
     "lowResAssetParseMsNormalised": {
       "limit": 400,
-      "covers": "JSON.parse of the low-resolution asset payloads, normalised to the reference machine",
+      "covers": "Parsing the low-resolution asset payloads and walking their positions and indices once, normalised to the reference machine: JSON.parse for JSON assets, the ATLM reader (tools/lib/meshbin.mjs) for binary meshes",
       "why": "Off the critical path for first interaction but on it for seeing anything. The viewer is expected to move this to a worker; until it does, 400 ms is the ceiling."
     },
     "derivedLowResAssetLoadMs": {
@@ -70,6 +96,11 @@
       "limit": 3500,
       "covers": "navigation start to the first click being handled, on the reference machine, derived as above plus a fixed render allowance",
       "why": "Interaction is the product. 3.5 s is the outer edge of acceptable for a first visit to a 3D atlas, and the target to beat once the viewer lands."
+    },
+    "derivedFirstBrainFrameMs": {
+      "limit": 3500,
+      "covers": "a brain link, navigation start to the first brain frame drawn, on the reference machine: the critical path of derivedFirstInteractionMs, one round of asset requests, the files the page fetches for the brain (each brain mesh set's structures.json, label file and registration where declared, and its eager tier, read from the atlas index's meshSets), the viewer's own decode of them (meshSetFrom, normalised), and the render allowance",
+      "why": "DOG-123 set the first brain frame at <= 3,500 ms modelled on this reference machine, as the derivedFirstInteractionMs limit, with no loosened line (CTO comment of 2026-10-11 17:02, carried into DOG-129). That line's derivation stops at the critical path, so it cannot see the brain at all; this one prices the brain in, under the same 3,500 ms. It is a second line at the same limit, not a looser one."
     }
   },
   "renderAllowanceMs": {

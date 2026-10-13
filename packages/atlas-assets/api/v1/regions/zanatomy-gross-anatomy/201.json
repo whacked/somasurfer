@@ -1,0 +1,46 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "key": "zanatomy-gross-anatomy/201",
+ "representation": "zanatomy-gross-anatomy",
+ "structureId": "201",
+ "structureName": "Midbrain.l",
+ "papers": [
+  {
+   "paperId": "paper:mazziotta-2001-icbm",
+   "href": "../../../../../data/api/v1/papers/mazziotta-2001-icbm.json",
+   "links": [
+    {
+     "mappingId": "map:mazziotta-2001-icbm/reference-system/atlas-label-brainstem",
+     "findingId": "finding:mazziotta-2001-icbm/reference-system",
+     "paperId": "paper:mazziotta-2001-icbm",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "201",
+     "structureName": "Midbrain.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brainstem is the midbrain, pons and medulla oblongata; a finding filed under the whole brainstem names no one of them"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:brainstem",
+      "label": "brainstem"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": [
+       "Medulla oblongata",
+       "Pons"
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}

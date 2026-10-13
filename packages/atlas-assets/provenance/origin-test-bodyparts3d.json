@@ -1,0 +1,409 @@
+{
+ "schema": "atlas-origin-test/1",
+ "test": "Z-Anatomy Temporal-lobe-only structures against BodyParts3D 4.0 (docs/brain-origin-test.md)",
+ "preRegistered": {
+  "thresholds": {
+   "alignment": "single-global-similarity",
+   "maxMeanSymmetricMm": 1.5,
+   "maxP95Mm": 3,
+   "minLabelAgreement": 0.9,
+   "maxNegativeControlPassShare": 0.05
+  },
+  "file": "tools/lib/origin-test.mjs"
+ },
+ "inputs": {
+  "brainGlb": "76a49ea4526a4880613aec7a02756bd7301b0b9d0680d7cae33e197b672c5453",
+  "bodyparts3d": {
+   "archive": "isa_BP3D_4.0_obj_99.zip",
+   "sha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e"
+  }
+ },
+ "transform": {
+  "model": "one similarity for the whole set (Umeyama), fitted by ICP on the fit structures only",
+  "scaleMmPerMeshM": 1024.488,
+  "R": [
+   [
+    1,
+    0.000157,
+    -0.000068
+   ],
+   [
+    -0.000068,
+    0.001143,
+    -0.999999
+   ],
+   [
+    -0.000156,
+    0.999999,
+    0.001144
+   ]
+  ],
+  "tMm": [
+   -0.917,
+   -90.313,
+   -111.698
+  ],
+  "icpMeanMmByIteration": [
+   3.5099,
+   2.2464,
+   1.706,
+   1.3999,
+   1.1923,
+   1.0261,
+   0.8869,
+   0.7762,
+   0.6829,
+   0.6041,
+   0.5375,
+   0.4816,
+   0.435,
+   0.3973,
+   0.3686,
+   0.3482,
+   0.3341,
+   0.3244,
+   0.3181,
+   0.314,
+   0.3116,
+   0.3102,
+   0.3095,
+   0.3092,
+   0.309,
+   0.309
+  ]
+ },
+ "structures": [
+  {
+   "name": "Caudate nucleus.l",
+   "role": "fit",
+   "reference": "FMA72827",
+   "matched": {
+    "meanSymmetricMm": 0.154,
+    "p95Mm": 0.29,
+    "labelAgreement": 0.954,
+    "passes": true
+   },
+   "control": {
+    "against": "Putamen.l",
+    "meanSymmetricMm": 9.026,
+    "p95Mm": 18.409,
+    "labelAgreement": 0.003,
+    "passes": false
+   }
+  },
+  {
+   "name": "Caudate nucleus.r",
+   "role": "fit",
+   "reference": "FMA72826",
+   "matched": {
+    "meanSymmetricMm": 0.149,
+    "p95Mm": 0.298,
+    "labelAgreement": 0.953,
+    "passes": true
+   },
+   "control": {
+    "against": "Putamen.r",
+    "meanSymmetricMm": 8.977,
+    "p95Mm": 18.424,
+    "labelAgreement": 0.004,
+    "passes": false
+   }
+  },
+  {
+   "name": "Putamen.l",
+   "role": "fit",
+   "reference": "FMA72829",
+   "matched": {
+    "meanSymmetricMm": 0.201,
+    "p95Mm": 0.274,
+    "labelAgreement": 1,
+    "passes": true
+   },
+   "control": {
+    "against": "Caudate nucleus.l",
+    "meanSymmetricMm": 10.239,
+    "p95Mm": 16.304,
+    "labelAgreement": 0,
+    "passes": false
+   }
+  },
+  {
+   "name": "Putamen.r",
+   "role": "fit",
+   "reference": "FMA72828",
+   "matched": {
+    "meanSymmetricMm": 0.201,
+    "p95Mm": 0.265,
+    "labelAgreement": 1,
+    "passes": true
+   },
+   "control": {
+    "against": "Caudate nucleus.r",
+    "meanSymmetricMm": 10.26,
+    "p95Mm": 16.314,
+    "labelAgreement": 0,
+    "passes": false
+   }
+  },
+  {
+   "name": "Hippocampus.l",
+   "role": "fit",
+   "reference": "FMA72714",
+   "matched": {
+    "meanSymmetricMm": 0.119,
+    "p95Mm": 0.209,
+    "labelAgreement": 0.941,
+    "passes": true
+   },
+   "control": {
+    "against": "Lateral ventricle.l",
+    "meanSymmetricMm": 21.508,
+    "p95Mm": 5.482,
+    "labelAgreement": 0.059,
+    "passes": false
+   }
+  },
+  {
+   "name": "Hippocampus.r",
+   "role": "fit",
+   "reference": "FMA72713",
+   "matched": {
+    "meanSymmetricMm": 0.108,
+    "p95Mm": 0.195,
+    "labelAgreement": 0.928,
+    "passes": true
+   },
+   "control": {
+    "against": "Lateral ventricle.r",
+    "meanSymmetricMm": 21.377,
+    "p95Mm": 5.472,
+    "labelAgreement": 0.072,
+    "passes": false
+   }
+  },
+  {
+   "name": "Lateral ventricle.l",
+   "role": "fit",
+   "reference": "FMA78450",
+   "matched": {
+    "meanSymmetricMm": 0.227,
+    "p95Mm": 0.301,
+    "labelAgreement": 0.951,
+    "passes": true
+   },
+   "control": {
+    "against": "Caudate nucleus.l",
+    "meanSymmetricMm": 5.112,
+    "p95Mm": 24.213,
+    "labelAgreement": 0.007,
+    "passes": false
+   }
+  },
+  {
+   "name": "Lateral ventricle.r",
+   "role": "fit",
+   "reference": "FMA78449",
+   "matched": {
+    "meanSymmetricMm": 0.226,
+    "p95Mm": 0.297,
+    "labelAgreement": 0.951,
+    "passes": true
+   },
+   "control": {
+    "against": "Caudate nucleus.r",
+    "meanSymmetricMm": 5.102,
+    "p95Mm": 24.226,
+    "labelAgreement": 0.008,
+    "passes": false
+   }
+  },
+  {
+   "name": "Superior colliculus.l",
+   "role": "fit",
+   "reference": "FMA73423",
+   "matched": {
+    "meanSymmetricMm": 2.072,
+    "p95Mm": 9.586,
+    "labelAgreement": 0.635,
+    "passes": false
+   },
+   "control": {
+    "against": "Midbrain.l",
+    "meanSymmetricMm": 8.439,
+    "p95Mm": 6.962,
+    "labelAgreement": 0.313,
+    "passes": false
+   }
+  },
+  {
+   "name": "Superior colliculus.r",
+   "role": "fit",
+   "reference": "FMA73422",
+   "matched": {
+    "meanSymmetricMm": 2.041,
+    "p95Mm": 9.531,
+    "labelAgreement": 0.622,
+    "passes": false
+   },
+   "control": {
+    "against": "Inferior colliculus.r",
+    "meanSymmetricMm": 5.654,
+    "p95Mm": 12.048,
+    "labelAgreement": 0.004,
+    "passes": false
+   }
+  },
+  {
+   "name": "Inferior colliculus.l",
+   "role": "fit",
+   "reference": "FMA73435",
+   "matched": {
+    "meanSymmetricMm": 1.986,
+    "p95Mm": 9.675,
+    "labelAgreement": 0.653,
+    "passes": false
+   },
+   "control": {
+    "against": "Superior colliculus.l",
+    "meanSymmetricMm": 4.391,
+    "p95Mm": 8,
+    "labelAgreement": 0.017,
+    "passes": false
+   }
+  },
+  {
+   "name": "Inferior colliculus.r",
+   "role": "fit",
+   "reference": "FMA73434",
+   "matched": {
+    "meanSymmetricMm": 1.823,
+    "p95Mm": 9.652,
+    "labelAgreement": 0.657,
+    "passes": false
+   },
+   "control": {
+    "against": "Superior colliculus.r",
+    "meanSymmetricMm": 4.267,
+    "p95Mm": 7.868,
+    "labelAgreement": 0.017,
+    "passes": false
+   }
+  },
+  {
+   "name": "Third ventricle",
+   "role": "fit",
+   "reference": "FMA78454",
+   "matched": {
+    "meanSymmetricMm": 0.108,
+    "p95Mm": 0.235,
+    "labelAgreement": 0.956,
+    "passes": true
+   },
+   "control": {
+    "against": "Corpus callosum",
+    "meanSymmetricMm": 20.993,
+    "p95Mm": 20.451,
+    "labelAgreement": 0.001,
+    "passes": false
+   }
+  },
+  {
+   "name": "Fourth ventricle",
+   "role": "fit",
+   "reference": "FMA78469",
+   "matched": {
+    "meanSymmetricMm": 0.102,
+    "p95Mm": 0.177,
+    "labelAgreement": 1,
+    "passes": true
+   },
+   "control": {
+    "against": "Inferior colliculus.l",
+    "meanSymmetricMm": 23.416,
+    "p95Mm": 38.232,
+    "labelAgreement": 0,
+    "passes": false
+   }
+  },
+  {
+   "name": "Corpus callosum",
+   "role": "held-out",
+   "reference": "FMA86464",
+   "matched": {
+    "meanSymmetricMm": 0.227,
+    "p95Mm": 0.378,
+    "labelAgreement": 0.769,
+    "passes": false
+   },
+   "control": {
+    "against": "Third ventricle",
+    "meanSymmetricMm": 16.53,
+    "p95Mm": 31.45,
+    "labelAgreement": 0.002,
+    "passes": false
+   }
+  },
+  {
+   "name": "Midbrain.l",
+   "role": "held-out",
+   "reference": "FMA61993:left (FJ1770)",
+   "matched": {
+    "meanSymmetricMm": 0.06,
+    "p95Mm": 0.139,
+    "labelAgreement": 0.989,
+    "passes": true
+   },
+   "control": {
+    "against": "Superior colliculus.l",
+    "meanSymmetricMm": 9.02,
+    "p95Mm": 20.99,
+    "labelAgreement": 0,
+    "passes": false
+   }
+  },
+  {
+   "name": "Midbrain.r",
+   "role": "held-out",
+   "reference": "FMA61993:right (FJ1817)",
+   "matched": {
+    "meanSymmetricMm": 0.061,
+    "p95Mm": 0.142,
+    "labelAgreement": 0.99,
+    "passes": true
+   },
+   "control": {
+    "against": "Inferior colliculus.r",
+    "meanSymmetricMm": 8.552,
+    "p95Mm": 21.73,
+    "labelAgreement": 0.002,
+    "passes": false
+   }
+  }
+ ],
+ "negativeControl": {
+  "passes": 0,
+  "of": 17,
+  "share": 0,
+  "discriminates": true
+ },
+ "result": {
+  "heldOut": [
+   {
+    "name": "Corpus callosum",
+    "passes": false
+   },
+   {
+    "name": "Midbrain.l",
+    "passes": true
+   },
+   {
+    "name": "Midbrain.r",
+    "passes": true
+   }
+  ],
+  "clears": [
+   "Midbrain.l",
+   "Midbrain.r"
+  ]
+ }
+}

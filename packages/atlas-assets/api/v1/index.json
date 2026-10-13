@@ -1,0 +1,1221 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region-index",
+ "licence": "CC-BY-SA-4.0",
+ "attributionHref": "../../ATTRIBUTION.md",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "representations": [
+  {
+   "id": "zanatomy-gross-anatomy",
+   "version": "zanatomy-2929e94"
+  },
+  {
+   "id": "mni-coordinates",
+   "version": "icbm152-2009c"
+  },
+  {
+   "id": "bodyparts3d-bd",
+   "version": "bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da"
+  },
+  {
+   "id": "icbm152-2009c-cortex-lobes",
+   "version": "icbm152-2009c-cortex-lobes"
+  }
+ ],
+ "coverage": {
+  "mappings": {
+   "total": 170,
+   "linked": 109,
+   "byHow": {
+    "exact-term": 36,
+    "crosswalk": 73,
+    "coordinate": 0
+   }
+  },
+  "papers": {
+   "total": 30,
+   "nonEmpty": 29,
+   "emptyWithStatedReason": 1
+  }
+ },
+ "regions": [
+  {
+   "key": "bodyparts3d-bd/FMA13075",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA13075",
+   "structureName": "fourth lumbar vertebra",
+   "paperIds": [
+    "paper:bogduk-2012-lumbar-anatomy",
+    "paper:panjabi-1991-thoracic-morphometry"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA13075.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA13295",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA13295",
+   "structureName": "diaphragm",
+   "paperIds": [
+    "paper:mitsuhashi-2009-bodyparts3d"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA13295.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA15900",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA15900",
+   "structureName": "urinary bladder",
+   "paperIds": [
+    "paper:rosse-2003-fma"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA15900.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA16202",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA16202",
+   "structureName": "sacrum",
+   "paperIds": [
+    "paper:bogduk-2012-lumbar-anatomy",
+    "paper:mungall-2012-uberon",
+    "paper:panjabi-1991-thoracic-morphometry"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA16202.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7088",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7088",
+   "structureName": "heart",
+   "paperIds": [
+    "paper:mitsuhashi-2009-bodyparts3d",
+    "paper:rosse-2003-fma"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7088.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7148",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7148",
+   "structureName": "stomach",
+   "paperIds": [
+    "paper:mungall-2012-uberon",
+    "paper:rosse-2003-fma"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7148.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7197",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7197",
+   "structureName": "liver",
+   "paperIds": [
+    "paper:mitsuhashi-2009-bodyparts3d",
+    "paper:mungall-2012-uberon",
+    "paper:rosse-2003-fma"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7197.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7198",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7198",
+   "structureName": "pancreas",
+   "paperIds": [
+    "paper:rosse-2003-fma"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7198.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7204",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7204",
+   "structureName": "right kidney",
+   "paperIds": [
+    "paper:mitsuhashi-2009-bodyparts3d"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7204.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7205",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7205",
+   "structureName": "left kidney",
+   "paperIds": [
+    "paper:mitsuhashi-2009-bodyparts3d"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7205.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7309",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7309",
+   "structureName": "right lung",
+   "paperIds": [
+    "paper:mungall-2012-uberon"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7309.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7310",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7310",
+   "structureName": "left lung",
+   "paperIds": [
+    "paper:mitsuhashi-2009-bodyparts3d"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7310.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7647",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA7647",
+   "structureName": "spinal cord",
+   "paperIds": [
+    "paper:bogduk-2012-lumbar-anatomy",
+    "paper:mazziotta-2001-icbm",
+    "paper:mungall-2012-uberon",
+    "paper:panjabi-1991-thoracic-morphometry"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA7647.json"
+  },
+  {
+   "key": "bodyparts3d-bd/FMA9968",
+   "representation": "bodyparts3d-bd",
+   "structureId": "FMA9968",
+   "structureName": "seventh thoracic vertebra",
+   "paperIds": [
+    "paper:mitsuhashi-2009-bodyparts3d",
+    "paper:panjabi-1991-thoracic-morphometry"
+   ],
+   "href": "regions/bodyparts3d-bd/FMA9968.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/101",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "101",
+   "structureName": "Frontal lobe.l",
+   "paperIds": [
+    "paper:amunts-1999-broca",
+    "paper:amunts-2020-julich-brain",
+    "paper:brodmann-1909-localisation",
+    "paper:buckner-2008-default-network",
+    "paper:catani-2008-virtual-dissection",
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:glasser-2016-mmp1",
+    "paper:hickok-2007-dual-stream",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:penfield-1937-somatotopy",
+    "paper:price-2012-language-review",
+    "paper:zilles-2010-brodmann-centenary"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/101.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/102",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "102",
+   "structureName": "Parietal lobe.l",
+   "paperIds": [
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:hagmann-2008-structural-core",
+    "paper:hickok-2007-dual-stream",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:penfield-1937-somatotopy",
+    "paper:power-2011-functional-areas",
+    "paper:raichle-2001-default-mode",
+    "paper:yeo-2011-intrinsic-networks"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/102.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/103",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "103",
+   "structureName": "Temporal lobe.l",
+   "paperIds": [
+    "paper:buckner-2008-default-network",
+    "paper:epstein-1998-parahippocampal-place-area",
+    "paper:hickok-2007-dual-stream",
+    "paper:kanwisher-1997-fusiform-face-area",
+    "paper:mazziotta-2001-icbm",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:price-2012-language-review"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/103.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/104",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "104",
+   "structureName": "Occipital lobe.l",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:brodmann-1909-localisation",
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:fischl-2012-freesurfer",
+    "paper:fonov-2011-unbiased-templates",
+    "paper:glasser-2016-mmp1",
+    "paper:mazziotta-2001-icbm",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:van-essen-2013-hcp",
+    "paper:zilles-2010-brodmann-centenary"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/104.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/106",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "106",
+   "structureName": "Limbic lobe.l",
+   "paperIds": [
+    "paper:buckner-2008-default-network",
+    "paper:hagmann-2008-structural-core"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/106.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/201",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "201",
+   "structureName": "Frontal lobe.r",
+   "paperIds": [
+    "paper:amunts-1999-broca",
+    "paper:amunts-2020-julich-brain",
+    "paper:brodmann-1909-localisation",
+    "paper:buckner-2008-default-network",
+    "paper:catani-2008-virtual-dissection",
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:glasser-2016-mmp1",
+    "paper:hickok-2007-dual-stream",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:penfield-1937-somatotopy",
+    "paper:price-2012-language-review",
+    "paper:zilles-2010-brodmann-centenary"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/201.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/202",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "202",
+   "structureName": "Parietal lobe.r",
+   "paperIds": [
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:hagmann-2008-structural-core",
+    "paper:hickok-2007-dual-stream",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:penfield-1937-somatotopy",
+    "paper:power-2011-functional-areas",
+    "paper:raichle-2001-default-mode",
+    "paper:yeo-2011-intrinsic-networks"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/202.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/203",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "203",
+   "structureName": "Temporal lobe.r",
+   "paperIds": [
+    "paper:buckner-2008-default-network",
+    "paper:epstein-1998-parahippocampal-place-area",
+    "paper:hickok-2007-dual-stream",
+    "paper:kanwisher-1997-fusiform-face-area",
+    "paper:mazziotta-2001-icbm",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:price-2012-language-review"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/203.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/204",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "204",
+   "structureName": "Occipital lobe.r",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:brodmann-1909-localisation",
+    "paper:eickhoff-2005-anatomy-toolbox",
+    "paper:fischl-2012-freesurfer",
+    "paper:fonov-2011-unbiased-templates",
+    "paper:glasser-2016-mmp1",
+    "paper:mazziotta-2001-icbm",
+    "paper:mesulam-1998-sensation-to-cognition",
+    "paper:van-essen-2013-hcp",
+    "paper:zilles-2010-brodmann-centenary"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/204.json"
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/206",
+   "representation": "icbm152-2009c-cortex-lobes",
+   "structureId": "206",
+   "structureName": "Limbic lobe.r",
+   "paperIds": [
+    "paper:buckner-2008-default-network",
+    "paper:hagmann-2008-structural-core"
+   ],
+   "href": "regions/icbm152-2009c-cortex-lobes/206.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/122",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "122",
+   "structureName": "Hippocampus.l",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:buckner-2008-default-network",
+    "paper:catani-2008-virtual-dissection",
+    "paper:fischl-2012-freesurfer",
+    "paper:fonov-2011-unbiased-templates",
+    "paper:mesulam-1998-sensation-to-cognition"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/122.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/123",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "123",
+   "structureName": "Hippocampus.r",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:buckner-2008-default-network",
+    "paper:catani-2008-virtual-dissection",
+    "paper:fischl-2012-freesurfer",
+    "paper:fonov-2011-unbiased-templates",
+    "paper:mesulam-1998-sensation-to-cognition"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/123.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/153",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "153",
+   "structureName": "Intralaminar and lateral posterior nuclei.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/153.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/154",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "154",
+   "structureName": "Intralaminar and lateral posterior nuclei.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/154.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/161",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "161",
+   "structureName": "Lateral geniculate body.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/161.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/162",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "162",
+   "structureName": "Lateral geniculate body.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/162.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/165",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "165",
+   "structureName": "Lateral nucleus.l",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/165.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/166",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "166",
+   "structureName": "Lateral nucleus.r",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/166.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/186",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "186",
+   "structureName": "Medial geniculate body.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/186.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/187",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "187",
+   "structureName": "Medial geniculate body.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/187.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/194",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "194",
+   "structureName": "Mediodorsal nucleus.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/194.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/195",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "195",
+   "structureName": "Mediodorsal nucleus.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/195.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/201",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "201",
+   "structureName": "Midbrain.l",
+   "paperIds": [
+    "paper:mazziotta-2001-icbm"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/201.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/202",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "202",
+   "structureName": "Midbrain.r",
+   "paperIds": [
+    "paper:mazziotta-2001-icbm"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/202.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/24",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "24",
+   "structureName": "Anterior nuclei of thalamus.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/24.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/25",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "25",
+   "structureName": "Anterior nuclei of thalamus.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/25.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/290",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "290",
+   "structureName": "Pulvinar.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/290.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/291",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "291",
+   "structureName": "Pulvinar.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/291.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/325",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "325",
+   "structureName": "Putamen.l",
+   "paperIds": [
+    "paper:power-2011-functional-areas",
+    "paper:tzourio-mazoyer-2002-aal"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/325.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/326",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "326",
+   "structureName": "Putamen.r",
+   "paperIds": [
+    "paper:power-2011-functional-areas",
+    "paper:tzourio-mazoyer-2002-aal"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/326.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/39",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "39",
+   "structureName": "Basolateral complex.l",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/39.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/40",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "40",
+   "structureName": "Basolateral complex.r",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/40.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/421",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "421",
+   "structureName": "Ventral anterior nucleus.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/421.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/422",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "422",
+   "structureName": "Ventral anterior nucleus.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/422.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/423",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "423",
+   "structureName": "Ventral laterodorsal nucleus.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/423.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/424",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "424",
+   "structureName": "Ventral laterodorsal nucleus.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/424.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/425",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "425",
+   "structureName": "Ventral lateroventral nucleus.l",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/425.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/426",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "426",
+   "structureName": "Ventral lateroventral nucleus.r",
+   "paperIds": [
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer",
+    "paper:mazziotta-2001-icbm",
+    "paper:power-2011-functional-areas"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/426.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/49",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "49",
+   "structureName": "Caudate nucleus.l",
+   "paperIds": [
+    "paper:fonov-2011-unbiased-templates",
+    "paper:tzourio-mazoyer-2002-aal"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/49.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/50",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "50",
+   "structureName": "Caudate nucleus.r",
+   "paperIds": [
+    "paper:fonov-2011-unbiased-templates",
+    "paper:tzourio-mazoyer-2002-aal"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/50.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/54",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "54",
+   "structureName": "Central nucleus.l",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/54.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/55",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "55",
+   "structureName": "Central nucleus.r",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/55.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/77",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "77",
+   "structureName": "Corticomedial group.l",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/77.json"
+  },
+  {
+   "key": "zanatomy-gross-anatomy/78",
+   "representation": "zanatomy-gross-anatomy",
+   "structureId": "78",
+   "structureName": "Corticomedial group.r",
+   "paperIds": [
+    "paper:amunts-2020-julich-brain",
+    "paper:fan-2016-brainnetome",
+    "paper:fischl-2012-freesurfer"
+   ],
+   "href": "regions/zanatomy-gross-anatomy/78.json"
+  }
+ ],
+ "papers": [
+  {
+   "paperId": "paper:brodmann-1909-localisation",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/204"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/brodmann-1909-localisation.json"
+  },
+  {
+   "paperId": "paper:glasser-2016-mmp1",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/204"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/glasser-2016-mmp1.json"
+  },
+  {
+   "paperId": "paper:amunts-1999-broca",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/201"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/amunts-1999-broca.json"
+  },
+  {
+   "paperId": "paper:amunts-2020-julich-brain",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/204",
+    "zanatomy-gross-anatomy/122",
+    "zanatomy-gross-anatomy/123",
+    "zanatomy-gross-anatomy/165",
+    "zanatomy-gross-anatomy/166",
+    "zanatomy-gross-anatomy/39",
+    "zanatomy-gross-anatomy/40",
+    "zanatomy-gross-anatomy/54",
+    "zanatomy-gross-anatomy/55",
+    "zanatomy-gross-anatomy/77",
+    "zanatomy-gross-anatomy/78"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/amunts-2020-julich-brain.json"
+  },
+  {
+   "paperId": "paper:zilles-2010-brodmann-centenary",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/204"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/zilles-2010-brodmann-centenary.json"
+  },
+  {
+   "paperId": "paper:desikan-2006-gyral-parcellation",
+   "regionKeys": [],
+   "emptyBecause": [
+    "structure-held"
+   ],
+   "href": "paper-regions/desikan-2006-gyral-parcellation.json"
+  },
+  {
+   "paperId": "paper:tzourio-mazoyer-2002-aal",
+   "regionKeys": [
+    "zanatomy-gross-anatomy/325",
+    "zanatomy-gross-anatomy/326",
+    "zanatomy-gross-anatomy/49",
+    "zanatomy-gross-anatomy/50"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/tzourio-mazoyer-2002-aal.json"
+  },
+  {
+   "paperId": "paper:fan-2016-brainnetome",
+   "regionKeys": [
+    "zanatomy-gross-anatomy/153",
+    "zanatomy-gross-anatomy/154",
+    "zanatomy-gross-anatomy/161",
+    "zanatomy-gross-anatomy/162",
+    "zanatomy-gross-anatomy/165",
+    "zanatomy-gross-anatomy/166",
+    "zanatomy-gross-anatomy/186",
+    "zanatomy-gross-anatomy/187",
+    "zanatomy-gross-anatomy/194",
+    "zanatomy-gross-anatomy/195",
+    "zanatomy-gross-anatomy/24",
+    "zanatomy-gross-anatomy/25",
+    "zanatomy-gross-anatomy/290",
+    "zanatomy-gross-anatomy/291",
+    "zanatomy-gross-anatomy/39",
+    "zanatomy-gross-anatomy/40",
+    "zanatomy-gross-anatomy/421",
+    "zanatomy-gross-anatomy/422",
+    "zanatomy-gross-anatomy/423",
+    "zanatomy-gross-anatomy/424",
+    "zanatomy-gross-anatomy/425",
+    "zanatomy-gross-anatomy/426",
+    "zanatomy-gross-anatomy/54",
+    "zanatomy-gross-anatomy/55",
+    "zanatomy-gross-anatomy/77",
+    "zanatomy-gross-anatomy/78"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/fan-2016-brainnetome.json"
+  },
+  {
+   "paperId": "paper:yeo-2011-intrinsic-networks",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/202"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/yeo-2011-intrinsic-networks.json"
+  },
+  {
+   "paperId": "paper:power-2011-functional-areas",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/202",
+    "zanatomy-gross-anatomy/153",
+    "zanatomy-gross-anatomy/154",
+    "zanatomy-gross-anatomy/161",
+    "zanatomy-gross-anatomy/162",
+    "zanatomy-gross-anatomy/186",
+    "zanatomy-gross-anatomy/187",
+    "zanatomy-gross-anatomy/194",
+    "zanatomy-gross-anatomy/195",
+    "zanatomy-gross-anatomy/24",
+    "zanatomy-gross-anatomy/25",
+    "zanatomy-gross-anatomy/290",
+    "zanatomy-gross-anatomy/291",
+    "zanatomy-gross-anatomy/325",
+    "zanatomy-gross-anatomy/326",
+    "zanatomy-gross-anatomy/421",
+    "zanatomy-gross-anatomy/422",
+    "zanatomy-gross-anatomy/423",
+    "zanatomy-gross-anatomy/424",
+    "zanatomy-gross-anatomy/425",
+    "zanatomy-gross-anatomy/426"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/power-2011-functional-areas.json"
+  },
+  {
+   "paperId": "paper:hagmann-2008-structural-core",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/106",
+    "icbm152-2009c-cortex-lobes/202",
+    "icbm152-2009c-cortex-lobes/206"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/hagmann-2008-structural-core.json"
+  },
+  {
+   "paperId": "paper:van-essen-2013-hcp",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/204"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/van-essen-2013-hcp.json"
+  },
+  {
+   "paperId": "paper:mazziotta-2001-icbm",
+   "regionKeys": [
+    "bodyparts3d-bd/FMA7647",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/203",
+    "icbm152-2009c-cortex-lobes/204",
+    "zanatomy-gross-anatomy/153",
+    "zanatomy-gross-anatomy/154",
+    "zanatomy-gross-anatomy/161",
+    "zanatomy-gross-anatomy/162",
+    "zanatomy-gross-anatomy/186",
+    "zanatomy-gross-anatomy/187",
+    "zanatomy-gross-anatomy/194",
+    "zanatomy-gross-anatomy/195",
+    "zanatomy-gross-anatomy/201",
+    "zanatomy-gross-anatomy/202",
+    "zanatomy-gross-anatomy/24",
+    "zanatomy-gross-anatomy/25",
+    "zanatomy-gross-anatomy/290",
+    "zanatomy-gross-anatomy/291",
+    "zanatomy-gross-anatomy/421",
+    "zanatomy-gross-anatomy/422",
+    "zanatomy-gross-anatomy/423",
+    "zanatomy-gross-anatomy/424",
+    "zanatomy-gross-anatomy/425",
+    "zanatomy-gross-anatomy/426"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/mazziotta-2001-icbm.json"
+  },
+  {
+   "paperId": "paper:fonov-2011-unbiased-templates",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/204",
+    "zanatomy-gross-anatomy/122",
+    "zanatomy-gross-anatomy/123",
+    "zanatomy-gross-anatomy/49",
+    "zanatomy-gross-anatomy/50"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/fonov-2011-unbiased-templates.json"
+  },
+  {
+   "paperId": "paper:fischl-2012-freesurfer",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/204",
+    "zanatomy-gross-anatomy/122",
+    "zanatomy-gross-anatomy/123",
+    "zanatomy-gross-anatomy/153",
+    "zanatomy-gross-anatomy/154",
+    "zanatomy-gross-anatomy/161",
+    "zanatomy-gross-anatomy/162",
+    "zanatomy-gross-anatomy/165",
+    "zanatomy-gross-anatomy/166",
+    "zanatomy-gross-anatomy/186",
+    "zanatomy-gross-anatomy/187",
+    "zanatomy-gross-anatomy/194",
+    "zanatomy-gross-anatomy/195",
+    "zanatomy-gross-anatomy/24",
+    "zanatomy-gross-anatomy/25",
+    "zanatomy-gross-anatomy/290",
+    "zanatomy-gross-anatomy/291",
+    "zanatomy-gross-anatomy/39",
+    "zanatomy-gross-anatomy/40",
+    "zanatomy-gross-anatomy/421",
+    "zanatomy-gross-anatomy/422",
+    "zanatomy-gross-anatomy/423",
+    "zanatomy-gross-anatomy/424",
+    "zanatomy-gross-anatomy/425",
+    "zanatomy-gross-anatomy/426",
+    "zanatomy-gross-anatomy/54",
+    "zanatomy-gross-anatomy/55",
+    "zanatomy-gross-anatomy/77",
+    "zanatomy-gross-anatomy/78"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/fischl-2012-freesurfer.json"
+  },
+  {
+   "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/202",
+    "icbm152-2009c-cortex-lobes/204"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/eickhoff-2005-anatomy-toolbox.json"
+  },
+  {
+   "paperId": "paper:mesulam-1998-sensation-to-cognition",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/104",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/202",
+    "icbm152-2009c-cortex-lobes/203",
+    "icbm152-2009c-cortex-lobes/204",
+    "zanatomy-gross-anatomy/122",
+    "zanatomy-gross-anatomy/123"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/mesulam-1998-sensation-to-cognition.json"
+  },
+  {
+   "paperId": "paper:raichle-2001-default-mode",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/202"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/raichle-2001-default-mode.json"
+  },
+  {
+   "paperId": "paper:buckner-2008-default-network",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/106",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/203",
+    "icbm152-2009c-cortex-lobes/206",
+    "zanatomy-gross-anatomy/122",
+    "zanatomy-gross-anatomy/123"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/buckner-2008-default-network.json"
+  },
+  {
+   "paperId": "paper:price-2012-language-review",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/203"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/price-2012-language-review.json"
+  },
+  {
+   "paperId": "paper:hickok-2007-dual-stream",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/202",
+    "icbm152-2009c-cortex-lobes/203"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/hickok-2007-dual-stream.json"
+  },
+  {
+   "paperId": "paper:kanwisher-1997-fusiform-face-area",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/203"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/kanwisher-1997-fusiform-face-area.json"
+  },
+  {
+   "paperId": "paper:epstein-1998-parahippocampal-place-area",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/103",
+    "icbm152-2009c-cortex-lobes/203"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/epstein-1998-parahippocampal-place-area.json"
+  },
+  {
+   "paperId": "paper:penfield-1937-somatotopy",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/102",
+    "icbm152-2009c-cortex-lobes/201",
+    "icbm152-2009c-cortex-lobes/202"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/penfield-1937-somatotopy.json"
+  },
+  {
+   "paperId": "paper:catani-2008-virtual-dissection",
+   "regionKeys": [
+    "icbm152-2009c-cortex-lobes/101",
+    "icbm152-2009c-cortex-lobes/201",
+    "zanatomy-gross-anatomy/122",
+    "zanatomy-gross-anatomy/123"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/catani-2008-virtual-dissection.json"
+  },
+  {
+   "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+   "regionKeys": [
+    "bodyparts3d-bd/FMA13295",
+    "bodyparts3d-bd/FMA7088",
+    "bodyparts3d-bd/FMA7197",
+    "bodyparts3d-bd/FMA7204",
+    "bodyparts3d-bd/FMA7205",
+    "bodyparts3d-bd/FMA7310",
+    "bodyparts3d-bd/FMA9968"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/mitsuhashi-2009-bodyparts3d.json"
+  },
+  {
+   "paperId": "paper:rosse-2003-fma",
+   "regionKeys": [
+    "bodyparts3d-bd/FMA15900",
+    "bodyparts3d-bd/FMA7088",
+    "bodyparts3d-bd/FMA7148",
+    "bodyparts3d-bd/FMA7197",
+    "bodyparts3d-bd/FMA7198"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/rosse-2003-fma.json"
+  },
+  {
+   "paperId": "paper:mungall-2012-uberon",
+   "regionKeys": [
+    "bodyparts3d-bd/FMA16202",
+    "bodyparts3d-bd/FMA7148",
+    "bodyparts3d-bd/FMA7197",
+    "bodyparts3d-bd/FMA7309",
+    "bodyparts3d-bd/FMA7647"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/mungall-2012-uberon.json"
+  },
+  {
+   "paperId": "paper:panjabi-1991-thoracic-morphometry",
+   "regionKeys": [
+    "bodyparts3d-bd/FMA13075",
+    "bodyparts3d-bd/FMA16202",
+    "bodyparts3d-bd/FMA7647",
+    "bodyparts3d-bd/FMA9968"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/panjabi-1991-thoracic-morphometry.json"
+  },
+  {
+   "paperId": "paper:bogduk-2012-lumbar-anatomy",
+   "regionKeys": [
+    "bodyparts3d-bd/FMA13075",
+    "bodyparts3d-bd/FMA16202",
+    "bodyparts3d-bd/FMA7647"
+   ],
+   "emptyBecause": [],
+   "href": "paper-regions/bogduk-2012-lumbar-anatomy.json"
+  }
+ ]
+}

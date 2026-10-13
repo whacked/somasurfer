@@ -18,6 +18,8 @@ surface.
 | `src/browse.ts` | `browseByAnatomy`, `browseByResearch`, `paperSelection` |
 | `src/layers.ts` | the palette, the common refinement, `solidColourLayers` |
 | `src/links.ts` | the one place a curator URL becomes an `href` |
+| `src/api.ts` | the static research API v1: documents, the local answers, a client, the validator |
+| `schema/api-1.md` | the API contract: two trees and why, paths, every document |
 | `fixtures/` | the 5-paper fixture and the synthetic name index it resolves against |
 | `data/` | the curated seed set and the synthetic index it resolves against |
 | `data/citation-report.json` | what Crossref and PubMed returned for all 30 sources, per paper |
@@ -97,6 +99,84 @@ person reading the sources. A citation can resolve perfectly while the claim
 attached to it is not what the paper found, and that is the failure this
 package cannot detect for you.
 
+## Region links: mappings onto named structures (DOG-130)
+
+`buildRegionIndex` resolves every mapping onto the named structures of each
+registered representation (`src/representations.ts`): the Z-Anatomy brain
+meshes, MNI coordinates, and v1's BodyParts3D name index. It provides
+`resolve(finding)`, `regionsFor(paper)` and `papersFor(structureKey)`. Every
+link records **how** it was made and its **precision**:
+
+| how | when | precision |
+| --- | --- | --- |
+| `exact-term` | the term is the structure's own id, or the crosswalk says it is the same concept (or its complete set of parts) | `exact` |
+| `crosswalk` | the crosswalk places the term on structures whose boundaries differ, e.g. every HCP-MMP1 area | `approximate`, with the entry's reason, and the term's own name kept |
+| `coordinate` | a published point, or a BV cell's centre, lies inside a structure's closed surface after the registration | millimetres, never below the registration's measured held-out error, with its basis |
+
+Two rules are worth knowing before you consume it:
+
+- **Containing, never nearest.** A point inside no shipped structure is
+  reported with its nearest structure and distance, and is **not** linked to
+  it. While the cortex is held, the nearest shipped structure to a cortical
+  point is the confident wrong answer. On the real seed, the fusiform face
+  coordinate lands 0.54 mm from a cerebellar lobule.
+- **Nothing vanishes.** A mapping with no link carries a stated reason
+  (`structure-held`, `not-in-representation`, `coordinate-outside-shipped-structures`, …).
+  A paper with no region carries the reasons of its mappings.
+
+The assets stay in `packages/atlas-assets` and are passed in as data. The
+crosswalk (`packages/atlas-assets/crosswalk/crosswalk.json`) is hand-authored.
+The committed index beside it is generated, and `tools/check-crosswalk.mjs`
+gates both: the crosswalk's targets, the acceptance invariants
+(`checkRegionIndex`), the locator on known points, and drift. Swapping the
+cortex, whether to a cleared gyral cortex or a lobe-labelled one, means
+changing data: a registry entry and crosswalk targets. The resolver code
+stays the same.
+
+The lobe-labelled ICBM152 cortex (DOG-151) is registered as
+`icbm152-2009c-cortex-lobes`, and every HCP-MMP1 entry targets its lobe as well as
+its gyrus. The gate reads DOG-151's label file
+(`packages/atlas-assets/brain/icbm152-2009c/lobes.json`) and checks every lobe
+target against it: the label exists, with one structure per side and the id
+DOG-151 publishes (DOG-157). The lobes are supplied as named structures only,
+with no locator, so a coordinate never lands on them. On the low tier a
+nearest-label rule puts the A1 peak in the parietal lobe and the PHA1 and FFC
+peaks on unlabelled faces, so the gate prints `NOT PLACED:` for the lobe cortex
+rather than placing points there. `PHA1` targets the temporal lobe only, because
+DOG-151's limbic lobe stops at the cingulate sulcus.
+
+**Two criteria are vacuous on the real data today, and the gate says so.** There
+are 0 coordinate links (every curated coordinate falls inside no shipped
+structure) and 0 HCP-MMP1 → gyrus links (every target gyrus is held). So "no
+coordinate link is `exact-term`", the precision floor, and "HCP-MMP1 links are
+crosswalk, approximate, and keep the area name" are checked only by
+`region-index.test.ts` and the gate's self-test. `check-crosswalk` prints
+`VACUOUS:` for each, rather than counting them as passes. Coverage
+(≥ 109 of 170 mappings, ≥ 29 of 30 papers) and coordinate precision (≥ ±7 mm,
+from ≥ 2 held-out landmarks) are committed literals in the gate, not readings.
+
+## The static research API, v1 (DOG-131)
+
+The region ↔ paper queries are also served as static JSON. There is no server.
+Read [`schema/api-1.md`](./schema/api-1.md). In short:
+
+- **Two trees, because two licences.** The paper tree is the curated dataset
+  alone. It is Apache-2.0 and is emitted by the site build to
+  `dist/data/api/v1/`. The region tree is joined with BY-SA structure names, so
+  it is asset-derived: `tools/build-research-api.mjs --write` commits it in
+  `packages/atlas-assets/api/v1/`, and the build byte-copies it to
+  `dist/assets/api/v1/` as attribution entry `research-api-regions`. Licence
+  rule 6 is unchanged.
+- **Three ways to ask, one answer.**
+  - `createResearchApi({ dataset, regionIndex })` answers locally.
+  - `createStaticApiClient({ dataRoot, assetsRoot, transport })` asks the
+    served trees. The caller supplies `transport`, so this package still never
+    makes a request of its own.
+  - `tools/check-research-api-contract.mjs` serves a built site at its own base
+    and requires every response to deep-equal the library's answer.
+- **Paths take the base from `atlas-index.json`** (`researchApi.dataRoot`,
+  `researchApi.assetsRoot`). Every link inside a document is relative.
+
 ## Tests
 
 ```
@@ -111,6 +191,8 @@ node --test --experimental-strip-types 'test/*.test.ts'
 | `trust.test.ts` | the URL allow-list, the no-network-client source scan, parameterised scans |
 | `seed.test.ts` | the curated seed set, and the stage-B resolution gate |
 | `citations.test.ts` | every identifier traces to a named source, with a must-pass case |
+| `region-index.test.ts` | region links: how and precision, containing not nearest, held targets, the cortex swap as data, the round trip |
+| `api.test.ts` | the API: every document validates, both trees' licences, agreement with the live index, paths under any base, the validator's must-fail table, the client |
 
 ## Stage A and stage B
 

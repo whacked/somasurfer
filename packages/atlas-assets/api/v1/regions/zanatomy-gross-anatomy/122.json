@@ -1,0 +1,187 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "key": "zanatomy-gross-anatomy/122",
+ "representation": "zanatomy-gross-anatomy",
+ "structureId": "122",
+ "structureName": "Hippocampus.l",
+ "papers": [
+  {
+   "paperId": "paper:amunts-2020-julich-brain",
+   "href": "../../../../../data/api/v1/papers/amunts-2020-julich-brain.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-hippocampus",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:buckner-2008-default-network",
+   "href": "../../../../../data/api/v1/papers/buckner-2008-default-network.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/medial-temporal-subsystem/atlas-label-hippocampus",
+     "findingId": "finding:buckner-2008-default-network/medial-temporal-subsystem",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:catani-2008-virtual-dissection",
+   "href": "../../../../../data/api/v1/papers/catani-2008-virtual-dissection.json",
+   "links": [
+    {
+     "mappingId": "map:catani-2008-virtual-dissection/fornix/atlas-label-hippocampus",
+     "findingId": "finding:catani-2008-virtual-dissection/fornix",
+     "paperId": "paper:catani-2008-virtual-dissection",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:fischl-2012-freesurfer",
+   "href": "../../../../../data/api/v1/papers/fischl-2012-freesurfer.json",
+   "links": [
+    {
+     "mappingId": "map:fischl-2012-freesurfer/subcortical-segmentation/atlas-label-hippocampus",
+     "findingId": "finding:fischl-2012-freesurfer/subcortical-segmentation",
+     "paperId": "paper:fischl-2012-freesurfer",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:fonov-2011-unbiased-templates",
+   "href": "../../../../../data/api/v1/papers/fonov-2011-unbiased-templates.json",
+   "links": [
+    {
+     "mappingId": "map:fonov-2011-unbiased-templates/template-is-not-a-subject/atlas-label-hippocampus",
+     "findingId": "finding:fonov-2011-unbiased-templates/template-is-not-a-subject",
+     "paperId": "paper:fonov-2011-unbiased-templates",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:mesulam-1998-sensation-to-cognition",
+   "href": "../../../../../data/api/v1/papers/mesulam-1998-sensation-to-cognition.json",
+   "links": [
+    {
+     "mappingId": "map:mesulam-1998-sensation-to-cognition/limbic-end/atlas-label-hippocampus",
+     "findingId": "finding:mesulam-1998-sensation-to-cognition/limbic-end",
+     "paperId": "paper:mesulam-1998-sensation-to-cognition",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ]
+}

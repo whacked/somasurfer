@@ -14,7 +14,8 @@ import { describe, it } from 'node:test';
 import { encodeBody, parse } from '../src/alc.js';
 import { fitCamera, missPoint, rayThrough } from '../src/viewer/camera.js';
 import { createViewer } from '../src/viewer/state.js';
-import { bodySurfaceMesh, meshBounds, pickMesh } from '../src/viewer/template.js';
+import { meshBounds } from '../src/viewer/template.js';
+import { bodySurfaceMesh, pickMesh } from './frame-surface.js';
 import { nameIndex, templates } from './support.js';
 
 const W = 1280;

@@ -1,0 +1,696 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:power-2011-functional-areas",
+ "paperHref": "../../../../data/api/v1/papers/power-2011-functional-areas.json",
+ "regions": [
+  {
+   "key": "icbm152-2009c-cortex-lobes/102",
+   "structureName": "Parietal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/102.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/areal-not-nodal/hcp-mmp1-pfm",
+     "findingId": "finding:power-2011-functional-areas/areal-not-nodal",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "102",
+     "structureName": "Parietal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PFm lies on the posterior supramarginal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PFm",
+      "label": "Area PFm (supramarginal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Supramarginal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/202",
+   "structureName": "Parietal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/202.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/areal-not-nodal/hcp-mmp1-pfm",
+     "findingId": "finding:power-2011-functional-areas/areal-not-nodal",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "202",
+     "structureName": "Parietal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PFm lies on the posterior supramarginal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PFm",
+      "label": "Area PFm (supramarginal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Supramarginal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/153",
+   "structureName": "Intralaminar and lateral posterior nuclei.l",
+   "href": "../regions/zanatomy-gross-anatomy/153.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "153",
+     "structureName": "Intralaminar and lateral posterior nuclei.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/154",
+   "structureName": "Intralaminar and lateral posterior nuclei.r",
+   "href": "../regions/zanatomy-gross-anatomy/154.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "154",
+     "structureName": "Intralaminar and lateral posterior nuclei.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/161",
+   "structureName": "Lateral geniculate body.l",
+   "href": "../regions/zanatomy-gross-anatomy/161.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "161",
+     "structureName": "Lateral geniculate body.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/162",
+   "structureName": "Lateral geniculate body.r",
+   "href": "../regions/zanatomy-gross-anatomy/162.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "162",
+     "structureName": "Lateral geniculate body.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/186",
+   "structureName": "Medial geniculate body.l",
+   "href": "../regions/zanatomy-gross-anatomy/186.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "186",
+     "structureName": "Medial geniculate body.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/187",
+   "structureName": "Medial geniculate body.r",
+   "href": "../regions/zanatomy-gross-anatomy/187.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "187",
+     "structureName": "Medial geniculate body.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/194",
+   "structureName": "Mediodorsal nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/194.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "194",
+     "structureName": "Mediodorsal nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/195",
+   "structureName": "Mediodorsal nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/195.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "195",
+     "structureName": "Mediodorsal nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/24",
+   "structureName": "Anterior nuclei of thalamus.l",
+   "href": "../regions/zanatomy-gross-anatomy/24.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "24",
+     "structureName": "Anterior nuclei of thalamus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/25",
+   "structureName": "Anterior nuclei of thalamus.r",
+   "href": "../regions/zanatomy-gross-anatomy/25.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "25",
+     "structureName": "Anterior nuclei of thalamus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/290",
+   "structureName": "Pulvinar.l",
+   "href": "../regions/zanatomy-gross-anatomy/290.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "290",
+     "structureName": "Pulvinar.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/291",
+   "structureName": "Pulvinar.r",
+   "href": "../regions/zanatomy-gross-anatomy/291.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "291",
+     "structureName": "Pulvinar.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/325",
+   "structureName": "Putamen.l",
+   "href": "../regions/zanatomy-gross-anatomy/325.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-putamen",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "325",
+     "structureName": "Putamen.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:putamen",
+      "label": "putamen"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/326",
+   "structureName": "Putamen.r",
+   "href": "../regions/zanatomy-gross-anatomy/326.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-putamen",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "326",
+     "structureName": "Putamen.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:putamen",
+      "label": "putamen"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/421",
+   "structureName": "Ventral anterior nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/421.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "421",
+     "structureName": "Ventral anterior nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/422",
+   "structureName": "Ventral anterior nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/422.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "422",
+     "structureName": "Ventral anterior nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/423",
+   "structureName": "Ventral laterodorsal nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/423.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "423",
+     "structureName": "Ventral laterodorsal nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/424",
+   "structureName": "Ventral laterodorsal nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/424.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "424",
+     "structureName": "Ventral laterodorsal nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/425",
+   "structureName": "Ventral lateroventral nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/425.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "425",
+     "structureName": "Ventral lateroventral nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/426",
+   "structureName": "Ventral lateroventral nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/426.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-thalamus",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "426",
+     "structureName": "Ventral lateroventral nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

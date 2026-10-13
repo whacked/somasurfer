@@ -759,4 +759,4 @@ const round = (v, places) => {
 
 // ---------------------------------------------------------------------------
 
-export { parseArgs, build, round };
+export { parseArgs, build, round, axisPoint };

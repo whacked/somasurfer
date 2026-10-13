@@ -34,11 +34,8 @@ import { NameIndexError, joinNameIndex } from '../src/viewer/nameindex.js';
 import { comparePapers, papersOverlapping, researchModel, revealPaper } from '../src/viewer/research.js';
 import { demote, selectAddress } from '../src/viewer/select.js';
 import { createViewer, isLayerVisible, layerOpacity } from '../src/viewer/state.js';
-import {
-  bodySurfaceMesh,
-  meshBounds,
-  validateBodyTemplate,
-} from '../src/viewer/template.js';
+import { meshBounds, validateBodyTemplate } from '../src/viewer/template.js';
+import { bodySurfaceMesh } from './frame-surface.js';
 import {
   ASSETS,
   COVERINGS_FILE,

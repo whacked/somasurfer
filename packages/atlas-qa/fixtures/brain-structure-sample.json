@@ -1,0 +1,527 @@
+{
+ "schema": "atlas-brain-qa-sample/1",
+ "comment": [
+  "The DOG-123 W8a brain sample: drawn once by tools/draw-brain-qa-sample.mjs, checked by tools/check-mesh-assets.mjs.",
+  "Every `sample` entry ships and must be pickable, returning `expect.name`. Every `withheldControls` entry",
+  "is held under docs/asset-licensing.md 7.3 and must NOT be pickable; the page should say why.",
+  "A category that ships fewer than 2 structures (white_matter ships 1) makes up the rest with withheld controls."
+ ],
+ "drawnFrom": {
+  "mesh": "zanatomy-2929e94",
+  "structures": 248,
+  "excluded": 189
+ },
+ "seed": 13656359,
+ "rules": {
+  "size": 40,
+  "minPerCategory": 2,
+  "required": [
+   "Subthalamic nucleus",
+   "Substantia nigra",
+   "Nucleus accumbens"
+  ],
+  "seed": 13656359
+ },
+ "categories": {
+  "all": [
+   "arteries",
+   "brainstem",
+   "cerebellum",
+   "cortex",
+   "cranial_nerves",
+   "deep_grey",
+   "diencephalon",
+   "meninges_dura",
+   "tracts",
+   "veins_sinuses",
+   "ventricles",
+   "white_matter"
+  ],
+  "shipping": [
+   "arteries",
+   "brainstem",
+   "cerebellum",
+   "cortex",
+   "cranial_nerves",
+   "deep_grey",
+   "diencephalon",
+   "meninges_dura",
+   "tracts",
+   "veins_sinuses",
+   "ventricles",
+   "white_matter"
+  ],
+  "shippingNothing": []
+ },
+ "quota": {
+  "arteries": 5,
+  "brainstem": 4,
+  "cerebellum": 4,
+  "cortex": 2,
+  "cranial_nerves": 2,
+  "deep_grey": 4,
+  "diencephalon": 4,
+  "meninges_dura": 2,
+  "tracts": 6,
+  "veins_sinuses": 3,
+  "ventricles": 2,
+  "white_matter": 1
+ },
+ "sample": [
+  {
+   "id": 280,
+   "name": "Posterior inferior cerebellar artery.l",
+   "label": "Posterior inferior cerebellar artery",
+   "category": "arteries",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Posterior inferior cerebellar artery"
+   }
+  },
+  {
+   "id": 281,
+   "name": "Posterior inferior cerebellar artery.r",
+   "label": "Posterior inferior cerebellar artery",
+   "category": "arteries",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Posterior inferior cerebellar artery"
+   }
+  },
+  {
+   "id": 149,
+   "name": "Internal carotid artery.l",
+   "label": "Internal carotid artery",
+   "category": "arteries",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Internal carotid artery"
+   }
+  },
+  {
+   "id": 150,
+   "name": "Internal carotid artery.r",
+   "label": "Internal carotid artery",
+   "category": "arteries",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Internal carotid artery"
+   }
+  },
+  {
+   "id": 147,
+   "name": "Insular branches of middle cerebral artery (M2).r",
+   "label": "Insular branches of middle cerebral artery (M2)",
+   "category": "arteries",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Insular branches of middle cerebral artery (M2)"
+   }
+  },
+  {
+   "id": 201,
+   "name": "Midbrain.l",
+   "label": "Midbrain",
+   "category": "brainstem",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Midbrain"
+   }
+  },
+  {
+   "id": 202,
+   "name": "Midbrain.r",
+   "label": "Midbrain",
+   "category": "brainstem",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Midbrain"
+   }
+  },
+  {
+   "id": 6,
+   "name": "Accessory nucleus of oculomotor nerve.l",
+   "label": "Accessory nucleus of oculomotor nerve",
+   "category": "brainstem",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Accessory nucleus of oculomotor nerve"
+   }
+  },
+  {
+   "id": 7,
+   "name": "Accessory nucleus of oculomotor nerve.r",
+   "label": "Accessory nucleus of oculomotor nerve",
+   "category": "brainstem",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Accessory nucleus of oculomotor nerve"
+   }
+  },
+  {
+   "id": 397,
+   "name": "Tonsil of cerebellum.l",
+   "label": "Tonsil of cerebellum",
+   "category": "cerebellum",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Tonsil of cerebellum"
+   }
+  },
+  {
+   "id": 398,
+   "name": "Tonsil of cerebellum.r",
+   "label": "Tonsil of cerebellum",
+   "category": "cerebellum",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Tonsil of cerebellum"
+   }
+  },
+  {
+   "id": 378,
+   "name": "Superior semilunar lobule.l",
+   "label": "Superior semilunar lobule",
+   "category": "cerebellum",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Superior semilunar lobule"
+   }
+  },
+  {
+   "id": 379,
+   "name": "Superior semilunar lobule.r",
+   "label": "Superior semilunar lobule",
+   "category": "cerebellum",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Superior semilunar lobule"
+   }
+  },
+  {
+   "id": 122,
+   "name": "Hippocampus.l",
+   "label": "Hippocampus",
+   "category": "cortex",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Hippocampus"
+   }
+  },
+  {
+   "id": 123,
+   "name": "Hippocampus.r",
+   "label": "Hippocampus",
+   "category": "cortex",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Hippocampus"
+   }
+  },
+  {
+   "id": 124,
+   "name": "Hypoglossal nerve (XII).l",
+   "label": "Hypoglossal nerve (XII)",
+   "category": "cranial_nerves",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Hypoglossal nerve (XII)"
+   }
+  },
+  {
+   "id": 125,
+   "name": "Hypoglossal nerve (XII).r",
+   "label": "Hypoglossal nerve (XII)",
+   "category": "cranial_nerves",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Hypoglossal nerve (XII)"
+   }
+  },
+  {
+   "id": 346,
+   "name": "Subthalamic nucleus.l",
+   "label": "Subthalamic nucleus",
+   "category": "deep_grey",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Subthalamic nucleus"
+   }
+  },
+  {
+   "id": 347,
+   "name": "Subthalamic nucleus.r",
+   "label": "Subthalamic nucleus",
+   "category": "deep_grey",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Subthalamic nucleus"
+   }
+  },
+  {
+   "id": 344,
+   "name": "Substantia nigra.l",
+   "label": "Substantia nigra",
+   "category": "deep_grey",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Substantia nigra"
+   }
+  },
+  {
+   "id": 345,
+   "name": "Substantia nigra.r",
+   "label": "Substantia nigra",
+   "category": "deep_grey",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Substantia nigra"
+   }
+  },
+  {
+   "id": 220,
+   "name": "Nucleus accumbens.l",
+   "label": "Nucleus accumbens",
+   "category": "deep_grey",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Nucleus accumbens"
+   }
+  },
+  {
+   "id": 221,
+   "name": "Nucleus accumbens.r",
+   "label": "Nucleus accumbens",
+   "category": "deep_grey",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Nucleus accumbens"
+   }
+  },
+  {
+   "id": 421,
+   "name": "Ventral anterior nucleus.l",
+   "label": "Ventral anterior nucleus",
+   "category": "diencephalon",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Ventral anterior nucleus"
+   }
+  },
+  {
+   "id": 422,
+   "name": "Ventral anterior nucleus.r",
+   "label": "Ventral anterior nucleus",
+   "category": "diencephalon",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Ventral anterior nucleus"
+   }
+  },
+  {
+   "id": 414,
+   "name": "Tuberal hypothalamus.l",
+   "label": "Tuberal hypothalamus",
+   "category": "diencephalon",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Tuberal hypothalamus"
+   }
+  },
+  {
+   "id": 415,
+   "name": "Tuberal hypothalamus.r",
+   "label": "Tuberal hypothalamus",
+   "category": "diencephalon",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Tuberal hypothalamus"
+   }
+  },
+  {
+   "id": 103,
+   "name": "Falx cerebri",
+   "label": "Falx cerebri",
+   "category": "meninges_dura",
+   "side": "median",
+   "expect": {
+    "pickable": true,
+    "name": "Falx cerebri"
+   }
+  },
+  {
+   "id": 394,
+   "name": "Tentorium cerebelli.l",
+   "label": "Tentorium cerebelli",
+   "category": "meninges_dura",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Tentorium cerebelli"
+   }
+  },
+  {
+   "id": 395,
+   "name": "Tentorium cerebelli.r",
+   "label": "Tentorium cerebelli",
+   "category": "meninges_dura",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Tentorium cerebelli"
+   }
+  },
+  {
+   "id": 81,
+   "name": "Corticopontine tract (occipital).l",
+   "label": "Corticopontine tract (occipital)",
+   "category": "tracts",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Corticopontine tract (occipital)"
+   }
+  },
+  {
+   "id": 82,
+   "name": "Corticopontine tract (occipital).r",
+   "label": "Corticopontine tract (occipital)",
+   "category": "tracts",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Corticopontine tract (occipital)"
+   }
+  },
+  {
+   "id": 91,
+   "name": "Corticostriatal tract (superior).l",
+   "label": "Corticostriatal tract (superior)",
+   "category": "tracts",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Corticostriatal tract (superior)"
+   }
+  },
+  {
+   "id": 92,
+   "name": "Corticostriatal tract (superior).r",
+   "label": "Corticostriatal tract (superior)",
+   "category": "tracts",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Corticostriatal tract (superior)"
+   }
+  },
+  {
+   "id": 51,
+   "name": "Cavernous sinus.l",
+   "label": "Cavernous sinus",
+   "category": "veins_sinuses",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Cavernous sinus"
+   }
+  },
+  {
+   "id": 52,
+   "name": "Cavernous sinus.r",
+   "label": "Cavernous sinus",
+   "category": "veins_sinuses",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Cavernous sinus"
+   }
+  },
+  {
+   "id": 375,
+   "name": "Superior sagittal sinus",
+   "label": "Superior sagittal sinus",
+   "category": "veins_sinuses",
+   "side": "median",
+   "expect": {
+    "pickable": true,
+    "name": "Superior sagittal sinus"
+   }
+  },
+  {
+   "id": 109,
+   "name": "Fourth ventricle",
+   "label": "Fourth ventricle",
+   "category": "ventricles",
+   "side": "median",
+   "expect": {
+    "pickable": true,
+    "name": "Fourth ventricle"
+   }
+  },
+  {
+   "id": 396,
+   "name": "Third ventricle",
+   "label": "Third ventricle",
+   "category": "ventricles",
+   "side": "median",
+   "expect": {
+    "pickable": true,
+    "name": "Third ventricle"
+   }
+  },
+  {
+   "id": 74,
+   "name": "Corpus callosum",
+   "label": "Corpus callosum",
+   "category": "white_matter",
+   "side": "median",
+   "expect": {
+    "pickable": true,
+    "name": "Corpus callosum"
+   }
+  }
+ ],
+ "withheldControls": [
+  {
+   "id": 15,
+   "name": "Anterior commissure",
+   "category": "white_matter",
+   "side": "median",
+   "expect": {
+    "pickable": false,
+    "reason": "zanatomy-undeclared-brain-materials",
+    "heldBecause": [
+     "carries undeclared material(s) `White matter`"
+    ]
+   }
+  }
+ ]
+}

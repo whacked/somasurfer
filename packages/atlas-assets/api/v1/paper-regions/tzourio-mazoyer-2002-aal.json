@@ -1,0 +1,132 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:tzourio-mazoyer-2002-aal",
+ "paperHref": "../../../../data/api/v1/papers/tzourio-mazoyer-2002-aal.json",
+ "regions": [
+  {
+   "key": "zanatomy-gross-anatomy/325",
+   "structureName": "Putamen.l",
+   "href": "../regions/zanatomy-gross-anatomy/325.json",
+   "links": [
+    {
+     "mappingId": "map:tzourio-mazoyer-2002-aal/subcortical-regions/atlas-label-putamen",
+     "findingId": "finding:tzourio-mazoyer-2002-aal/subcortical-regions",
+     "paperId": "paper:tzourio-mazoyer-2002-aal",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "325",
+     "structureName": "Putamen.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:putamen",
+      "label": "putamen"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/326",
+   "structureName": "Putamen.r",
+   "href": "../regions/zanatomy-gross-anatomy/326.json",
+   "links": [
+    {
+     "mappingId": "map:tzourio-mazoyer-2002-aal/subcortical-regions/atlas-label-putamen",
+     "findingId": "finding:tzourio-mazoyer-2002-aal/subcortical-regions",
+     "paperId": "paper:tzourio-mazoyer-2002-aal",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "326",
+     "structureName": "Putamen.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:putamen",
+      "label": "putamen"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/49",
+   "structureName": "Caudate nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/49.json",
+   "links": [
+    {
+     "mappingId": "map:tzourio-mazoyer-2002-aal/subcortical-regions/atlas-label-caudate-nucleus",
+     "findingId": "finding:tzourio-mazoyer-2002-aal/subcortical-regions",
+     "paperId": "paper:tzourio-mazoyer-2002-aal",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "49",
+     "structureName": "Caudate nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:caudate-nucleus",
+      "label": "caudate nucleus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/50",
+   "structureName": "Caudate nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/50.json",
+   "links": [
+    {
+     "mappingId": "map:tzourio-mazoyer-2002-aal/subcortical-regions/atlas-label-caudate-nucleus",
+     "findingId": "finding:tzourio-mazoyer-2002-aal/subcortical-regions",
+     "paperId": "paper:tzourio-mazoyer-2002-aal",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "50",
+     "structureName": "Caudate nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:caudate-nucleus",
+      "label": "caudate nucleus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

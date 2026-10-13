@@ -1,0 +1,793 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "key": "icbm152-2009c-cortex-lobes/201",
+ "representation": "icbm152-2009c-cortex-lobes",
+ "structureId": "201",
+ "structureName": "Frontal lobe.r",
+ "papers": [
+  {
+   "paperId": "paper:amunts-1999-broca",
+   "href": "../../../../../data/api/v1/papers/amunts-1999-broca.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-1999-broca/area-44-variability/hcp-mmp1-44",
+     "findingId": "finding:amunts-1999-broca/area-44-variability",
+     "paperId": "paper:amunts-1999-broca",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:amunts-1999-broca/area-44-variability/hcp-mmp1-45",
+     "findingId": "finding:amunts-1999-broca/area-44-variability",
+     "paperId": "paper:amunts-1999-broca",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:amunts-1999-broca/interhemispheric-asymmetry/hcp-mmp1-44",
+     "findingId": "finding:amunts-1999-broca/interhemispheric-asymmetry",
+     "paperId": "paper:amunts-1999-broca",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:amunts-2020-julich-brain",
+   "href": "../../../../../data/api/v1/papers/amunts-2020-julich-brain.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/probabilistic-maps/hcp-mmp1-44",
+     "findingId": "finding:amunts-2020-julich-brain/probabilistic-maps",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:amunts-2020-julich-brain/probabilistic-maps/hcp-mmp1-45",
+     "findingId": "finding:amunts-2020-julich-brain/probabilistic-maps",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:brodmann-1909-localisation",
+   "href": "../../../../../data/api/v1/papers/brodmann-1909-localisation.json",
+   "links": [
+    {
+     "mappingId": "map:brodmann-1909-localisation/area-44/hcp-mmp1-44",
+     "findingId": "finding:brodmann-1909-localisation/area-44",
+     "paperId": "paper:brodmann-1909-localisation",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:brodmann-1909-localisation/area-45/hcp-mmp1-45",
+     "findingId": "finding:brodmann-1909-localisation/area-45",
+     "paperId": "paper:brodmann-1909-localisation",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:brodmann-1909-localisation/area-4-giant-pyramidal/hcp-mmp1-4",
+     "findingId": "finding:brodmann-1909-localisation/area-4-giant-pyramidal",
+     "paperId": "paper:brodmann-1909-localisation",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:4",
+      "label": "Primary motor cortex (area 4)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Central sulcus",
+       "Precentral gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:buckner-2008-default-network",
+   "href": "../../../../../data/api/v1/papers/buckner-2008-default-network.json",
+   "links": [
+    {
+     "mappingId": "map:buckner-2008-default-network/prefrontal-hub/hcp-mmp1-9-46d",
+     "findingId": "finding:buckner-2008-default-network/prefrontal-hub",
+     "paperId": "paper:buckner-2008-default-network",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:9-46d",
+      "label": "Area 9-46d (dorsolateral prefrontal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Middle frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:catani-2008-virtual-dissection",
+   "href": "../../../../../data/api/v1/papers/catani-2008-virtual-dissection.json",
+   "links": [
+    {
+     "mappingId": "map:catani-2008-virtual-dissection/arcuate-fasciculus/hcp-mmp1-44",
+     "findingId": "finding:catani-2008-virtual-dissection/arcuate-fasciculus",
+     "paperId": "paper:catani-2008-virtual-dissection",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+   "href": "../../../../../data/api/v1/papers/eickhoff-2005-anatomy-toolbox.json",
+   "links": [
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-44",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture/hcp-mmp1-45",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/probabilistic-cytoarchitecture",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:eickhoff-2005-anatomy-toolbox/maximum-probability-map/hcp-mmp1-4",
+     "findingId": "finding:eickhoff-2005-anatomy-toolbox/maximum-probability-map",
+     "paperId": "paper:eickhoff-2005-anatomy-toolbox",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:4",
+      "label": "Primary motor cortex (area 4)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Central sulcus",
+       "Precentral gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:glasser-2016-mmp1",
+   "href": "../../../../../data/api/v1/papers/glasser-2016-mmp1.json",
+   "links": [
+    {
+     "mappingId": "map:glasser-2016-mmp1/parcels-per-hemisphere/hcp-mmp1-55b",
+     "findingId": "finding:glasser-2016-mmp1/parcels-per-hemisphere",
+     "paperId": "paper:glasser-2016-mmp1",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 55b lies at the junction of the posterior middle frontal gyrus and the precentral gyrus, so both are named."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:55b",
+      "label": "Area 55b"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Middle frontal gyrus",
+       "Precentral gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:glasser-2016-mmp1/parcels-per-hemisphere/hcp-mmp1-sfl",
+     "findingId": "finding:glasser-2016-mmp1/parcels-per-hemisphere",
+     "paperId": "paper:glasser-2016-mmp1",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. SFL lies on the superior frontal gyrus near its medial border."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:SFL",
+      "label": "Superior frontal language area"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Superior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:glasser-2016-mmp1/broca-subdivision/hcp-mmp1-44",
+     "findingId": "finding:glasser-2016-mmp1/broca-subdivision",
+     "paperId": "paper:glasser-2016-mmp1",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:glasser-2016-mmp1/broca-subdivision/hcp-mmp1-45",
+     "findingId": "finding:glasser-2016-mmp1/broca-subdivision",
+     "paperId": "paper:glasser-2016-mmp1",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:glasser-2016-mmp1/frontopolar-parcels/hcp-mmp1-10d",
+     "findingId": "finding:glasser-2016-mmp1/frontopolar-parcels",
+     "paperId": "paper:glasser-2016-mmp1",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 10d is dorsal frontopolar cortex; the nearest Z-Anatomy unit is the frontopolar gyrus and sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:10d",
+      "label": "Area 10d (frontopolar)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Transverse frontopolar gyrus and sulcus*"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:glasser-2016-mmp1/frontopolar-parcels/hcp-mmp1-9-46d",
+     "findingId": "finding:glasser-2016-mmp1/frontopolar-parcels",
+     "paperId": "paper:glasser-2016-mmp1",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:9-46d",
+      "label": "Area 9-46d (dorsolateral prefrontal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Middle frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:hickok-2007-dual-stream",
+   "href": "../../../../../data/api/v1/papers/hickok-2007-dual-stream.json",
+   "links": [
+    {
+     "mappingId": "map:hickok-2007-dual-stream/dorsal-stream/hcp-mmp1-44",
+     "findingId": "finding:hickok-2007-dual-stream/dorsal-stream",
+     "paperId": "paper:hickok-2007-dual-stream",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:mesulam-1998-sensation-to-cognition",
+   "href": "../../../../../data/api/v1/papers/mesulam-1998-sensation-to-cognition.json",
+   "links": [
+    {
+     "mappingId": "map:mesulam-1998-sensation-to-cognition/heteromodal-cortex/hcp-mmp1-9-46d",
+     "findingId": "finding:mesulam-1998-sensation-to-cognition/heteromodal-cortex",
+     "paperId": "paper:mesulam-1998-sensation-to-cognition",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:9-46d",
+      "label": "Area 9-46d (dorsolateral prefrontal)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Middle frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:penfield-1937-somatotopy",
+   "href": "../../../../../data/api/v1/papers/penfield-1937-somatotopy.json",
+   "links": [
+    {
+     "mappingId": "map:penfield-1937-somatotopy/motor-strip/hcp-mmp1-4",
+     "findingId": "finding:penfield-1937-somatotopy/motor-strip",
+     "paperId": "paper:penfield-1937-somatotopy",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:4",
+      "label": "Primary motor cortex (area 4)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Central sulcus",
+       "Precentral gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:penfield-1937-somatotopy/stimulation-not-imaging/hcp-mmp1-fop4",
+     "findingId": "finding:penfield-1937-somatotopy/stimulation-not-imaging",
+     "paperId": "paper:penfield-1937-somatotopy",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. FOP4 lies on the inner frontal operculum toward the circular sulcus of the insula; both are named and neither is the area."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:FOP4",
+      "label": "Frontal opercular area 4"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Circular sulcus of insula",
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:price-2012-language-review",
+   "href": "../../../../../data/api/v1/papers/price-2012-language-review.json",
+   "links": [
+    {
+     "mappingId": "map:price-2012-language-review/speech-production/hcp-mmp1-44",
+     "findingId": "finding:price-2012-language-review/speech-production",
+     "paperId": "paper:price-2012-language-review",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:price-2012-language-review/speech-production/hcp-mmp1-4",
+     "findingId": "finding:price-2012-language-review/speech-production",
+     "paperId": "paper:price-2012-language-review",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:4",
+      "label": "Primary motor cortex (area 4)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Central sulcus",
+       "Precentral gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:zilles-2010-brodmann-centenary",
+   "href": "../../../../../data/api/v1/papers/zilles-2010-brodmann-centenary.json",
+   "links": [
+    {
+     "mappingId": "map:zilles-2010-brodmann-centenary/map-and-its-fate/hcp-mmp1-44",
+     "findingId": "finding:zilles-2010-brodmann-centenary/map-and-its-fate",
+     "paperId": "paper:zilles-2010-brodmann-centenary",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:zilles-2010-brodmann-centenary/map-and-its-fate/hcp-mmp1-45",
+     "findingId": "finding:zilles-2010-brodmann-centenary/map-and-its-fate",
+     "paperId": "paper:zilles-2010-brodmann-centenary",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}

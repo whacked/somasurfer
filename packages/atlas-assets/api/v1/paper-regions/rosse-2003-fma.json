@@ -1,0 +1,142 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:rosse-2003-fma",
+ "paperHref": "../../../../data/api/v1/papers/rosse-2003-fma.json",
+ "regions": [
+  {
+   "key": "bodyparts3d-bd/FMA15900",
+   "structureName": "urinary bladder",
+   "href": "../regions/bodyparts3d-bd/FMA15900.json",
+   "links": [
+    {
+     "mappingId": "map:rosse-2003-fma/not-instance-anatomy/fma15900",
+     "findingId": "finding:rosse-2003-fma/not-instance-anatomy",
+     "paperId": "paper:rosse-2003-fma",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA15900",
+     "structureName": "urinary bladder",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA15900",
+      "label": "urinary bladder"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7088",
+   "structureName": "heart",
+   "href": "../regions/bodyparts3d-bd/FMA7088.json",
+   "links": [
+    {
+     "mappingId": "map:rosse-2003-fma/reference-ontology/fma7088",
+     "findingId": "finding:rosse-2003-fma/reference-ontology",
+     "paperId": "paper:rosse-2003-fma",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7088",
+     "structureName": "heart",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7088",
+      "label": "heart"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7148",
+   "structureName": "stomach",
+   "href": "../regions/bodyparts3d-bd/FMA7148.json",
+   "links": [
+    {
+     "mappingId": "map:rosse-2003-fma/canonical-anatomy/fma7148",
+     "findingId": "finding:rosse-2003-fma/canonical-anatomy",
+     "paperId": "paper:rosse-2003-fma",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7148",
+     "structureName": "stomach",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7148",
+      "label": "stomach"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7197",
+   "structureName": "liver",
+   "href": "../regions/bodyparts3d-bd/FMA7197.json",
+   "links": [
+    {
+     "mappingId": "map:rosse-2003-fma/reference-ontology/fma7197",
+     "findingId": "finding:rosse-2003-fma/reference-ontology",
+     "paperId": "paper:rosse-2003-fma",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7197",
+     "structureName": "liver",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7197",
+      "label": "liver"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7198",
+   "structureName": "pancreas",
+   "href": "../regions/bodyparts3d-bd/FMA7198.json",
+   "links": [
+    {
+     "mappingId": "map:rosse-2003-fma/canonical-anatomy/fma7198",
+     "findingId": "finding:rosse-2003-fma/canonical-anatomy",
+     "paperId": "paper:rosse-2003-fma",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7198",
+     "structureName": "pancreas",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7198",
+      "label": "pancreas"
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

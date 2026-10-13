@@ -1,0 +1,558 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:amunts-2020-julich-brain",
+ "paperHref": "../../../../data/api/v1/papers/amunts-2020-julich-brain.json",
+ "regions": [
+  {
+   "key": "icbm152-2009c-cortex-lobes/101",
+   "structureName": "Frontal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/101.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/probabilistic-maps/hcp-mmp1-44",
+     "findingId": "finding:amunts-2020-julich-brain/probabilistic-maps",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "101",
+     "structureName": "Frontal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:amunts-2020-julich-brain/probabilistic-maps/hcp-mmp1-45",
+     "findingId": "finding:amunts-2020-julich-brain/probabilistic-maps",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "101",
+     "structureName": "Frontal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/104",
+   "structureName": "Occipital lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/104.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/visual-areas/hcp-mmp1-v1",
+     "findingId": "finding:amunts-2020-julich-brain/visual-areas",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "104",
+     "structureName": "Occipital lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V1 lies in the banks of the calcarine sulcus and spills onto its lips."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:V1",
+      "label": "Primary visual cortex (V1)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Calcarine sulcus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:amunts-2020-julich-brain/visual-areas/hcp-mmp1-v2",
+     "findingId": "finding:amunts-2020-julich-brain/visual-areas",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "104",
+     "structureName": "Occipital lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V2 surrounds V1 on the cuneus above and the lingual gyrus below."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:V2",
+      "label": "Second visual area (V2)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Cuneus",
+       "Lingual gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/201",
+   "structureName": "Frontal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/201.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/probabilistic-maps/hcp-mmp1-44",
+     "findingId": "finding:amunts-2020-julich-brain/probabilistic-maps",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:44",
+      "label": "Area 44 (pars opercularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Opercular part of inferior frontal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:amunts-2020-julich-brain/probabilistic-maps/hcp-mmp1-45",
+     "findingId": "finding:amunts-2020-julich-brain/probabilistic-maps",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "201",
+     "structureName": "Frontal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:45",
+      "label": "Area 45 (pars triangularis)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Triangular part of inferior frontal gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/204",
+   "structureName": "Occipital lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/204.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/visual-areas/hcp-mmp1-v1",
+     "findingId": "finding:amunts-2020-julich-brain/visual-areas",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "204",
+     "structureName": "Occipital lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V1 lies in the banks of the calcarine sulcus and spills onto its lips."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:V1",
+      "label": "Primary visual cortex (V1)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Calcarine sulcus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:amunts-2020-julich-brain/visual-areas/hcp-mmp1-v2",
+     "findingId": "finding:amunts-2020-julich-brain/visual-areas",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "204",
+     "structureName": "Occipital lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. V2 surrounds V1 on the cuneus above and the lingual gyrus below."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:V2",
+      "label": "Second visual area (V2)"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Cuneus",
+       "Lingual gyrus"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/122",
+   "structureName": "Hippocampus.l",
+   "href": "../regions/zanatomy-gross-anatomy/122.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-hippocampus",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "122",
+     "structureName": "Hippocampus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/123",
+   "structureName": "Hippocampus.r",
+   "href": "../regions/zanatomy-gross-anatomy/123.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-hippocampus",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "123",
+     "structureName": "Hippocampus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:hippocampus",
+      "label": "hippocampus"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/165",
+   "structureName": "Lateral nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/165.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "165",
+     "structureName": "Lateral nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/166",
+   "structureName": "Lateral nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/166.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "166",
+     "structureName": "Lateral nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/39",
+   "structureName": "Basolateral complex.l",
+   "href": "../regions/zanatomy-gross-anatomy/39.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "39",
+     "structureName": "Basolateral complex.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/40",
+   "structureName": "Basolateral complex.r",
+   "href": "../regions/zanatomy-gross-anatomy/40.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "40",
+     "structureName": "Basolateral complex.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/54",
+   "structureName": "Central nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/54.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "54",
+     "structureName": "Central nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/55",
+   "structureName": "Central nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/55.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "55",
+     "structureName": "Central nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/77",
+   "structureName": "Corticomedial group.l",
+   "href": "../regions/zanatomy-gross-anatomy/77.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "77",
+     "structureName": "Corticomedial group.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/78",
+   "structureName": "Corticomedial group.r",
+   "href": "../regions/zanatomy-gross-anatomy/78.json",
+   "links": [
+    {
+     "mappingId": "map:amunts-2020-julich-brain/subcortical-coverage/atlas-label-amygdala",
+     "findingId": "finding:amunts-2020-julich-brain/subcortical-coverage",
+     "paperId": "paper:amunts-2020-julich-brain",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "78",
+     "structureName": "Corticomedial group.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

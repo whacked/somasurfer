@@ -22,9 +22,10 @@
  *   5. Every asset package carries its own LICENSE and ATTRIBUTION.md, and
  *      every payload file in it is covered by exactly one attribution entry
  *      that names a licence, a holder and a source.
- *   6. If dist/ exists, no asset payload bytes appear in the shipped
- *      JavaScript, CSS, HTML or prebuilt JSON indexes, and the asset subtree
- *      ships with its LICENSE and ATTRIBUTION.md beside it.
+ *   6. If dist/ exists, no asset payload bytes appear in any file the build
+ *      writes outside dist/assets/ — bundle, prebuilt indexes, or anything
+ *      else — raw or base64-encoded, and the asset subtree ships with its
+ *      LICENSE and ATTRIBUTION.md beside it.
  *   7. Every shipped asset copy is byte-identical to its source. A build that
  *      re-encodes an asset has adapted it, which is what a share-alike
  *      licence attaches to most firmly; copying it verbatim is aggregation.
@@ -46,6 +47,39 @@
  *      mandatory, not opt-in: an entry that simply omits `sources` would
  *      otherwise skip every one of these checks.
  *
+ * And one more makes rule 9's citations checkable rather than declared (DOG-127):
+ *
+ *  10. A file that holds brain structures (an ATLM mesh file, found by its
+ *      magic bytes rather than its name, or a brain structures.json) is
+ *      checked structure by structure against the provenance manifest that
+ *      tools/build-meshes.mjs generates from the pinned glb. Every structure it
+ *      actually contains must be cleared, and every source that structure
+ *      derives from must be cited by the entry that ships the file. An entry
+ *      citing only cleared sources while its file carries a held structure is
+ *      exactly what rule 9 alone lets through. The manifest is re-derived
+ *      first, from the inputs it records, so a hand-edited group or source
+ *      fails here instead of clearing what it labels. No offline check can see
+ *      whether those recorded inputs, or the geometry, really are the glb's:
+ *      this checks what a structure is labelled, not what it is.
+ *      A set extracted from a volume (the ICBM152 cortex, DOG-151) has no glb
+ *      manifest, and its own structures.json is the record. That path is not
+ *      the set's to choose: a file saying `source.kind: "volume"` only takes it
+ *      when the upstream it names is itself recorded in upstreamSources with
+ *      `kind: "volume"` (a reviewed edit to the cleared-source registry), it
+ *      names no glb commit (a set that does is judged by its manifest,
+ *      whatever it calls itself), and no generated manifest exists for its id. Every
+ *      structure's sources must then be exactly that one upstream, whose
+ *      verdict must ship. Without these, a glb-derived set could relabel itself
+ *      a volume and ship a held structure green (DOG-165 F1).
+ *
+ *      Body files (DOG-128) are checked the same way, against the body's own
+ *      structures.json: every structure an ATLM body file contains must be
+ *      listed there, with the sources the entry cites, and an element the body
+ *      excludes (the brain) must not ride along under its own id. The body has
+ *      one source, BodyParts3D, and its manifest is the build's grouping of
+ *      the archive's own element headers; the source is not in the repository,
+ *      so that grouping is checked for consistency, not re-derived.
+ *
  * CI tooling under tools/ is deliberately out of scope: validating assets is
  * exactly what a CI gate is for, and tools/ is not published or linked into
  * any code package. Rules 2, 3 and 6 are about the shipped artefact.
@@ -54,6 +88,9 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, posix, relative } from 'node:path';
 import { REPO_ROOT, readPackages, sourceFiles, fail, pass, rel } from './lib/repo.mjs';
+import { MAGIC as ATLM_MAGIC, readMeshBin } from './lib/meshbin.mjs';
+import { GROUPS, verifyProvenance } from './lib/brain-provenance.mjs';
+import { brainAssetPaths } from './lib/brain-asset-paths.mjs';
 
 const DEP_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
 const DIST = join(REPO_ROOT, 'packages', 'atlas-web', 'dist');
@@ -188,6 +225,70 @@ for (const a of assets) {
   }
 }
 
+/**
+ * Distinctive slices of a payload, for finding it inside something else.
+ *
+ * One slice from the middle was enough while every payload was JSON and the
+ * failure being guarded was a mesh pasted whole into a bundle. A binary mesh
+ * file changes both halves of that. A build can embed one structure's range of
+ * it rather than the file, and the natural way to put binary in JavaScript is
+ * base64, which a raw slice never matches. So: several windows spread across
+ * the file, each also in all three base64 alignments (a window's encoding
+ * depends on where it falls relative to the 3-byte groups of the whole).
+ *
+ * Eight windows across a whole file only land inside a handful of the
+ * structures an ATLM file holds (6 of 248 in the low tier, measured), so for a
+ * mesh file every structure's range in every section gets a window of its own
+ * too: one structure's positions, normals or indices copied out is found.
+ */
+const PROBE_WINDOWS = 8;
+const PROBE_BYTES = 96;
+const MIN_PROBE_BYTES = 64;
+function windowProbes(window, where) {
+  const out = [{ needle: window, base64: false, where }];
+  for (let phase = 0; phase < 3; phase += 1) {
+    // Drop the first `phase` bytes so the encoded run starts on a group
+    // boundary, and the last partial group, whose encoding depends on what
+    // follows it.
+    const aligned = window.subarray(phase, phase + Math.floor((window.length - phase) / 3) * 3);
+    if (aligned.length >= 48) out.push({ needle: aligned.toString('base64'), base64: true, where });
+  }
+  return out;
+}
+function payloadProbes(bytes) {
+  if (bytes.length < MIN_PROBE_BYTES) return [];
+  const width = Math.min(PROBE_BYTES, bytes.length);
+  const out = [];
+  for (let k = 0; k < PROBE_WINDOWS; k += 1) {
+    const at = Math.floor(((bytes.length - width) * (k + 0.5)) / PROBE_WINDOWS);
+    out.push(...windowProbes(bytes.subarray(at, at + width), null));
+  }
+  if (bytes.subarray(0, 4).toString('latin1') === ATLM_MAGIC) {
+    // A file that claims to be a mesh and does not parse is rule 10's to report;
+    // here it keeps its whole-file windows.
+    let mesh = null;
+    try {
+      mesh = readMeshBin(bytes);
+    } catch {
+      mesh = null;
+    }
+    for (const t of mesh?.table ?? []) {
+      const isz = mesh.index32 ? 4 : 2;
+      for (const [section, start, length] of [
+        ['positions', mesh.positions.byteOffset + t.firstVertex * 6, t.vertexCount * 6],
+        ['normals', mesh.normals.byteOffset + t.firstVertex * 2, t.vertexCount * 2],
+        ['indices', mesh.indices.byteOffset + t.firstIndex * isz, t.indexCount * isz],
+      ]) {
+        const w = Math.min(PROBE_BYTES, length);
+        if (w < MIN_PROBE_BYTES) continue;
+        const at = start + Math.floor((length - w) / 2);
+        out.push(...windowProbes(bytes.subarray(at, at + w), `structure id ${t.id}'s ${section}`));
+      }
+    }
+  }
+  return out;
+}
+
 // --- Rule 6: the built artefact keeps the boundary -------------------------
 if (existsSync(DIST)) {
   const distAssets = join(DIST, 'assets');
@@ -222,14 +323,16 @@ if (existsSync(DIST)) {
   // Everything outside dist/assets/ is our own output and must contain none of
   // the above. The prebuilt JSON indexes are in scope: an index that inlined
   // mesh vertices would be a derivative of the mesh just as surely as a
-  // JavaScript bundle that did.
+  // JavaScript bundle that did. So is every other file, whatever its
+  // extension: a mesh re-emitted as `app/brain.bin` is in the bundle too, and
+  // the extension list this used to filter by would never have looked at it.
   const bundleFiles = [];
   const walkDist = (d) => {
     for (const e of readdirSync(d, { withFileTypes: true })) {
       const p = join(d, e.name);
       if (e.isDirectory()) {
         if (relative(DIST, p) !== 'assets') walkDist(p);
-      } else if (/\.(m?js|cjs|css|html|json)$/.test(e.name)) bundleFiles.push(p);
+      } else bundleFiles.push(p);
     }
   };
   walkDist(DIST);
@@ -255,25 +358,25 @@ if (existsSync(DIST)) {
     }
   }
 
+  for (const payload of payloads) payload.probes = payloadProbes(payload.bytes);
+  const probeCount = payloads.reduce((n, p) => n + p.probes.length, 0);
   for (const bundle of bundleFiles) {
     const text = readFileSync(bundle);
     for (const payload of payloads) {
-      // A distinctive interior slice: long enough that a collision is not
-      // plausible, short enough to survive reformatting of the surrounding file.
-      const probe = payload.bytes.subarray(
-        Math.floor(payload.bytes.length / 2),
-        Math.floor(payload.bytes.length / 2) + 160,
-      );
-      if (probe.length >= 64 && text.includes(probe)) {
+      const hit = payload.probes.find((probe) => text.includes(probe.needle));
+      if (hit) {
         problems.push(
-          `${rel(bundle)}: contains bytes from asset payload ${payload.file}.`,
+          `${rel(bundle)}: contains bytes from asset payload ${payload.file}${hit.base64 ? ', base64-encoded' : ''}${hit.where ? ` (${hit.where})` : ''}.`,
           `  The asset is embedded in the bundle, so the bundle is a derivative of it.`,
           `  Emit the asset as its own file under dist/assets/ and fetch it at runtime.`,
         );
       }
     }
   }
-  report.push(`dist/: ${bundleFiles.length} bundle file(s) checked against ${payloads.length} asset payload(s).`);
+  report.push(
+    `dist/: ${bundleFiles.length} file(s) outside assets/ checked against ${payloads.length} asset payload(s),` +
+      ` ${PROBE_WINDOWS} windows each plus one per mesh structure per section, ${probeCount} probes raw and base64.`,
+  );
 } else {
   report.push(`dist/: not built, artefact rules skipped. Run \`npm run build\` first to check them.`);
 }
@@ -313,6 +416,110 @@ function probeOf(bytes) {
 
 let ncEntryCount = 0;
 let citingEntryCount = 0;
+let brainFileCount = 0;
+let brainSlotCount = 0;
+let bodyFileCount = 0;
+let bodySlotCount = 0;
+
+/**
+ * A body structures.json as rule 10's provenance: its structures are what may
+ * ship, and every concept it excluded is held under its own FMA id, so a body
+ * file that carries one is caught even though structures.json does not list it.
+ */
+function bodyProvenance(structuresDoc) {
+  const provenance = new Map();
+  for (const e of structuresDoc.excluded ?? []) {
+    if (typeof e.fma === 'string') {
+      provenance.set(Number(e.fma.replace(/^FMA/, '')), { name: e.name ?? e.fma, group: 'excluded-from-body', heldBecause: [e.reason], sources: [] });
+    }
+  }
+  for (const s of structuresDoc.structures ?? []) {
+    provenance.set(s.id, { name: s.name, group: GROUPS.cleared, sources: Array.isArray(s.sources) ? s.sources : [] });
+  }
+  return provenance;
+}
+let volumeFileCount = 0;
+let volumeSlotCount = 0;
+
+/**
+ * The brain structure ids a file contains, read from the file itself, and the
+ * provenance manifest to judge them by. `null` for a file that holds none.
+ * The manifest is found through the `source.commit` of the structures.json
+ * that sits beside every mesh file; a mesh with no such sibling is an error,
+ * never a pass.
+ */
+function brainStructuresIn(abs, upstream) {
+  const bytes = readFileSync(abs);
+  let ids;
+  let structuresDoc;
+  if (bytes.subarray(0, 4).toString('latin1') === ATLM_MAGIC) {
+    try {
+      ids = readMeshBin(bytes).table.map((t) => t.id);
+    } catch (err) {
+      return { error: `is an ATLM mesh file that does not parse (${err.message}).` };
+    }
+    const sibling = join(abs, '..', 'structures.json');
+    if (!existsSync(sibling)) return { error: 'is an ATLM mesh file with no structures.json beside it to name its source.' };
+    structuresDoc = JSON.parse(readFileSync(sibling, 'utf8'));
+  } else if (abs.endsWith('.json')) {
+    try {
+      structuresDoc = JSON.parse(bytes.toString('utf8'));
+    } catch {
+      return null;
+    }
+    if (structuresDoc?.schema === 'atlas-body-structures/1') {
+      return { kind: 'body', ids: structuresDoc.structures.map((s) => s.id), provenance: bodyProvenance(structuresDoc) };
+    }
+    if (structuresDoc?.schema !== 'atlas-brain-structures/1') return null;
+    ids = structuresDoc.structures.map((s) => s.id);
+  } else return null;
+  if (structuresDoc?.schema === 'atlas-body-structures/1') {
+    return { kind: 'body', ids, provenance: bodyProvenance(structuresDoc) };
+  }
+
+  const commit = structuresDoc?.source?.commit;
+  // A set that names a glb commit is judged by its manifest, whatever `kind` says.
+  if (structuresDoc?.source?.kind === 'volume' && commit === undefined) return volumeProvenance(structuresDoc, ids, upstream);
+  if (typeof commit !== 'string') return { error: 'names no source commit, so its provenance cannot be found.' };
+  const manifestPath = join(REPO_ROOT, brainAssetPaths(commit).provenance);
+  if (!existsSync(manifestPath)) return { error: `has no provenance manifest at ${rel(manifestPath)}.` };
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  // The manifest is the judge here, so it is judged first: re-derived from the
+  // inputs it records, under §7.3, the committed origin result and the decision
+  // holds. A record hand-edited to `cleared` would otherwise clear its structure.
+  const originPath = join(manifestPath, '..', 'origin-test-bodyparts3d.json');
+  if (!existsSync(originPath)) return { error: `has no origin-test result at ${rel(originPath)} to re-derive its provenance with.` };
+  const drift = verifyProvenance(manifest, JSON.parse(readFileSync(originPath, 'utf8')));
+  if (drift.length > 0) return { error: `has a provenance manifest that does not re-derive:\n    ${drift.join('\n    ')}` };
+  return { ids, provenance: new Map(manifest.structures.map((s) => [s.id, s])) };
+}
+/**
+ * Provenance for a volume-derived set, from its own structures.json, after the
+ * registry has vouched that its upstream is a volume. A structure is cleared
+ * when its sources are exactly that upstream and the upstream's verdict ships.
+ */
+function volumeProvenance(doc, ids, upstream) {
+  const upstreamId = doc.source?.upstream;
+  const rec = upstream.get(upstreamId);
+  if (!rec || rec.kind !== 'volume') {
+    return { error: `says it is a volume-derived set, but its upstream ${JSON.stringify(upstreamId)} is not recorded in upstreamSources with kind "volume". The registry, not the set, decides which sets skip the generated manifest.` };
+  }
+  const manifestPath = join(REPO_ROOT, 'packages', 'atlas-assets', 'provenance', `brain-${doc.id}.json`);
+  if (existsSync(manifestPath)) return { error: `says it is a volume-derived set, but a generated provenance manifest exists for it at ${rel(manifestPath)}; it is judged by that.` };
+  const listed = new Set(doc.structures.map((s) => s.id));
+  for (const id of ids) {
+    if (!listed.has(id)) return { error: `holds structure id ${id}, which its structures.json does not list.` };
+  }
+  const provenance = new Map();
+  for (const s of doc.structures) {
+    const sources = Array.isArray(s.sources) ? s.sources : [];
+    const heldBecause = [];
+    if (sources.length !== 1 || sources[0] !== upstreamId) heldBecause.push(`its sources are ${JSON.stringify(sources)}, not exactly the set's one upstream, ${upstreamId}`);
+    if (!VERDICTS_THAT_SHIP.includes(rec.verdict)) heldBecause.push(`its upstream ${upstreamId} has verdict ${JSON.stringify(rec.verdict)}`);
+    provenance.set(s.id, { name: s.name, sources, group: heldBecause.length === 0 ? GROUPS.cleared : 'uncleared-source', heldBecause });
+  }
+  return { ids, provenance, volume: true };
+}
 for (const a of assets) {
   if (!existsSync(join(a.dir, 'attribution.json'))) continue;
   const attribution = JSON.parse(readFileSync(join(a.dir, 'attribution.json'), 'utf8'));
@@ -505,7 +712,52 @@ for (const a of assets) {
       }
     }
   }
+
+  // --- Rule 10: what a brain file contains, against what its entry cites -----
+  for (const e of entries) {
+    for (const f of e.files ?? []) {
+      const abs = join(a.dir, f);
+      if (!existsSync(abs)) continue;
+      const contained = brainStructuresIn(abs, sources);
+      if (contained === null) continue;
+      if (contained.kind === 'body') bodyFileCount += 1;
+      else if (contained.volume) volumeFileCount += 1;
+      else brainFileCount += 1;
+      if (contained.error) {
+        problems.push(`${rel(abs)}: ${contained.error}`, `  A mesh file whose contents cannot be checked against provenance is not shipped on trust.`);
+        continue;
+      }
+      const cited = new Set(Array.isArray(e.sources) ? e.sources : []);
+      for (const id of contained.ids) {
+        if (contained.kind === 'body') bodySlotCount += 1;
+        else if (contained.volume) volumeSlotCount += 1;
+        else brainSlotCount += 1;
+        const rec = contained.provenance.get(id);
+        if (!rec) {
+          problems.push(`${rel(abs)}: holds structure id ${id}, which the provenance manifest does not list.`);
+          continue;
+        }
+        if (rec.group !== GROUPS.cleared) {
+          problems.push(
+            `${rel(abs)}: entry ${e.id} ships ${rec.name.trim()} (id ${id}), which is held as ${rec.group}.`,
+            `  ${(rec.heldBecause ?? []).join('; ')}. A file's citations do not clear what is inside it.`,
+          );
+        }
+        const uncited = rec.sources.filter((src) => !cited.has(src));
+        if (uncited.length > 0) {
+          problems.push(
+            `${rel(abs)}: entry ${e.id} does not cite ${uncited.join(', ')}, which ${rec.name.trim()} (id ${id}) derives from.`,
+          );
+        }
+      }
+    }
+  }
 }
+report.push(
+  `rule 10: ${brainFileCount} brain file(s), ${brainSlotCount} structure slot(s), each checked against the generated provenance manifest;`
+    + ` ${bodyFileCount} body file(s), ${bodySlotCount} structure slot(s), each checked against the body's structures.json;`
+    + ` ${volumeFileCount} volume-derived file(s), ${volumeSlotCount} slot(s), each checked against its set's record and a volume source in the registry.`,
+);
 report.push(
   `${ncEntryCount} asset-nc entr${ncEntryCount === 1 ? 'y' : 'ies'}, none reachable in a default build;` +
     ` ${citingEntryCount} entr${citingEntryCount === 1 ? 'y' : 'ies'} citing upstream sources, all cleared.`,

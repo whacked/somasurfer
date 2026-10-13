@@ -1,0 +1,63 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "key": "bodyparts3d-bd/FMA13075",
+ "representation": "bodyparts3d-bd",
+ "structureId": "FMA13075",
+ "structureName": "fourth lumbar vertebra",
+ "papers": [
+  {
+   "paperId": "paper:bogduk-2012-lumbar-anatomy",
+   "href": "../../../../../data/api/v1/papers/bogduk-2012-lumbar-anatomy.json",
+   "links": [
+    {
+     "mappingId": "map:bogduk-2012-lumbar-anatomy/lumbar-vertebra-structure/fma13075",
+     "findingId": "finding:bogduk-2012-lumbar-anatomy/lumbar-vertebra-structure",
+     "paperId": "paper:bogduk-2012-lumbar-anatomy",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA13075",
+     "structureName": "fourth lumbar vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA13075",
+      "label": "fourth lumbar vertebra"
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:panjabi-1991-thoracic-morphometry",
+   "href": "../../../../../data/api/v1/papers/panjabi-1991-thoracic-morphometry.json",
+   "links": [
+    {
+     "mappingId": "map:panjabi-1991-thoracic-morphometry/level-to-level-variation/fma13075",
+     "findingId": "finding:panjabi-1991-thoracic-morphometry/level-to-level-variation",
+     "paperId": "paper:panjabi-1991-thoracic-morphometry",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA13075",
+     "structureName": "fourth lumbar vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA13075",
+      "label": "fourth lumbar vertebra"
+     }
+    }
+   ]
+  }
+ ]
+}

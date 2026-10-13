@@ -1,0 +1,818 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:fan-2016-brainnetome",
+ "paperHref": "../../../../data/api/v1/papers/fan-2016-brainnetome.json",
+ "regions": [
+  {
+   "key": "zanatomy-gross-anatomy/153",
+   "structureName": "Intralaminar and lateral posterior nuclei.l",
+   "href": "../regions/zanatomy-gross-anatomy/153.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "153",
+     "structureName": "Intralaminar and lateral posterior nuclei.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/154",
+   "structureName": "Intralaminar and lateral posterior nuclei.r",
+   "href": "../regions/zanatomy-gross-anatomy/154.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "154",
+     "structureName": "Intralaminar and lateral posterior nuclei.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/161",
+   "structureName": "Lateral geniculate body.l",
+   "href": "../regions/zanatomy-gross-anatomy/161.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "161",
+     "structureName": "Lateral geniculate body.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/162",
+   "structureName": "Lateral geniculate body.r",
+   "href": "../regions/zanatomy-gross-anatomy/162.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "162",
+     "structureName": "Lateral geniculate body.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/165",
+   "structureName": "Lateral nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/165.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "165",
+     "structureName": "Lateral nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/166",
+   "structureName": "Lateral nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/166.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "166",
+     "structureName": "Lateral nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/186",
+   "structureName": "Medial geniculate body.l",
+   "href": "../regions/zanatomy-gross-anatomy/186.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "186",
+     "structureName": "Medial geniculate body.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/187",
+   "structureName": "Medial geniculate body.r",
+   "href": "../regions/zanatomy-gross-anatomy/187.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "187",
+     "structureName": "Medial geniculate body.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/194",
+   "structureName": "Mediodorsal nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/194.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "194",
+     "structureName": "Mediodorsal nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/195",
+   "structureName": "Mediodorsal nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/195.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "195",
+     "structureName": "Mediodorsal nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/24",
+   "structureName": "Anterior nuclei of thalamus.l",
+   "href": "../regions/zanatomy-gross-anatomy/24.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "24",
+     "structureName": "Anterior nuclei of thalamus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/25",
+   "structureName": "Anterior nuclei of thalamus.r",
+   "href": "../regions/zanatomy-gross-anatomy/25.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "25",
+     "structureName": "Anterior nuclei of thalamus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/290",
+   "structureName": "Pulvinar.l",
+   "href": "../regions/zanatomy-gross-anatomy/290.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "290",
+     "structureName": "Pulvinar.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/291",
+   "structureName": "Pulvinar.r",
+   "href": "../regions/zanatomy-gross-anatomy/291.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "291",
+     "structureName": "Pulvinar.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/39",
+   "structureName": "Basolateral complex.l",
+   "href": "../regions/zanatomy-gross-anatomy/39.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "39",
+     "structureName": "Basolateral complex.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/40",
+   "structureName": "Basolateral complex.r",
+   "href": "../regions/zanatomy-gross-anatomy/40.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "40",
+     "structureName": "Basolateral complex.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/421",
+   "structureName": "Ventral anterior nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/421.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "421",
+     "structureName": "Ventral anterior nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/422",
+   "structureName": "Ventral anterior nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/422.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "422",
+     "structureName": "Ventral anterior nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/423",
+   "structureName": "Ventral laterodorsal nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/423.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "423",
+     "structureName": "Ventral laterodorsal nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/424",
+   "structureName": "Ventral laterodorsal nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/424.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "424",
+     "structureName": "Ventral laterodorsal nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/425",
+   "structureName": "Ventral lateroventral nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/425.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "425",
+     "structureName": "Ventral lateroventral nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/426",
+   "structureName": "Ventral lateroventral nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/426.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus",
+     "findingId": "finding:fan-2016-brainnetome/subcortical-subdivision",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "426",
+     "structureName": "Ventral lateroventral nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole thalamus; it ships thalamic nuclei (Najdenovska, and the geniculate bodies), and whether they tile the whole thalamus is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:thalamus",
+      "label": "thalamus"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/54",
+   "structureName": "Central nucleus.l",
+   "href": "../regions/zanatomy-gross-anatomy/54.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "54",
+     "structureName": "Central nucleus.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/55",
+   "structureName": "Central nucleus.r",
+   "href": "../regions/zanatomy-gross-anatomy/55.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "55",
+     "structureName": "Central nucleus.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/77",
+   "structureName": "Corticomedial group.l",
+   "href": "../regions/zanatomy-gross-anatomy/77.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "77",
+     "structureName": "Corticomedial group.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "key": "zanatomy-gross-anatomy/78",
+   "structureName": "Corticomedial group.r",
+   "href": "../regions/zanatomy-gross-anatomy/78.json",
+   "links": [
+    {
+     "mappingId": "map:fan-2016-brainnetome/connectivity-fingerprints/atlas-label-amygdala",
+     "findingId": "finding:fan-2016-brainnetome/connectivity-fingerprints",
+     "paperId": "paper:fan-2016-brainnetome",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "78",
+     "structureName": "Corticomedial group.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "the brain mesh has no whole amygdala; it ships the CIT168 amygdala nuclear groups, and whether they tile the whole amygdala is not verified here"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:amygdala",
+      "label": "amygdala"
+     },
+     "crosswalk": {
+      "completeness": "parts",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

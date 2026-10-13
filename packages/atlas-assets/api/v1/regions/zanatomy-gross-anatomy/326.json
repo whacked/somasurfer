@@ -1,0 +1,71 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "key": "zanatomy-gross-anatomy/326",
+ "representation": "zanatomy-gross-anatomy",
+ "structureId": "326",
+ "structureName": "Putamen.r",
+ "papers": [
+  {
+   "paperId": "paper:power-2011-functional-areas",
+   "href": "../../../../../data/api/v1/papers/power-2011-functional-areas.json",
+   "links": [
+    {
+     "mappingId": "map:power-2011-functional-areas/subcortical-nodes/atlas-label-putamen",
+     "findingId": "finding:power-2011-functional-areas/subcortical-nodes",
+     "paperId": "paper:power-2011-functional-areas",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "326",
+     "structureName": "Putamen.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:putamen",
+      "label": "putamen"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  },
+  {
+   "paperId": "paper:tzourio-mazoyer-2002-aal",
+   "href": "../../../../../data/api/v1/papers/tzourio-mazoyer-2002-aal.json",
+   "links": [
+    {
+     "mappingId": "map:tzourio-mazoyer-2002-aal/subcortical-regions/atlas-label-putamen",
+     "findingId": "finding:tzourio-mazoyer-2002-aal/subcortical-regions",
+     "paperId": "paper:tzourio-mazoyer-2002-aal",
+     "representation": "zanatomy-gross-anatomy",
+     "structureId": "326",
+     "structureName": "Putamen.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "ATLAS-LABEL",
+      "term": "ATLAS-LABEL:putamen",
+      "label": "putamen"
+     },
+     "crosswalk": {
+      "completeness": "same",
+      "heldTargets": []
+     }
+    }
+   ]
+  }
+ ]
+}

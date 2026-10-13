@@ -1,0 +1,11507 @@
+{
+ "schema": "icbm152-2009c-cortex-build/1",
+ "generatedBy": "tools/build-icbm-cortex.mjs",
+ "inputs": {
+  "source": "icbm152-2009c",
+  "url": "https://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip",
+  "archive": {
+   "checked": false,
+   "note": "archive not present beside the extracted files; each file checked individually"
+  },
+  "files": {
+   "gm": {
+    "file": "mni_icbm152_nlin_asym_09c/mni_icbm152_gm_tal_nlin_asym_09c.nii",
+    "sha256": "781550eec4b7f0e33abfba267b96887a32cf57f9482c958c700f9e35199cc666"
+   },
+   "wm": {
+    "file": "mni_icbm152_nlin_asym_09c/mni_icbm152_wm_tal_nlin_asym_09c.nii",
+    "sha256": "337525d68780df3eef82539cf1ff3f44efeb4d988379407cf7a678303bd913d4"
+   },
+   "csf": {
+    "file": "mni_icbm152_nlin_asym_09c/mni_icbm152_csf_tal_nlin_asym_09c.nii",
+    "sha256": "6baf048a874ebabb252e028229cbfd19ddfc835fa7d89efe18ceab86926c87b3"
+   },
+   "mask": {
+    "file": "mni_icbm152_nlin_asym_09c/mni_icbm152_t1_tal_nlin_asym_09c_mask.nii",
+    "sha256": "7d80b651fc5f11bae015f28577b9e9b4211d11910b4d215f6a8fb47fc2ab2b40"
+   }
+  },
+  "grid": {
+   "dims": [
+    193,
+    229,
+    193
+   ],
+   "voxelMm": 1,
+   "originMm": [
+    -96,
+    -132,
+    -78
+   ],
+   "space": "MNI152 2009c asymmetric (sform_code 4), RAS"
+  }
+ },
+ "method": {
+  "isoLevel": 0.4,
+  "field": "GM + WM probability (scl_slope/scl_inter applied), zeroed where the brain mask < 0.5",
+  "extraction": "marching tetrahedra, Kuhn 6-tetrahedron split (tools/lib/marching-cubes.mjs)",
+  "hemispheres": "split at MNI x = 0; x < 0 left (structure 1), x >= 0 right (structure 2)",
+  "cerebrumRule": {
+   "tentorium": {
+    "rule": "remove voxels with y <= -30 and z < clamp(a + b*y + c*|x| + d*|x|*y, -40, -3)",
+    "sampling": "per column |x| in [4,64], y in [-100,-30], the deepest z in [-40,5] with GM+WM < 0.6 and GM+WM > 0.8 within 8 mm above and below",
+    "samples": 2829,
+    "samplesKept": 1887,
+    "coefficients": {
+     "a": 15.3319,
+     "b": 0.37698,
+     "c": -0.92308,
+     "d": -0.009497
+    },
+    "rmsResidualMm": 2.21,
+    "cutZMmAt": {
+     "|x|=0,y=-40": -3,
+     "|x|=0,y=-60": -7.3,
+     "|x|=0,y=-80": -14.8,
+     "|x|=0,y=-100": -22.4,
+     "|x|=10,y=-40": -5.2,
+     "|x|=10,y=-60": -10.8,
+     "|x|=10,y=-80": -16.5,
+     "|x|=10,y=-100": -22.1,
+     "|x|=20,y=-40": -10.6,
+     "|x|=20,y=-60": -14.4,
+     "|x|=20,y=-80": -18.1,
+     "|x|=20,y=-100": -21.8,
+     "|x|=40,y=-40": -21.5,
+     "|x|=40,y=-60": -21.4,
+     "|x|=40,y=-80": -21.4,
+     "|x|=40,y=-100": -21.3,
+     "|x|=60,y=-40": -32.3,
+     "|x|=60,y=-60": -28.5,
+     "|x|=60,y=-80": -24.6,
+     "|x|=60,y=-100": -20.8
+    }
+   },
+   "brainstem": {
+    "rule": "remove voxels with |x| <= 15, -50 <= y <= -6, z < -12"
+   },
+   "tissueVoxelsAboveIso": 1741162,
+   "removedByTentoriumCutVoxels": 187944,
+   "removedByBrainstemCutVoxels": 44332,
+   "removedShare": 0.1334
+  },
+  "surfaceField": "GM + WM - CSF, level 0.4 (the CSF probability 0.3 level), inside the brain mask",
+  "depth": "distance to the outside of the hemisphere's morphological closing, radius 12 mm; on the medial cap, CSF summed 15 mm into the hemisphere",
+  "cutProbeMm": 1
+ },
+ "hemispheres": [
+  {
+   "id": 1,
+   "name": "left",
+   "extraction": {
+    "trianglesExtracted": 804280,
+    "components": 65,
+    "keptComponentTriangles": 790124,
+    "droppedComponents": 64,
+    "droppedTriangles": 14156,
+    "largestDroppedTriangles": 2888,
+    "edges": 1185186,
+    "nonManifoldEdges": 0,
+    "openEdges": 0,
+    "overSharedEdges": 0,
+    "inconsistentlyWoundEdges": 0,
+    "degenerateTriangles": 0,
+    "enclosedVolumeCm3": 714.3,
+    "areaCm2": 894.4
+   },
+   "low": {
+    "triangles": 8446,
+    "vertices": 4261,
+    "areaMm2": 81724,
+    "enclosedVolumeCm3": 706.8,
+    "targetTriangles": 8620,
+    "simplifierFlags": [
+     "Regularize"
+    ],
+    "repair": {
+     "droppedPairs": 68,
+     "splitVertices": 69,
+     "holesClosed": 10
+    },
+    "manifold": {
+     "edges": 12669,
+     "nonManifoldEdges": 0,
+     "openEdges": 0,
+     "overSharedEdges": 0,
+     "inconsistentlyWoundEdges": 0
+    }
+   },
+   "errorMm": {
+    "hausdorff": 7.923,
+    "mean": 0.31,
+    "lowToFullP95": 0.001,
+    "fullToLowP95": 0.811,
+    "measuredAgainst": "the undecimated extracted surface, at build time; not in the repository, so not re-measurable in CI"
+   },
+   "lobes": {
+    "vertexCounts": {
+     "frontal": 140688,
+     "parietal": 76949,
+     "temporal": 59830,
+     "occipital": 46098,
+     "insula": 4279,
+     "limbic": 18619
+    },
+    "nonCortex": {
+     "fossaCut": 11489,
+     "medialWall": 4519,
+     "corticalContact": 4264,
+     "corticalContactPatches": 47,
+     "medialWallSurface": 31781
+    },
+    "bandVertices": 83966,
+    "sideSeeds": 641,
+    "sideConflicts": 0,
+    "openFronts": {
+     "occipital/temporal": {
+      "edges": 8,
+      "min": [
+       -43,
+       -59,
+       -22
+      ],
+      "max": [
+       -41,
+       -58,
+       -22
+      ]
+     },
+     "frontal/medialWall": {
+      "edges": 31,
+      "min": [
+       -44,
+       1,
+       -19
+      ],
+      "max": [
+       -42,
+       6,
+       -18
+      ]
+     },
+     "medialWall/temporal": {
+      "edges": 184,
+      "min": [
+       -28,
+       -52,
+       -18
+      ],
+      "max": [
+       -15,
+       -2,
+       17
+      ]
+     },
+     "frontal/temporal": {
+      "edges": 33,
+      "min": [
+       -54,
+       13,
+       -10
+      ],
+      "max": [
+       -52,
+       17,
+       -7
+      ]
+     },
+     "frontal/parietal": {
+      "edges": 233,
+      "min": [
+       -69,
+       -21,
+       -2
+      ],
+      "max": [
+       -41,
+       -6,
+       26
+      ]
+     }
+    },
+    "fragments": {
+     "temporal": [
+      {
+       "vertices": 58365,
+       "centroidMni": [
+        -49,
+        -23,
+        -17
+       ]
+      },
+      {
+       "vertices": 1465,
+       "centroidMni": [
+        -12,
+        -47,
+        -1
+       ]
+      }
+     ],
+     "frontal": [
+      {
+       "vertices": 140688,
+       "centroidMni": [
+        -28,
+        21,
+        25
+       ]
+      }
+     ],
+     "occipital": [
+      {
+       "vertices": 46098,
+       "centroidMni": [
+        -23,
+        -84,
+        9
+       ]
+      }
+     ],
+     "insula": [
+      {
+       "vertices": 4279,
+       "centroidMni": [
+        -41,
+        -2,
+        -1
+       ]
+      }
+     ],
+     "limbic": [
+      {
+       "vertices": 18619,
+       "centroidMni": [
+        -3,
+        -19,
+        26
+       ]
+      }
+     ],
+     "parietal": [
+      {
+       "vertices": 76949,
+       "centroidMni": [
+        -36,
+        -47,
+        48
+       ]
+      }
+     ]
+    },
+    "unreachedVertices": 1631,
+    "boundaries": [
+     {
+      "key": "centralSulcus",
+      "landmark": "central sulcus",
+      "separates": [
+       "frontal",
+       "parietal"
+      ],
+      "kind": "sulcus",
+      "placement": "fundus of the depth > 6 mm basin running from the dorsal margin (its highest vertex) to its lowest vertex, then on to the deepest vertex of the separate basin in line with it below, which reaches to 2 cm above the lateral fissure",
+      "sides": {
+       "frontal": [
+        0,
+        1,
+        0
+       ],
+       "parietal": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "dorsal end, at the dorsal margin",
+        "snap": "sulcus",
+        "givenMni": [
+         -12,
+         -34,
+         75
+        ],
+        "snappedMni": [
+         -13.7,
+         -34,
+         70.3
+        ],
+        "snappedDepthMm": 10.5
+       },
+       {
+        "role": "mid course, chosen on the lateral view",
+        "snap": "sulcus",
+        "givenMni": [
+         -55,
+         -27,
+         58
+        ],
+        "snappedMni": [
+         -53,
+         -27,
+         53.5
+        ],
+        "snappedDepthMm": 4.6
+       },
+       {
+        "role": "lowest vertex of the upper basin",
+        "snap": "sulcus",
+        "givenMni": [
+         -41,
+         -20,
+         38
+        ],
+        "snappedMni": [
+         -38.8,
+         -20,
+         39
+        ],
+        "snappedDepthMm": 23.5
+       },
+       {
+        "role": "ventral end, deepest vertex of the lower basin",
+        "snap": "sulcus",
+        "givenMni": [
+         -52,
+         -8,
+         27
+        ],
+        "snappedMni": [
+         -51.5,
+         -8,
+         27
+        ],
+        "snappedDepthMm": 14.7
+       }
+      ],
+      "lengthMm": 177,
+      "meanDepthMm": 8.6,
+      "sideSeeds": 16,
+      "unseededVertices": 316,
+      "polylineMni": [
+       [
+        -13.7,
+        -34,
+        70.3
+       ],
+       [
+        -14.8,
+        -33,
+        69.2
+       ],
+       [
+        -16,
+        -32.1,
+        68
+       ],
+       [
+        -17,
+        -31.3,
+        68
+       ],
+       [
+        -18,
+        -30.8,
+        67.2
+       ],
+       [
+        -20,
+        -30.2,
+        66.8
+       ],
+       [
+        -22,
+        -30,
+        66
+       ],
+       [
+        -24,
+        -30.1,
+        65
+       ],
+       [
+        -25.1,
+        -30,
+        64.9
+       ],
+       [
+        -26.5,
+        -29,
+        64
+       ],
+       [
+        -27.5,
+        -28,
+        63.5
+       ],
+       [
+        -29,
+        -27.3,
+        63
+       ],
+       [
+        -31,
+        -27.3,
+        62.7
+       ],
+       [
+        -33,
+        -28.3,
+        61.7
+       ],
+       [
+        -35,
+        -29.3,
+        60.7
+       ],
+       [
+        -37,
+        -29.4,
+        60
+       ],
+       [
+        -38.2,
+        -29,
+        59.8
+       ],
+       [
+        -39.9,
+        -28,
+        59
+       ],
+       [
+        -41,
+        -27.4,
+        59
+       ],
+       [
+        -42,
+        -26.6,
+        59
+       ],
+       [
+        -43,
+        -25.5,
+        59
+       ],
+       [
+        -43.9,
+        -24,
+        59
+       ],
+       [
+        -44.4,
+        -23,
+        59
+       ],
+       [
+        -44.6,
+        -21,
+        59
+       ],
+       [
+        -45,
+        -19.2,
+        59.8
+       ],
+       [
+        -45.7,
+        -18,
+        61
+       ],
+       [
+        -46.7,
+        -17,
+        61.3
+       ],
+       [
+        -48,
+        -16.7,
+        62
+       ],
+       [
+        -50,
+        -16.9,
+        62
+       ],
+       [
+        -52,
+        -18,
+        61.1
+       ],
+       [
+        -53,
+        -19.4,
+        59.6
+       ],
+       [
+        -53.2,
+        -21.2,
+        57.8
+       ],
+       [
+        -53.1,
+        -23.1,
+        56
+       ],
+       [
+        -53.5,
+        -25.5,
+        54.5
+       ],
+       [
+        -53,
+        -27,
+        53.5
+       ],
+       [
+        -53.5,
+        -25.5,
+        54.5
+       ],
+       [
+        -53.1,
+        -23.1,
+        56
+       ],
+       [
+        -53.2,
+        -21.2,
+        57.8
+       ],
+       [
+        -53,
+        -19.4,
+        59.6
+       ],
+       [
+        -52,
+        -18,
+        61.1
+       ],
+       [
+        -50,
+        -16.9,
+        62
+       ],
+       [
+        -48,
+        -16.7,
+        62
+       ],
+       [
+        -46.7,
+        -17,
+        61.3
+       ],
+       [
+        -46,
+        -17,
+        60
+       ],
+       [
+        -45.4,
+        -17,
+        58.6
+       ],
+       [
+        -44.8,
+        -17,
+        57.2
+       ],
+       [
+        -44.4,
+        -17,
+        55.6
+       ],
+       [
+        -43.7,
+        -17,
+        54.3
+       ],
+       [
+        -43.2,
+        -17,
+        52.8
+       ],
+       [
+        -43,
+        -16.5,
+        51
+       ],
+       [
+        -43,
+        -16.6,
+        49
+       ],
+       [
+        -43,
+        -17.1,
+        47
+       ],
+       [
+        -44,
+        -18,
+        45
+       ],
+       [
+        -44,
+        -19.7,
+        43
+       ],
+       [
+        -42.7,
+        -20,
+        42.3
+       ],
+       [
+        -41.3,
+        -20,
+        41.7
+       ],
+       [
+        -40.3,
+        -20.3,
+        40.7
+       ],
+       [
+        -39.4,
+        -20.4,
+        39.6
+       ],
+       [
+        -38.8,
+        -19.8,
+        39
+       ],
+       [
+        -40.2,
+        -19.2,
+        39
+       ],
+       [
+        -41.3,
+        -19.3,
+        40
+       ],
+       [
+        -43,
+        -19,
+        40
+       ],
+       [
+        -44.2,
+        -19,
+        40
+       ],
+       [
+        -45.6,
+        -19,
+        41
+       ],
+       [
+        -46.8,
+        -19,
+        42
+       ],
+       [
+        -47.5,
+        -18.5,
+        42.5
+       ],
+       [
+        -49.2,
+        -18.2,
+        42.8
+       ],
+       [
+        -50.1,
+        -17.1,
+        43
+       ],
+       [
+        -51.6,
+        -16.6,
+        44
+       ],
+       [
+        -53,
+        -16,
+        44.8
+       ],
+       [
+        -54,
+        -15,
+        45.4
+       ],
+       [
+        -55.1,
+        -14.1,
+        45.9
+       ],
+       [
+        -56,
+        -13,
+        46.3
+       ],
+       [
+        -57,
+        -12,
+        46.1
+       ],
+       [
+        -57.5,
+        -11,
+        45.5
+       ],
+       [
+        -58.3,
+        -10.3,
+        44.7
+       ],
+       [
+        -59,
+        -9.8,
+        44
+       ],
+       [
+        -59,
+        -9,
+        42.3
+       ],
+       [
+        -59,
+        -8,
+        41
+       ],
+       [
+        -60,
+        -8,
+        39.7
+       ],
+       [
+        -61,
+        -7,
+        38.3
+       ],
+       [
+        -62,
+        -6,
+        37
+       ],
+       [
+        -62,
+        -5.4,
+        36
+       ],
+       [
+        -62,
+        -4.7,
+        35
+       ],
+       [
+        -62,
+        -4,
+        33.1
+       ],
+       [
+        -61.3,
+        -3,
+        32.7
+       ],
+       [
+        -60.4,
+        -3,
+        31.6
+       ],
+       [
+        -59.4,
+        -3,
+        30.6
+       ],
+       [
+        -58,
+        -3.4,
+        30
+       ],
+       [
+        -56.7,
+        -4,
+        29.3
+       ],
+       [
+        -55.5,
+        -5,
+        28.5
+       ],
+       [
+        -54.1,
+        -6,
+        27.9
+       ],
+       [
+        -53,
+        -6.6,
+        27.4
+       ],
+       [
+        -52,
+        -7.2,
+        27
+       ]
+      ]
+     },
+     {
+      "key": "centralToCingulate",
+      "landmark": "central sulcus carried over the dorsal margin to the cingulate sulcus",
+      "separates": [
+       "frontal",
+       "parietal"
+      ],
+      "kind": "line",
+      "placement": "line from the central sulcus dorsal end, across the medial surface at the same coronal level, to the cingulate sulcus",
+      "sides": {
+       "frontal": [
+        0,
+        1,
+        0
+       ],
+       "parietal": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "central sulcus dorsal end",
+        "snap": "sulcus",
+        "givenMni": [
+         -12,
+         -34,
+         75
+        ],
+        "snappedMni": [
+         -13.7,
+         -34,
+         70.3
+        ],
+        "snappedDepthMm": 10.5
+       },
+       {
+        "role": "medial surface below the margin",
+        "snap": "surface",
+        "givenMni": [
+         -2,
+         -33,
+         63
+        ],
+        "snappedMni": [
+         -1.6,
+         -33,
+         63
+        ],
+        "snappedDepthMm": 0.6
+       },
+       {
+        "role": "cingulate sulcus at the marginal ramus",
+        "snap": "sulcus",
+        "givenMni": [
+         -14,
+         -31,
+         41
+        ],
+        "snappedMni": [
+         -16.2,
+         -34.2,
+         43
+        ],
+        "snappedDepthMm": 15.3
+       }
+      ],
+      "lengthMm": 59.1,
+      "meanDepthMm": 4.5,
+      "sideSeeds": 46,
+      "unseededVertices": 50,
+      "polylineMni": [
+       [
+        -13.7,
+        -34,
+        70.3
+       ],
+       [
+        -12.9,
+        -35,
+        70
+       ],
+       [
+        -11.7,
+        -36,
+        70
+       ],
+       [
+        -10,
+        -36.9,
+        70.1
+       ],
+       [
+        -8.6,
+        -37,
+        71
+       ],
+       [
+        -7.4,
+        -37,
+        73
+       ],
+       [
+        -5.6,
+        -37,
+        74.4
+       ],
+       [
+        -3.4,
+        -37,
+        74.6
+       ],
+       [
+        -2.2,
+        -37,
+        73.8
+       ],
+       [
+        -1.3,
+        -36.3,
+        72.7
+       ],
+       [
+        -0.8,
+        -36,
+        71.2
+       ],
+       [
+        -0.7,
+        -36,
+        69.3
+       ],
+       [
+        -1,
+        -35.8,
+        68
+       ],
+       [
+        -1.2,
+        -35,
+        66.8
+       ],
+       [
+        -2,
+        -35,
+        64.1
+       ],
+       [
+        -2,
+        -34.1,
+        63
+       ],
+       [
+        -1.9,
+        -33,
+        62.1
+       ],
+       [
+        -2.7,
+        -33.7,
+        60.3
+       ],
+       [
+        -2.3,
+        -34,
+        58.7
+       ],
+       [
+        -1.8,
+        -34,
+        57.2
+       ],
+       [
+        -1.7,
+        -35,
+        55.3
+       ],
+       [
+        -3,
+        -36,
+        52.9
+       ],
+       [
+        -5.3,
+        -36.3,
+        52
+       ],
+       [
+        -7,
+        -36,
+        52
+       ],
+       [
+        -8.4,
+        -35.4,
+        51.6
+       ],
+       [
+        -9.7,
+        -34.7,
+        50.3
+       ],
+       [
+        -11.5,
+        -34.5,
+        48.5
+       ],
+       [
+        -13.2,
+        -34.2,
+        46.8
+       ],
+       [
+        -14.9,
+        -33.9,
+        45.1
+       ],
+       [
+        -16.2,
+        -34.2,
+        43
+       ]
+      ]
+     },
+     {
+      "key": "centralToInsula",
+      "landmark": "central sulcus ventral end to the circular sulcus",
+      "separates": [
+       "frontal",
+       "parietal"
+      ],
+      "kind": "line",
+      "placement": "line from the central sulcus ventral end down the opercular face to the superior limb of the circular sulcus",
+      "sides": {
+       "frontal": [
+        0,
+        1,
+        0
+       ],
+       "parietal": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "central sulcus ventral end",
+        "snap": "sulcus",
+        "givenMni": [
+         -52,
+         -8,
+         27
+        ],
+        "snappedMni": [
+         -51.5,
+         -8,
+         27
+        ],
+        "snappedDepthMm": 14.7
+       },
+       {
+        "role": "circular sulcus, superior limb",
+        "snap": "sulcus",
+        "givenMni": [
+         -36,
+         -9,
+         14
+        ],
+        "snappedMni": [
+         -35.7,
+         -10,
+         14.3
+        ],
+        "snappedDepthMm": 30.8
+       }
+      ],
+      "lengthMm": 63.6,
+      "meanDepthMm": 11.5,
+      "sideSeeds": 35,
+      "unseededVertices": 51,
+      "polylineMni": [
+       [
+        -51.5,
+        -8,
+        27
+       ],
+       [
+        -52.1,
+        -7,
+        26.9
+       ],
+       [
+        -53.9,
+        -6,
+        25.1
+       ],
+       [
+        -55,
+        -6,
+        24.3
+       ],
+       [
+        -57,
+        -6,
+        22.9
+       ],
+       [
+        -59,
+        -6,
+        21
+       ],
+       [
+        -60,
+        -6,
+        19
+       ],
+       [
+        -61,
+        -6,
+        18
+       ],
+       [
+        -62.3,
+        -5.3,
+        16.7
+       ],
+       [
+        -63.7,
+        -4.7,
+        15.3
+       ],
+       [
+        -65.6,
+        -5,
+        14.4
+       ],
+       [
+        -67.1,
+        -6,
+        13
+       ],
+       [
+        -67.4,
+        -8,
+        11
+       ],
+       [
+        -67,
+        -9.5,
+        9.5
+       ],
+       [
+        -66,
+        -10.7,
+        9
+       ],
+       [
+        -65,
+        -11.3,
+        9
+       ],
+       [
+        -63,
+        -11.6,
+        9
+       ],
+       [
+        -61.5,
+        -12,
+        9.5
+       ],
+       [
+        -59.8,
+        -12,
+        10.2
+       ],
+       [
+        -57.9,
+        -12,
+        11.1
+       ],
+       [
+        -56,
+        -12.3,
+        11.7
+       ],
+       [
+        -54,
+        -12.6,
+        12
+       ],
+       [
+        -52,
+        -12.8,
+        12
+       ],
+       [
+        -51,
+        -13.2,
+        12
+       ],
+       [
+        -49,
+        -13.5,
+        12
+       ],
+       [
+        -47,
+        -13.6,
+        12.4
+       ],
+       [
+        -45,
+        -13.2,
+        12.8
+       ],
+       [
+        -43,
+        -12.1,
+        13
+       ],
+       [
+        -40.4,
+        -11,
+        13.6
+       ],
+       [
+        -37.4,
+        -10,
+        14.6
+       ],
+       [
+        -35.7,
+        -10,
+        14.3
+       ]
+      ]
+     },
+     {
+      "key": "lateralFissureStem",
+      "landmark": "lateral fissure, stem",
+      "separates": [
+       "frontal",
+       "temporal"
+      ],
+      "kind": "sulcus",
+      "placement": "from the limen of the insula forward through the fissure to where its stem opens on the inferior surface, along the groove between the temporal pole and the orbital surface (points chosen on the inferior view, snapped into the groove), then medially to the medial wall",
+      "sides": {
+       "frontal": [
+        0,
+        1,
+        1
+       ],
+       "temporal": [
+        0,
+        -1,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "circular sulcus at the limen",
+        "snap": "sulcus",
+        "givenMni": [
+         -35,
+         17,
+         -11
+        ],
+        "snappedMni": [
+         -32.3,
+         18,
+         -9.3
+        ],
+        "snappedDepthMm": 19.6
+       },
+       {
+        "role": "lateral end of the stem groove",
+        "snap": "sulcus",
+        "givenMni": [
+         -44,
+         23,
+         -20
+        ],
+        "snappedMni": [
+         -41.1,
+         19,
+         -20
+        ],
+        "snappedDepthMm": 9.9
+       },
+       {
+        "role": "stem groove",
+        "snap": "sulcus",
+        "givenMni": [
+         -38,
+         24,
+         -23
+        ],
+        "snappedMni": [
+         -39.5,
+         19.5,
+         -22
+        ],
+        "snappedDepthMm": 9.6
+       },
+       {
+        "role": "medial end of the stem groove",
+        "snap": "sulcus",
+        "givenMni": [
+         -24,
+         19,
+         -26
+        ],
+        "snappedMni": [
+         -26,
+         16,
+         -28.8
+        ],
+        "snappedDepthMm": 6.5
+       },
+       {
+        "role": "medial end, on the anterior medial-wall line",
+        "snap": "surface",
+        "givenMni": [
+         -7,
+         8,
+         -11
+        ],
+        "snappedMni": [
+         -4,
+         5.3,
+         -12.7
+        ],
+        "snappedDepthMm": 2.4
+       }
+      ],
+      "lengthMm": 73.1,
+      "meanDepthMm": 9.5,
+      "sideSeeds": 0,
+      "unseededVertices": 125,
+      "polylineMni": [
+       [
+        -32.3,
+        18,
+        -9.3
+       ],
+       [
+        -31,
+        18.4,
+        -10
+       ],
+       [
+        -31,
+        19,
+        -12
+       ],
+       [
+        -31.6,
+        19.4,
+        -12
+       ],
+       [
+        -34,
+        19,
+        -12.8
+       ],
+       [
+        -36.6,
+        18,
+        -14.6
+       ],
+       [
+        -38,
+        17.4,
+        -16.6
+       ],
+       [
+        -39.3,
+        17.7,
+        -18.3
+       ],
+       [
+        -40.5,
+        18.5,
+        -19.5
+       ],
+       [
+        -41.1,
+        19,
+        -20.1
+       ],
+       [
+        -40,
+        19,
+        -21
+       ],
+       [
+        -39.1,
+        19,
+        -22.1
+       ],
+       [
+        -38,
+        18.4,
+        -22.6
+       ],
+       [
+        -37,
+        17.8,
+        -23.2
+       ],
+       [
+        -35.7,
+        17,
+        -24
+       ],
+       [
+        -34.1,
+        16,
+        -25
+       ],
+       [
+        -33.3,
+        15.7,
+        -26
+       ],
+       [
+        -32,
+        15,
+        -27
+       ],
+       [
+        -31,
+        15,
+        -27.9
+       ],
+       [
+        -30,
+        15,
+        -28.5
+       ],
+       [
+        -28.2,
+        15,
+        -29
+       ],
+       [
+        -27,
+        15,
+        -29
+       ],
+       [
+        -26,
+        15,
+        -28.9
+       ],
+       [
+        -25.4,
+        13.6,
+        -28.4
+       ],
+       [
+        -24.8,
+        12.2,
+        -27.8
+       ],
+       [
+        -24.2,
+        10.8,
+        -27.2
+       ],
+       [
+        -23.4,
+        9.6,
+        -26.4
+       ],
+       [
+        -22.5,
+        8.5,
+        -25.5
+       ],
+       [
+        -21.3,
+        7.7,
+        -25
+       ],
+       [
+        -19.9,
+        7.1,
+        -23.9
+       ],
+       [
+        -18,
+        7,
+        -22.4
+       ],
+       [
+        -16.3,
+        6.7,
+        -21.3
+       ],
+       [
+        -15.2,
+        5.8,
+        -20.2
+       ],
+       [
+        -13.6,
+        5.4,
+        -18.6
+       ],
+       [
+        -12,
+        5,
+        -17
+       ],
+       [
+        -10,
+        5,
+        -16.2
+       ],
+       [
+        -8,
+        5,
+        -15.4
+       ],
+       [
+        -6.1,
+        4.9,
+        -14.1
+       ],
+       [
+        -4.5,
+        5,
+        -13
+       ]
+      ]
+     },
+     {
+      "key": "lateralFissureLip",
+      "landmark": "lateral fissure, its opening on the lateral surface",
+      "separates": [
+       "frontal",
+       "parietal",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line along the opening of the fissure on the lateral surface, from the lateral end of its stem to its posterior end, 5 mm wide: in the template the opercula and the superior temporal gyrus touch across the opening in places, and the fissure, not its fundus, is what separates the lobes there; points are the most lateral surface at the fissure on the lateral view, split where the central sulcus meets it",
+      "sides": [
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       }
+      ],
+      "bandMm": 5,
+      "controlPoints": [
+       {
+        "role": "lateral end of the stem groove",
+        "snap": "sulcus",
+        "givenMni": [
+         -44,
+         23,
+         -20
+        ],
+        "snappedMni": [
+         -41.1,
+         19,
+         -20
+        ],
+        "snappedDepthMm": 9.9
+       },
+       {
+        "role": "anterior opening",
+        "snap": "surface",
+        "givenMni": [
+         -54,
+         21,
+         -4
+        ],
+        "snappedMni": [
+         -54.2,
+         20.8,
+         -4
+        ],
+        "snappedDepthMm": 1.8
+       },
+       {
+        "role": "opening",
+        "snap": "surface",
+        "givenMni": [
+         -62,
+         4,
+         -1
+        ],
+        "snappedMni": [
+         -62,
+         3.8,
+         -1.2
+        ],
+        "snappedDepthMm": 1
+       },
+       {
+        "role": "opening, below the central sulcus",
+        "snap": "surface",
+        "givenMni": [
+         -66,
+         -10,
+         5
+        ],
+        "snappedMni": [
+         -66,
+         -10,
+         5
+        ],
+        "snappedDepthMm": 1.4
+       },
+       {
+        "role": "opening",
+        "snap": "surface",
+        "givenMni": [
+         -70,
+         -26,
+         12
+        ],
+        "snappedMni": [
+         -70.2,
+         -26,
+         12
+        ],
+        "snappedDepthMm": 0.8
+       },
+       {
+        "role": "opening",
+        "snap": "surface",
+        "givenMni": [
+         -69,
+         -41,
+         19
+        ],
+        "snappedMni": [
+         -69.3,
+         -41,
+         19
+        ],
+        "snappedDepthMm": 0.7
+       },
+       {
+        "role": "posterior end of the fissure",
+        "snap": "sulcus",
+        "givenMni": [
+         -57,
+         -46,
+         29
+        ],
+        "snappedMni": [
+         -53,
+         -44,
+         26.8
+        ],
+        "snappedDepthMm": 14.9
+       }
+      ],
+      "lengthMm": 131.5,
+      "meanDepthMm": 3.2,
+      "sideSeeds": 49,
+      "unseededVertices": 111,
+      "polylineMni": [
+       [
+        -41.1,
+        19,
+        -20
+       ],
+       [
+        -42.2,
+        18.8,
+        -19
+       ],
+       [
+        -43,
+        19,
+        -18
+       ],
+       [
+        -44,
+        19,
+        -16.2
+       ],
+       [
+        -45,
+        19.5,
+        -15.5
+       ],
+       [
+        -46,
+        20,
+        -14.8
+       ],
+       [
+        -47,
+        20,
+        -13.2
+       ],
+       [
+        -47.3,
+        20,
+        -12
+       ],
+       [
+        -48,
+        20.5,
+        -10.5
+       ],
+       [
+        -49,
+        21.7,
+        -9.3
+       ],
+       [
+        -49,
+        23,
+        -7.5
+       ],
+       [
+        -50,
+        22.6,
+        -6.4
+       ],
+       [
+        -51.4,
+        21.6,
+        -6
+       ],
+       [
+        -53,
+        21,
+        -5.2
+       ],
+       [
+        -54,
+        20.8,
+        -4.2
+       ],
+       [
+        -54,
+        20,
+        -3
+       ],
+       [
+        -54,
+        19.7,
+        -2
+       ],
+       [
+        -52.8,
+        19.2,
+        0
+       ],
+       [
+        -52.6,
+        18,
+        0.4
+       ],
+       [
+        -55.1,
+        16,
+        -1.1
+       ],
+       [
+        -55.6,
+        14,
+        -1.6
+       ],
+       [
+        -56,
+        12,
+        -1.4
+       ],
+       [
+        -56,
+        10,
+        -1
+       ],
+       [
+        -56.4,
+        8.6,
+        -1
+       ],
+       [
+        -57,
+        7,
+        -1
+       ],
+       [
+        -59,
+        6.3,
+        -1.7
+       ],
+       [
+        -61,
+        5,
+        -1.6
+       ],
+       [
+        -62,
+        3.7,
+        -1
+       ],
+       [
+        -63,
+        2,
+        -0.3
+       ],
+       [
+        -63,
+        1,
+        0.8
+       ],
+       [
+        -64,
+        -0.6,
+        1
+       ],
+       [
+        -64,
+        -1.6,
+        2
+       ],
+       [
+        -65,
+        -4,
+        2
+       ],
+       [
+        -65,
+        -5,
+        2.9
+       ],
+       [
+        -65,
+        -6,
+        3.5
+       ],
+       [
+        -65.4,
+        -7.4,
+        4
+       ],
+       [
+        -66,
+        -9,
+        4.5
+       ],
+       [
+        -66,
+        -10,
+        5
+       ],
+       [
+        -66,
+        -12,
+        5.2
+       ],
+       [
+        -66.6,
+        -13.6,
+        6
+       ],
+       [
+        -67.5,
+        -14.5,
+        7
+       ],
+       [
+        -68,
+        -15.6,
+        8
+       ],
+       [
+        -68,
+        -16.5,
+        9
+       ],
+       [
+        -69,
+        -18,
+        9.2
+       ],
+       [
+        -69.1,
+        -19.1,
+        10
+       ],
+       [
+        -70,
+        -21.7,
+        10
+       ],
+       [
+        -70,
+        -23,
+        10.8
+       ],
+       [
+        -70,
+        -24,
+        11.6
+       ],
+       [
+        -70.1,
+        -25.1,
+        12
+       ],
+       [
+        -70,
+        -27,
+        12.9
+       ],
+       [
+        -70,
+        -28,
+        13.3
+       ],
+       [
+        -70,
+        -29.8,
+        14
+       ],
+       [
+        -70,
+        -31,
+        14.3
+       ],
+       [
+        -69.6,
+        -32.6,
+        15
+       ],
+       [
+        -69,
+        -34,
+        15.8
+       ],
+       [
+        -69,
+        -35,
+        16.1
+       ],
+       [
+        -69,
+        -36,
+        17.5
+       ],
+       [
+        -69,
+        -37,
+        18.4
+       ],
+       [
+        -69.1,
+        -38.1,
+        19
+       ],
+       [
+        -69.3,
+        -40.3,
+        19
+       ],
+       [
+        -69,
+        -41,
+        20.5
+       ],
+       [
+        -68,
+        -41,
+        22.4
+       ],
+       [
+        -66.8,
+        -41.8,
+        23.2
+       ],
+       [
+        -65,
+        -42,
+        23.9
+       ],
+       [
+        -63,
+        -42,
+        24.2
+       ],
+       [
+        -61,
+        -42,
+        24.4
+       ],
+       [
+        -59.2,
+        -42.2,
+        24.8
+       ],
+       [
+        -58,
+        -43,
+        25.1
+       ],
+       [
+        -56.5,
+        -43.5,
+        25.5
+       ],
+       [
+        -55,
+        -44,
+        26.3
+       ],
+       [
+        -53,
+        -44,
+        26.8
+       ]
+      ]
+     },
+     {
+      "key": "lateralFissurePosterior",
+      "landmark": "lateral fissure, posterior ramus",
+      "separates": [
+       "parietal",
+       "temporal"
+      ],
+      "kind": "sulcus",
+      "placement": "from the posterior point of the circular sulcus along the posterior ramus to its end, the most posterior vertex of the fissure basin",
+      "sides": {
+       "parietal": [
+        0,
+        0,
+        1
+       ],
+       "temporal": [
+        0,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "circular sulcus, posterior",
+        "snap": "sulcus",
+        "givenMni": [
+         -35,
+         -28,
+         17
+        ],
+        "snappedMni": [
+         -35,
+         -31.6,
+         20
+        ],
+        "snappedDepthMm": 33.7
+       },
+       {
+        "role": "posterior end of the fissure",
+        "snap": "sulcus",
+        "givenMni": [
+         -57,
+         -46,
+         29
+        ],
+        "snappedMni": [
+         -53,
+         -44,
+         26.8
+        ],
+        "snappedDepthMm": 14.9
+       }
+      ],
+      "lengthMm": 44.6,
+      "meanDepthMm": 20.4,
+      "sideSeeds": 0,
+      "unseededVertices": 83,
+      "polylineMni": [
+       [
+        -35,
+        -31.6,
+        20
+       ],
+       [
+        -37,
+        -32.6,
+        20
+       ],
+       [
+        -38,
+        -33,
+        18
+       ],
+       [
+        -39,
+        -33,
+        16.4
+       ],
+       [
+        -41,
+        -33,
+        15.1
+       ],
+       [
+        -43,
+        -33,
+        14.6
+       ],
+       [
+        -45,
+        -33,
+        14.2
+       ],
+       [
+        -47,
+        -33,
+        14.1
+       ],
+       [
+        -48.3,
+        -33,
+        15
+       ],
+       [
+        -49.6,
+        -34.6,
+        15.4
+       ],
+       [
+        -50.6,
+        -35,
+        16.4
+       ],
+       [
+        -52.1,
+        -35,
+        16.9
+       ],
+       [
+        -53.7,
+        -35,
+        17.3
+       ],
+       [
+        -54.9,
+        -35,
+        18.1
+       ],
+       [
+        -55.6,
+        -35,
+        19.4
+       ],
+       [
+        -55,
+        -35.2,
+        21
+       ],
+       [
+        -54.1,
+        -36.1,
+        21.9
+       ],
+       [
+        -52.9,
+        -36.9,
+        23.1
+       ],
+       [
+        -51.9,
+        -37.9,
+        24.1
+       ],
+       [
+        -51.1,
+        -39.1,
+        24.9
+       ],
+       [
+        -50,
+        -40,
+        26
+       ],
+       [
+        -51,
+        -42.5,
+        25.5
+       ],
+       [
+        -52.4,
+        -43.4,
+        26
+       ]
+      ]
+     },
+     {
+      "key": "lateralFissureToOccipital",
+      "landmark": "line from the posterior end of the lateral fissure to the parieto-occipital line",
+      "separates": [
+       "parietal",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line on the lateral surface",
+      "sides": {
+       "parietal": [
+        0,
+        0,
+        1
+       ],
+       "temporal": [
+        0,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "posterior end of the fissure",
+        "snap": "sulcus",
+        "givenMni": [
+         -57,
+         -46,
+         29
+        ],
+        "snappedMni": [
+         -53,
+         -44,
+         26.8
+        ],
+        "snappedDepthMm": 14.9
+       },
+       {
+        "role": "on the parieto-occipital line, chosen on the lateral view",
+        "snap": "surface",
+        "givenMni": [
+         -56,
+         -74,
+         19
+        ],
+        "snappedMni": [
+         -55.8,
+         -74,
+         19
+        ],
+        "snappedDepthMm": 0.2
+       }
+      ],
+      "lengthMm": 51.7,
+      "meanDepthMm": 2.8,
+      "sideSeeds": 85,
+      "unseededVertices": 24,
+      "polylineMni": [
+       [
+        -53,
+        -44,
+        26.8
+       ],
+       [
+        -55,
+        -44,
+        26.3
+       ],
+       [
+        -57,
+        -44,
+        25.5
+       ],
+       [
+        -59,
+        -44,
+        25
+       ],
+       [
+        -61,
+        -44,
+        24.7
+       ],
+       [
+        -62.7,
+        -43.7,
+        24.3
+       ],
+       [
+        -64.8,
+        -43.8,
+        24.2
+       ],
+       [
+        -66.4,
+        -45,
+        23.6
+       ],
+       [
+        -66.8,
+        -47,
+        23.2
+       ],
+       [
+        -66.7,
+        -49,
+        23
+       ],
+       [
+        -66.1,
+        -51,
+        23
+       ],
+       [
+        -65.7,
+        -52,
+        23
+       ],
+       [
+        -65.8,
+        -54,
+        23
+       ],
+       [
+        -65.4,
+        -56,
+        23
+       ],
+       [
+        -65,
+        -57.1,
+        23
+       ],
+       [
+        -64.1,
+        -59,
+        23
+       ],
+       [
+        -63.4,
+        -60,
+        23
+       ],
+       [
+        -62.9,
+        -61,
+        23
+       ],
+       [
+        -62,
+        -62.2,
+        22.8
+       ],
+       [
+        -60.7,
+        -63,
+        22
+       ],
+       [
+        -59,
+        -63.4,
+        22
+       ],
+       [
+        -58,
+        -64.1,
+        21.9
+       ],
+       [
+        -59.2,
+        -66,
+        22
+       ],
+       [
+        -59.2,
+        -68,
+        21.8
+       ],
+       [
+        -58.9,
+        -69,
+        21.1
+       ],
+       [
+        -58,
+        -70.7,
+        20.3
+       ],
+       [
+        -57.2,
+        -72,
+        19.8
+       ],
+       [
+        -56.5,
+        -73,
+        19
+       ],
+       [
+        -55.8,
+        -74,
+        19
+       ]
+      ]
+     },
+     {
+      "key": "parietoOccipitalLine",
+      "landmark": "parieto-occipital sulcus to preoccipital notch",
+      "separates": [
+       "occipital",
+       "parietal",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line over the lateral surface from where the parieto-occipital sulcus notches the dorsal margin to the preoccipital notch on the inferolateral margin",
+      "sides": [
+       {
+        "parietal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "temporal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       }
+      ],
+      "controlPoints": [
+       {
+        "role": "parieto-occipital sulcus at the dorsal margin",
+        "snap": "sulcus",
+        "givenMni": [
+         -12,
+         -78,
+         47
+        ],
+        "snappedMni": [
+         -13,
+         -74.3,
+         47
+        ],
+        "snappedDepthMm": 8.9
+       },
+       {
+        "role": "lateral surface, where the lateral fissure line meets it",
+        "snap": "surface",
+        "givenMni": [
+         -56,
+         -74,
+         19
+        ],
+        "snappedMni": [
+         -55.8,
+         -74,
+         19
+        ],
+        "snappedDepthMm": 0.2
+       },
+       {
+        "role": "preoccipital notch",
+        "snap": "surface",
+        "givenMni": [
+         -58,
+         -69,
+         -11
+        ],
+        "snappedMni": [
+         -58.1,
+         -69.1,
+         -11
+        ],
+        "snappedDepthMm": 0.8
+       }
+      ],
+      "lengthMm": 113.5,
+      "meanDepthMm": 3.2,
+      "sideSeeds": 134,
+      "unseededVertices": 56,
+      "polylineMni": [
+       [
+        -13,
+        -74.3,
+        47
+       ],
+       [
+        -14.3,
+        -75,
+        47.7
+       ],
+       [
+        -15.2,
+        -75,
+        48.8
+       ],
+       [
+        -16.4,
+        -75,
+        49.6
+       ],
+       [
+        -18,
+        -74.1,
+        49.9
+       ],
+       [
+        -18.7,
+        -73,
+        50
+       ],
+       [
+        -20,
+        -72.2,
+        49.8
+       ],
+       [
+        -22,
+        -72,
+        49
+       ],
+       [
+        -23.2,
+        -72,
+        47
+       ],
+       [
+        -23.8,
+        -72,
+        45
+       ],
+       [
+        -24,
+        -72,
+        43
+       ],
+       [
+        -24.5,
+        -72,
+        41.5
+       ],
+       [
+        -26.5,
+        -74.5,
+        40.5
+       ],
+       [
+        -27.8,
+        -75.8,
+        41.2
+       ],
+       [
+        -29,
+        -77.1,
+        41.9
+       ],
+       [
+        -29.5,
+        -79,
+        42
+       ],
+       [
+        -29.4,
+        -81,
+        42
+       ],
+       [
+        -29.7,
+        -83,
+        42
+       ],
+       [
+        -31.8,
+        -84.8,
+        42
+       ],
+       [
+        -33.6,
+        -84.6,
+        42
+       ],
+       [
+        -34.9,
+        -83.9,
+        42
+       ],
+       [
+        -35.8,
+        -82.8,
+        42
+       ],
+       [
+        -36.7,
+        -81.7,
+        41.3
+       ],
+       [
+        -37.3,
+        -81,
+        40.7
+       ],
+       [
+        -38.2,
+        -80,
+        40
+       ],
+       [
+        -40.7,
+        -80,
+        39
+       ],
+       [
+        -42.8,
+        -80,
+        38.2
+       ],
+       [
+        -44.7,
+        -80,
+        37
+       ],
+       [
+        -46.7,
+        -80,
+        35
+       ],
+       [
+        -47.8,
+        -80,
+        33
+       ],
+       [
+        -48.7,
+        -80,
+        31
+       ],
+       [
+        -49.4,
+        -80,
+        29
+       ],
+       [
+        -50,
+        -79.5,
+        27.5
+       ],
+       [
+        -50.7,
+        -78.7,
+        26.3
+       ],
+       [
+        -52,
+        -78,
+        25
+       ],
+       [
+        -53.1,
+        -77.1,
+        23.9
+       ],
+       [
+        -54,
+        -76.3,
+        22.7
+       ],
+       [
+        -54.5,
+        -75.5,
+        21.5
+       ],
+       [
+        -55.2,
+        -75.2,
+        19.8
+       ],
+       [
+        -55.8,
+        -74,
+        19
+       ],
+       [
+        -56,
+        -73.4,
+        17.6
+       ],
+       [
+        -56,
+        -73,
+        16
+       ],
+       [
+        -56,
+        -72.4,
+        14.6
+       ],
+       [
+        -56,
+        -71.5,
+        13.5
+       ],
+       [
+        -55.6,
+        -70.6,
+        12.4
+       ],
+       [
+        -56,
+        -71,
+        10.2
+       ],
+       [
+        -57.1,
+        -72.1,
+        8.9
+       ],
+       [
+        -57.6,
+        -72.6,
+        6.4
+       ],
+       [
+        -57.7,
+        -72.7,
+        4.3
+       ],
+       [
+        -58,
+        -72.5,
+        2.5
+       ],
+       [
+        -58,
+        -72.2,
+        0.8
+       ],
+       [
+        -58,
+        -71.7,
+        -0.7
+       ],
+       [
+        -58,
+        -71.1,
+        -2.1
+       ],
+       [
+        -57.8,
+        -70.8,
+        -3.8
+       ],
+       [
+        -58,
+        -70.6,
+        -5.6
+       ],
+       [
+        -58,
+        -70.3,
+        -7.3
+       ],
+       [
+        -58,
+        -69.8,
+        -8.8
+       ],
+       [
+        -58,
+        -69.3,
+        -10.3
+       ]
+      ]
+     },
+     {
+      "key": "parietoOccipitalSulcus",
+      "landmark": "parieto-occipital sulcus",
+      "separates": [
+       "occipital",
+       "parietal",
+       "limbic"
+      ],
+      "kind": "sulcus",
+      "placement": "fundus of the two medial basins (depth > 6 mm) that run from the dorsal margin to the calcarine junction",
+      "sides": [
+       {
+        "parietal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "limbic": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "limbic": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       }
+      ],
+      "controlPoints": [
+       {
+        "role": "at the dorsal margin",
+        "snap": "sulcus",
+        "givenMni": [
+         -12,
+         -78,
+         47
+        ],
+        "snappedMni": [
+         -13,
+         -74.3,
+         47
+        ],
+        "snappedDepthMm": 8.9
+       },
+       {
+        "role": "upper basin",
+        "snap": "sulcus",
+        "givenMni": [
+         -16,
+         -78,
+         39
+        ],
+        "snappedMni": [
+         -16.3,
+         -75,
+         35.7
+        ],
+        "snappedDepthMm": 15.2
+       },
+       {
+        "role": "where the subparietal sulcus line meets it",
+        "snap": "sulcus",
+        "givenMni": [
+         -18,
+         -68,
+         28
+        ],
+        "snappedMni": [
+         -18.3,
+         -69,
+         23.7
+        ],
+        "snappedDepthMm": 17.3
+       },
+       {
+        "role": "deepest vertex",
+        "snap": "sulcus",
+        "givenMni": [
+         -20,
+         -61,
+         20
+        ],
+        "snappedMni": [
+         -20.4,
+         -61.4,
+         20
+        ],
+        "snappedDepthMm": 19.9
+       },
+       {
+        "role": "junction with the calcarine sulcus",
+        "snap": "sulcus",
+        "givenMni": [
+         -16,
+         -56,
+         4
+        ],
+        "snappedMni": [
+         -20.9,
+         -56.9,
+         4.1
+        ],
+        "snappedDepthMm": 16.7
+       }
+      ],
+      "lengthMm": 137.5,
+      "meanDepthMm": 11.3,
+      "sideSeeds": 0,
+      "unseededVertices": 267,
+      "polylineMni": [
+       [
+        -13,
+        -74.3,
+        47
+       ],
+       [
+        -13,
+        -76.2,
+        46.8
+       ],
+       [
+        -12,
+        -77.3,
+        47
+       ],
+       [
+        -11,
+        -78.3,
+        47
+       ],
+       [
+        -10.1,
+        -80,
+        47.9
+       ],
+       [
+        -10,
+        -81.6,
+        47
+       ],
+       [
+        -10,
+        -81.9,
+        45
+       ],
+       [
+        -11.8,
+        -81,
+        43.2
+       ],
+       [
+        -12.8,
+        -80,
+        42.2
+       ],
+       [
+        -13,
+        -79,
+        41.2
+       ],
+       [
+        -13.5,
+        -78,
+        40.5
+       ],
+       [
+        -14.4,
+        -77,
+        39.6
+       ],
+       [
+        -15,
+        -76,
+        38.6
+       ],
+       [
+        -16,
+        -75.2,
+        37
+       ],
+       [
+        -16.3,
+        -75,
+        35.7
+       ],
+       [
+        -16,
+        -76.3,
+        35
+       ],
+       [
+        -14.4,
+        -77,
+        34.6
+       ],
+       [
+        -13.7,
+        -77,
+        33.3
+       ],
+       [
+        -13.9,
+        -76.9,
+        32
+       ],
+       [
+        -14,
+        -75.9,
+        32
+       ],
+       [
+        -14,
+        -75.4,
+        30
+       ],
+       [
+        -14,
+        -74.7,
+        29
+       ],
+       [
+        -14,
+        -73.6,
+        28
+       ],
+       [
+        -15,
+        -73,
+        26.7
+       ],
+       [
+        -16,
+        -72,
+        25.4
+       ],
+       [
+        -16.5,
+        -70.5,
+        25
+       ],
+       [
+        -18,
+        -70,
+        24
+       ],
+       [
+        -18,
+        -68.8,
+        24
+       ],
+       [
+        -16.8,
+        -69,
+        24.2
+       ],
+       [
+        -15,
+        -69.9,
+        25
+       ],
+       [
+        -14,
+        -70.5,
+        25
+       ],
+       [
+        -13,
+        -71.7,
+        25
+       ],
+       [
+        -13,
+        -72.5,
+        25.5
+       ],
+       [
+        -11.7,
+        -73,
+        26.3
+       ],
+       [
+        -10.1,
+        -74,
+        27.9
+       ],
+       [
+        -8.5,
+        -74,
+        28.5
+       ],
+       [
+        -6.7,
+        -74,
+        28.3
+       ],
+       [
+        -5,
+        -73.6,
+        28
+       ],
+       [
+        -3,
+        -73.6,
+        28
+       ],
+       [
+        -4,
+        -73,
+        27
+       ],
+       [
+        -5.4,
+        -72.4,
+        26
+       ],
+       [
+        -6.7,
+        -71.7,
+        25.3
+       ],
+       [
+        -7.8,
+        -70.8,
+        24.2
+       ],
+       [
+        -9,
+        -70.1,
+        22.9
+       ],
+       [
+        -10.9,
+        -70,
+        22.1
+       ],
+       [
+        -11.3,
+        -69.3,
+        21
+       ],
+       [
+        -12,
+        -68,
+        20.3
+       ],
+       [
+        -11.5,
+        -66.5,
+        20
+       ],
+       [
+        -12,
+        -65,
+        20
+       ],
+       [
+        -12.5,
+        -63.5,
+        20
+       ],
+       [
+        -13.9,
+        -62.9,
+        19
+       ],
+       [
+        -15.5,
+        -62.5,
+        19
+       ],
+       [
+        -17.4,
+        -62.4,
+        19
+       ],
+       [
+        -19.2,
+        -62.2,
+        19
+       ],
+       [
+        -20.4,
+        -61.4,
+        20
+       ],
+       [
+        -19.8,
+        -61,
+        19
+       ],
+       [
+        -19,
+        -61,
+        18
+       ],
+       [
+        -18,
+        -61,
+        16.9
+       ],
+       [
+        -16,
+        -61,
+        16
+       ],
+       [
+        -15,
+        -61,
+        15.7
+       ],
+       [
+        -13.4,
+        -61,
+        15
+       ],
+       [
+        -12.2,
+        -61,
+        14
+       ],
+       [
+        -11.5,
+        -62,
+        13
+       ],
+       [
+        -10.8,
+        -62,
+        12
+       ],
+       [
+        -10.7,
+        -62,
+        10
+       ],
+       [
+        -12,
+        -61.9,
+        8.1
+       ],
+       [
+        -11.1,
+        -61,
+        7
+       ],
+       [
+        -12.5,
+        -60.5,
+        5.5
+       ],
+       [
+        -13.3,
+        -59.3,
+        4.7
+       ],
+       [
+        -13.3,
+        -57.3,
+        4.7
+       ],
+       [
+        -14.6,
+        -56.6,
+        4
+       ],
+       [
+        -16.2,
+        -56.2,
+        4
+       ],
+       [
+        -17.8,
+        -55.8,
+        4
+       ],
+       [
+        -19.2,
+        -56,
+        4
+       ]
+      ]
+     },
+     {
+      "key": "cingulateSulcus",
+      "landmark": "cingulate sulcus",
+      "separates": [
+       "limbic",
+       "frontal",
+       "parietal"
+      ],
+      "kind": "sulcus",
+      "placement": "fundus from the marginal ramus forward over the corpus callosum and round the genu to the subcallosal area, then to the medial wall",
+      "sides": [
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "limbic": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "limbic": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         1,
+         1
+        ],
+        "limbic": [
+         0,
+         -1,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         1,
+         0
+        ],
+        "limbic": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         0,
+         -1
+        ],
+        "limbic": [
+         0,
+         0,
+         1
+        ]
+       }
+      ],
+      "controlPoints": [
+       {
+        "role": "at the marginal ramus",
+        "snap": "sulcus",
+        "givenMni": [
+         -14,
+         -31,
+         41
+        ],
+        "snappedMni": [
+         -16.2,
+         -34.2,
+         43
+        ],
+        "snappedDepthMm": 15.3
+       },
+       {
+        "role": "above the body of the corpus callosum",
+        "snap": "sulcus",
+        "givenMni": [
+         -6,
+         -2,
+         44
+        ],
+        "snappedMni": [
+         -9.3,
+         -4,
+         43
+        ],
+        "snappedDepthMm": 8.3
+       },
+       {
+        "role": "anterior",
+        "snap": "sulcus",
+        "givenMni": [
+         -3,
+         24,
+         42
+        ],
+        "snappedMni": [
+         -7.6,
+         24,
+         43.4
+        ],
+        "snappedDepthMm": 5.7
+       },
+       {
+        "role": "round the genu",
+        "snap": "sulcus",
+        "givenMni": [
+         -5,
+         46,
+         15
+        ],
+        "snappedMni": [
+         -9.5,
+         44.5,
+         16.5
+        ],
+        "snappedDepthMm": 7.5
+       },
+       {
+        "role": "subgenual",
+        "snap": "sulcus",
+        "givenMni": [
+         -3,
+         39,
+         -5
+        ],
+        "snappedMni": [
+         -3.4,
+         39,
+         -5
+        ],
+        "snappedDepthMm": 2.4
+       },
+       {
+        "role": "subcallosal end, on the anterior medial-wall line",
+        "snap": "surface",
+        "givenMni": [
+         -3,
+         20,
+         -6
+        ],
+        "snappedMni": [
+         -2.9,
+         20,
+         -6
+        ],
+        "snappedDepthMm": 1.9
+       }
+      ],
+      "lengthMm": 198.6,
+      "meanDepthMm": 3.6,
+      "sideSeeds": 110,
+      "unseededVertices": 154,
+      "polylineMni": [
+       [
+        -16.2,
+        -34.2,
+        43
+       ],
+       [
+        -15,
+        -32.9,
+        43
+       ],
+       [
+        -13,
+        -31.8,
+        43
+       ],
+       [
+        -11,
+        -30.6,
+        44
+       ],
+       [
+        -9.3,
+        -28.3,
+        44.7
+       ],
+       [
+        -9,
+        -26.9,
+        44.1
+       ],
+       [
+        -9,
+        -25,
+        44
+       ],
+       [
+        -8.6,
+        -22,
+        45
+       ],
+       [
+        -7.3,
+        -19.3,
+        45.7
+       ],
+       [
+        -5.3,
+        -17.3,
+        46.7
+       ],
+       [
+        -3.7,
+        -15,
+        47
+       ],
+       [
+        -3.2,
+        -13,
+        47
+       ],
+       [
+        -3.3,
+        -11,
+        47
+       ],
+       [
+        -4,
+        -9.2,
+        47
+       ],
+       [
+        -5,
+        -8.7,
+        47
+       ],
+       [
+        -6.7,
+        -8.7,
+        46
+       ],
+       [
+        -8,
+        -8,
+        45.8
+       ],
+       [
+        -8.5,
+        -6.5,
+        45.5
+       ],
+       [
+        -9.1,
+        -5.1,
+        44.9
+       ],
+       [
+        -8.8,
+        -4,
+        44
+       ],
+       [
+        -8.5,
+        -3.5,
+        43.5
+       ],
+       [
+        -6,
+        -3,
+        45
+       ],
+       [
+        -4.2,
+        -2.2,
+        44.8
+       ],
+       [
+        -4,
+        -1,
+        44
+       ],
+       [
+        -3.7,
+        0.3,
+        43.3
+       ],
+       [
+        -3.8,
+        2,
+        43
+       ],
+       [
+        -3.6,
+        4,
+        43
+       ],
+       [
+        -4,
+        5.7,
+        43
+       ],
+       [
+        -4.7,
+        7,
+        43
+       ],
+       [
+        -5.2,
+        8,
+        43
+       ],
+       [
+        -6.9,
+        9,
+        42.1
+       ],
+       [
+        -7,
+        10,
+        41
+       ],
+       [
+        -6,
+        11,
+        40.2
+       ],
+       [
+        -4.1,
+        12,
+        40
+       ],
+       [
+        -3.9,
+        12,
+        39
+       ],
+       [
+        -4,
+        13,
+        38.7
+       ],
+       [
+        -4,
+        14,
+        37.9
+       ],
+       [
+        -3.9,
+        15.1,
+        37
+       ],
+       [
+        -3,
+        17.2,
+        37
+       ],
+       [
+        -2.5,
+        19.5,
+        37
+       ],
+       [
+        -2.2,
+        21.8,
+        38.8
+       ],
+       [
+        -2.4,
+        22.6,
+        40.6
+       ],
+       [
+        -3.2,
+        23,
+        41.8
+       ],
+       [
+        -4.4,
+        23.6,
+        42.6
+       ],
+       [
+        -6.1,
+        23.9,
+        42.9
+       ],
+       [
+        -7.6,
+        24,
+        43.4
+       ],
+       [
+        -6,
+        24.1,
+        43
+       ],
+       [
+        -4,
+        25,
+        43
+       ],
+       [
+        -2.6,
+        26.4,
+        42.4
+       ],
+       [
+        -2.7,
+        28,
+        42
+       ],
+       [
+        -2.5,
+        29.5,
+        41.5
+       ],
+       [
+        -2.5,
+        30.5,
+        40.5
+       ],
+       [
+        -3,
+        31.5,
+        40
+       ],
+       [
+        -3.2,
+        32,
+        38.8
+       ],
+       [
+        -4,
+        33,
+        38
+       ],
+       [
+        -5,
+        34,
+        36.8
+       ],
+       [
+        -4,
+        35,
+        35.3
+       ],
+       [
+        -3.3,
+        35.7,
+        34
+       ],
+       [
+        -3,
+        36.4,
+        33
+       ],
+       [
+        -3.4,
+        37.6,
+        32
+       ],
+       [
+        -4.1,
+        38,
+        30.9
+       ],
+       [
+        -5.1,
+        37.9,
+        28.9
+       ],
+       [
+        -6,
+        38.4,
+        27.4
+       ],
+       [
+        -5.5,
+        39.5,
+        26.5
+       ],
+       [
+        -4.4,
+        40.6,
+        25.6
+       ],
+       [
+        -3.4,
+        41.6,
+        24.6
+       ],
+       [
+        -3.2,
+        42,
+        23
+       ],
+       [
+        -3.8,
+        43,
+        22
+       ],
+       [
+        -4,
+        43.9,
+        20.9
+       ],
+       [
+        -4.5,
+        44.5,
+        19.5
+       ],
+       [
+        -7,
+        44,
+        18.3
+       ],
+       [
+        -9.1,
+        43.9,
+        16.9
+       ],
+       [
+        -9,
+        45,
+        16
+       ],
+       [
+        -8,
+        45,
+        15
+       ],
+       [
+        -6,
+        45.9,
+        15
+       ],
+       [
+        -4.4,
+        46.6,
+        14.6
+       ],
+       [
+        -4.1,
+        46.9,
+        12.9
+       ],
+       [
+        -4.6,
+        47.4,
+        11.4
+       ],
+       [
+        -4.5,
+        47.5,
+        9.5
+       ],
+       [
+        -3.9,
+        48,
+        8.1
+       ],
+       [
+        -3,
+        48,
+        7
+       ],
+       [
+        -2.4,
+        47.6,
+        5.6
+       ],
+       [
+        -2,
+        47,
+        4
+       ],
+       [
+        -2.9,
+        46.1,
+        2.1
+       ],
+       [
+        -3.3,
+        44.7,
+        0.7
+       ],
+       [
+        -3.4,
+        42.6,
+        -1.4
+       ],
+       [
+        -3.7,
+        40.3,
+        -3.7
+       ],
+       [
+        -3.3,
+        38.7,
+        -5.3
+       ],
+       [
+        -3.2,
+        36.8,
+        -6.2
+       ],
+       [
+        -3.1,
+        34.9,
+        -7.1
+       ],
+       [
+        -3,
+        33.4,
+        -8
+       ],
+       [
+        -3,
+        32,
+        -8
+       ],
+       [
+        -3,
+        30.7,
+        -8
+       ],
+       [
+        -3.1,
+        28.9,
+        -8
+       ],
+       [
+        -3.6,
+        27.4,
+        -7
+       ],
+       [
+        -3.7,
+        26,
+        -6.7
+       ],
+       [
+        -3.6,
+        24,
+        -6.6
+       ],
+       [
+        -3.3,
+        22,
+        -6.3
+       ],
+       [
+        -3,
+        20.4,
+        -6
+       ]
+      ]
+     },
+     {
+      "key": "subparietalSulcus",
+      "landmark": "subparietal sulcus",
+      "separates": [
+       "limbic",
+       "parietal"
+      ],
+      "kind": "sulcus",
+      "placement": "posterior continuation of the cingulate sulcus below the marginal ramus, through the subparietal basin, to the parieto-occipital sulcus",
+      "sides": {
+       "parietal": [
+        0,
+        0,
+        1
+       ],
+       "limbic": [
+        0,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "cingulate sulcus at the marginal ramus",
+        "snap": "sulcus",
+        "givenMni": [
+         -14,
+         -31,
+         41
+        ],
+        "snappedMni": [
+         -16.2,
+         -34.2,
+         43
+        ],
+        "snappedDepthMm": 15.3
+       },
+       {
+        "role": "subparietal basin",
+        "snap": "sulcus",
+        "givenMni": [
+         -11,
+         -53,
+         41
+        ],
+        "snappedMni": [
+         -11.4,
+         -53,
+         41
+        ],
+        "snappedDepthMm": 10.4
+       },
+       {
+        "role": "parieto-occipital sulcus",
+        "snap": "sulcus",
+        "givenMni": [
+         -18,
+         -68,
+         28
+        ],
+        "snappedMni": [
+         -18.3,
+         -69,
+         23.7
+        ],
+        "snappedDepthMm": 17.3
+       }
+      ],
+      "lengthMm": 116.9,
+      "meanDepthMm": 6.1,
+      "sideSeeds": 20,
+      "unseededVertices": 179,
+      "polylineMni": [
+       [
+        -16.2,
+        -34.2,
+        43
+       ],
+       [
+        -15.2,
+        -35.2,
+        43.8
+       ],
+       [
+        -15,
+        -35.8,
+        45.2
+       ],
+       [
+        -15,
+        -36.5,
+        46.5
+       ],
+       [
+        -15,
+        -37.2,
+        47.8
+       ],
+       [
+        -14.9,
+        -38.9,
+        48.1
+       ],
+       [
+        -13.9,
+        -39.9,
+        49.1
+       ],
+       [
+        -12.6,
+        -40.6,
+        50.4
+       ],
+       [
+        -11.9,
+        -41.9,
+        51.1
+       ],
+       [
+        -10,
+        -42,
+        51.5
+       ],
+       [
+        -8,
+        -42,
+        51.2
+       ],
+       [
+        -7,
+        -42.2,
+        50.8
+       ],
+       [
+        -5,
+        -42.3,
+        50.7
+       ],
+       [
+        -3,
+        -42.8,
+        50.2
+       ],
+       [
+        -2,
+        -43.4,
+        50
+       ],
+       [
+        -1.2,
+        -45,
+        50
+       ],
+       [
+        -1,
+        -46,
+        50
+       ],
+       [
+        -0.9,
+        -48,
+        50
+       ],
+       [
+        -1,
+        -50,
+        48
+       ],
+       [
+        -0.8,
+        -51,
+        48
+       ],
+       [
+        -1.1,
+        -53,
+        48
+       ],
+       [
+        -2.4,
+        -55,
+        48
+       ],
+       [
+        -5,
+        -56,
+        47.6
+       ],
+       [
+        -6,
+        -56,
+        47
+       ],
+       [
+        -8,
+        -55.6,
+        45
+       ],
+       [
+        -10,
+        -55.1,
+        43
+       ],
+       [
+        -11,
+        -54.1,
+        42
+       ],
+       [
+        -10.9,
+        -53,
+        42
+       ],
+       [
+        -10.9,
+        -53,
+        42
+       ],
+       [
+        -11,
+        -54.1,
+        42
+       ],
+       [
+        -10,
+        -55.1,
+        43
+       ],
+       [
+        -8,
+        -55.6,
+        45
+       ],
+       [
+        -6,
+        -56,
+        47
+       ],
+       [
+        -5,
+        -56,
+        47.6
+       ],
+       [
+        -3.4,
+        -56,
+        47
+       ],
+       [
+        -3,
+        -55.6,
+        46
+       ],
+       [
+        -3,
+        -55,
+        44
+       ],
+       [
+        -2,
+        -55,
+        43
+       ],
+       [
+        -1,
+        -56,
+        42
+       ],
+       [
+        -0.7,
+        -57,
+        41
+       ],
+       [
+        -1,
+        -59,
+        40
+       ],
+       [
+        -2.9,
+        -61,
+        38
+       ],
+       [
+        -2,
+        -62.3,
+        37.7
+       ],
+       [
+        -0.9,
+        -63,
+        37.1
+       ],
+       [
+        -0.5,
+        -65,
+        36
+       ],
+       [
+        -0.5,
+        -67,
+        34
+       ],
+       [
+        -0.5,
+        -69,
+        34
+       ],
+       [
+        -0.4,
+        -71,
+        32
+       ],
+       [
+        -1,
+        -73,
+        30
+       ],
+       [
+        -2.7,
+        -73.7,
+        29.3
+       ],
+       [
+        -4.9,
+        -73.9,
+        29.1
+       ],
+       [
+        -6.8,
+        -73.8,
+        29
+       ],
+       [
+        -8.3,
+        -73.3,
+        29
+       ],
+       [
+        -9.7,
+        -72.7,
+        29
+       ],
+       [
+        -11.3,
+        -72.3,
+        28.7
+       ],
+       [
+        -12.7,
+        -71.7,
+        27.3
+       ],
+       [
+        -13.8,
+        -70.8,
+        26.2
+       ],
+       [
+        -14.9,
+        -69.9,
+        25.1
+       ],
+       [
+        -16.4,
+        -69.4,
+        24.6
+       ],
+       [
+        -17.9,
+        -68.9,
+        24
+       ]
+      ]
+     },
+     {
+      "key": "isthmusLine",
+      "landmark": "anterior end of the calcarine sulcus to the medial wall",
+      "separates": [
+       "limbic",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line from the calcarine junction to the medial wall behind the splenium, closing the isthmus off from the parahippocampal gyrus",
+      "sides": {
+       "limbic": [
+        0,
+        0,
+        1
+       ],
+       "temporal": [
+        0,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "calcarine junction",
+        "snap": "sulcus",
+        "givenMni": [
+         -16,
+         -56,
+         4
+        ],
+        "snappedMni": [
+         -20.9,
+         -56.9,
+         4.1
+        ],
+        "snappedDepthMm": 16.7
+       },
+       {
+        "role": "under the splenium, where the posterior medial-wall line starts",
+        "snap": "rim",
+        "givenMni": [
+         -1,
+         -38,
+         6
+        ],
+        "snappedMni": [
+         -1,
+         -38,
+         6.4
+        ],
+        "snappedDepthMm": 0.4
+       }
+      ],
+      "lengthMm": 32.7,
+      "meanDepthMm": 8.1,
+      "sideSeeds": 9,
+      "unseededVertices": 36,
+      "polylineMni": [
+       [
+        -20.9,
+        -56.9,
+        4.1
+       ],
+       [
+        -19,
+        -55,
+        4
+       ],
+       [
+        -17,
+        -54,
+        4
+       ],
+       [
+        -15,
+        -53.5,
+        4
+       ],
+       [
+        -13.7,
+        -52.7,
+        3.3
+       ],
+       [
+        -12.6,
+        -51.6,
+        2.4
+       ],
+       [
+        -11.6,
+        -50.6,
+        1.4
+       ],
+       [
+        -9.6,
+        -48.6,
+        1.4
+       ],
+       [
+        -7.9,
+        -47,
+        2
+       ],
+       [
+        -6.3,
+        -45,
+        4
+       ],
+       [
+        -7,
+        -43.1,
+        5.9
+       ],
+       [
+        -6,
+        -42.2,
+        6.8
+       ],
+       [
+        -4,
+        -41,
+        7
+       ],
+       [
+        -2.2,
+        -39.2,
+        6.8
+       ]
+      ]
+     },
+     {
+      "key": "occipitotemporalMedial",
+      "landmark": "anterior end of the calcarine sulcus to the tentorial cut",
+      "separates": [
+       "occipital",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line down the medial surface from the calcarine junction to the cut",
+      "sides": {
+       "temporal": [
+        0,
+        1,
+        0
+       ],
+       "occipital": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "calcarine junction",
+        "snap": "sulcus",
+        "givenMni": [
+         -16,
+         -56,
+         4
+        ],
+        "snappedMni": [
+         -20.9,
+         -56.9,
+         4.1
+        ],
+        "snappedDepthMm": 16.7
+       },
+       {
+        "role": "tentorial cut",
+        "snap": "rim",
+        "givenMni": [
+         -20,
+         -58,
+         -8
+        ],
+        "snappedMni": [
+         -16.4,
+         -57,
+         -11
+        ],
+        "snappedDepthMm": 1.5
+       }
+      ],
+      "lengthMm": 31.1,
+      "meanDepthMm": 8.7,
+      "sideSeeds": 6,
+      "unseededVertices": 41,
+      "polylineMni": [
+       [
+        -20.9,
+        -56.9,
+        4.1
+       ],
+       [
+        -20.4,
+        -56.4,
+        3
+       ],
+       [
+        -19,
+        -55,
+        2.7
+       ],
+       [
+        -17,
+        -55,
+        2.2
+       ],
+       [
+        -16.3,
+        -54.3,
+        1
+       ],
+       [
+        -14.6,
+        -53.6,
+        1
+       ],
+       [
+        -13,
+        -52,
+        1
+       ],
+       [
+        -11.3,
+        -51,
+        0.7
+       ],
+       [
+        -9.8,
+        -51,
+        0.2
+       ],
+       [
+        -9.3,
+        -51.3,
+        -1.3
+       ],
+       [
+        -10,
+        -52,
+        -3.3
+       ],
+       [
+        -11.4,
+        -53.4,
+        -5.4
+       ],
+       [
+        -13,
+        -54.2,
+        -8
+       ],
+       [
+        -15,
+        -56,
+        -10
+       ]
+      ]
+     },
+     {
+      "key": "occipitotemporalBasal",
+      "landmark": "preoccipital notch to the tentorial cut",
+      "separates": [
+       "occipital",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line across the inferior surface from the notch to the cut",
+      "sides": {
+       "temporal": [
+        0,
+        1,
+        0
+       ],
+       "occipital": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "preoccipital notch",
+        "snap": "surface",
+        "givenMni": [
+         -58,
+         -69,
+         -11
+        ],
+        "snappedMni": [
+         -58.1,
+         -69.1,
+         -11
+        ],
+        "snappedDepthMm": 0.8
+       },
+       {
+        "role": "tentorial cut",
+        "snap": "rim",
+        "givenMni": [
+         -50,
+         -64,
+         -22
+        ],
+        "snappedMni": [
+         -44.8,
+         -58.8,
+         -22.8
+        ],
+        "snappedDepthMm": 0.3
+       }
+      ],
+      "lengthMm": 23.1,
+      "meanDepthMm": 1.5,
+      "sideSeeds": 32,
+      "unseededVertices": 10,
+      "polylineMni": [
+       [
+        -58.1,
+        -69.1,
+        -11
+       ],
+       [
+        -57.6,
+        -69,
+        -12
+       ],
+       [
+        -57,
+        -69,
+        -13.5
+       ],
+       [
+        -56,
+        -69,
+        -14.3
+       ],
+       [
+        -55,
+        -68,
+        -15.7
+       ],
+       [
+        -54,
+        -67,
+        -16.5
+       ],
+       [
+        -53,
+        -65.5,
+        -17
+       ],
+       [
+        -52.2,
+        -64.2,
+        -18
+       ],
+       [
+        -51.7,
+        -63.7,
+        -19
+       ],
+       [
+        -51,
+        -63,
+        -20.1
+       ],
+       [
+        -50,
+        -62,
+        -21
+       ],
+       [
+        -48.5,
+        -61,
+        -22
+       ],
+       [
+        -47,
+        -60.4,
+        -22.4
+       ],
+       [
+        -45,
+        -59,
+        -22.8
+       ]
+      ]
+     },
+     {
+      "key": "medialWallPosterior",
+      "landmark": "medial wall, behind the thalamus: from the splenium to the tentorial cut",
+      "separates": [
+       "medialWall",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line from the underside of the splenium down to the tentorial cut, behind the pulvinar; points chosen on the medial view",
+      "sides": {
+       "medialWall": [
+        0,
+        1,
+        0
+       ],
+       "temporal": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "under the splenium",
+        "snap": "rim",
+        "givenMni": [
+         -1,
+         -38,
+         6
+        ],
+        "snappedMni": [
+         -1,
+         -38,
+         6.4
+        ],
+        "snappedDepthMm": 0.4
+       },
+       {
+        "role": "tentorial cut",
+        "snap": "rim",
+        "givenMni": [
+         -13,
+         -36,
+         -5
+        ],
+        "snappedMni": [
+         -13,
+         -35.8,
+         -5
+        ],
+        "snappedDepthMm": 2.9
+       }
+      ],
+      "lengthMm": 21.7,
+      "meanDepthMm": 4.5,
+      "sideSeeds": 24,
+      "unseededVertices": 1,
+      "polylineMni": [
+       [
+        -1,
+        -38,
+        6.4
+       ],
+       [
+        -3,
+        -38,
+        6.3
+       ],
+       [
+        -5,
+        -38.3,
+        5.7
+       ],
+       [
+        -7,
+        -38.6,
+        5.4
+       ],
+       [
+        -9,
+        -39,
+        4.8
+       ],
+       [
+        -10.7,
+        -39.7,
+        3.3
+       ],
+       [
+        -11,
+        -39.4,
+        1.6
+       ],
+       [
+        -10.9,
+        -38.9,
+        0.1
+       ],
+       [
+        -11.5,
+        -38.5,
+        -1.5
+       ],
+       [
+        -12,
+        -37.7,
+        -2.7
+       ],
+       [
+        -12.7,
+        -36.7,
+        -3.7
+       ],
+       [
+        -13,
+        -35.8,
+        -4.8
+       ]
+      ]
+     },
+     {
+      "key": "medialWallLateral",
+      "landmark": "medial wall, beside the brainstem cut: the choroid-fissure side of the diencephalon",
+      "separates": [
+       "medialWall",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line along the lateral side of the brainstem cut, between the diencephalon and the medial surface of the temporal lobe, from the lower end of the posterior line to the start of the anterior one; points chosen on the inferior view",
+      "sides": {
+       "medialWall": [
+        1,
+        0,
+        1
+       ],
+       "temporal": [
+        -1,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "tentorial cut, lower end of the posterior line",
+        "snap": "rim",
+        "givenMni": [
+         -13,
+         -36,
+         -5
+        ],
+        "snappedMni": [
+         -13,
+         -35.8,
+         -5
+        ],
+        "snappedDepthMm": 2.9
+       },
+       {
+        "role": "beside the brainstem cut",
+        "snap": "surface",
+        "givenMni": [
+         -17,
+         -25,
+         -10
+        ],
+        "snappedMni": [
+         -17,
+         -25.4,
+         -10
+        ],
+        "snappedDepthMm": 5.9
+       },
+       {
+        "role": "beside the brainstem cut",
+        "snap": "surface",
+        "givenMni": [
+         -17,
+         -12,
+         -12
+        ],
+        "snappedMni": [
+         -19.5,
+         -12,
+         -15.5
+        ],
+        "snappedDepthMm": 6.5
+       },
+       {
+        "role": "front of the brainstem cut",
+        "snap": "rim",
+        "givenMni": [
+         -10,
+         -5,
+         -14
+        ],
+        "snappedMni": [
+         -10,
+         -5.4,
+         -14
+        ],
+        "snappedDepthMm": 3.3
+       }
+      ],
+      "lengthMm": 94.6,
+      "meanDepthMm": 5,
+      "sideSeeds": 64,
+      "unseededVertices": 70,
+      "polylineMni": [
+       [
+        -13,
+        -35.8,
+        -5
+       ],
+       [
+        -14,
+        -35,
+        -5
+       ],
+       [
+        -15.9,
+        -34,
+        -5
+       ],
+       [
+        -16,
+        -32.3,
+        -4.3
+       ],
+       [
+        -16,
+        -30.6,
+        -4.6
+       ],
+       [
+        -16,
+        -29.6,
+        -5.6
+       ],
+       [
+        -16,
+        -29.4,
+        -7.4
+       ],
+       [
+        -16,
+        -28.3,
+        -8.3
+       ],
+       [
+        -16,
+        -26.9,
+        -8.9
+       ],
+       [
+        -16.5,
+        -25.5,
+        -9.5
+       ],
+       [
+        -17.7,
+        -24.7,
+        -10.7
+       ],
+       [
+        -18.7,
+        -23.7,
+        -11.7
+       ],
+       [
+        -19.5,
+        -22.5,
+        -12.5
+       ],
+       [
+        -20.1,
+        -21.1,
+        -13
+       ],
+       [
+        -20.6,
+        -19.6,
+        -13
+       ],
+       [
+        -21.2,
+        -18.2,
+        -13
+       ],
+       [
+        -22.1,
+        -17.1,
+        -13
+       ],
+       [
+        -22,
+        -15,
+        -12.9
+       ],
+       [
+        -22,
+        -14,
+        -13.5
+       ],
+       [
+        -21.3,
+        -13,
+        -14.3
+       ],
+       [
+        -20.3,
+        -12.3,
+        -15.3
+       ],
+       [
+        -20.3,
+        -12.3,
+        -15.3
+       ],
+       [
+        -21.3,
+        -13,
+        -14.3
+       ],
+       [
+        -22,
+        -14,
+        -13.5
+       ],
+       [
+        -22.1,
+        -15.1,
+        -13
+       ],
+       [
+        -22.1,
+        -17.1,
+        -13
+       ],
+       [
+        -21.2,
+        -18.2,
+        -13
+       ],
+       [
+        -20.6,
+        -19.6,
+        -13.6
+       ],
+       [
+        -19.4,
+        -20.4,
+        -14.4
+       ],
+       [
+        -18.8,
+        -19.8,
+        -15.8
+       ],
+       [
+        -18.5,
+        -19.5,
+        -17.5
+       ],
+       [
+        -18,
+        -18.7,
+        -18.7
+       ],
+       [
+        -17.6,
+        -17.6,
+        -19.6
+       ],
+       [
+        -17,
+        -16.4,
+        -20.4
+       ],
+       [
+        -17,
+        -15.6,
+        -21.6
+       ],
+       [
+        -16.5,
+        -14.5,
+        -22.5
+       ],
+       [
+        -16,
+        -14,
+        -24
+       ],
+       [
+        -16,
+        -13.5,
+        -25.5
+       ],
+       [
+        -16,
+        -12.5,
+        -26.5
+       ],
+       [
+        -16,
+        -11.2,
+        -27.2
+       ],
+       [
+        -16,
+        -9.8,
+        -27.8
+       ],
+       [
+        -15.8,
+        -8,
+        -28
+       ],
+       [
+        -15.6,
+        -6,
+        -28
+       ],
+       [
+        -13,
+        -5,
+        -27
+       ],
+       [
+        -12.5,
+        -4.5,
+        -26
+       ],
+       [
+        -11.8,
+        -4,
+        -24
+       ],
+       [
+        -11.8,
+        -4,
+        -22
+       ],
+       [
+        -12.3,
+        -4.3,
+        -21
+       ],
+       [
+        -13,
+        -4.7,
+        -19.7
+       ],
+       [
+        -14,
+        -5,
+        -18
+       ],
+       [
+        -14.4,
+        -5,
+        -17
+       ],
+       [
+        -14,
+        -5.4,
+        -15.4
+       ],
+       [
+        -12,
+        -5.6,
+        -14.6
+       ],
+       [
+        -10,
+        -5.4,
+        -14
+       ]
+      ]
+     },
+     {
+      "key": "medialWallAnterior",
+      "landmark": "medial wall, in front of the diencephalon: from the brainstem cut through the anterior perforated substance to the rostrum of the corpus callosum",
+      "separates": [
+       "medialWall",
+       "temporal",
+       "frontal",
+       "limbic"
+      ],
+      "kind": "line",
+      "placement": "line from the front of the brainstem cut, under the hypothalamus and through the anterior perforated substance, up the lamina terminalis to the rostrum; points chosen on the medial view",
+      "sides": [
+       {
+        "medialWall": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "medialWall": [
+         0,
+         0,
+         1
+        ],
+        "frontal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "medialWall": [
+         0,
+         -1,
+         0
+        ],
+        "limbic": [
+         0,
+         1,
+         0
+        ]
+       }
+      ],
+      "controlPoints": [
+       {
+        "role": "front of the brainstem cut",
+        "snap": "rim",
+        "givenMni": [
+         -10,
+         -5,
+         -14
+        ],
+        "snappedMni": [
+         -10,
+         -5.4,
+         -14
+        ],
+        "snappedDepthMm": 3.3
+       },
+       {
+        "role": "anterior perforated substance, where the fissure stem ends",
+        "snap": "surface",
+        "givenMni": [
+         -7,
+         8,
+         -11
+        ],
+        "snappedMni": [
+         -4,
+         5.3,
+         -12.7
+        ],
+        "snappedDepthMm": 2.4
+       },
+       {
+        "role": "where the cingulate sulcus ends",
+        "snap": "surface",
+        "givenMni": [
+         -3,
+         20,
+         -6
+        ],
+        "snappedMni": [
+         -2.9,
+         20,
+         -6
+        ],
+        "snappedDepthMm": 1.9
+       },
+       {
+        "role": "rostrum of the corpus callosum",
+        "snap": "rim",
+        "givenMni": [
+         -1,
+         26,
+         -3
+        ],
+        "snappedMni": [
+         -1,
+         26,
+         -3
+        ],
+        "snappedDepthMm": 1
+       }
+      ],
+      "lengthMm": 43.2,
+      "meanDepthMm": 2.1,
+      "sideSeeds": 11,
+      "unseededVertices": 31,
+      "polylineMni": [
+       [
+        -10,
+        -5.4,
+        -14
+       ],
+       [
+        -11,
+        -5,
+        -16
+       ],
+       [
+        -11.4,
+        -4.4,
+        -16.4
+       ],
+       [
+        -11.5,
+        -2.5,
+        -16.5
+       ],
+       [
+        -9,
+        -0.7,
+        -15
+       ],
+       [
+        -6.3,
+        1.7,
+        -14.3
+       ],
+       [
+        -5.3,
+        3.7,
+        -13.3
+       ],
+       [
+        -3.5,
+        5.5,
+        -12.5
+       ],
+       [
+        -1.6,
+        7,
+        -11.6
+       ],
+       [
+        -1.3,
+        9,
+        -11
+       ],
+       [
+        -2,
+        11,
+        -11
+       ],
+       [
+        -2.2,
+        12,
+        -10.2
+       ],
+       [
+        -1.9,
+        15,
+        -9
+       ],
+       [
+        -2,
+        16.3,
+        -7.7
+       ],
+       [
+        -2.5,
+        18,
+        -7
+       ],
+       [
+        -2.9,
+        20,
+        -6
+       ],
+       [
+        -2,
+        22,
+        -4
+       ],
+       [
+        -1.4,
+        24,
+        -3.4
+       ],
+       [
+        -1,
+        26,
+        -3
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": 2,
+   "name": "right",
+   "extraction": {
+    "trianglesExtracted": 800144,
+    "components": 69,
+    "keptComponentTriangles": 781452,
+    "droppedComponents": 68,
+    "droppedTriangles": 18692,
+    "largestDroppedTriangles": 2976,
+    "edges": 1172178,
+    "nonManifoldEdges": 0,
+    "openEdges": 0,
+    "overSharedEdges": 0,
+    "inconsistentlyWoundEdges": 0,
+    "degenerateTriangles": 0,
+    "enclosedVolumeCm3": 718.7,
+    "areaCm2": 907
+   },
+   "low": {
+    "triangles": 8618,
+    "vertices": 4341,
+    "areaMm2": 86415,
+    "enclosedVolumeCm3": 710.4,
+    "targetTriangles": 8782,
+    "simplifierFlags": [],
+    "repair": {
+     "droppedPairs": 76,
+     "splitVertices": 82,
+     "holesClosed": 13
+    },
+    "manifold": {
+     "edges": 12927,
+     "nonManifoldEdges": 0,
+     "openEdges": 0,
+     "overSharedEdges": 0,
+     "inconsistentlyWoundEdges": 0
+    }
+   },
+   "errorMm": {
+    "hausdorff": 4.886,
+    "mean": 0.267,
+    "lowToFullP95": 0.001,
+    "fullToLowP95": 0.689,
+    "measuredAgainst": "the undecimated extracted surface, at build time; not in the repository, so not re-measurable in CI"
+   },
+   "lobes": {
+    "vertexCounts": {
+     "frontal": 146575,
+     "parietal": 56329,
+     "temporal": 67852,
+     "occipital": 47806,
+     "insula": 3121,
+     "limbic": 20789
+    },
+    "nonCortex": {
+     "fossaCut": 13815,
+     "medialWall": 4289,
+     "corticalContact": 7104,
+     "corticalContactPatches": 54,
+     "medialWallSurface": 29431
+    },
+    "bandVertices": 78731,
+    "sideSeeds": 692,
+    "sideConflicts": 0,
+    "openFronts": {
+     "frontal/temporal": {
+      "edges": 381,
+      "min": [
+       35,
+       -25,
+       -5
+      ],
+      "max": [
+       62,
+       5,
+       16
+      ]
+     },
+     "parietal/temporal": {
+      "edges": 87,
+      "min": [
+       66,
+       -34,
+       24
+      ],
+      "max": [
+       70,
+       -26,
+       34
+      ]
+     },
+     "frontal/parietal": {
+      "edges": 49,
+      "min": [
+       59,
+       -19,
+       42
+      ],
+      "max": [
+       63,
+       -12,
+       44
+      ]
+     }
+    },
+    "fragments": {
+     "temporal": [
+      {
+       "vertices": 65090,
+       "centroidMni": [
+        47,
+        -11,
+        -18
+       ]
+      },
+      {
+       "vertices": 1970,
+       "centroidMni": [
+        10,
+        -47,
+        -2
+       ]
+      },
+      {
+       "vertices": 792,
+       "centroidMni": [
+        54,
+        -28,
+        17
+       ]
+      }
+     ],
+     "frontal": [
+      {
+       "vertices": 146575,
+       "centroidMni": [
+        30,
+        20,
+        29
+       ]
+      }
+     ],
+     "occipital": [
+      {
+       "vertices": 47806,
+       "centroidMni": [
+        18,
+        -82,
+        11
+       ]
+      }
+     ],
+     "insula": [
+      {
+       "vertices": 3121,
+       "centroidMni": [
+        42,
+        -6,
+        -1
+       ]
+      }
+     ],
+     "limbic": [
+      {
+       "vertices": 20789,
+       "centroidMni": [
+        3,
+        -4,
+        27
+       ]
+      }
+     ],
+     "parietal": [
+      {
+       "vertices": 56329,
+       "centroidMni": [
+        34,
+        -50,
+        51
+       ]
+      }
+     ]
+    },
+    "unreachedVertices": 1737,
+    "boundaries": [
+     {
+      "key": "centralSulcus",
+      "landmark": "central sulcus",
+      "separates": [
+       "frontal",
+       "parietal"
+      ],
+      "kind": "sulcus",
+      "placement": "fundus of the depth > 6 mm basin running from the dorsal margin (its highest vertex) to its lowest vertex, then on to the deepest vertex of the separate basin in line with it below, which reaches to 2 cm above the lateral fissure",
+      "sides": {
+       "frontal": [
+        0,
+        1,
+        0
+       ],
+       "parietal": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "dorsal end, at the dorsal margin (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         12,
+         -34,
+         75
+        ],
+        "snappedMni": [
+         12.4,
+         -33,
+         70.4
+        ],
+        "snappedDepthMm": 11
+       },
+       {
+        "role": "mid course, chosen on the lateral view (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         55,
+         -27,
+         58
+        ],
+        "snappedMni": [
+         51.6,
+         -27,
+         55
+        ],
+        "snappedDepthMm": 5.2
+       },
+       {
+        "role": "lowest vertex of the upper basin (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         41,
+         -20,
+         38
+        ],
+        "snappedMni": [
+         38.7,
+         -16.3,
+         38.7
+        ],
+        "snappedDepthMm": 23.3
+       },
+       {
+        "role": "ventral end, deepest vertex of the lower basin (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         52,
+         -8,
+         27
+        ],
+        "snappedMni": [
+         48.9,
+         -8,
+         30
+        ],
+        "snappedDepthMm": 17.3
+       }
+      ],
+      "lengthMm": 156.9,
+      "meanDepthMm": 9.1,
+      "sideSeeds": 3,
+      "unseededVertices": 251,
+      "polylineMni": [
+       [
+        12.4,
+        -33,
+        70.4
+       ],
+       [
+        14,
+        -31.6,
+        70
+       ],
+       [
+        16,
+        -29.9,
+        71.1
+       ],
+       [
+        18,
+        -28.7,
+        73
+       ],
+       [
+        19.1,
+        -27.9,
+        75
+       ],
+       [
+        20,
+        -27.6,
+        77
+       ],
+       [
+        20,
+        -28,
+        78
+       ],
+       [
+        20.5,
+        -30,
+        78.5
+       ],
+       [
+        20.3,
+        -32,
+        78.3
+       ],
+       [
+        19,
+        -33.3,
+        76.7
+       ],
+       [
+        19,
+        -34,
+        75
+       ],
+       [
+        19,
+        -35,
+        72.5
+       ],
+       [
+        19,
+        -36,
+        70.6
+       ],
+       [
+        20,
+        -36.3,
+        69.7
+       ],
+       [
+        21.4,
+        -37,
+        69
+       ],
+       [
+        22,
+        -37.3,
+        67.7
+       ],
+       [
+        23,
+        -37,
+        66.2
+       ],
+       [
+        24.8,
+        -36.2,
+        66
+       ],
+       [
+        25.1,
+        -35.9,
+        65
+       ],
+       [
+        27.1,
+        -35.9,
+        65
+       ],
+       [
+        28.3,
+        -36.7,
+        64.3
+       ],
+       [
+        29.3,
+        -37.7,
+        63.3
+       ],
+       [
+        30.2,
+        -38.8,
+        62.2
+       ],
+       [
+        31.6,
+        -39.4,
+        62
+       ],
+       [
+        33.8,
+        -39.2,
+        62
+       ],
+       [
+        35.5,
+        -38.5,
+        62
+       ],
+       [
+        37,
+        -37,
+        61
+       ],
+       [
+        38,
+        -36,
+        60.6
+       ],
+       [
+        39,
+        -35,
+        59.1
+       ],
+       [
+        40,
+        -35,
+        58.6
+       ],
+       [
+        42,
+        -34.9,
+        58.1
+       ],
+       [
+        42.6,
+        -34.4,
+        57
+       ],
+       [
+        44,
+        -33,
+        56
+       ],
+       [
+        45,
+        -32,
+        55.6
+       ],
+       [
+        47,
+        -31,
+        55
+       ],
+       [
+        48.9,
+        -30,
+        55
+       ],
+       [
+        50,
+        -29,
+        54.8
+       ],
+       [
+        51.1,
+        -27,
+        54.1
+       ],
+       [
+        51,
+        -26.4,
+        53
+       ],
+       [
+        51,
+        -25.8,
+        52
+       ],
+       [
+        51.4,
+        -24.6,
+        51
+       ],
+       [
+        52.3,
+        -22.7,
+        51
+       ],
+       [
+        53.7,
+        -20.3,
+        52.7
+       ],
+       [
+        54.3,
+        -18.7,
+        54.3
+       ],
+       [
+        54.8,
+        -16.2,
+        56.8
+       ],
+       [
+        54.3,
+        -14.7,
+        57.3
+       ],
+       [
+        53.4,
+        -13.6,
+        58
+       ],
+       [
+        53.2,
+        -11.8,
+        58
+       ],
+       [
+        52.1,
+        -10.9,
+        58
+       ],
+       [
+        50.9,
+        -10.1,
+        56.9
+       ],
+       [
+        49,
+        -10.3,
+        55
+       ],
+       [
+        47,
+        -11.5,
+        52
+       ],
+       [
+        45,
+        -12.6,
+        49
+       ],
+       [
+        43.4,
+        -13.6,
+        46
+       ],
+       [
+        42.7,
+        -14.3,
+        44
+       ],
+       [
+        41.8,
+        -15.2,
+        42
+       ],
+       [
+        40,
+        -16.4,
+        40
+       ],
+       [
+        39,
+        -16,
+        38.2
+       ],
+       [
+        40.2,
+        -15,
+        38
+       ],
+       [
+        42.5,
+        -14.5,
+        38
+       ],
+       [
+        44.8,
+        -14,
+        39
+       ],
+       [
+        46.9,
+        -13.1,
+        39.9
+       ],
+       [
+        48.2,
+        -12.8,
+        40
+       ],
+       [
+        50.6,
+        -10.4,
+        40.6
+       ],
+       [
+        50,
+        -10,
+        39
+       ],
+       [
+        48.8,
+        -10,
+        37
+       ],
+       [
+        46.8,
+        -10.2,
+        34.8
+       ],
+       [
+        46.6,
+        -9.4,
+        33.6
+       ],
+       [
+        46.8,
+        -9.2,
+        31.8
+       ],
+       [
+        48,
+        -8.4,
+        31
+       ]
+      ]
+     },
+     {
+      "key": "centralToCingulate",
+      "landmark": "central sulcus carried over the dorsal margin to the cingulate sulcus",
+      "separates": [
+       "frontal",
+       "parietal"
+      ],
+      "kind": "line",
+      "placement": "line from the central sulcus dorsal end, across the medial surface at the same coronal level, to the cingulate sulcus",
+      "sides": {
+       "frontal": [
+        0,
+        1,
+        0
+       ],
+       "parietal": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "central sulcus dorsal end (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         12,
+         -34,
+         75
+        ],
+        "snappedMni": [
+         12.4,
+         -33,
+         70.4
+        ],
+        "snappedDepthMm": 11
+       },
+       {
+        "role": "medial surface below the margin (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         2,
+         -33,
+         63
+        ],
+        "snappedMni": [
+         2.2,
+         -33,
+         63
+        ],
+        "snappedDepthMm": 1.2
+       },
+       {
+        "role": "cingulate sulcus at the marginal ramus (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         14,
+         -31,
+         41
+        ],
+        "snappedMni": [
+         15,
+         -34.3,
+         44
+        ],
+        "snappedDepthMm": 14.5
+       }
+      ],
+      "lengthMm": 57.3,
+      "meanDepthMm": 4.7,
+      "sideSeeds": 26,
+      "unseededVertices": 82,
+      "polylineMni": [
+       [
+        12.4,
+        -33,
+        70.4
+       ],
+       [
+        10.7,
+        -34.3,
+        70
+       ],
+       [
+        9,
+        -34,
+        70.8
+       ],
+       [
+        8.4,
+        -34,
+        72
+       ],
+       [
+        7.7,
+        -34,
+        73
+       ],
+       [
+        6.9,
+        -34,
+        74
+       ],
+       [
+        5.5,
+        -34,
+        75
+       ],
+       [
+        4,
+        -34,
+        75.3
+       ],
+       [
+        2,
+        -34,
+        74.6
+       ],
+       [
+        0.4,
+        -34,
+        72.4
+       ],
+       [
+        -0.1,
+        -34,
+        70.9
+       ],
+       [
+        0.2,
+        -33.8,
+        69.2
+       ],
+       [
+        0.6,
+        -33.4,
+        67.6
+       ],
+       [
+        1,
+        -33,
+        66
+       ],
+       [
+        1.6,
+        -33,
+        64.6
+       ],
+       [
+        2.2,
+        -33,
+        63.2
+       ],
+       [
+        2.7,
+        -33,
+        61.7
+       ],
+       [
+        2,
+        -33,
+        59.4
+       ],
+       [
+        1.6,
+        -33.4,
+        57.6
+       ],
+       [
+        1.7,
+        -35.3,
+        55.7
+       ],
+       [
+        2.5,
+        -36,
+        54.5
+       ],
+       [
+        3.4,
+        -36,
+        53.4
+       ],
+       [
+        4.5,
+        -36,
+        52.5
+       ],
+       [
+        5.9,
+        -36,
+        51.9
+       ],
+       [
+        7.7,
+        -36,
+        51.7
+       ],
+       [
+        9.1,
+        -35.9,
+        51.1
+       ],
+       [
+        10.2,
+        -35.8,
+        50.2
+       ],
+       [
+        11,
+        -35.8,
+        49
+       ],
+       [
+        12,
+        -36,
+        48
+       ],
+       [
+        13.1,
+        -36,
+        47.1
+       ],
+       [
+        14,
+        -36,
+        46
+       ],
+       [
+        14.6,
+        -35,
+        44.6
+       ]
+      ]
+     },
+     {
+      "key": "centralToInsula",
+      "landmark": "central sulcus ventral end to the circular sulcus",
+      "separates": [
+       "frontal",
+       "parietal"
+      ],
+      "kind": "line",
+      "placement": "line from the central sulcus ventral end down the opercular face to the superior limb of the circular sulcus",
+      "sides": {
+       "frontal": [
+        0,
+        1,
+        0
+       ],
+       "parietal": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "central sulcus ventral end (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         52,
+         -8,
+         27
+        ],
+        "snappedMni": [
+         48.9,
+         -8,
+         30
+        ],
+        "snappedDepthMm": 17.3
+       },
+       {
+        "role": "circular sulcus, superior limb (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         36,
+         -9,
+         14
+        ],
+        "snappedMni": [
+         35.6,
+         -8.4,
+         14
+        ],
+        "snappedDepthMm": 31.6
+       }
+      ],
+      "lengthMm": 89.5,
+      "meanDepthMm": 12.9,
+      "sideSeeds": 54,
+      "unseededVertices": 87,
+      "polylineMni": [
+       [
+        48.9,
+        -8,
+        30
+       ],
+       [
+        49,
+        -8.8,
+        31.2
+       ],
+       [
+        48.3,
+        -9,
+        33
+       ],
+       [
+        49.1,
+        -9,
+        35
+       ],
+       [
+        51.5,
+        -8,
+        36
+       ],
+       [
+        53.9,
+        -7.1,
+        36.9
+       ],
+       [
+        56,
+        -6,
+        39
+       ],
+       [
+        58,
+        -5,
+        40.8
+       ],
+       [
+        59,
+        -4,
+        39.8
+       ],
+       [
+        60,
+        -4,
+        38.9
+       ],
+       [
+        62,
+        -4,
+        38.4
+       ],
+       [
+        63.5,
+        -4.5,
+        38
+       ],
+       [
+        64.6,
+        -5.4,
+        37.6
+       ],
+       [
+        65.4,
+        -6.6,
+        37
+       ],
+       [
+        66,
+        -8,
+        36
+       ],
+       [
+        66.4,
+        -9.6,
+        34.4
+       ],
+       [
+        66,
+        -11.7,
+        32
+       ],
+       [
+        66,
+        -13.5,
+        30
+       ],
+       [
+        66,
+        -15.5,
+        28
+       ],
+       [
+        66.1,
+        -17,
+        26.1
+       ],
+       [
+        65.9,
+        -18,
+        24
+       ],
+       [
+        65.2,
+        -19,
+        22
+       ],
+       [
+        64.4,
+        -19,
+        20
+       ],
+       [
+        62.3,
+        -19,
+        18.3
+       ],
+       [
+        60.2,
+        -19,
+        17.2
+       ],
+       [
+        58.8,
+        -19.2,
+        16.8
+       ],
+       [
+        56.5,
+        -19.5,
+        16.5
+       ],
+       [
+        54.2,
+        -20,
+        16
+       ],
+       [
+        52.6,
+        -20.4,
+        15.6
+       ],
+       [
+        50.3,
+        -20.7,
+        15
+       ],
+       [
+        48.8,
+        -20.2,
+        14
+       ],
+       [
+        47.4,
+        -19.6,
+        14
+       ],
+       [
+        46,
+        -19,
+        14
+       ],
+       [
+        45.3,
+        -17.7,
+        13.3
+       ],
+       [
+        44.1,
+        -16.9,
+        13
+       ],
+       [
+        43.6,
+        -15.4,
+        13
+       ],
+       [
+        43,
+        -14,
+        13.9
+       ],
+       [
+        42.1,
+        -12.9,
+        14
+       ],
+       [
+        41.4,
+        -11.6,
+        14
+       ],
+       [
+        40.4,
+        -10.6,
+        14
+       ],
+       [
+        38.9,
+        -10.1,
+        14
+       ],
+       [
+        37.6,
+        -9.4,
+        14
+       ],
+       [
+        35.9,
+        -9.1,
+        14
+       ]
+      ]
+     },
+     {
+      "key": "lateralFissureStem",
+      "landmark": "lateral fissure, stem",
+      "separates": [
+       "frontal",
+       "temporal"
+      ],
+      "kind": "sulcus",
+      "placement": "from the limen of the insula forward through the fissure to where its stem opens on the inferior surface, along the groove between the temporal pole and the orbital surface (points chosen on the inferior view, snapped into the groove), then medially to the medial wall",
+      "sides": {
+       "frontal": [
+        0,
+        1,
+        1
+       ],
+       "temporal": [
+        0,
+        -1,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "circular sulcus at the limen (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         35,
+         17,
+         -11
+        ],
+        "snappedMni": [
+         33,
+         19.7,
+         -8
+        ],
+        "snappedDepthMm": 20.2
+       },
+       {
+        "role": "lateral end of the stem groove (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         44,
+         23,
+         -20
+        ],
+        "snappedMni": [
+         40,
+         20.6,
+         -18.4
+        ],
+        "snappedDepthMm": 10.7
+       },
+       {
+        "role": "stem groove (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         38,
+         24,
+         -23
+        ],
+        "snappedMni": [
+         38,
+         20.5,
+         -19.5
+        ],
+        "snappedDepthMm": 11.3
+       },
+       {
+        "role": "medial end of the stem groove (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         24,
+         19,
+         -26
+        ],
+        "snappedMni": [
+         26.7,
+         15,
+         -27.3
+        ],
+        "snappedDepthMm": 10
+       },
+       {
+        "role": "medial end, on the anterior medial-wall line (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         7,
+         8,
+         -11
+        ],
+        "snappedMni": [
+         5.6,
+         5.6,
+         -13.4
+        ],
+        "snappedDepthMm": 4
+       }
+      ],
+      "lengthMm": 65.8,
+      "meanDepthMm": 10.5,
+      "sideSeeds": 0,
+      "unseededVertices": 108,
+      "polylineMni": [
+       [
+        33,
+        19.7,
+        -8
+       ],
+       [
+        33,
+        19.5,
+        -10
+       ],
+       [
+        33,
+        20,
+        -11.2
+       ],
+       [
+        34.8,
+        20.8,
+        -12
+       ],
+       [
+        36,
+        20.7,
+        -12.3
+       ],
+       [
+        37,
+        20.3,
+        -13.7
+       ],
+       [
+        37,
+        19.9,
+        -15.1
+       ],
+       [
+        38.8,
+        19.8,
+        -16
+       ],
+       [
+        39,
+        20,
+        -17.4
+       ],
+       [
+        40,
+        20.6,
+        -18.4
+       ],
+       [
+        38,
+        20.5,
+        -19.5
+       ],
+       [
+        36,
+        20,
+        -20
+       ],
+       [
+        34,
+        19.3,
+        -21.7
+       ],
+       [
+        32,
+        17.6,
+        -23.4
+       ],
+       [
+        30,
+        15.9,
+        -25.1
+       ],
+       [
+        27.3,
+        15,
+        -27
+       ],
+       [
+        26,
+        14,
+        -27.1
+       ],
+       [
+        25,
+        13,
+        -27
+       ],
+       [
+        23,
+        11,
+        -26.3
+       ],
+       [
+        22,
+        10,
+        -25.7
+       ],
+       [
+        21,
+        9,
+        -24.6
+       ],
+       [
+        20,
+        8,
+        -23.1
+       ],
+       [
+        19,
+        8,
+        -23
+       ],
+       [
+        17,
+        7.9,
+        -22.1
+       ],
+       [
+        16.4,
+        7.4,
+        -21
+       ],
+       [
+        15.8,
+        6.8,
+        -20
+       ],
+       [
+        15,
+        6,
+        -18.1
+       ],
+       [
+        14,
+        6,
+        -17.7
+       ],
+       [
+        12.9,
+        6,
+        -17
+       ],
+       [
+        11,
+        6,
+        -16.3
+       ],
+       [
+        10,
+        6,
+        -16
+       ],
+       [
+        9,
+        5.3,
+        -14.7
+       ],
+       [
+        7,
+        5,
+        -14
+       ],
+       [
+        6,
+        5.4,
+        -13.6
+       ]
+      ]
+     },
+     {
+      "key": "lateralFissureLip",
+      "landmark": "lateral fissure, its opening on the lateral surface",
+      "separates": [
+       "frontal",
+       "parietal",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line along the opening of the fissure on the lateral surface, from the lateral end of its stem to its posterior end, 5 mm wide: in the template the opercula and the superior temporal gyrus touch across the opening in places, and the fissure, not its fundus, is what separates the lobes there; points are the most lateral surface at the fissure on the lateral view, split where the central sulcus meets it",
+      "sides": [
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       }
+      ],
+      "bandMm": 5,
+      "controlPoints": [
+       {
+        "role": "lateral end of the stem groove (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         44,
+         23,
+         -20
+        ],
+        "snappedMni": [
+         40,
+         20.6,
+         -18.4
+        ],
+        "snappedDepthMm": 10.7
+       },
+       {
+        "role": "anterior opening (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         54,
+         21,
+         -4
+        ],
+        "snappedMni": [
+         53.8,
+         21.8,
+         -4
+        ],
+        "snappedDepthMm": 2.4
+       },
+       {
+        "role": "opening (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         62,
+         4,
+         -1
+        ],
+        "snappedMni": [
+         62.9,
+         4.9,
+         -0.1
+        ],
+        "snappedDepthMm": 1.1
+       },
+       {
+        "role": "opening, below the central sulcus (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         66,
+         -10,
+         5
+        ],
+        "snappedMni": [
+         66,
+         -8.2,
+         5.8
+        ],
+        "snappedDepthMm": 2.4
+       },
+       {
+        "role": "opening (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         70,
+         -26,
+         12
+        ],
+        "snappedMni": [
+         70.3,
+         -26,
+         12
+        ],
+        "snappedDepthMm": 0.7
+       },
+       {
+        "role": "opening (adjusted on the right: the right fissure ends at y -33, so the last opening point moves forward)",
+        "snap": "surface",
+        "givenMni": [
+         66,
+         -31,
+         20
+        ],
+        "snappedMni": [
+         69.6,
+         -31.4,
+         19
+        ],
+        "snappedDepthMm": 0.4
+       },
+       {
+        "role": "posterior end of the fissure (adjusted on the right: the right fissure is shorter; its posterior end is the most posterior vertex of the right fissure basin)",
+        "snap": "sulcus",
+        "givenMni": [
+         55,
+         -33,
+         29
+        ],
+        "snappedMni": [
+         50.5,
+         -32.5,
+         27
+        ],
+        "snappedDepthMm": 18.9
+       }
+      ],
+      "lengthMm": 140.6,
+      "meanDepthMm": 4.2,
+      "sideSeeds": 49,
+      "unseededVertices": 144,
+      "polylineMni": [
+       [
+        40,
+        20.6,
+        -18.4
+       ],
+       [
+        41.6,
+        20.6,
+        -16.4
+       ],
+       [
+        43.8,
+        20.8,
+        -14.2
+       ],
+       [
+        45,
+        21.2,
+        -12.8
+       ],
+       [
+        46.6,
+        23,
+        -10.4
+       ],
+       [
+        48.2,
+        24.2,
+        -8.8
+       ],
+       [
+        48.9,
+        22.9,
+        -8.1
+       ],
+       [
+        49.8,
+        21.8,
+        -7.2
+       ],
+       [
+        51.5,
+        21.5,
+        -6
+       ],
+       [
+        53.8,
+        21.8,
+        -4
+       ],
+       [
+        52.1,
+        21.1,
+        -3
+       ],
+       [
+        51,
+        21,
+        -2.6
+       ],
+       [
+        49,
+        21,
+        -2.2
+       ],
+       [
+        48,
+        21,
+        -1.5
+       ],
+       [
+        48,
+        20.9,
+        -1
+       ],
+       [
+        50,
+        20.8,
+        -1
+       ],
+       [
+        52,
+        20.4,
+        -1
+       ],
+       [
+        53,
+        19.5,
+        -1.5
+       ],
+       [
+        54,
+        18.7,
+        -2
+       ],
+       [
+        55.1,
+        18,
+        -2
+       ],
+       [
+        56,
+        16.9,
+        -2
+       ],
+       [
+        56.6,
+        15,
+        -2
+       ],
+       [
+        57,
+        13.8,
+        -1.2
+       ],
+       [
+        57,
+        12.8,
+        -0.2
+       ],
+       [
+        56.1,
+        11,
+        0
+       ],
+       [
+        57.4,
+        10,
+        0
+       ],
+       [
+        58.4,
+        9,
+        0
+       ],
+       [
+        59,
+        7.7,
+        -0.3
+       ],
+       [
+        61,
+        7.2,
+        -0.8
+       ],
+       [
+        61.7,
+        6,
+        -0.3
+       ],
+       [
+        62.8,
+        5,
+        0
+       ],
+       [
+        63.4,
+        4,
+        0.4
+       ],
+       [
+        63.9,
+        2.9,
+        1
+       ],
+       [
+        64,
+        1.9,
+        2
+       ],
+       [
+        64.7,
+        0,
+        2.7
+       ],
+       [
+        65,
+        -1,
+        3.2
+       ],
+       [
+        65,
+        -2.5,
+        4
+       ],
+       [
+        65.4,
+        -4,
+        4.4
+       ],
+       [
+        65.4,
+        -6,
+        4.4
+       ],
+       [
+        66,
+        -7.5,
+        5
+       ],
+       [
+        66,
+        -8.4,
+        6
+       ],
+       [
+        67,
+        -9.5,
+        7
+       ],
+       [
+        67.9,
+        -11,
+        7.9
+       ],
+       [
+        68.4,
+        -12,
+        8.4
+       ],
+       [
+        69,
+        -14,
+        9
+       ],
+       [
+        69.3,
+        -15,
+        9.3
+       ],
+       [
+        70,
+        -16.8,
+        10
+       ],
+       [
+        70.5,
+        -18,
+        10.5
+       ],
+       [
+        70.6,
+        -20,
+        10.6
+       ],
+       [
+        71,
+        -21.9,
+        11
+       ],
+       [
+        71,
+        -23,
+        11.2
+       ],
+       [
+        70.5,
+        -25,
+        11.5
+       ],
+       [
+        70.1,
+        -26.9,
+        12
+       ],
+       [
+        69.8,
+        -28,
+        12.8
+       ],
+       [
+        70,
+        -28,
+        14
+       ],
+       [
+        70,
+        -29,
+        16
+       ],
+       [
+        70,
+        -30,
+        17
+       ],
+       [
+        69.8,
+        -30.2,
+        18
+       ],
+       [
+        69.6,
+        -31.4,
+        19
+       ],
+       [
+        69.5,
+        -29.5,
+        19
+       ],
+       [
+        69.2,
+        -27.8,
+        19
+       ],
+       [
+        68.4,
+        -26.6,
+        19
+       ],
+       [
+        66.7,
+        -26.3,
+        19
+       ],
+       [
+        64.6,
+        -26.4,
+        19
+       ],
+       [
+        62.4,
+        -27,
+        19
+       ],
+       [
+        60.7,
+        -28,
+        19
+       ],
+       [
+        60,
+        -29.1,
+        19.9
+       ],
+       [
+        60,
+        -29.6,
+        21.4
+       ],
+       [
+        59.2,
+        -30.8,
+        22.2
+       ],
+       [
+        58.4,
+        -31.6,
+        23.4
+       ],
+       [
+        57.6,
+        -32,
+        24.6
+       ],
+       [
+        56.4,
+        -32,
+        25.4
+       ],
+       [
+        55.2,
+        -32,
+        26.2
+       ],
+       [
+        53.8,
+        -32.2,
+        26.8
+       ],
+       [
+        52,
+        -32.6,
+        27
+       ]
+      ]
+     },
+     {
+      "key": "lateralFissurePosterior",
+      "landmark": "lateral fissure, posterior ramus",
+      "separates": [
+       "parietal",
+       "temporal"
+      ],
+      "kind": "sulcus",
+      "placement": "from the posterior point of the circular sulcus along the posterior ramus to its end, the most posterior vertex of the fissure basin",
+      "sides": {
+       "parietal": [
+        0,
+        0,
+        1
+       ],
+       "temporal": [
+        0,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "circular sulcus, posterior (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         35,
+         -28,
+         17
+        ],
+        "snappedMni": [
+         35,
+         -24.7,
+         16
+        ],
+        "snappedDepthMm": 33.3
+       },
+       {
+        "role": "posterior end of the fissure (adjusted on the right: the right fissure is shorter; its posterior end is the most posterior vertex of the right fissure basin)",
+        "snap": "sulcus",
+        "givenMni": [
+         55,
+         -33,
+         29
+        ],
+        "snappedMni": [
+         50.5,
+         -32.5,
+         27
+        ],
+        "snappedDepthMm": 18.9
+       }
+      ],
+      "lengthMm": 26.8,
+      "meanDepthMm": 26.7,
+      "sideSeeds": 0,
+      "unseededVertices": 45,
+      "polylineMni": [
+       [
+        35,
+        -24.7,
+        16
+       ],
+       [
+        36,
+        -25,
+        17
+       ],
+       [
+        37.5,
+        -25.5,
+        17.5
+       ],
+       [
+        38.4,
+        -26.6,
+        17.4
+       ],
+       [
+        39.5,
+        -27.5,
+        17.5
+       ],
+       [
+        40.3,
+        -28.7,
+        17.3
+       ],
+       [
+        41.4,
+        -29.6,
+        17.4
+       ],
+       [
+        42.1,
+        -30.9,
+        18.1
+       ],
+       [
+        43.2,
+        -31.8,
+        19.2
+       ],
+       [
+        45.2,
+        -31.8,
+        21.2
+       ],
+       [
+        46,
+        -32,
+        22
+       ],
+       [
+        47,
+        -32,
+        24
+       ],
+       [
+        48.9,
+        -32.1,
+        25.9
+       ],
+       [
+        50.5,
+        -32.5,
+        27
+       ]
+      ]
+     },
+     {
+      "key": "lateralFissureToOccipital",
+      "landmark": "line from the posterior end of the lateral fissure to the parieto-occipital line",
+      "separates": [
+       "parietal",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line on the lateral surface",
+      "sides": {
+       "parietal": [
+        0,
+        0,
+        1
+       ],
+       "temporal": [
+        0,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "posterior end of the fissure (adjusted on the right: the right fissure is shorter; its posterior end is the most posterior vertex of the right fissure basin)",
+        "snap": "sulcus",
+        "givenMni": [
+         55,
+         -33,
+         29
+        ],
+        "snappedMni": [
+         50.5,
+         -32.5,
+         27
+        ],
+        "snappedDepthMm": 18.9
+       },
+       {
+        "role": "on the parieto-occipital line, chosen on the lateral view (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         56,
+         -74,
+         19
+        ],
+        "snappedMni": [
+         55,
+         -72.5,
+         19
+        ],
+        "snappedDepthMm": 0.5
+       }
+      ],
+      "lengthMm": 73.3,
+      "meanDepthMm": 3.6,
+      "sideSeeds": 72,
+      "unseededVertices": 20,
+      "polylineMni": [
+       [
+        50.5,
+        -32.5,
+        27
+       ],
+       [
+        52.4,
+        -32.6,
+        27.4
+       ],
+       [
+        53.7,
+        -33.3,
+        28.7
+       ],
+       [
+        55.8,
+        -33.2,
+        29.8
+       ],
+       [
+        57.4,
+        -32.6,
+        30.4
+       ],
+       [
+        59.4,
+        -31.6,
+        31.4
+       ],
+       [
+        61.3,
+        -30.7,
+        32.3
+       ],
+       [
+        63.3,
+        -29.7,
+        33.3
+       ],
+       [
+        65,
+        -29,
+        34
+       ],
+       [
+        66.7,
+        -29.3,
+        33.7
+       ],
+       [
+        68.2,
+        -29.8,
+        33.2
+       ],
+       [
+        69,
+        -31,
+        33
+       ],
+       [
+        69.3,
+        -32.7,
+        33
+       ],
+       [
+        69.2,
+        -34.8,
+        33
+       ],
+       [
+        68.6,
+        -37.4,
+        32
+       ],
+       [
+        67.9,
+        -40.1,
+        31
+       ],
+       [
+        68,
+        -42,
+        30
+       ],
+       [
+        67.1,
+        -44.9,
+        29.1
+       ],
+       [
+        66,
+        -47,
+        27.5
+       ],
+       [
+        65.6,
+        -49.4,
+        26.6
+       ],
+       [
+        65,
+        -52,
+        26
+       ],
+       [
+        64.2,
+        -53.8,
+        25.2
+       ],
+       [
+        64,
+        -55.5,
+        25
+       ],
+       [
+        63.3,
+        -57.7,
+        24.3
+       ],
+       [
+        62.2,
+        -59.8,
+        23.2
+       ],
+       [
+        61,
+        -61.6,
+        22
+       ],
+       [
+        58.6,
+        -63.4,
+        21.6
+       ],
+       [
+        58,
+        -64.8,
+        21
+       ],
+       [
+        58.4,
+        -66,
+        20.4
+       ],
+       [
+        58,
+        -68,
+        20
+       ],
+       [
+        56.8,
+        -70,
+        19.8
+       ],
+       [
+        55.4,
+        -72,
+        19
+       ]
+      ]
+     },
+     {
+      "key": "parietoOccipitalLine",
+      "landmark": "parieto-occipital sulcus to preoccipital notch",
+      "separates": [
+       "occipital",
+       "parietal",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line over the lateral surface from where the parieto-occipital sulcus notches the dorsal margin to the preoccipital notch on the inferolateral margin",
+      "sides": [
+       {
+        "parietal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "temporal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       }
+      ],
+      "controlPoints": [
+       {
+        "role": "parieto-occipital sulcus at the dorsal margin (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         12,
+         -78,
+         47
+        ],
+        "snappedMni": [
+         13,
+         -73.4,
+         48.6
+        ],
+        "snappedDepthMm": 8
+       },
+       {
+        "role": "lateral surface, where the lateral fissure line meets it (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         56,
+         -74,
+         19
+        ],
+        "snappedMni": [
+         55,
+         -72.5,
+         19
+        ],
+        "snappedDepthMm": 0.5
+       },
+       {
+        "role": "preoccipital notch (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         58,
+         -69,
+         -11
+        ],
+        "snappedMni": [
+         57,
+         -68,
+         -10.4
+        ],
+        "snappedDepthMm": 0.6
+       }
+      ],
+      "lengthMm": 112.8,
+      "meanDepthMm": 3.9,
+      "sideSeeds": 148,
+      "unseededVertices": 32,
+      "polylineMni": [
+       [
+        13,
+        -73.4,
+        48.6
+       ],
+       [
+        15,
+        -71.9,
+        50.1
+       ],
+       [
+        17,
+        -71.1,
+        50.9
+       ],
+       [
+        19,
+        -71,
+        51.2
+       ],
+       [
+        20,
+        -71,
+        50.9
+       ],
+       [
+        21.1,
+        -71,
+        50
+       ],
+       [
+        22,
+        -71,
+        48.7
+       ],
+       [
+        23,
+        -71,
+        47
+       ],
+       [
+        24,
+        -71,
+        46.8
+       ],
+       [
+        26,
+        -71,
+        46.1
+       ],
+       [
+        26.8,
+        -71,
+        45
+       ],
+       [
+        27.3,
+        -71,
+        44
+       ],
+       [
+        27.4,
+        -72.6,
+        42
+       ],
+       [
+        28,
+        -73,
+        40.4
+       ],
+       [
+        29,
+        -73,
+        39.9
+       ],
+       [
+        30.3,
+        -73,
+        39
+       ],
+       [
+        31,
+        -73,
+        38
+       ],
+       [
+        31.9,
+        -74,
+        36
+       ],
+       [
+        32,
+        -75.5,
+        34.5
+       ],
+       [
+        32,
+        -77.1,
+        34.9
+       ],
+       [
+        31.6,
+        -79,
+        35
+       ],
+       [
+        31.8,
+        -81,
+        35
+       ],
+       [
+        32.1,
+        -82,
+        35
+       ],
+       [
+        33,
+        -83.6,
+        35
+       ],
+       [
+        34,
+        -84.6,
+        35
+       ],
+       [
+        35,
+        -85.2,
+        35
+       ],
+       [
+        37,
+        -85.2,
+        35
+       ],
+       [
+        39,
+        -83.8,
+        35
+       ],
+       [
+        40.8,
+        -82.2,
+        34.8
+       ],
+       [
+        41.2,
+        -81.8,
+        34
+       ],
+       [
+        43,
+        -80,
+        33.4
+       ],
+       [
+        44,
+        -80,
+        32.8
+       ],
+       [
+        45.3,
+        -78.7,
+        32
+       ],
+       [
+        46.7,
+        -78,
+        31
+       ],
+       [
+        48,
+        -77,
+        30.2
+       ],
+       [
+        49,
+        -77,
+        29.6
+       ],
+       [
+        49.7,
+        -77,
+        28
+       ],
+       [
+        50.3,
+        -77,
+        27
+       ],
+       [
+        51,
+        -77,
+        25
+       ],
+       [
+        51.7,
+        -76.3,
+        24
+       ],
+       [
+        52,
+        -75.9,
+        23
+       ],
+       [
+        52,
+        -75.3,
+        21
+       ],
+       [
+        52.6,
+        -74.4,
+        20
+       ],
+       [
+        53.1,
+        -73.9,
+        19
+       ],
+       [
+        55,
+        -72.5,
+        18.5
+       ],
+       [
+        55,
+        -72,
+        17
+       ],
+       [
+        55,
+        -72,
+        15.2
+       ],
+       [
+        55.7,
+        -72,
+        14
+       ],
+       [
+        56.1,
+        -71.9,
+        13
+       ],
+       [
+        56.8,
+        -71.2,
+        11
+       ],
+       [
+        56.9,
+        -71,
+        9.9
+       ],
+       [
+        56.3,
+        -71,
+        7.3
+       ],
+       [
+        56,
+        -71,
+        5.9
+       ],
+       [
+        55.1,
+        -71,
+        3.1
+       ],
+       [
+        55,
+        -70.4,
+        2
+       ],
+       [
+        55.7,
+        -69.3,
+        1
+       ],
+       [
+        56,
+        -68.8,
+        0
+       ],
+       [
+        56.6,
+        -68.4,
+        -1.4
+       ],
+       [
+        57,
+        -68,
+        -3
+       ],
+       [
+        57,
+        -68.4,
+        -5
+       ],
+       [
+        57,
+        -68.6,
+        -7
+       ],
+       [
+        57,
+        -68.4,
+        -9
+       ],
+       [
+        57,
+        -68,
+        -10.4
+       ]
+      ]
+     },
+     {
+      "key": "parietoOccipitalSulcus",
+      "landmark": "parieto-occipital sulcus",
+      "separates": [
+       "occipital",
+       "parietal",
+       "limbic"
+      ],
+      "kind": "sulcus",
+      "placement": "fundus of the two medial basins (depth > 6 mm) that run from the dorsal margin to the calcarine junction",
+      "sides": [
+       {
+        "parietal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "limbic": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "limbic": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       }
+      ],
+      "controlPoints": [
+       {
+        "role": "at the dorsal margin (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         12,
+         -78,
+         47
+        ],
+        "snappedMni": [
+         13,
+         -73.4,
+         48.6
+        ],
+        "snappedDepthMm": 8
+       },
+       {
+        "role": "upper basin (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         16,
+         -78,
+         39
+        ],
+        "snappedMni": [
+         18,
+         -74.5,
+         36
+        ],
+        "snappedDepthMm": 15.7
+       },
+       {
+        "role": "where the subparietal sulcus line meets it (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         18,
+         -68,
+         28
+        ],
+        "snappedMni": [
+         20.4,
+         -65.6,
+         24.4
+        ],
+        "snappedDepthMm": 20.4
+       },
+       {
+        "role": "deepest vertex (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         20,
+         -61,
+         20
+        ],
+        "snappedMni": [
+         23,
+         -59,
+         20
+        ],
+        "snappedDepthMm": 22.3
+       },
+       {
+        "role": "junction with the calcarine sulcus (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         16,
+         -56,
+         4
+        ],
+        "snappedMni": [
+         17.3,
+         -58.7,
+         8
+        ],
+        "snappedDepthMm": 15.3
+       }
+      ],
+      "lengthMm": 81.8,
+      "meanDepthMm": 13.6,
+      "sideSeeds": 0,
+      "unseededVertices": 150,
+      "polylineMni": [
+       [
+        13,
+        -73.4,
+        48.6
+       ],
+       [
+        12,
+        -75,
+        48.8
+       ],
+       [
+        11,
+        -76,
+        49.1
+       ],
+       [
+        10,
+        -78,
+        49.7
+       ],
+       [
+        10,
+        -79,
+        50.1
+       ],
+       [
+        8.8,
+        -80.2,
+        48.8
+       ],
+       [
+        8.7,
+        -80.3,
+        46.7
+       ],
+       [
+        9.1,
+        -79.9,
+        45.1
+       ],
+       [
+        9.7,
+        -79.3,
+        43.7
+       ],
+       [
+        10.6,
+        -78.4,
+        42.6
+       ],
+       [
+        11.5,
+        -77.5,
+        41.5
+       ],
+       [
+        12.6,
+        -77,
+        40.6
+       ],
+       [
+        14.3,
+        -76.7,
+        40.3
+       ],
+       [
+        15.1,
+        -75.9,
+        39.1
+       ],
+       [
+        16,
+        -74.8,
+        38.2
+       ],
+       [
+        16.7,
+        -74,
+        37
+       ],
+       [
+        17,
+        -74,
+        36
+       ],
+       [
+        18,
+        -74.5,
+        36
+       ],
+       [
+        16.8,
+        -75,
+        34.8
+       ],
+       [
+        16.4,
+        -74.6,
+        33
+       ],
+       [
+        16.9,
+        -74.1,
+        31
+       ],
+       [
+        17,
+        -73,
+        30
+       ],
+       [
+        17,
+        -72,
+        29
+       ],
+       [
+        17.2,
+        -71,
+        28.2
+       ],
+       [
+        17.3,
+        -70,
+        27.3
+       ],
+       [
+        17.3,
+        -68.7,
+        27
+       ],
+       [
+        18.1,
+        -67.9,
+        26.1
+       ],
+       [
+        19.2,
+        -66.8,
+        25.2
+       ],
+       [
+        20.4,
+        -65.6,
+        24.4
+       ],
+       [
+        21,
+        -64.5,
+        23.5
+       ],
+       [
+        21.3,
+        -63.7,
+        22.3
+       ],
+       [
+        22,
+        -62.7,
+        21.3
+       ],
+       [
+        22,
+        -61.2,
+        20.8
+       ],
+       [
+        22.5,
+        -59.5,
+        20.5
+       ],
+       [
+        22.3,
+        -59,
+        19
+       ],
+       [
+        21,
+        -58.7,
+        18.3
+       ],
+       [
+        20,
+        -58,
+        17
+       ],
+       [
+        18,
+        -58,
+        16.4
+       ],
+       [
+        16,
+        -58,
+        16.3
+       ],
+       [
+        14,
+        -58,
+        14.9
+       ],
+       [
+        12.5,
+        -59,
+        12
+       ],
+       [
+        13.1,
+        -59,
+        11
+       ],
+       [
+        14.6,
+        -59,
+        10
+       ],
+       [
+        16,
+        -59,
+        9.4
+       ],
+       [
+        17.2,
+        -58.8,
+        9
+       ]
+      ]
+     },
+     {
+      "key": "cingulateSulcus",
+      "landmark": "cingulate sulcus",
+      "separates": [
+       "limbic",
+       "frontal",
+       "parietal"
+      ],
+      "kind": "sulcus",
+      "placement": "fundus from the marginal ramus forward over the corpus callosum and round the genu to the subcallosal area, then to the medial wall",
+      "sides": [
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "limbic": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         0,
+         1
+        ],
+        "limbic": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         1,
+         1
+        ],
+        "limbic": [
+         0,
+         -1,
+         -1
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         1,
+         0
+        ],
+        "limbic": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "frontal": [
+         0,
+         0,
+         -1
+        ],
+        "limbic": [
+         0,
+         0,
+         1
+        ]
+       }
+      ],
+      "controlPoints": [
+       {
+        "role": "at the marginal ramus (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         14,
+         -31,
+         41
+        ],
+        "snappedMni": [
+         15,
+         -34.3,
+         44
+        ],
+        "snappedDepthMm": 14.5
+       },
+       {
+        "role": "above the body of the corpus callosum (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         6,
+         -2,
+         44
+        ],
+        "snappedMni": [
+         3.8,
+         -4.2,
+         45
+        ],
+        "snappedDepthMm": 2.7
+       },
+       {
+        "role": "anterior (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         3,
+         24,
+         42
+        ],
+        "snappedMni": [
+         3.4,
+         22,
+         37.4
+        ],
+        "snappedDepthMm": 2.4
+       },
+       {
+        "role": "round the genu (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         5,
+         46,
+         15
+        ],
+        "snappedMni": [
+         8.6,
+         45,
+         12
+        ],
+        "snappedDepthMm": 7.6
+       },
+       {
+        "role": "subgenual (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         3,
+         39,
+         -5
+        ],
+        "snappedMni": [
+         5.6,
+         42.6,
+         -7
+        ],
+        "snappedDepthMm": 5.6
+       },
+       {
+        "role": "subcallosal end, on the anterior medial-wall line (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         3,
+         20,
+         -6
+        ],
+        "snappedMni": [
+         0.5,
+         19.5,
+         -6.5
+        ],
+        "snappedDepthMm": 0.7
+       }
+      ],
+      "lengthMm": 210.1,
+      "meanDepthMm": 4.6,
+      "sideSeeds": 46,
+      "unseededVertices": 334,
+      "polylineMni": [
+       [
+        15,
+        -34.3,
+        44
+       ],
+       [
+        15,
+        -35.2,
+        44.8
+       ],
+       [
+        14,
+        -36,
+        46
+       ],
+       [
+        13.1,
+        -36,
+        47
+       ],
+       [
+        12,
+        -36,
+        48
+       ],
+       [
+        11,
+        -36,
+        48.8
+       ],
+       [
+        10,
+        -36,
+        49
+       ],
+       [
+        8.8,
+        -35.2,
+        50
+       ],
+       [
+        8.9,
+        -34.1,
+        49
+       ],
+       [
+        9.2,
+        -33,
+        48.2
+       ],
+       [
+        10,
+        -32,
+        47.2
+       ],
+       [
+        10.7,
+        -30.3,
+        47
+       ],
+       [
+        12,
+        -28.8,
+        47
+       ],
+       [
+        11.7,
+        -27.3,
+        47.7
+       ],
+       [
+        10.4,
+        -27,
+        48.4
+       ],
+       [
+        8.8,
+        -27,
+        48.8
+       ],
+       [
+        7,
+        -27,
+        49
+       ],
+       [
+        5.2,
+        -27,
+        49
+       ],
+       [
+        4,
+        -26.5,
+        49
+       ],
+       [
+        3.4,
+        -25.6,
+        48.4
+       ],
+       [
+        3.5,
+        -24,
+        48
+       ],
+       [
+        4,
+        -23,
+        47
+       ],
+       [
+        4.7,
+        -21,
+        47
+       ],
+       [
+        6,
+        -19,
+        47
+       ],
+       [
+        7.6,
+        -17,
+        47
+       ],
+       [
+        7.9,
+        -15,
+        47
+       ],
+       [
+        6.4,
+        -14,
+        47.4
+       ],
+       [
+        5,
+        -13.5,
+        48
+       ],
+       [
+        3.9,
+        -13,
+        48
+       ],
+       [
+        3,
+        -12,
+        47
+       ],
+       [
+        3,
+        -10.2,
+        47
+       ],
+       [
+        3.3,
+        -9.7,
+        46
+       ],
+       [
+        3.3,
+        -7.7,
+        46
+       ],
+       [
+        3.7,
+        -5.3,
+        46
+       ],
+       [
+        3.8,
+        -4.2,
+        45
+       ],
+       [
+        3.4,
+        -2.6,
+        45
+       ],
+       [
+        3,
+        -1,
+        45
+       ],
+       [
+        2.6,
+        0.6,
+        45
+       ],
+       [
+        2.6,
+        2.6,
+        45
+       ],
+       [
+        2.9,
+        4.9,
+        45
+       ],
+       [
+        4,
+        6.1,
+        45
+       ],
+       [
+        4,
+        7.4,
+        44
+       ],
+       [
+        4,
+        8.8,
+        43
+       ],
+       [
+        4.2,
+        10,
+        43.2
+       ],
+       [
+        3.7,
+        11,
+        43
+       ],
+       [
+        4.1,
+        12.1,
+        42.1
+       ],
+       [
+        4.2,
+        13.2,
+        41.2
+       ],
+       [
+        4,
+        14,
+        41
+       ],
+       [
+        5,
+        15.1,
+        40.1
+       ],
+       [
+        5,
+        16.2,
+        39.2
+       ],
+       [
+        7,
+        17,
+        39.1
+       ],
+       [
+        7,
+        18,
+        38.8
+       ],
+       [
+        7,
+        19.6,
+        38
+       ],
+       [
+        6.6,
+        20.6,
+        37
+       ],
+       [
+        5.2,
+        21.2,
+        37
+       ],
+       [
+        4,
+        22,
+        37.1
+       ],
+       [
+        4,
+        22,
+        36.4
+       ],
+       [
+        4.1,
+        23.1,
+        36.1
+       ],
+       [
+        3.4,
+        24,
+        35.4
+       ],
+       [
+        5.1,
+        25.1,
+        35.1
+       ],
+       [
+        6,
+        26.6,
+        34.6
+       ],
+       [
+        6,
+        28.4,
+        34.4
+       ],
+       [
+        6,
+        29.1,
+        33.1
+       ],
+       [
+        4.5,
+        29.5,
+        32
+       ],
+       [
+        3.8,
+        30,
+        31.8
+       ],
+       [
+        3,
+        31,
+        31
+       ],
+       [
+        3,
+        32,
+        30
+       ],
+       [
+        3.1,
+        33.1,
+        29.1
+       ],
+       [
+        3.7,
+        34,
+        28
+       ],
+       [
+        5,
+        34.1,
+        27.1
+       ],
+       [
+        5.9,
+        35,
+        26.9
+       ],
+       [
+        6.7,
+        34.7,
+        25.7
+       ],
+       [
+        7,
+        35.7,
+        24.7
+       ],
+       [
+        7,
+        36.7,
+        23.7
+       ],
+       [
+        7,
+        37.6,
+        22.6
+       ],
+       [
+        7,
+        38.8,
+        21.8
+       ],
+       [
+        7,
+        40.4,
+        21.4
+       ],
+       [
+        8,
+        41,
+        20.4
+       ],
+       [
+        8,
+        42,
+        19
+       ],
+       [
+        8,
+        42.5,
+        18
+       ],
+       [
+        8,
+        42.9,
+        16
+       ],
+       [
+        8.1,
+        43.1,
+        15
+       ],
+       [
+        8.6,
+        43.6,
+        13
+       ],
+       [
+        8.5,
+        44.5,
+        12
+       ],
+       [
+        8,
+        45.2,
+        11
+       ],
+       [
+        8,
+        46,
+        9.4
+       ],
+       [
+        8,
+        46.3,
+        8
+       ],
+       [
+        7,
+        46.8,
+        6
+       ],
+       [
+        6,
+        46.8,
+        4
+       ],
+       [
+        5,
+        47,
+        3
+       ],
+       [
+        5,
+        47.3,
+        1
+       ],
+       [
+        3.7,
+        47,
+        -1
+       ],
+       [
+        3.4,
+        46,
+        -3
+       ],
+       [
+        4,
+        45.3,
+        -4.7
+       ],
+       [
+        5,
+        44.9,
+        -5
+       ],
+       [
+        6,
+        43.3,
+        -6
+       ],
+       [
+        4.7,
+        42.7,
+        -7
+       ],
+       [
+        3.1,
+        43.1,
+        -7
+       ],
+       [
+        2.8,
+        42,
+        -8
+       ],
+       [
+        2.3,
+        40,
+        -9.7
+       ],
+       [
+        1.9,
+        38,
+        -11
+       ],
+       [
+        1.7,
+        36,
+        -12
+       ],
+       [
+        1.4,
+        34,
+        -12.6
+       ],
+       [
+        1.4,
+        32,
+        -13
+       ],
+       [
+        1.1,
+        30,
+        -13
+       ],
+       [
+        1,
+        28,
+        -13
+       ],
+       [
+        1,
+        26.2,
+        -12.8
+       ],
+       [
+        0.2,
+        25.2,
+        -11.8
+       ],
+       [
+        -0.1,
+        23.9,
+        -11.1
+       ],
+       [
+        0.5,
+        22.5,
+        -10.5
+       ],
+       [
+        0.9,
+        20.9,
+        -10.1
+       ],
+       [
+        1,
+        20,
+        -9
+       ],
+       [
+        0.6,
+        19.6,
+        -7.4
+       ]
+      ]
+     },
+     {
+      "key": "subparietalSulcus",
+      "landmark": "subparietal sulcus",
+      "separates": [
+       "limbic",
+       "parietal"
+      ],
+      "kind": "line",
+      "placement": "posterior continuation of the cingulate sulcus below the marginal ramus, through the subparietal basin, to the parieto-occipital sulcus. On the right: mirrored, the path climbed onto the right parieto-occipital sulcus and ran down beside it; a point between the two keeps it on the subparietal course",
+      "sides": {
+       "parietal": [
+        0,
+        0,
+        1
+       ],
+       "limbic": [
+        0,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "cingulate sulcus at the marginal ramus",
+        "snap": "sulcus",
+        "givenMni": [
+         14,
+         -31,
+         41
+        ],
+        "snappedMni": [
+         15,
+         -34.3,
+         44
+        ],
+        "snappedDepthMm": 14.5
+       },
+       {
+        "role": "subparietal basin",
+        "snap": "sulcus",
+        "givenMni": [
+         11,
+         -53,
+         41
+        ],
+        "snappedMni": [
+         10,
+         -51,
+         45.4
+        ],
+        "snappedDepthMm": 8.1
+       },
+       {
+        "role": "between the subparietal and parieto-occipital sulci",
+        "snap": "surface",
+        "givenMni": [
+         13,
+         -60,
+         33
+        ],
+        "snappedMni": [
+         12,
+         -66.5,
+         31.5
+        ],
+        "snappedDepthMm": 11.9
+       },
+       {
+        "role": "parieto-occipital sulcus",
+        "snap": "sulcus",
+        "givenMni": [
+         18,
+         -68,
+         28
+        ],
+        "snappedMni": [
+         20.4,
+         -65.6,
+         24.4
+        ],
+        "snappedDepthMm": 20.4
+       }
+      ],
+      "lengthMm": 103.3,
+      "meanDepthMm": 6.3,
+      "sideSeeds": 54,
+      "unseededVertices": 113,
+      "polylineMni": [
+       [
+        15,
+        -34.3,
+        44
+       ],
+       [
+        15,
+        -35.2,
+        44.8
+       ],
+       [
+        14,
+        -36,
+        46
+       ],
+       [
+        13.8,
+        -37,
+        47
+       ],
+       [
+        13,
+        -37,
+        48.1
+       ],
+       [
+        12,
+        -37,
+        49.1
+       ],
+       [
+        10,
+        -37,
+        50
+       ],
+       [
+        9,
+        -37.5,
+        50.5
+       ],
+       [
+        7,
+        -38.4,
+        50.6
+       ],
+       [
+        5,
+        -39.6,
+        50.4
+       ],
+       [
+        3,
+        -40.6,
+        49.4
+       ],
+       [
+        1.9,
+        -42.1,
+        47.9
+       ],
+       [
+        1,
+        -45,
+        47
+       ],
+       [
+        0.9,
+        -46.1,
+        47
+       ],
+       [
+        1.1,
+        -47.9,
+        47
+       ],
+       [
+        1.6,
+        -49.4,
+        47
+       ],
+       [
+        2.4,
+        -50.6,
+        47
+       ],
+       [
+        3.5,
+        -51.5,
+        47
+       ],
+       [
+        5,
+        -52,
+        47.2
+       ],
+       [
+        6,
+        -52,
+        46.1
+       ],
+       [
+        7,
+        -52,
+        46
+       ],
+       [
+        9,
+        -51.5,
+        45.5
+       ],
+       [
+        8.6,
+        -51.4,
+        45
+       ],
+       [
+        7,
+        -52,
+        45.7
+       ],
+       [
+        6,
+        -52,
+        46.1
+       ],
+       [
+        5,
+        -52,
+        47.2
+       ],
+       [
+        3.5,
+        -52,
+        45.5
+       ],
+       [
+        1.7,
+        -53,
+        44
+       ],
+       [
+        1.2,
+        -55,
+        42
+       ],
+       [
+        1.9,
+        -57,
+        40
+       ],
+       [
+        2.6,
+        -58,
+        39
+       ],
+       [
+        1.3,
+        -60,
+        37
+       ],
+       [
+        1.2,
+        -62,
+        35
+       ],
+       [
+        1.2,
+        -64,
+        33
+       ],
+       [
+        0.5,
+        -66,
+        31
+       ],
+       [
+        0,
+        -68,
+        29.8
+       ],
+       [
+        1.1,
+        -68.9,
+        30
+       ],
+       [
+        1.9,
+        -70.1,
+        30
+       ],
+       [
+        2.8,
+        -71.2,
+        30.8
+       ],
+       [
+        4.2,
+        -71.8,
+        31
+       ],
+       [
+        6,
+        -72,
+        31.4
+       ],
+       [
+        8.2,
+        -70,
+        32
+       ],
+       [
+        10.4,
+        -68,
+        32
+       ],
+       [
+        12,
+        -67,
+        31.9
+       ],
+       [
+        12.9,
+        -67.1,
+        30.9
+       ],
+       [
+        13.6,
+        -67,
+        29.6
+       ],
+       [
+        14.7,
+        -66.3,
+        28.7
+       ],
+       [
+        15.9,
+        -66.1,
+        27.9
+       ],
+       [
+        17.2,
+        -66,
+        27.2
+       ],
+       [
+        18.3,
+        -66,
+        26.3
+       ],
+       [
+        19.3,
+        -66,
+        25.3
+       ],
+       [
+        20.4,
+        -65.6,
+        24.4
+       ]
+      ]
+     },
+     {
+      "key": "isthmusLine",
+      "landmark": "anterior end of the calcarine sulcus to the medial wall",
+      "separates": [
+       "limbic",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line from the calcarine junction to the medial wall behind the splenium, closing the isthmus off from the parahippocampal gyrus",
+      "sides": {
+       "limbic": [
+        0,
+        0,
+        1
+       ],
+       "temporal": [
+        0,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "calcarine junction (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         16,
+         -56,
+         4
+        ],
+        "snappedMni": [
+         17.3,
+         -58.7,
+         8
+        ],
+        "snappedDepthMm": 15.3
+       },
+       {
+        "role": "under the splenium, where the posterior medial-wall line starts (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         1,
+         -38,
+         6
+        ],
+        "snappedMni": [
+         -0.5,
+         -38,
+         6.5
+        ],
+        "snappedDepthMm": 0.2
+       }
+      ],
+      "lengthMm": 38.4,
+      "meanDepthMm": 5.9,
+      "sideSeeds": 23,
+      "unseededVertices": 43,
+      "polylineMni": [
+       [
+        17.3,
+        -58.7,
+        8
+       ],
+       [
+        16.3,
+        -58.7,
+        9
+       ],
+       [
+        15,
+        -59,
+        9.7
+       ],
+       [
+        13.4,
+        -58.6,
+        10
+       ],
+       [
+        11.8,
+        -58.2,
+        10
+       ],
+       [
+        10.5,
+        -57.5,
+        10
+       ],
+       [
+        10,
+        -57,
+        9
+       ],
+       [
+        8.8,
+        -56,
+        8
+       ],
+       [
+        7.2,
+        -55.8,
+        6.2
+       ],
+       [
+        6.5,
+        -54.5,
+        5.5
+       ],
+       [
+        6,
+        -53,
+        5
+       ],
+       [
+        5.9,
+        -51.1,
+        4.9
+       ],
+       [
+        6,
+        -49,
+        5.1
+       ],
+       [
+        5.7,
+        -47.3,
+        6
+       ],
+       [
+        5.2,
+        -45.8,
+        7
+       ],
+       [
+        4.8,
+        -44.2,
+        7
+       ],
+       [
+        5.2,
+        -42.8,
+        7.2
+       ],
+       [
+        4.1,
+        -41.9,
+        8
+       ],
+       [
+        2.6,
+        -41.4,
+        7.6
+       ],
+       [
+        1.8,
+        -40.2,
+        7
+       ],
+       [
+        0.7,
+        -39.3,
+        6.7
+       ],
+       [
+        0,
+        -38,
+        6.4
+       ]
+      ]
+     },
+     {
+      "key": "occipitotemporalMedial",
+      "landmark": "anterior end of the calcarine sulcus to the tentorial cut",
+      "separates": [
+       "occipital",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line down the medial surface from the calcarine junction to the cut",
+      "sides": {
+       "temporal": [
+        0,
+        1,
+        0
+       ],
+       "occipital": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "calcarine junction (mirrored from the left placement)",
+        "snap": "sulcus",
+        "givenMni": [
+         16,
+         -56,
+         4
+        ],
+        "snappedMni": [
+         17.3,
+         -58.7,
+         8
+        ],
+        "snappedDepthMm": 15.3
+       },
+       {
+        "role": "tentorial cut (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         20,
+         -58,
+         -8
+        ],
+        "snappedMni": [
+         15.5,
+         -58,
+         -11
+        ],
+        "snappedDepthMm": 1.6
+       }
+      ],
+      "lengthMm": 36.8,
+      "meanDepthMm": 7,
+      "sideSeeds": 42,
+      "unseededVertices": 35,
+      "polylineMni": [
+       [
+        17.3,
+        -58.7,
+        8
+       ],
+       [
+        17,
+        -58.9,
+        9.1
+       ],
+       [
+        15,
+        -59,
+        9.7
+       ],
+       [
+        13.4,
+        -58.6,
+        10
+       ],
+       [
+        11.8,
+        -58.2,
+        10
+       ],
+       [
+        10.5,
+        -57.5,
+        10
+       ],
+       [
+        10,
+        -57,
+        9
+       ],
+       [
+        8.8,
+        -56,
+        8
+       ],
+       [
+        7,
+        -56.1,
+        5.9
+       ],
+       [
+        6.5,
+        -56,
+        4
+       ],
+       [
+        6.5,
+        -56,
+        2
+       ],
+       [
+        7,
+        -56,
+        0.7
+       ],
+       [
+        7.9,
+        -56,
+        -1
+       ],
+       [
+        8.6,
+        -56,
+        -2
+       ],
+       [
+        9.3,
+        -56,
+        -3
+       ],
+       [
+        10,
+        -56,
+        -4.2
+       ],
+       [
+        11,
+        -56,
+        -5.6
+       ],
+       [
+        12,
+        -56.7,
+        -6.7
+       ],
+       [
+        13,
+        -57,
+        -7
+       ],
+       [
+        14.3,
+        -57,
+        -8
+       ],
+       [
+        14.7,
+        -57.3,
+        -10
+       ],
+       [
+        15.5,
+        -58,
+        -11
+       ]
+      ]
+     },
+     {
+      "key": "occipitotemporalBasal",
+      "landmark": "preoccipital notch to the tentorial cut",
+      "separates": [
+       "occipital",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line across the inferior surface from the notch to the cut",
+      "sides": {
+       "temporal": [
+        0,
+        1,
+        0
+       ],
+       "occipital": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "preoccipital notch (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         58,
+         -69,
+         -11
+        ],
+        "snappedMni": [
+         57,
+         -68,
+         -10.4
+        ],
+        "snappedDepthMm": 0.6
+       },
+       {
+        "role": "tentorial cut (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         50,
+         -64,
+         -22
+        ],
+        "snappedMni": [
+         44.5,
+         -57.5,
+         -22.5
+        ],
+        "snappedDepthMm": 0.7
+       }
+      ],
+      "lengthMm": 24.1,
+      "meanDepthMm": 1.2,
+      "sideSeeds": 30,
+      "unseededVertices": 1,
+      "polylineMni": [
+       [
+        57,
+        -68,
+        -10.4
+       ],
+       [
+        56,
+        -68,
+        -12
+       ],
+       [
+        56,
+        -67,
+        -13.9
+       ],
+       [
+        55,
+        -66.3,
+        -15
+       ],
+       [
+        55,
+        -65,
+        -16
+       ],
+       [
+        54.5,
+        -64,
+        -16.5
+       ],
+       [
+        53.3,
+        -63,
+        -17.7
+       ],
+       [
+        51,
+        -63,
+        -19
+       ],
+       [
+        50.3,
+        -62,
+        -19.7
+       ],
+       [
+        49.4,
+        -61,
+        -20.6
+       ],
+       [
+        48,
+        -60.6,
+        -20.6
+       ],
+       [
+        46.9,
+        -60,
+        -21.1
+       ],
+       [
+        45.9,
+        -59,
+        -22.1
+       ],
+       [
+        45,
+        -57.7,
+        -22.7
+       ]
+      ]
+     },
+     {
+      "key": "medialWallPosterior",
+      "landmark": "medial wall, behind the thalamus: from the splenium to the tentorial cut",
+      "separates": [
+       "medialWall",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line from the underside of the splenium down to the tentorial cut, behind the pulvinar; points chosen on the medial view",
+      "sides": {
+       "medialWall": [
+        0,
+        1,
+        0
+       ],
+       "temporal": [
+        0,
+        -1,
+        0
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "under the splenium (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         1,
+         -38,
+         6
+        ],
+        "snappedMni": [
+         -0.5,
+         -38,
+         6.5
+        ],
+        "snappedDepthMm": 0.2
+       },
+       {
+        "role": "tentorial cut (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         13,
+         -36,
+         -5
+        ],
+        "snappedMni": [
+         13,
+         -36.4,
+         -5.4
+        ],
+        "snappedDepthMm": 2.4
+       }
+      ],
+      "lengthMm": 22.8,
+      "meanDepthMm": 4.1,
+      "sideSeeds": 37,
+      "unseededVertices": 0,
+      "polylineMni": [
+       [
+        -0.5,
+        -38,
+        6.5
+       ],
+       [
+        1.3,
+        -38,
+        6.3
+       ],
+       [
+        3,
+        -38,
+        6
+       ],
+       [
+        4.8,
+        -38.2,
+        5.8
+       ],
+       [
+        6.6,
+        -38.4,
+        5.6
+       ],
+       [
+        8.3,
+        -38.7,
+        5.3
+       ],
+       [
+        9,
+        -39.3,
+        4
+       ],
+       [
+        9,
+        -39.2,
+        2
+       ],
+       [
+        9.7,
+        -39,
+        0.7
+       ],
+       [
+        10.5,
+        -39,
+        -0.5
+       ],
+       [
+        11.5,
+        -38.5,
+        -1.5
+       ],
+       [
+        12.4,
+        -37.6,
+        -2.6
+       ],
+       [
+        13,
+        -37,
+        -4
+       ],
+       [
+        13,
+        -36.9,
+        -5
+       ]
+      ]
+     },
+     {
+      "key": "medialWallLateral",
+      "landmark": "medial wall, beside the brainstem cut: the choroid-fissure side of the diencephalon",
+      "separates": [
+       "medialWall",
+       "temporal"
+      ],
+      "kind": "line",
+      "placement": "line along the lateral side of the brainstem cut, between the diencephalon and the medial surface of the temporal lobe, from the lower end of the posterior line to the start of the anterior one; points chosen on the inferior view",
+      "sides": {
+       "medialWall": [
+        -1,
+        0,
+        1
+       ],
+       "temporal": [
+        1,
+        0,
+        -1
+       ]
+      },
+      "controlPoints": [
+       {
+        "role": "tentorial cut, lower end of the posterior line (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         13,
+         -36,
+         -5
+        ],
+        "snappedMni": [
+         13,
+         -36.4,
+         -5.4
+        ],
+        "snappedDepthMm": 2.4
+       },
+       {
+        "role": "beside the brainstem cut (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         17,
+         -25,
+         -10
+        ],
+        "snappedMni": [
+         17,
+         -24.9,
+         -10
+        ],
+        "snappedDepthMm": 6.3
+       },
+       {
+        "role": "beside the brainstem cut (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         17,
+         -12,
+         -12
+        ],
+        "snappedMni": [
+         18,
+         -11.7,
+         -12.7
+        ],
+        "snappedDepthMm": 7.3
+       },
+       {
+        "role": "front of the brainstem cut (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         10,
+         -5,
+         -14
+        ],
+        "snappedMni": [
+         10.2,
+         -5,
+         -13.8
+        ],
+        "snappedDepthMm": 4.3
+       }
+      ],
+      "lengthMm": 93.3,
+      "meanDepthMm": 4.7,
+      "sideSeeds": 69,
+      "unseededVertices": 55,
+      "polylineMni": [
+       [
+        13,
+        -36.4,
+        -5.4
+       ],
+       [
+        14,
+        -34.8,
+        -5
+       ],
+       [
+        16,
+        -33.4,
+        -4.4
+       ],
+       [
+        16.8,
+        -31.2,
+        -4
+       ],
+       [
+        16,
+        -30,
+        -4.3
+       ],
+       [
+        16,
+        -29,
+        -5.3
+       ],
+       [
+        16,
+        -28.3,
+        -7
+       ],
+       [
+        16,
+        -27.6,
+        -8
+       ],
+       [
+        16.1,
+        -26,
+        -8.9
+       ],
+       [
+        17,
+        -25,
+        -9.8
+       ],
+       [
+        17.3,
+        -24.7,
+        -10.7
+       ],
+       [
+        17.9,
+        -24.1,
+        -12.1
+       ],
+       [
+        19.6,
+        -22.4,
+        -12.4
+       ],
+       [
+        20,
+        -21,
+        -13
+       ],
+       [
+        20.6,
+        -19,
+        -13
+       ],
+       [
+        21,
+        -17,
+        -13
+       ],
+       [
+        21,
+        -15.6,
+        -13
+       ],
+       [
+        20,
+        -14.1,
+        -13.1
+       ],
+       [
+        19,
+        -13.5,
+        -13
+       ],
+       [
+        18,
+        -12.2,
+        -13
+       ],
+       [
+        18,
+        -12.2,
+        -13
+       ],
+       [
+        19,
+        -13.5,
+        -13
+       ],
+       [
+        20,
+        -14.1,
+        -13.1
+       ],
+       [
+        21,
+        -15.6,
+        -13
+       ],
+       [
+        21,
+        -17,
+        -13
+       ],
+       [
+        20,
+        -19,
+        -14.1
+       ],
+       [
+        18.7,
+        -19.3,
+        -16.3
+       ],
+       [
+        18,
+        -18.9,
+        -17.9
+       ],
+       [
+        17.1,
+        -17.9,
+        -18.9
+       ],
+       [
+        16.4,
+        -16.6,
+        -19.6
+       ],
+       [
+        16,
+        -15,
+        -20
+       ],
+       [
+        16,
+        -14.2,
+        -21.2
+       ],
+       [
+        15.9,
+        -13,
+        -22
+       ],
+       [
+        15.4,
+        -11.6,
+        -22.6
+       ],
+       [
+        15.4,
+        -11.6,
+        -24.6
+       ],
+       [
+        15.4,
+        -10.6,
+        -25.6
+       ],
+       [
+        15.4,
+        -9.6,
+        -26.6
+       ],
+       [
+        15.4,
+        -7.6,
+        -26.6
+       ],
+       [
+        15.4,
+        -6,
+        -27
+       ],
+       [
+        14.6,
+        -5.4,
+        -27.4
+       ],
+       [
+        13.3,
+        -5,
+        -26.7
+       ],
+       [
+        11.7,
+        -5,
+        -26.3
+       ],
+       [
+        10.9,
+        -5,
+        -25.1
+       ],
+       [
+        10.6,
+        -5,
+        -23.4
+       ],
+       [
+        10.7,
+        -5,
+        -21.3
+       ],
+       [
+        12,
+        -5,
+        -19.2
+       ],
+       [
+        13.1,
+        -5,
+        -17.9
+       ],
+       [
+        14.2,
+        -5,
+        -15.8
+       ],
+       [
+        13.5,
+        -5.5,
+        -14.5
+       ],
+       [
+        11.4,
+        -5.6,
+        -14.6
+       ],
+       [
+        10.2,
+        -5,
+        -13.8
+       ]
+      ]
+     },
+     {
+      "key": "medialWallAnterior",
+      "landmark": "medial wall, in front of the diencephalon: from the brainstem cut through the anterior perforated substance to the rostrum of the corpus callosum",
+      "separates": [
+       "medialWall",
+       "temporal",
+       "frontal",
+       "limbic"
+      ],
+      "kind": "line",
+      "placement": "line from the front of the brainstem cut, under the hypothalamus and through the anterior perforated substance, up the lamina terminalis to the rostrum; points chosen on the medial view",
+      "sides": [
+       {
+        "medialWall": [
+         0,
+         0,
+         1
+        ],
+        "temporal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "medialWall": [
+         0,
+         0,
+         1
+        ],
+        "frontal": [
+         0,
+         0,
+         -1
+        ]
+       },
+       {
+        "medialWall": [
+         0,
+         -1,
+         0
+        ],
+        "limbic": [
+         0,
+         1,
+         0
+        ]
+       }
+      ],
+      "controlPoints": [
+       {
+        "role": "front of the brainstem cut (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         10,
+         -5,
+         -14
+        ],
+        "snappedMni": [
+         10.2,
+         -5,
+         -13.8
+        ],
+        "snappedDepthMm": 4.3
+       },
+       {
+        "role": "anterior perforated substance, where the fissure stem ends (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         7,
+         8,
+         -11
+        ],
+        "snappedMni": [
+         5.6,
+         5.6,
+         -13.4
+        ],
+        "snappedDepthMm": 4
+       },
+       {
+        "role": "where the cingulate sulcus ends (mirrored from the left placement)",
+        "snap": "surface",
+        "givenMni": [
+         3,
+         20,
+         -6
+        ],
+        "snappedMni": [
+         0.5,
+         19.5,
+         -6.5
+        ],
+        "snappedDepthMm": 0.7
+       },
+       {
+        "role": "rostrum of the corpus callosum (mirrored from the left placement)",
+        "snap": "rim",
+        "givenMni": [
+         1,
+         26,
+         -3
+        ],
+        "snappedMni": [
+         -0.4,
+         26.6,
+         -3
+        ],
+        "snappedDepthMm": 0.6
+       }
+      ],
+      "lengthMm": 44.8,
+      "meanDepthMm": 2.7,
+      "sideSeeds": 18,
+      "unseededVertices": 48,
+      "polylineMni": [
+       [
+        10.2,
+        -5,
+        -13.8
+       ],
+       [
+        10,
+        -4.4,
+        -15
+       ],
+       [
+        10.4,
+        -3.6,
+        -16
+       ],
+       [
+        11.4,
+        -1.6,
+        -15.6
+       ],
+       [
+        10.6,
+        -0.4,
+        -14.4
+       ],
+       [
+        9.3,
+        0.3,
+        -14
+       ],
+       [
+        7.8,
+        0.8,
+        -14
+       ],
+       [
+        6.8,
+        1.8,
+        -14
+       ],
+       [
+        6,
+        3,
+        -13.6
+       ],
+       [
+        5.7,
+        4.7,
+        -13.3
+       ],
+       [
+        4.7,
+        5.7,
+        -13.3
+       ],
+       [
+        3.4,
+        6.4,
+        -13
+       ],
+       [
+        2,
+        7,
+        -13
+       ],
+       [
+        1.4,
+        8.4,
+        -13
+       ],
+       [
+        1,
+        10,
+        -12
+       ],
+       [
+        1.4,
+        12.4,
+        -10.6
+       ],
+       [
+        1.7,
+        14.7,
+        -9
+       ],
+       [
+        1.4,
+        16.4,
+        -8.6
+       ],
+       [
+        0.8,
+        17.8,
+        -8
+       ],
+       [
+        0.5,
+        19.5,
+        -6.5
+       ],
+       [
+        0.1,
+        21.1,
+        -5.9
+       ],
+       [
+        0,
+        23,
+        -4.5
+       ],
+       [
+        0,
+        25,
+        -4
+       ],
+       [
+        -0.4,
+        26.6,
+        -3
+       ]
+      ]
+     },
+     {
+      "key": "parietoOccipitalMedialSurface",
+      "landmark": "parieto-occipital sulcus, its course on the medial surface",
+      "separates": [
+       "occipital",
+       "parietal",
+       "limbic"
+      ],
+      "kind": "line",
+      "placement": "on the right the parieto-occipital sulcus does not open onto the medial surface of the template: the surface passes over it, 15 to 20 mm from its fundus, and the fundus trace alone leaves that surface open. Its course there is a line on the medial surface over the fundus control points, each found as the most medial surface vertex at the fundus point's (y, z)",
+      "sides": [
+       {
+        "parietal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "parietal": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "limbic": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       },
+       {
+        "limbic": [
+         0,
+         1,
+         0
+        ],
+        "occipital": [
+         0,
+         -1,
+         0
+        ]
+       }
+      ],
+      "bandMm": 5,
+      "controlPoints": [
+       {
+        "role": "medial surface over the sulcus at the dorsal margin",
+        "snap": "surface",
+        "givenMni": [
+         2,
+         -74,
+         51
+        ],
+        "snappedMni": [
+         2.3,
+         -74,
+         51
+        ],
+        "snappedDepthMm": 0.3
+       },
+       {
+        "role": "over the upper basin",
+        "snap": "surface",
+        "givenMni": [
+         3,
+         -76,
+         35
+        ],
+        "snappedMni": [
+         3,
+         -76,
+         35
+        ],
+        "snappedDepthMm": 3
+       },
+       {
+        "role": "over the deepest vertex",
+        "snap": "surface",
+        "givenMni": [
+         0,
+         -65,
+         25
+        ],
+        "snappedMni": [
+         -0.2,
+         -65,
+         25
+        ],
+        "snappedDepthMm": 0.2
+       },
+       {
+        "role": "over the lower course",
+        "snap": "surface",
+        "givenMni": [
+         1,
+         -59,
+         15
+        ],
+        "snappedMni": [
+         1.1,
+         -59,
+         15
+        ],
+        "snappedDepthMm": 0.1
+       },
+       {
+        "role": "over the calcarine junction",
+        "snap": "surface",
+        "givenMni": [
+         3,
+         -59,
+         6
+        ],
+        "snappedMni": [
+         3.3,
+         -59,
+         6
+        ],
+        "snappedDepthMm": 1.6
+       }
+      ],
+      "lengthMm": 66.4,
+      "meanDepthMm": 1.8,
+      "sideSeeds": 21,
+      "unseededVertices": 87,
+      "polylineMni": [
+       [
+        2.3,
+        -74,
+        51
+       ],
+       [
+        2.3,
+        -74,
+        49
+       ],
+       [
+        2.4,
+        -74,
+        47
+       ],
+       [
+        1.5,
+        -75,
+        44
+       ],
+       [
+        1.6,
+        -75,
+        42
+       ],
+       [
+        2,
+        -75,
+        40.4
+       ],
+       [
+        2.4,
+        -74.6,
+        39
+       ],
+       [
+        3,
+        -74,
+        37.5
+       ],
+       [
+        3.6,
+        -73.4,
+        36
+       ],
+       [
+        4,
+        -73,
+        35
+       ],
+       [
+        4,
+        -72.5,
+        33
+       ],
+       [
+        3,
+        -74.2,
+        32.8
+       ],
+       [
+        3,
+        -75,
+        34
+       ],
+       [
+        3,
+        -76,
+        35
+       ],
+       [
+        3,
+        -75,
+        34
+       ],
+       [
+        3,
+        -74.2,
+        32.8
+       ],
+       [
+        3,
+        -73.3,
+        31.7
+       ],
+       [
+        3,
+        -72.5,
+        30.5
+       ],
+       [
+        3.3,
+        -71,
+        30.3
+       ],
+       [
+        2.3,
+        -70,
+        29.3
+       ],
+       [
+        1.5,
+        -69,
+        28.5
+       ],
+       [
+        1,
+        -67.9,
+        28
+       ],
+       [
+        0.3,
+        -67,
+        26.3
+       ],
+       [
+        -0.1,
+        -66.1,
+        25
+       ],
+       [
+        -0.2,
+        -65,
+        24.8
+       ],
+       [
+        -0.1,
+        -65,
+        22.9
+       ],
+       [
+        0,
+        -64,
+        21.8
+       ],
+       [
+        -0.1,
+        -63,
+        20.9
+       ],
+       [
+        0,
+        -62,
+        19.7
+       ],
+       [
+        0.4,
+        -61.6,
+        18
+       ],
+       [
+        0.8,
+        -61,
+        16.8
+       ],
+       [
+        1,
+        -59.9,
+        16
+       ],
+       [
+        1.4,
+        -59,
+        14.4
+       ],
+       [
+        1.7,
+        -59,
+        12.7
+       ],
+       [
+        2.5,
+        -59,
+        11.5
+       ],
+       [
+        3.5,
+        -59,
+        10.5
+       ],
+       [
+        4.2,
+        -58.8,
+        9.2
+       ],
+       [
+        3.5,
+        -59,
+        7.5
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "lowTierSearch": [
+  {
+   "budgetTriangles": 18000,
+   "gzipBytes": 149934
+  },
+  {
+   "budgetTriangles": 17146,
+   "gzipBytes": 143989
+  }
+ ],
+ "cerebellarLeak": {
+  "reference": {
+   "set": "zanatomy-2929e94",
+   "category": "cerebellum",
+   "structures": 31,
+   "geometry": "packages/atlas-assets/brain/zanatomy-2929e94/meshes.fullres.bin",
+   "registration": "packages/atlas-assets/registration/mni-to-zanatomy-2929e94.json",
+   "licence": "CC-BY-SA-4.0 (Z-Anatomy; the brainproject-brain-glb source in attribution.json)",
+   "heldOutErrorMm": 8.55
+  },
+  "referencePlacement": {
+   "referenceVertices": 70315,
+   "inRemovedTissue": 54584,
+   "inKeptCerebrum": 9872,
+   "outsideTissue": 5859
+  },
+  "fullSurface": {
+   "left": {
+    "vertices": 394666,
+    "inside": 12125,
+    "deeperThan4Mm": 1122,
+    "deeperThanHeldOutError": 0,
+    "deepestExamples": [
+     {
+      "mni": [
+       -14,
+       -76,
+       -16
+      ],
+      "depthMm": 7.1
+     },
+     {
+      "mni": [
+       -15,
+       -77,
+       -16
+      ],
+      "depthMm": 7
+     },
+     {
+      "mni": [
+       -14,
+       -76,
+       -16
+      ],
+      "depthMm": 7
+     },
+     {
+      "mni": [
+       -16,
+       -52,
+       -11
+      ],
+      "depthMm": 7
+     },
+     {
+      "mni": [
+       -17,
+       -78,
+       -17
+      ],
+      "depthMm": 6.9
+     }
+    ]
+   },
+   "right": {
+    "vertices": 390410,
+    "inside": 13616,
+    "deeperThan4Mm": 1139,
+    "deeperThanHeldOutError": 0,
+    "deepestExamples": [
+     {
+      "mni": [
+       10,
+       -76,
+       -15
+      ],
+      "depthMm": 6.6
+     },
+     {
+      "mni": [
+       9,
+       -76,
+       -16
+      ],
+      "depthMm": 6.6
+     },
+     {
+      "mni": [
+       9,
+       -76,
+       -16
+      ],
+      "depthMm": 6.5
+     },
+     {
+      "mni": [
+       10,
+       -76,
+       -15
+      ],
+      "depthMm": 6.5
+     },
+     {
+      "mni": [
+       10,
+       -76,
+       -15
+      ],
+      "depthMm": 6.5
+     }
+    ]
+   }
+  },
+  "shippedLowTier": {
+   "left": {
+    "vertices": 4261,
+    "inside": 174,
+    "deeperThan4Mm": 18,
+    "deeperThanHeldOutError": 0,
+    "deepestExamples": [
+     {
+      "mni": [
+       -17,
+       -52,
+       -12
+      ],
+      "depthMm": 6.8
+     },
+     {
+      "mni": [
+       -14,
+       -75,
+       -15
+      ],
+      "depthMm": 5.7
+     },
+     {
+      "mni": [
+       -22,
+       -51,
+       -14
+      ],
+      "depthMm": 5.5
+     },
+     {
+      "mni": [
+       -17,
+       -79,
+       -17
+      ],
+      "depthMm": 5.3
+     },
+     {
+      "mni": [
+       -23,
+       -78,
+       -18
+      ],
+      "depthMm": 5.3
+     }
+    ]
+   },
+   "right": {
+    "vertices": 4341,
+    "inside": 235,
+    "deeperThan4Mm": 20,
+    "deeperThanHeldOutError": 0,
+    "deepestExamples": [
+     {
+      "mni": [
+       8,
+       -76,
+       -16
+      ],
+      "depthMm": 6.3
+     },
+     {
+      "mni": [
+       18,
+       -50,
+       -13
+      ],
+      "depthMm": 5.4
+     },
+     {
+      "mni": [
+       7,
+       -74,
+       -14
+      ],
+      "depthMm": 5.4
+     },
+     {
+      "mni": [
+       16,
+       -52,
+       -11
+      ],
+      "depthMm": 5.3
+     },
+     {
+      "mni": [
+       11,
+       -50,
+       -8
+      ],
+      "depthMm": 5.2
+     }
+    ]
+   }
+  }
+ },
+ "timingsS": {
+  "readAndCutS": 2.4,
+  "extractS": 11.5,
+  "measureAndLabelS": 71.3,
+  "lowTierS": 83.3,
+  "errorS": 34.3,
+  "leakS": 11.7
+ }
+}

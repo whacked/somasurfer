@@ -114,6 +114,212 @@
       ],
       "attributionStatement": "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan",
       "note": "names.json carries FMA concept ids and the release's own English terms, plus UBERON cross-references read from UBERON's FMA xrefs (UBERON is CC BY 3.0, which BY-SA 4.0 satisfies). coverings.json is computed from the mesh geometry, so it is an adaptation of the DBCLS meshes and share-alike follows. The brain is deliberately absent: it is a BV structure, and the owner decided on 2026-10-09 not to use Harvard-Oxford, AAL or Julich-Brain, so BV ships coordinates without names until a first-party label layer exists - see docs/asset-licensing.md section 4."
+    },
+    {
+      "id": "zanatomy-brain-meshes-cleared",
+      "title": "Brain meshes, cleared group: 244 structures from brainproject brain.glb (Z-Anatomy, BodyParts3D and five imaging atlases), the corpus callosum from BodyParts3D directly",
+      "files": [
+        "brain/zanatomy-2929e94/meshes.lowres.bin",
+        "brain/zanatomy-2929e94/meshes.fullres.bin",
+        "brain/zanatomy-2929e94/structures.json"
+      ],
+      "licence": "CC-BY-SA-4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "holder": "Z-Anatomy contributors; The Database Center for Life Science (DBCLS); Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack",
+      "source": "Derived by tools/build-meshes.mjs from brainproject brain.glb at commit 2929e94f521a8ddceab26bc100a98dc06b0da060 (SHA-256 76a49ea4526a4880613aec7a02756bd7301b0b9d0680d7cae33e197b672c5453): welded, quantised to int16, and decimated per structure for the low tier. The corpus callosum is BodyParts3D 4.0 FMA86464 (isa_BP3D_4.0_obj_99.zip), placed in the mesh frame by the transform of the origin test (docs/brain-origin-test.md)",
+      "shareAlike": true,
+      "licenceClass": "asset",
+      "sources": [
+        "bodyparts3d",
+        "brainproject-brain-glb",
+        "cit168-amygdala",
+        "cit168-subcortical",
+        "hcp1065-yeh2022",
+        "najdenovska-thalamus",
+        "neudorfer-hypothalamus",
+        "zanatomy"
+      ],
+      "note": "Only structures that are cleared: by docs/asset-licensing.md 7.3, or by the pre-registered origin test (midbrain L and R, shown to be BodyParts3D's own; the corpus callosum, which failed it, ships from BodyParts3D instead). The 143 undeclared-material structures still held (126 of 128 cortical) and the 46 Dundee cranial-nerve structures are in neither mesh file; structures.json lists them by name under `excluded`, and records per structure which source it ships from (`shipsFrom`). Licence rule 10 checks every structure id inside these files against packages/atlas-assets/provenance/brain-zanatomy-2929e94.json. Data derived from the Human Connectome Project (CIT168, Najdenovska, Neudorfer, HCP1065): Yeh, F.-C. Population-based tract-to-region connectome of the human brain and its hierarchical topology. Nat Commun 13, 4933 (2022), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657)."
+    },
+    {
+      "id": "bp3d-body-meshes",
+      "title": "Body meshes: the whole BodyParts3D 4.0 body, one structure per FMA concept, the brain excluded",
+      "files": [
+        "body/bp3d-4066585/meshes.lowres.bin",
+        "body/bp3d-4066585/meshes.fullres.bin",
+        "body/bp3d-4066585/structures.json"
+      ],
+      "licence": "CC-BY-SA-4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "holder": "The Database Center for Life Science (DBCLS); adaptation by GStack",
+      "source": "Derived by tools/build-body-meshes.mjs from BodyParts3D/Anatomography 4.0, 99%-polygon-reduced OBJ set (IS-A tree), isa_BP3D_4.0_obj_99.zip (SHA-256 40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e), https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html: element meshes grouped by the FMA concept each names in its own header, welded, quantised to int16, and decimated per structure into a lazy full tier and an eager low tier",
+      "shareAlike": true,
+      "licenceClass": "asset",
+      "sources": [
+        "bodyparts3d"
+      ],
+      "attributionStatement": "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan",
+      "note": "An adaptation of the DBCLS meshes, so share-alike under the D1 decision (docs/asset-licensing.md section 3): the inbound licence is CC BY-SA 2.1 Japan, as the OBJ headers state, and this derivative ships under CC BY-SA 4.0. Mesh vertices ARE redistributed here, decimated, unlike the BD template. BodyParts3D only: none of Z-Anatomy's objects is read, so neither of its non-commercial models (the Dundee inner ear, the Cowley kidney) nor any undeclared-material object is in these files; the kidney and inner ear are DBCLS's own. The brain (PART-OF FMA50801) is excluded, because it is its own atlas; structures.json lists every excluded element file with its reason. Display geometry in the BD template's own chart: no structure here has an ALC-1 address. Licence rule 10 checks every structure id inside these files against structures.json."
+    },
+    {
+      "id": "brain-mni-registration",
+      "title": "MNI (ICBM152 2009c) to brain-mesh affine, with residuals",
+      "files": [
+        "registration/mni-to-zanatomy-2929e94.json"
+      ],
+      "licence": "Apache-2.0",
+      "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+      "holder": "GStack",
+      "source": "First-party. Fitted by tools/fit-brain-registration.mjs.",
+      "shareAlike": false,
+      "licenceClass": "asset",
+      "note": "Our own fit, not brainproject's. It records centroid coordinates as measurements: of Z-Anatomy surfaces in the committed brain mesh, and of the CIT168 atlas (Pauli et al. 2018, CC BY 4.0, credited in the file). No mesh or atlas geometry is in it."
+    },
+    {
+      "id": "icbm152-cortex-surface",
+      "title": "Cerebral cortex surface, ICBM152 2009c (low tier)",
+      "files": [
+        "brain/icbm152-2009c/cortex.lowres.bin",
+        "brain/icbm152-2009c/structures.json"
+      ],
+      "licence": "MNI-BIC-permissive",
+      "licenceUrl": "https://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009",
+      "holder": "Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University; adaptation by GStack",
+      "source": "Derived by tools/build-icbm-cortex.mjs from the ICBM 152 non-linear 2009c asymmetric distribution (GM, WM, CSF and brain-mask maps), mni_icbm152_nlin_asym_09c_nifti.zip, https://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip",
+      "shareAlike": false,
+      "licenceClass": "asset",
+      "sources": [
+        "icbm152-2009c"
+      ],
+      "attributionStatement": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.",
+      "note": "Image-derived geometry: a cerebral surface extracted from the template's tissue maps, natively in MNI152 2009c asymmetric space. Unlike the BV template, this entry DOES redistribute geometry derived from that archive, so the archive's COPYING is reproduced verbatim in structures.json, which travels with the mesh. Permissive, not share-alike and not non-commercial, so it carries no obligation onto anything that reads it. Approved for v2 on card 6a774981 (DOG-151)."
+    },
+    {
+      "id": "icbm152-cortex-lobes",
+      "title": "First-party lobe labels for the ICBM152 2009c cortex",
+      "files": [
+        "brain/icbm152-2009c/lobes.json"
+      ],
+      "licence": "Apache-2.0",
+      "licenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+      "holder": "GStack",
+      "source": "First-party. Drawn by tools/build-icbm-cortex.mjs from landmarks we placed on the ICBM152 surface (tools/lib/icbm-lobe-landmarks.mjs).",
+      "shareAlike": false,
+      "licenceClass": "asset",
+      "note": "Frontal, parietal, temporal, occipital, insula and limbic, per hemisphere, as a per-vertex label of the cortex mesh. No parcellation was used to draw them; the file says so (`licence.thirdPartyParcellationsUsed: []`) and records, per boundary, the landmark, how it was placed and its MNI coordinates. A separate file from the geometry so that it can be one label set among several on a future mni152-2009c brain model."
+    },
+    {
+      "id": "research-api-regions",
+      "title": "Research API v1, region tree: region -> papers and paper -> regions, joined with brain and body structure names",
+      "files": [
+        "api/v1/index.json",
+        "api/v1/paper-regions/amunts-1999-broca.json",
+        "api/v1/paper-regions/amunts-2020-julich-brain.json",
+        "api/v1/paper-regions/bogduk-2012-lumbar-anatomy.json",
+        "api/v1/paper-regions/brodmann-1909-localisation.json",
+        "api/v1/paper-regions/buckner-2008-default-network.json",
+        "api/v1/paper-regions/catani-2008-virtual-dissection.json",
+        "api/v1/paper-regions/desikan-2006-gyral-parcellation.json",
+        "api/v1/paper-regions/eickhoff-2005-anatomy-toolbox.json",
+        "api/v1/paper-regions/epstein-1998-parahippocampal-place-area.json",
+        "api/v1/paper-regions/fan-2016-brainnetome.json",
+        "api/v1/paper-regions/fischl-2012-freesurfer.json",
+        "api/v1/paper-regions/fonov-2011-unbiased-templates.json",
+        "api/v1/paper-regions/glasser-2016-mmp1.json",
+        "api/v1/paper-regions/hagmann-2008-structural-core.json",
+        "api/v1/paper-regions/hickok-2007-dual-stream.json",
+        "api/v1/paper-regions/kanwisher-1997-fusiform-face-area.json",
+        "api/v1/paper-regions/mazziotta-2001-icbm.json",
+        "api/v1/paper-regions/mesulam-1998-sensation-to-cognition.json",
+        "api/v1/paper-regions/mitsuhashi-2009-bodyparts3d.json",
+        "api/v1/paper-regions/mungall-2012-uberon.json",
+        "api/v1/paper-regions/panjabi-1991-thoracic-morphometry.json",
+        "api/v1/paper-regions/penfield-1937-somatotopy.json",
+        "api/v1/paper-regions/power-2011-functional-areas.json",
+        "api/v1/paper-regions/price-2012-language-review.json",
+        "api/v1/paper-regions/raichle-2001-default-mode.json",
+        "api/v1/paper-regions/rosse-2003-fma.json",
+        "api/v1/paper-regions/tzourio-mazoyer-2002-aal.json",
+        "api/v1/paper-regions/van-essen-2013-hcp.json",
+        "api/v1/paper-regions/yeo-2011-intrinsic-networks.json",
+        "api/v1/paper-regions/zilles-2010-brodmann-centenary.json",
+        "api/v1/regions/bodyparts3d-bd/FMA13075.json",
+        "api/v1/regions/bodyparts3d-bd/FMA13295.json",
+        "api/v1/regions/bodyparts3d-bd/FMA15900.json",
+        "api/v1/regions/bodyparts3d-bd/FMA16202.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7088.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7148.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7197.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7198.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7204.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7205.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7309.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7310.json",
+        "api/v1/regions/bodyparts3d-bd/FMA7647.json",
+        "api/v1/regions/bodyparts3d-bd/FMA9968.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/101.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/102.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/103.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/104.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/106.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/201.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/202.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/203.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/204.json",
+        "api/v1/regions/icbm152-2009c-cortex-lobes/206.json",
+        "api/v1/regions/zanatomy-gross-anatomy/122.json",
+        "api/v1/regions/zanatomy-gross-anatomy/123.json",
+        "api/v1/regions/zanatomy-gross-anatomy/153.json",
+        "api/v1/regions/zanatomy-gross-anatomy/154.json",
+        "api/v1/regions/zanatomy-gross-anatomy/161.json",
+        "api/v1/regions/zanatomy-gross-anatomy/162.json",
+        "api/v1/regions/zanatomy-gross-anatomy/165.json",
+        "api/v1/regions/zanatomy-gross-anatomy/166.json",
+        "api/v1/regions/zanatomy-gross-anatomy/186.json",
+        "api/v1/regions/zanatomy-gross-anatomy/187.json",
+        "api/v1/regions/zanatomy-gross-anatomy/194.json",
+        "api/v1/regions/zanatomy-gross-anatomy/195.json",
+        "api/v1/regions/zanatomy-gross-anatomy/201.json",
+        "api/v1/regions/zanatomy-gross-anatomy/202.json",
+        "api/v1/regions/zanatomy-gross-anatomy/24.json",
+        "api/v1/regions/zanatomy-gross-anatomy/25.json",
+        "api/v1/regions/zanatomy-gross-anatomy/290.json",
+        "api/v1/regions/zanatomy-gross-anatomy/291.json",
+        "api/v1/regions/zanatomy-gross-anatomy/325.json",
+        "api/v1/regions/zanatomy-gross-anatomy/326.json",
+        "api/v1/regions/zanatomy-gross-anatomy/39.json",
+        "api/v1/regions/zanatomy-gross-anatomy/40.json",
+        "api/v1/regions/zanatomy-gross-anatomy/421.json",
+        "api/v1/regions/zanatomy-gross-anatomy/422.json",
+        "api/v1/regions/zanatomy-gross-anatomy/423.json",
+        "api/v1/regions/zanatomy-gross-anatomy/424.json",
+        "api/v1/regions/zanatomy-gross-anatomy/425.json",
+        "api/v1/regions/zanatomy-gross-anatomy/426.json",
+        "api/v1/regions/zanatomy-gross-anatomy/49.json",
+        "api/v1/regions/zanatomy-gross-anatomy/50.json",
+        "api/v1/regions/zanatomy-gross-anatomy/54.json",
+        "api/v1/regions/zanatomy-gross-anatomy/55.json",
+        "api/v1/regions/zanatomy-gross-anatomy/77.json",
+        "api/v1/regions/zanatomy-gross-anatomy/78.json"
+      ],
+      "licence": "CC-BY-SA-4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "holder": "Z-Anatomy contributors; The Database Center for Life Science (DBCLS); UBERON / OBO Foundry; Itay Inbar (brainproject); the CIT168, Najdenovska, Neudorfer and HCP1065 authors; adaptation by GStack",
+      "source": "Generated by tools/build-research-api.mjs from crosswalk/region-index-zanatomy-2929e94.json, which tools/check-crosswalk.mjs resolves from the curated research seed (packages/atlas-research, Apache-2.0), crosswalk/crosswalk.json, brain/zanatomy-2929e94/structures.json and labels/names.json",
+      "shareAlike": true,
+      "licenceClass": "asset",
+      "sources": [
+        "bodyparts3d",
+        "brainproject-brain-glb",
+        "cit168-amygdala",
+        "cit168-subcortical",
+        "hcp1065-yeh2022",
+        "najdenovska-thalamus",
+        "neudorfer-hypothalamus",
+        "uberon",
+        "zanatomy"
+      ],
+      "note": "No geometry: structure names and ids, read from the two share-alike files above, joined with our own curated findings and crosswalk. That join is derived from asset content, so the tree ships here under dist/assets/api/v1/ and is CC BY-SA 4.0 as a whole (licence rule 6 keeps dist/data/ free of asset content; DOG-123, 2026-10-11 16:04). The paper documents of the same API carry the curated dataset only and ship separately under dist/data/api/v1/, Apache-2.0. The stated reasons a paper reaches no region quote the names of held structures; structures.json already ships those names under `excluded`, and no held geometry is in this tree. The file list is maintained by tools/build-research-api.mjs --write, which the check mode holds to the generated tree exactly."
     }
   ],
   "upstreamSources": [
@@ -195,7 +401,50 @@
       "verdict": "cleared",
       "verifiedAt": "2026-10-11",
       "attributionStatement": "BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan",
-      "evidence": "Unchanged from the D1 memo (section 2): the OBJ headers state CC BY-SA 2.1 Japan, the licence page (re-read 2026-10-11, still 'Last updated 2025/02/27', page SHA-256 84c390a75d873447f148054c5f9cc420e9f1394e1fbe2ab259e3581ef4970f65) states CC BY 4.0, and the owner decided share-alike is mandatory. Not CC BY-SA 4.0 as DOG-126's brief has it; Z-Anatomy and the Dundee model also cite 2.1 Japan."
+      "evidence": "Unchanged from the D1 memo (section 2): the OBJ headers state CC BY-SA 2.1 Japan, the licence page (re-read 2026-10-11, still 'Last updated 2025/02/27', page SHA-256 84c390a75d873447f148054c5f9cc420e9f1394e1fbe2ab259e3581ef4970f65) states CC BY 4.0, and the owner decided share-alike is mandatory. Not CC BY-SA 4.0 as DOG-126's brief has it; Z-Anatomy and the Dundee model also cite 2.1 Japan.",
+      "pinned": {
+        "release": "4.0",
+        "pinnedAt": "2026-10-11",
+        "note": "Pinned by DOG-128 (W3). These are the bytes the BD template, the name index, the W2 origin test and the body meshes were built from; the archive SHA-256 matches the one tools/test-bp3d-origin.mjs checks. LATEST is a moving URL, so a build that reads anything else is refused.",
+        "archive": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_BP3D_4.0_obj_99.zip",
+        "files": {
+          "isa_BP3D_4.0_obj_99.zip": {
+            "url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_BP3D_4.0_obj_99.zip",
+            "bytes": 142903898,
+            "sha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e"
+          },
+          "isa_element_parts.txt": {
+            "url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_element_parts.txt",
+            "bytes": 1142159,
+            "sha256": "a3de74423f943b0d724ae8f59b3a817f87c423a544f8db98113b1980817cbeaf"
+          },
+          "isa_parts_list_e.txt": {
+            "url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_parts_list_e.txt",
+            "bytes": 128086,
+            "sha256": "ab7796deedd49205e77f3609a1cb8c53e2bbee14ecb5c9a6ca05227469780513"
+          },
+          "isa_inclusion_relation_list.txt": {
+            "url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_inclusion_relation_list.txt",
+            "bytes": 207664,
+            "sha256": "26e7d818e03a8c909fe09c561f38d0d513423c87681f9450a803bc38f5b07564"
+          },
+          "partof_element_parts.txt": {
+            "url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_element_parts.txt",
+            "bytes": 651179,
+            "sha256": "3f5f6df1028eb122b30de77c711597b6bb8e5541658e5985859fd228adbf88ea"
+          },
+          "partof_parts_list_e.txt": {
+            "url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_parts_list_e.txt",
+            "bytes": 59351,
+            "sha256": "9224080557053e6f1322f1e13ab27f0ecde0db19bb3b505f0631afad230eeebd"
+          },
+          "partof_inclusion_relation_list.txt": {
+            "url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/partof_inclusion_relation_list.txt",
+            "bytes": 91241,
+            "sha256": "1b40738270931e3c1d955ce34e0fce0d8d10d8c5ad543463e40b4b4c0243007c"
+          }
+        }
+      }
     },
     {
       "id": "icbm152-2009c",
@@ -209,7 +458,9 @@
       "verdict": "cleared",
       "verifiedAt": "2026-10-09",
       "attributionStatement": "Copyright (C) 1993-2004 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.",
-      "evidence": "The archive's own COPYING file (archive SHA-256 804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4), quoted in docs/asset-licensing.md section 2. Recorded here in DOG-126 so the BV template can cite it."
+      "evidence": "The archive's own COPYING file (archive SHA-256 804382e5d68a42ff8096ee845a7600b6658434da762fa67840a149eb25d48bd4), quoted in docs/asset-licensing.md section 2. Recorded here in DOG-126 so the BV template can cite it.",
+      "kind": "volume",
+      "kindNote": "An image volume. Brain sets extracted from it carry no glb provenance manifest; licence rule 10 judges them from their own structures.json, and only because this record says so (DOG-151, DOG-165)."
     },
     {
       "id": "uberon",
@@ -233,11 +484,11 @@
       "source": "https://brainder.org/research/brain-for-blender/",
       "shareAlike": true,
       "nonCommercial": false,
-      "verdict": "cleared",
+      "verdict": "not-established",
       "verifiedAt": "2026-10-11",
       "attributionStatement": "Brain for Blender, by Anderson Winkler, licensed under CC BY-SA 3.0 Unported, https://brainder.org/brain-for-blender",
-      "conditions": "The licence is cleared, and BY-SA 3.0 permits adaptations under BY-SA 4.0. That Z-Anatomy's 'Brainder' is this work is inferred from the name and the Destrieux/DKT-split cortex, not measured, so nothing may cite this source in place of zanatomy-undeclared-brain-materials until the geometry is matched.",
-      "evidence": "brainder.org page, 'License' section: 'The models in this page are by Anderson Winkler and are licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.'"
+      "conditions": "Not cleared. Winkler's own grant is CC BY-SA 3.0, but the CTO's condition (b) on DOG-127 requires the upstream title behind it, and that is NOT ESTABLISHED (docs/asset-licensing.md 7.8). The meshes are one individual's brain reconstructed with FreeSurfer 5.2.0 (not fsaverage), and their parcel delineations come from FreeSurfer's classifier atlases. The FreeSurfer Software License (Version 1.0, February 2011) covers 'software and/or data', and B.1(b) requires all of its terms to 'appear in and apply to' any copy or sublicense of any portion, which a bare CC BY-SA grant does not carry. FreeSurfer's own README-DKT40.txt states the DKT source data are CC BY-NC-SA 3.0. Until a licensor says otherwise, nothing may cite this source, and the origin test (docs/brain-origin-test.md) cannot clear any structure to it.",
+      "evidence": "brainder.org page, 'License' section: 'The models in this page are by Anderson Winkler and are licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.' Upstream title read 2026-10-11: FreeSurfer LICENSE.txt (github.com/freesurfer/freesurfer, dev, 'Version 1.0 (February 2011)'), B.1(b), B.2(iii), B.3, B.5, B.7; fswiki CorticalParcellation, DestrieuxAtlasChanges and FsAverage (Wayback snapshots; no terms of their own); README-DKT40.txt (fswiki attachment, Wayback): 'Copyright 2012, Mindboggle team ... by-nc-sa/3.0'. brainder.org states 'constructed from 12 volumes' and 'FreeSurfer 5.2.0', with no statement of upstream permission."
     },
     {
       "id": "zanatomy-undeclared-brain-materials",

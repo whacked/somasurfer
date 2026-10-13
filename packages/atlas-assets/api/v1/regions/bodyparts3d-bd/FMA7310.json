@@ -1,0 +1,38 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "region",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "key": "bodyparts3d-bd/FMA7310",
+ "representation": "bodyparts3d-bd",
+ "structureId": "FMA7310",
+ "structureName": "left lung",
+ "papers": [
+  {
+   "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+   "href": "../../../../../data/api/v1/papers/mitsuhashi-2009-bodyparts3d.json",
+   "links": [
+    {
+     "mappingId": "map:mitsuhashi-2009-bodyparts3d/per-part-meshes/fma7310",
+     "findingId": "finding:mitsuhashi-2009-bodyparts3d/per-part-meshes",
+     "paperId": "paper:mitsuhashi-2009-bodyparts3d",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7310",
+     "structureName": "left lung",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7310",
+      "label": "left lung"
+     }
+    }
+   ]
+  }
+ ]
+}

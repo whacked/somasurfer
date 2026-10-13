@@ -21,10 +21,13 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { REPO_ROOT, rel } from './lib/repo.mjs';
+import { readMeshBin, writeMeshBin } from './lib/meshbin.mjs';
+import { brainAssetPaths } from './lib/brain-asset-paths.mjs';
+import { bodyAssetPaths } from './lib/body-asset-paths.mjs';
 
 const ALC = join(REPO_ROOT, 'packages', 'alc');
 const WEB = join(REPO_ROOT, 'packages', 'atlas-web');
@@ -347,6 +350,103 @@ function shareAlikeEntry(id, sources) {
     licenceClass: 'asset',
     sources,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Brain meshes (DOG-127).
+// ---------------------------------------------------------------------------
+
+const BRAIN = brainAssetPaths(
+  JSON.parse(readFileSync(join(ASSETS, 'attribution.json'), 'utf8')).upstreamSources.find((s) => s.id === 'brainproject-brain-glb')
+    .pinned.commit,
+);
+const BRAIN_LOW = join(ASSETS, BRAIN.lowFile);
+const BRAIN_FULL = join(ASSETS, BRAIN.fullFile);
+const BRAIN_STRUCTURES = join(ASSETS, BRAIN.structuresFile);
+const BRAIN_REGISTRATION = join(ASSETS, 'registration', `mni-to-${BRAIN.id}.json`);
+const BRAIN_QA_SAMPLE = join(REPO_ROOT, 'packages', 'atlas-qa', 'fixtures', 'brain-structure-sample.json');
+const BRAIN_PROVENANCE = join(REPO_ROOT, BRAIN.provenance);
+const BRAIN_ORIGIN_RESULT = join(ASSETS, 'provenance', 'origin-test-bodyparts3d.json');
+const ICBM_LOW = join(ASSETS, 'brain', 'icbm152-2009c', 'cortex.lowres.bin');
+const ICBM_STRUCTURES = join(ASSETS, 'brain', 'icbm152-2009c', 'structures.json');
+const ICBM_LOBES = join(ASSETS, 'brain', 'icbm152-2009c', 'lobes.json');
+
+/** A committed JSON file with one edit applied, written back in its own layout. */
+function editJson(path, edit, indent) {
+  const doc = JSON.parse(readFileSync(path, 'utf8'));
+  edit(doc);
+  return substitute(path, `${JSON.stringify(doc, null, indent)}\n`);
+}
+
+const CROSSWALK = join(ASSETS, 'crosswalk', 'crosswalk.json');
+const REGION_INDEX = join(ASSETS, 'crosswalk', `region-index-${BRAIN.id}.json`);
+const API_TREE = join(ASSETS, 'api', 'v1');
+/** One committed region document to stage edits on: the first, so it exists whatever the coverage. */
+const API_REGION_DOC = (() => {
+  const dir = join(API_TREE, 'regions');
+  if (!existsSync(dir)) return join(dir, 'missing.json');
+  const rep = readdirSync(dir).sort()[0];
+  return rep ? join(dir, rep, readdirSync(join(dir, rep)).sort()[0]) : join(dir, 'missing.json');
+})();
+const API_STRAY = join(API_TREE, 'regions', 'gate-verify', '0.json');
+
+/** `crosswalk.json` with one entry changed, in a single substitution. */
+function withCrosswalk(mutate) {
+  const doc = JSON.parse(readFileSync(CROSSWALK, 'utf8'));
+  mutate(doc);
+  return substitute(CROSSWALK, `${JSON.stringify(doc, null, 1)}\n`);
+}
+
+/** The structure records of a committed brain file, by name, for staging against. */
+function brainStructure(name) {
+  const doc = JSON.parse(readFileSync(BRAIN_STRUCTURES, 'utf8'));
+  const s = doc.structures.find((x) => x.name === name);
+  if (!s) throw new Error(`${name} is no longer a shipped brain structure to stage this against`);
+  return s;
+}
+
+/** A held structure from the generated provenance manifest, by name. */
+function heldStructure(name) {
+  const manifest = JSON.parse(readFileSync(join(REPO_ROOT, BRAIN.provenance), 'utf8'));
+  const s = manifest.structures.find((x) => x.name.trim() === name);
+  if (!s || s.group === 'cleared') throw new Error(`${name} is no longer a held structure to stage this against`);
+  return s;
+}
+
+/**
+ * Rewrite an ATLM file through `edit`, which receives one record per structure
+ * (positions, normals and structure-local indices, all copies) and returns the
+ * list to write. Goes through the format's own writer, so the staged file is
+ * well-formed and only the defect being staged is wrong with it.
+ */
+function rewriteMesh(path, edit) {
+  const mesh = readMeshBin(readFileSync(path));
+  const records = mesh.table.map((t) => ({
+    id: t.id,
+    positions: mesh.positions.slice(t.firstVertex * 3, (t.firstVertex + t.vertexCount) * 3),
+    normals: mesh.normals.slice(t.firstVertex * 2, (t.firstVertex + t.vertexCount) * 2),
+    indices: Uint32Array.from(mesh.indices.subarray(t.firstIndex, t.firstIndex + t.indexCount), (i) => (mesh.index32 ? i - t.firstVertex : i)),
+  }));
+  return substitute(path, writeMeshBin({ origin: mesh.origin, step: mesh.step, structures: edit(records) }));
+}
+
+// ---------------------------------------------------------------------------
+// Body meshes (DOG-128).
+// ---------------------------------------------------------------------------
+
+const BODY = bodyAssetPaths(
+  JSON.parse(readFileSync(join(ASSETS, 'attribution.json'), 'utf8')).upstreamSources.find((s) => s.id === 'bodyparts3d')
+    .pinned.files['isa_BP3D_4.0_obj_99.zip'].sha256,
+);
+const BODY_LOW = join(ASSETS, BODY.lowFile);
+const BODY_STRUCTURES = join(ASSETS, BODY.structuresFile);
+
+/** A committed body structure, by name, for staging against. */
+function bodyStructure(name) {
+  const doc = JSON.parse(readFileSync(BODY_STRUCTURES, 'utf8'));
+  const s = doc.structures.find((x) => x.name === name);
+  if (!s) throw new Error(`${name} is no longer a shipped body structure to stage this against`);
+  return s;
 }
 
 /** Limits a case staged from the measurement, read back by its expectations. */
@@ -1229,6 +1329,649 @@ const CASES = [
   },
 
   // -------------------------------------------------------------------------
+  // Brain meshes (DOG-127): the decimation gate, licence rule 10, rule 6 on a
+  // binary payload, and the perf gate's lazy tier.
+  // -------------------------------------------------------------------------
+  {
+    name: 'mesh-gate-reads-the-committed-files',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate checks every shippable structure on the committed tree, not none',
+    mustPass: true,
+    expect: [/provenance re-derived for all 437 structures; 244 of 244 shippable structures in both tiers/, /Published error re-measured for all 244/, /QA sample 40 structures, 1 withheld control/],
+    describe: 'the committed brain mesh files, unchanged',
+    // A gate that found no files would also pass. This pins that it found them.
+    break: () => () => {},
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-structure-lost-to-decimation',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a structure in the source manifest is missing from the low tier',
+    expect: [/Subthalamic nucleus\.l \(id \d+\) is in the source manifest but missing from the low tier/],
+    describe: 'a low tier with the left subthalamic nucleus decimated out of existence',
+    break: () => {
+      const stn = brainStructure('Subthalamic nucleus.l');
+      return rewriteMesh(BRAIN_LOW, (records) => records.filter((r) => r.id !== stn.id));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-structure-degenerate',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a structure is present but degenerate in the low tier',
+    expect: [/Substantia nigra\.r \(id \d+\): \d+ degenerate triangle\(s\) in the low tier/],
+    describe: 'the right substantia nigra kept in the table, every vertex collapsed onto one point',
+    break: () => {
+      const sn = brainStructure('Substantia nigra.r');
+      return rewriteMesh(BRAIN_LOW, (records) => records.map((r) => {
+        if (r.id !== sn.id) return r;
+        const positions = Int16Array.from(r.positions, (_, i) => r.positions[i % 3]);
+        return { ...r, positions };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-tract-flattened-to-a-sliver',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a structure keeps its triangles but loses an axis',
+    expect: [/Corticospinal tract\.l \(id \d+\): the low tier keeps [\d.]+ mm of its [\d.]+ mm [xyz] extent; it has collapsed toward a sliver/],
+    describe: 'the left corticospinal tract squashed flat onto one plane, triangle count untouched',
+    // The decimation failure a triangle floor cannot see: a thin tube simplified
+    // into a ribbon has as many triangles as the floor asks for.
+    break: () => {
+      const cst = brainStructure('Corticospinal tract.l');
+      return rewriteMesh(BRAIN_LOW, (records) => records.map((r) => {
+        if (r.id !== cst.id) return r;
+        // Flatten the axis with the smallest extent, so the length survives.
+        const ext = [0, 1, 2].map((a) => {
+          let lo = Infinity;
+          let hi = -Infinity;
+          for (let v = a; v < r.positions.length; v += 3) {
+            lo = Math.min(lo, r.positions[v]);
+            hi = Math.max(hi, r.positions[v]);
+          }
+          return { a, lo, span: hi - lo };
+        }).sort((x, y) => x.span - y.span)[0];
+        const positions = Int16Array.from(r.positions, (q, i) => (i % 3 === ext.a ? ext.lo : q));
+        return { ...r, positions };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-published-error-drifts',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a published error figure is not what the files measure',
+    expect: [/Nucleus accumbens\.l \(id \d+\): structures\.json publishes Hausdorff 0\.001 mm/],
+    describe: 'structures.json claiming a 0.001 mm error for the left nucleus accumbens',
+    break: () => {
+      const doc = JSON.parse(readFileSync(BRAIN_STRUCTURES, 'utf8'));
+      const s = doc.structures.find((x) => x.name === 'Nucleus accumbens.l');
+      if (!s) throw new Error('Nucleus accumbens.l is no longer a shipped brain structure to stage this against');
+      s.errorMm.hausdorff = 0.001;
+      return substitute(BRAIN_STRUCTURES, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-registration-error-understated',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when the registration publishes a held-out error the fit does not give',
+    expect: [/registration: red-nucleus\.l records errorMm 2; refitting gives [\d.]+/],
+    describe: 'the registration file claiming a 2 mm held-out error at the left red nucleus',
+    // The figure every coordinate-reported finding inherits. Understating it is
+    // the failure that matters, so it is the one staged.
+    break: () => {
+      const reg = JSON.parse(readFileSync(BRAIN_REGISTRATION, 'utf8'));
+      const rn = reg.heldOut.find((x) => x.id === 'red-nucleus.l');
+      if (!rn) throw new Error('red-nucleus.l is no longer a held-out pair to stage this against');
+      rn.errorMm = 2;
+      return substitute(BRAIN_REGISTRATION, `${JSON.stringify(reg, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-qa-sample-drops-a-required-nucleus',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when the QA sample loses a required nucleus or one side of a pair',
+    expect: [/QA sample: the sample has 39 structures, not 40/, /QA sample: required Subthalamic nucleus\.r is not in the sample/],
+    describe: 'the committed QA sample with the right subthalamic nucleus dropped',
+    break: () => {
+      const fixture = JSON.parse(readFileSync(BRAIN_QA_SAMPLE, 'utf8'));
+      fixture.sample = fixture.sample.filter((x) => x.name !== 'Subthalamic nucleus.r');
+      return substitute(BRAIN_QA_SAMPLE, `${JSON.stringify(fixture, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  // -------------------------------------------------------------------------
+  // The ICBM152 cortex (DOG-151): its own gate, and rule 10 on a volume-derived set.
+  // -------------------------------------------------------------------------
+  {
+    name: 'icbm-cortex-gate-reads-the-committed-files',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate checks both hemispheres of the committed low tier, not none',
+    mustPass: true,
+    expect: [/cortex\.lowres\.bin: 2 structures, left [\d,]+ triangles, right [\d,]+ triangles; 0 non-manifold edges/, /all 6 lobes in both hemispheres/],
+    describe: 'the committed cortex, its structures.json and lobes.json, unchanged',
+    break: () => () => {},
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'icbm-cortex-non-manifold-edge',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when the shipped tier has a non-manifold edge',
+    expect: [/Cerebral cortex\.l \(id 1\): 3 non-manifold edge\(s\) \(0 open, 3 in more than two triangles\)/],
+    describe: 'the left hemisphere with its first triangle repeated, so each of its three edges is in three triangles',
+    break: () => rewriteMesh(ICBM_LOW, (records) => records.map((r) => {
+      if (r.id !== 1) return r;
+      const indices = new Uint32Array(r.indices.length + 3);
+      indices.set(r.indices);
+      indices.set([r.indices[0], r.indices[1], r.indices[2]], r.indices.length);
+      return { ...r, indices };
+    })),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'icbm-cortex-cut-called-validated',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when the cerebrum cut is labelled validated',
+    expect: [/labels the cerebrum cut validated \(cutValidated true\)\. Nothing has validated it/],
+    describe: 'structures.json with cerebellarLeak.cutValidated set to true and nothing else changed',
+    break: () => editJson(ICBM_STRUCTURES, (doc) => { doc.cerebellarLeak.cutValidated = true; }, 1),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'icbm-lobes-drawn-from-a-parcellation',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when the lobe labels declare a third-party parcellation',
+    expect: [/lobes\.json declares third-party parcellations used: \["harvard-oxford"\]/],
+    describe: 'lobes.json declaring Harvard-Oxford among the parcellations used to draw it',
+    break: () => editJson(ICBM_LOBES, (doc) => { doc.licence.thirdPartyParcellationsUsed = ['harvard-oxford']; }),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'licence-volume-set-cites-an-unrecorded-source',
+    gate: 'licence separation',
+    criterion: 'rule 10 fails when a structure of a volume-derived set names any source but its one upstream',
+    expect: [/entry icbm152-cortex-surface ships Cerebral cortex\.l \(id 1\), which is held as uncleared-source/, /its sources are \["icbm152-2009c","harvard-oxford"\], not exactly the set's one upstream, icbm152-2009c/],
+    describe: 'the cortex structures.json naming harvard-oxford among the left hemisphere\'s sources',
+    break: () => editJson(ICBM_STRUCTURES, (doc) => { doc.structures[0].sources.push('harvard-oxford'); }, 1),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'icbm-cortex-published-area-missing',
+    gate: 'icbm cortex',
+    criterion: 'the cortex gate fails when structures.json drops the area and volume it is checked against',
+    expect: [/Cerebral cortex\.l \(id 1\): structures\.json does not publish its area and enclosed volume/],
+    describe: 'structures.json with low.areaMm2 and low.enclosedVolumeCm3 deleted from both hemispheres (DOG-165 F2)',
+    break: () => editJson(ICBM_STRUCTURES, (doc) => {
+      for (const st of doc.structures) { delete st.low.areaMm2; delete st.low.enclosedVolumeCm3; }
+    }, 1),
+    check: () => run('check-icbm-cortex.mjs'),
+  },
+  {
+    name: 'licence-glb-set-relabelled-volume',
+    gate: 'licence separation',
+    criterion: 'rule 10 still judges a glb-derived set by its manifest when the set calls itself a volume',
+    expect: [/ships Posterior transverse collateral sulcus\.l \(id 0\), which is held as zanatomy-undeclared-brain-materials/],
+    describe: 'the zanatomy structures.json with a held structure (id 0) appended, source.kind "volume", and brainproject-brain-glb pushed onto every structure\'s sources (DOG-165 F1, reproduction C)',
+    break: () => editJson(BRAIN_STRUCTURES, (doc) => {
+      doc.source.kind = 'volume';
+      doc.structures.push({ ...doc.structures[0], id: 0, name: 'Posterior transverse collateral sulcus.l', label: 'Posterior transverse collateral sulcus' });
+      for (const st of doc.structures) if (!st.sources.includes('brainproject-brain-glb')) st.sources.push('brainproject-brain-glb');
+    }, 1),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-glb-set-relabelled-volume-without-commit',
+    gate: 'licence separation',
+    criterion: 'rule 10 refuses the volume path to a set whose upstream the registry does not record as a volume',
+    expect: [/says it is a volume-derived set, but its upstream "brainproject-brain-glb" is not recorded in upstreamSources with kind "volume"/],
+    describe: 'the zanatomy structures.json relabelled source.kind "volume", its glb commit deleted and its upstream left as brainproject-brain-glb',
+    break: () => editJson(BRAIN_STRUCTURES, (doc) => {
+      doc.source.kind = 'volume';
+      delete doc.source.commit;
+    }, 1),
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-rule-10-reads-the-brain-files',
+    gate: 'licence separation',
+    criterion: 'rule 10 checks every structure slot of the committed brain files, not none',
+    mustPass: true,
+    // `[^\n]*`: on a tree carrying W3 the body clause sits between the two
+    // (DOG-129 merged W2c onto W3), and this case is about the brain's slots.
+    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\), each checked against the generated provenance manifest;[^\n]* 2 volume-derived file\(s\), 4 slot\(s\)/],
+    describe: 'the committed brain mesh files and their attribution entry, unchanged',
+    break: () => () => {},
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-held-structure-in-cleared-file',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a cleared-looking brain file carries one held structure',
+    expect: [
+      /entry zanatomy-brain-meshes-cleared ships Precentral gyrus\.l \(id \d+\), which is held as zanatomy-undeclared-brain-materials/,
+      /A file's citations do not clear what is inside it/,
+    ],
+    describe: 'the low tier with one slot relabelled as the left precentral gyrus, its entry citing only cleared sources',
+    // The residual DOG-126 left open: every citation on the entry is cleared, so
+    // rule 9 is green, and only reading the file can see what it carries.
+    break: () => {
+      const held = heldStructure('Precentral gyrus.l');
+      let swapped = false;
+      return rewriteMesh(BRAIN_LOW, (records) => records.map((r) => {
+        if (swapped) return r;
+        swapped = true;
+        return { ...r, id: held.id };
+      }));
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-manifest-record-hand-cleared',
+    gate: 'licence separation',
+    criterion: 'rule 10 fails when a provenance record is hand-edited to cleared and the structure added to a tier',
+    expect: [
+      /has a provenance manifest that does not re-derive/,
+      /Precentral gyrus\.l \(id \d+\): the manifest records group "cleared"/,
+    ],
+    describe: 'the manifest record for the left precentral gyrus edited to `cleared`, and one low-tier slot relabelled as it',
+    // DOG-143 F2: rule 10 took each record's group from the committed JSON as
+    // given, so one edited record plus one relabelled slot was green on both gates.
+    break: () => {
+      const held = heldStructure('Precentral gyrus.l');
+      const manifest = JSON.parse(readFileSync(BRAIN_PROVENANCE, 'utf8'));
+      const rec = manifest.structures.find((x) => x.id === held.id);
+      rec.group = 'cleared';
+      rec.sources = rec.sources.filter((x) => x !== 'zanatomy-undeclared-brain-materials');
+      delete rec.heldBecause;
+      const restoreManifest = substitute(BRAIN_PROVENANCE, `${JSON.stringify(manifest, null, 1)}\n`);
+      let swapped = false;
+      const restoreMesh = rewriteMesh(BRAIN_LOW, (records) => records.map((r) => {
+        if (swapped) return r;
+        swapped = true;
+        return { ...r, id: held.id };
+      }));
+      return () => {
+        restoreMesh();
+        restoreManifest();
+      };
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'mesh-origin-result-clears-a-failure',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when the committed origin result clears a structure its own figures fail',
+    expect: [/provenance: the provenance manifest does not re-derive: the origin result clears \["Corpus callosum","Midbrain\.l","Midbrain\.r"\]/],
+    describe: 'the origin-test result with the corpus callosum added to `clears`, its figures untouched',
+    // DOG-143 F2: applyOriginResult cleared whatever `clears` listed, without
+    // re-judging the row against the pre-registered thresholds.
+    break: () => {
+      const result = JSON.parse(readFileSync(BRAIN_ORIGIN_RESULT, 'utf8'));
+      if (result.result.clears.includes('Corpus callosum')) throw new Error('the corpus callosum already clears; nothing to stage');
+      result.result.clears = [...result.result.clears, 'Corpus callosum'].sort();
+      return substitute(BRAIN_ORIGIN_RESULT, `${JSON.stringify(result, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'licence-one-structure-inlined-as-base64',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when one small structure\'s range of a mesh file is embedded in the bundle',
+    expect: [/contains bytes from asset payload brain\/zanatomy-2929e94\/meshes\.lowres\.bin, base64-encoded \(structure id \d+'s positions\)/],
+    describe: 'a build that inlines only the left subthalamic nucleus\'s low-tier positions into app.js as base64',
+    // DOG-143 F3: eight windows over the whole file land inside 6 of 248
+    // structures, so a single structure copied out went unseen.
+    break: () => {
+      requireBuild();
+      const stn = brainStructure('Subthalamic nucleus.l');
+      const bytes = readFileSync(BRAIN_LOW);
+      const mesh = readMeshBin(bytes);
+      const t = mesh.table.find((x) => x.id === stn.id);
+      const start = mesh.positions.byteOffset + t.firstVertex * 6;
+      const range = bytes.subarray(start, start + t.vertexCount * 6).toString('base64');
+      const app = join(WEB, 'dist', 'app', 'app.js');
+      return substitute(app, `${readFileSync(app, 'utf8')}\nexport const INLINED_STN = '${range}';\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-mesh-inlined-as-base64',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a binary mesh is embedded in the bundle as base64',
+    expect: [/contains bytes from asset payload brain\/zanatomy-2929e94\/meshes\.lowres\.bin, base64-encoded/],
+    describe: 'a build that inlines the low-tier brain mesh into app.js as a base64 string',
+    break: () => {
+      requireBuild();
+      const app = join(WEB, 'dist', 'app', 'app.js');
+      const mesh = readFileSync(BRAIN_LOW).toString('base64');
+      return substitute(app, `${readFileSync(app, 'utf8')}\nexport const INLINED_BRAIN = '${mesh}';\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-mesh-copied-outside-assets',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a mesh is re-emitted outside dist/assets/ under any extension',
+    expect: [/dist\/app\/brain\.bin: contains bytes from asset payload brain\/zanatomy-2929e94\/meshes\.fullres\.bin\./],
+    describe: 'a build that also writes the full-tier brain mesh to dist/app/brain.bin',
+    // Rule 6 used to read only .js/.css/.html/.json outside the assets tree, so a
+    // binary written next to the bundle was never looked at.
+    break: () => {
+      requireBuild();
+      return substitute(join(WEB, 'dist', 'app', 'brain.bin'), readFileSync(BRAIN_FULL));
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'perf-undeclared-lazy-tier-is-costed-as-low-res',
+    gate: 'performance budget',
+    criterion: 'a full-resolution tier not declared lazy is paid for on the low-resolution lines',
+    expect: [/lowResBrainAssetGzipBytes: [\d.]+ KiB against a budget of 1024\.0 KiB/],
+    describe: 'a built structures.json whose full tier no longer says `loading: "lazy"`',
+    // The lazy classification reads a declaration, so this is its failure mode:
+    // forget the declaration and the bytes land on the line that pays for them.
+    break: () => {
+      requireBuild();
+      const shipped = join(WEB, 'dist', 'assets', BRAIN.structuresFile);
+      const doc = JSON.parse(readFileSync(shipped, 'utf8'));
+      delete doc.tiers.full.loading;
+      return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+  {
+    name: 'perf-non-brain-asset-declared-lazy',
+    gate: 'performance budget',
+    criterion: 'a lazy declaration pointing outside its own mesh set fails instead of taking the file off every byte line',
+    expect: [/A lazy declaration would take a file off every byte line/, /declares tiers\.x templates\/bp3d-4\.0-adult-body-centroid\.body\.json lazy; a set may only declare files beside its own structures\.json/],
+    describe: 'a built brain structures.json that also declares the body template as a lazy tier',
+    // DOG-143 F4, the opposite direction to the case above: declaring a file
+    // wrongly, rather than forgetting to, removed it from the low-res line and
+    // put it on no other.
+    break: () => {
+      requireBuild();
+      const shipped = join(WEB, 'dist', 'assets', BRAIN.structuresFile);
+      if (!existsSync(join(WEB, 'dist', 'assets', 'templates', 'bp3d-4.0-adult-body-centroid.body.json'))) {
+        throw new Error('the body template is no longer in the build to stage this against');
+      }
+      const doc = JSON.parse(readFileSync(shipped, 'utf8'));
+      doc.tiers.x = { file: 'templates/bp3d-4.0-adult-body-centroid.body.json', loading: 'lazy' };
+      return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+
+  // -------------------------------------------------------------------------
+  // Body meshes (DOG-128): the same per-structure gate as the brain's, the
+  // registration to BD, licence rule 10 on body files, and the body's budget.
+  // -------------------------------------------------------------------------
+  {
+    name: 'body-mesh-gate-reads-the-committed-files',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate checks every body structure and all 25 BD levels on the committed tree, not none',
+    mustPass: true,
+    expect: [/bp3d-4066585: 1605 body structures in both tiers/, /Published error re-measured for all 1605: Hausdorff/, /Registered to BD: 25 level points re-derived from the shipped vertebrae/],
+    describe: 'the committed body mesh files, unchanged',
+    break: () => () => {},
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-skull-bone-lost-from-low-tier',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a body structure is missing from the low tier',
+    expect: [/body: structures\.json lists 1605 structures; the tiers hold 1604 \(low\)/],
+    describe: 'a low tier with the frontal bone decimated out of existence',
+    break: () => {
+      const bone = bodyStructure('Frontal bone');
+      return rewriteMesh(BODY_LOW, (records) => records.filter((r) => r.id !== bone.id));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-limb-bone-degenerate',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a body structure is present but degenerate in the low tier',
+    expect: [/body: Left femur \(id 24475\): \d+ degenerate triangle\(s\) in the low tier/],
+    describe: 'the left femur kept in the table, every vertex collapsed onto one point',
+    break: () => {
+      const femur = bodyStructure('Left femur');
+      return rewriteMesh(BODY_LOW, (records) => records.map((r) => {
+        if (r.id !== femur.id) return r;
+        return { ...r, positions: Int16Array.from(r.positions, (_, i) => r.positions[i % 3]) };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-rib-flattened-to-a-sliver',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a body structure keeps its triangles but loses an axis',
+    expect: [/body: Left seventh rib \(id 8256\): the low tier keeps [\d.]+ mm of its [\d.]+ mm [xyz] extent; it has collapsed toward a sliver/],
+    describe: 'the left seventh rib squashed flat onto one plane, triangle count untouched',
+    break: () => {
+      const rib = bodyStructure('Left seventh rib');
+      return rewriteMesh(BODY_LOW, (records) => records.map((r) => {
+        if (r.id !== rib.id) return r;
+        const ext = [0, 1, 2].map((a) => {
+          let lo = Infinity;
+          let hi = -Infinity;
+          for (let v = a; v < r.positions.length; v += 3) {
+            lo = Math.min(lo, r.positions[v]);
+            hi = Math.max(hi, r.positions[v]);
+          }
+          return { a, lo, span: hi - lo };
+        }).sort((x, y) => x.span - y.span)[0];
+        return { ...r, positions: Int16Array.from(r.positions, (q, i) => (i % 3 === ext.a ? ext.lo : q)) };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-sliver-hidden-by-undrawn-vertices',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate measures the drawn surface: a sliver cannot hide behind vertices no triangle uses',
+    expect: [/body: Left seventh rib \(id 8256\): the low tier keeps [\d.]+ mm of its [\d.]+ mm [xyz] extent; it has collapsed toward a sliver/],
+    describe: 'the left seventh rib flattened onto one plane, with one undrawn vertex left at each end of the flattened axis',
+    // DOG-173 F1: extents were taken over every vertex, so two vertices no
+    // triangle uses, parked at the old extremes, kept the extent whole.
+    break: () => {
+      const rib = bodyStructure('Left seventh rib');
+      return rewriteMesh(BODY_LOW, (records) => records.map((r) => {
+        if (r.id !== rib.id) return r;
+        const ext = [0, 1, 2].map((a) => {
+          let lo = Infinity;
+          let hi = -Infinity;
+          for (let v = a; v < r.positions.length; v += 3) {
+            lo = Math.min(lo, r.positions[v]);
+            hi = Math.max(hi, r.positions[v]);
+          }
+          return { a, lo, hi, span: hi - lo };
+        }).sort((x, y) => x.span - y.span)[0];
+        const flat = Int16Array.from(r.positions, (q, i) => (i % 3 === ext.a ? ext.lo : q));
+        const ends = [ext.lo, ext.hi].flatMap((q) => [0, 1, 2].map((a) => (a === ext.a ? q : flat[a])));
+        const positions = new Int16Array(flat.length + 6);
+        positions.set(flat);
+        positions.set(ends, flat.length);
+        const normals = new Int8Array(r.normals.length + 4);
+        normals.set(r.normals);
+        return { ...r, positions, normals };
+      }));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-not-in-the-bd-frame',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when the body is not in BD\'s frame, though every per-structure check still passes',
+    expect: [/body: registration: BD T07 axis point re-derived from the shipped seventh thoracic vertebra is [\d.]+ mm from the template's, over 1 mm/],
+    describe: 'both body tiers mirrored front to back, as a build that kept the source\'s LPS chart would be',
+    // Mirroring both tiers alike keeps every triangle, area and published error
+    // exactly: only the registration check can see that the body faces the wrong way.
+    break: () => {
+      const flip = (records) => records.map((r) => ({ ...r, positions: Int16Array.from(r.positions, (q, i) => (i % 3 === 1 ? -q : q)) }));
+      const restoreLow = rewriteMesh(BODY_LOW, flip);
+      const restoreFull = rewriteMesh(join(ASSETS, BODY.fullFile), flip);
+      return () => {
+        restoreFull();
+        restoreLow();
+      };
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'body-limb-given-an-address',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a body structure carries an ALC-1 address',
+    expect: [/body: Left humerus \(id 23131\) carries an ALC-1 address; body meshes are display geometry, named and not addressed/],
+    describe: 'body structures.json giving the left humerus a BD address',
+    // A limb frame is an ALC-1 spec change. A limb with an address in the data
+    // is that change made without the spec.
+    break: () => {
+      const doc = JSON.parse(readFileSync(BODY_STRUCTURES, 'utf8'));
+      const s = doc.structures.find((x) => x.name === 'Left humerus');
+      if (!s) throw new Error('Left humerus is no longer a shipped body structure to stage this against');
+      s.address = 'BD-T03-03O-531';
+      return substitute(BODY_STRUCTURES, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'licence-rule-10-reads-the-body-files',
+    gate: 'licence separation',
+    criterion: 'rule 10 checks every structure slot of the committed body files, not none',
+    mustPass: true,
+    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\)[^\n]*; 3 body file\(s\), 4815 structure slot\(s\)/],
+    describe: 'the committed body mesh files and their attribution entry, unchanged',
+    break: () => () => {},
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-brain-carried-inside-the-body-file',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when a body file carries a concept the body excludes',
+    expect: [/entry bp3d-body-meshes ships [^\n]* \(id \d+\), which is held as excluded-from-body/],
+    describe: 'the body low tier with one slot relabelled as an excluded brain concept',
+    // The brain is W2's atlas. Shipping it inside the body would be a second
+    // brain, registered differently, under an entry that never cleared it as one.
+    break: () => {
+      const doc = JSON.parse(readFileSync(BODY_STRUCTURES, 'utf8'));
+      const shipped = new Set(doc.structures.map((x) => x.id));
+      const brain = doc.excluded.map((e) => Number(String(e.fma).replace(/^FMA/, ''))).find((id) => Number.isFinite(id) && !shipped.has(id));
+      if (!brain) throw new Error('the body excludes no brain concept to stage this against');
+      let swapped = false;
+      return rewriteMesh(BODY_LOW, (records) => records.map((r) => {
+        if (swapped) return r;
+        swapped = true;
+        return { ...r, id: brain };
+      }));
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-body-entry-cites-the-wrong-source',
+    gate: 'licence separation',
+    criterion: 'rule 10 fails when the body entry does not cite the source its structures derive from',
+    expect: [/entry bp3d-body-meshes does not cite bodyparts3d, which [^\n]* \(id \d+\) derives from/],
+    describe: 'the body attribution entry citing Z-Anatomy in place of BodyParts3D',
+    break: () => {
+      const path = join(ASSETS, 'attribution.json');
+      const doc = JSON.parse(readFileSync(path, 'utf8'));
+      const e = doc.entries.find((x) => x.id === 'bp3d-body-meshes');
+      if (!e) throw new Error('there is no bp3d-body-meshes entry to stage this against');
+      e.sources = ['zanatomy'];
+      return substitute(path, `${JSON.stringify(doc, null, 2)}\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'licence-one-body-structure-inlined-as-base64',
+    gate: 'licence separation',
+    criterion: 'licence separation fails when one body structure\'s range of a mesh file is embedded in the bundle',
+    expect: [/contains bytes from asset payload body\/bp3d-4066585\/meshes\.lowres\.bin, base64-encoded \(structure id 24475's positions\)/],
+    describe: 'a build that inlines only the left femur\'s low-tier positions into app.js as base64',
+    break: () => {
+      requireBuild();
+      const femur = bodyStructure('Left femur');
+      const bytes = readFileSync(BODY_LOW);
+      const mesh = readMeshBin(bytes);
+      const t = mesh.table.find((x) => x.id === femur.id);
+      const start = mesh.positions.byteOffset + t.firstVertex * 6;
+      const range = bytes.subarray(start, start + t.vertexCount * 6).toString('base64');
+      const app = join(WEB, 'dist', 'app', 'app.js');
+      return substitute(app, `${readFileSync(app, 'utf8')}\nexport const INLINED_FEMUR = '${range}';\n`);
+    },
+    check: () => run('check-licence-separation.mjs'),
+  },
+  {
+    name: 'perf-body-lines-read-the-built-body',
+    gate: 'performance budget',
+    criterion: 'the body byte lines measure the body files in the build, not none',
+    mustPass: true,
+    expect: [/2 the low-resolution body\), 2 fetched lazily \(1 brain, 1 body, full resolution\)/],
+    describe: 'the build as it stands',
+    // DOG-173 note: a build that stopped copying body/ would read 0 B on both
+    // body lines and pass them. This pins that the gate found the files.
+    break: () => {
+      requireBuild();
+      return () => {};
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+  {
+    name: 'perf-body-full-tier-undeclared-overruns-its-share',
+    gate: 'performance budget',
+    criterion: 'the body\'s full tier, if not declared lazy, is paid for on the body\'s low-resolution share and fails it',
+    expect: [/lowResBodyAssetGzipBytes: [\d.]+ KiB against a budget of 1280\.0 KiB/],
+    describe: 'a built body structures.json whose full tier no longer says `loading: "lazy"`',
+    break: () => {
+      requireBuild();
+      const shipped = join(WEB, 'dist', 'assets', BODY.structuresFile);
+      const doc = JSON.parse(readFileSync(shipped, 'utf8'));
+      delete doc.tiers.full.loading;
+      return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+
+  {
+    name: 'perf-first-brain-frame-reads-the-built-brain',
+    gate: 'performance budget',
+    criterion: 'the first-brain-frame line costs the brain files the build declares, not none',
+    mustPass: true,
+    expect: [/first brain frame: \d+ files, [\d.]+ KiB gzip, the viewer's decode [\d.]+ ms raw/],
+    describe: 'the build as it stands',
+    // DOG-129: a build whose atlas index lost `meshSets` would report the line
+    // as absent and stay green, which is the DOG-80 shape. This pins that the
+    // gate found the brain's files and ran the viewer's decode over them.
+    break: () => {
+      requireBuild();
+      return () => {};
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS)]),
+  },
+  {
+    name: 'perf-first-brain-frame-reds-over-its-limit',
+    gate: 'performance budget',
+    criterion: 'a first brain frame slower than its limit fails the gate',
+    expect: () => [
+      new RegExp(`derivedFirstBrainFrameMs: [\\d.]+ ms against a budget of ${shown(staged.brainFrame)} ms`),
+    ],
+    describe: 'a first-brain-frame limit staged well under this runner\'s own reading',
+    // Staged from the reading, in the band (calibration 120 scales by 1), so it
+    // is a breakage on any runner and not only on one slower than a literal.
+    break: () => {
+      requireBuild();
+      staged.brainFrame = limitBelow(perfReading(perfReport(120), 'derivedFirstBrainFrameMs'));
+      return withBudgetLimit('derivedFirstBrainFrameMs', staged.brainFrame);
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '120']),
+  },
+
+  // -------------------------------------------------------------------------
   // A non-root base (DOG-120).
   //
   // Pages builds with the base its config hands out, `/somasurfer`, and every
@@ -1291,6 +2034,249 @@ const CASES = [
     },
     check: () => run('perf-budget.mjs', ['--calibration-ms', String(LOOKUP_CALIBRATION_MS), '--dist', rel(BASE_BUILD_DIST)]),
   },
+
+  // -------------------------------------------------------------------------
+  // Crosswalk and region index (DOG-130).
+  // -------------------------------------------------------------------------
+  {
+    name: 'crosswalk-gate-reads-the-committed-files',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate resolves the whole seed on the committed tree and finds the index matching',
+    mustPass: true,
+    expect: [
+      /coverage: \d+ of 170 mappings reach a named structure, covering \d+ of 30 papers/,
+      /index: .*region-index-zanatomy-2929e94\.json matches its inputs/,
+      /floors \(committed\): coverage ≥ 109 of 170 mappings and ≥ 29 of 30 papers, met; coordinate precision ≥ ±7 mm/,
+      /lobes: 24 crosswalk target\(s\) in icbm152-2009c-cortex-lobes checked against .*lobes\.json/,
+      /NOT PLACED: coordinates on icbm152-2009c-cortex-lobes, no locator/,
+      /VACUOUS: 0 coordinate links/,
+      /VACUOUS: 0 HCP-MMP1 → gyrus links/,
+      // DOG-157: the lobe targets are checked, so no UNVERIFIED line may remain.
+      // Matches at the start only when the word appears nowhere in the output.
+      /^(?![\s\S]*UNVERIFIED)/,
+    ],
+    describe: 'the committed crosswalk, seed and brain assets, unchanged',
+    // A gate that resolved nothing would also pass. This pins that it resolved the
+    // seed, that the floors are the committed literals, and that what it cannot
+    // check is still said out loud: deleting the VACUOUS or NOT PLACED report
+    // would otherwise leave those criteria passing in silence.
+    break: () => () => {},
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-index-hand-edited',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when the committed region index is not what its inputs produce',
+    expect: [/region-index-zanatomy-2929e94\.json does not match what its inputs produce/],
+    describe: 'the committed region index claiming every paper is non-empty',
+    // The figure W8a reads. Inflating it is the edit that matters, so it is the one staged.
+    break: () => {
+      const doc = JSON.parse(readFileSync(REGION_INDEX, 'utf8'));
+      doc.coverage.papers.nonEmpty = doc.coverage.papers.total;
+      return substitute(REGION_INDEX, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-hcp-entry-claims-exact',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when an HCP-MMP1 area claims to be the gyrus it is projected onto',
+    expect: [/crosswalk HCP-MMP1:V1: claims exact-term/],
+    describe: 'crosswalk.json filing HCP-MMP1 V1 as exact-term',
+    break: () =>
+      withCrosswalk((doc) => {
+        const v1 = doc.entries.find((e) => e.term === 'HCP-MMP1:V1');
+        if (!v1) throw new Error('HCP-MMP1:V1 is no longer in the crosswalk to stage this against');
+        v1.how = 'exact-term';
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-target-misspelt',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when a target names no structure, shipped or held',
+    expect: [/crosswalk ATLAS-LABEL:putamen: target "Putamen nucleus" is not a structure of zanatomy-gross-anatomy/],
+    describe: 'crosswalk.json naming the putamen "Putamen nucleus"',
+    // A misspelt target resolves to nothing, and nothing reads like a hold.
+    break: () =>
+      withCrosswalk((doc) => {
+        const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:putamen');
+        if (!e) throw new Error('ATLAS-LABEL:putamen is no longer in the crosswalk to stage this against');
+        e.targets[0].label = 'Putamen nucleus';
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-seed-term-unmapped',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when a term the seed uses has no entry',
+    expect: [/term ATLAS-LABEL:thalamus has no crosswalk entry/],
+    describe: 'crosswalk.json with the thalamus entry deleted',
+    break: () => withCrosswalk((doc) => (doc.entries = doc.entries.filter((e) => e.term !== 'ATLAS-LABEL:thalamus'))),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-coverage-below-floor',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when coverage drops below its committed floor, not just when the index drifts',
+    expect: [/coverage floor: 103 of 170 mappings and 29 of 30 papers reach a named structure,/],
+    describe: 'crosswalk.json filing the hippocampus under the held precentral gyrus (6 mappings lost)',
+    // A valid crosswalk that links less. The drift check fires too; this pins the
+    // floor, which is the one that survives a --write.
+    break: () =>
+      withCrosswalk((doc) => {
+        const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:hippocampus');
+        if (!e) throw new Error('ATLAS-LABEL:hippocampus is no longer in the crosswalk to stage this against');
+        e.targets = [{ representation: 'zanatomy-gross-anatomy', label: 'Precentral gyrus' }];
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-lobe-label-renamed',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate fails when the shipped lobe label set renames a label the crosswalk targets (DOG-157)',
+    expect: [/crosswalk HCP-MMP1:RSC: target "Limbic lobe" is not a structure of icbm152-2009c-cortex-lobes/],
+    describe: 'lobes.json calling the limbic lobe "Cingulate lobe", in its values and on both sides',
+    // The rename happens in the label file, not the crosswalk: the contract runs
+    // both ways, and the lobe targets were UNVERIFIED until this side was read.
+    break: () =>
+      editJson(ICBM_LOBES, (doc) => {
+        const n = doc.structures.filter((s) => s.label === 'Limbic lobe').length;
+        if (n !== 2) throw new Error(`lobes.json has ${n} "Limbic lobe" structures, not 2, to stage this against`);
+        for (const x of [...doc.values, ...doc.structures]) {
+          if (x.label !== 'Limbic lobe') continue;
+          x.label = 'Cingulate lobe';
+          if (x.name) x.name = x.name.replace('Limbic lobe', 'Cingulate lobe');
+        }
+      }),
+    check: () => run('check-crosswalk.mjs'),
+  },
+  {
+    name: 'crosswalk-registration-precision-below-floor',
+    gate: 'crosswalk',
+    criterion: 'the crosswalk gate refuses a registration claiming better than the committed precision floor',
+    expect: [/precision floor: the registration claims a held-out error of ±1 mm, below the committed floor of ±7 mm/],
+    describe: 'the registration summary claiming a 1 mm held-out error',
+    // Read from the file, the floor used to follow it down. This is the refit the
+    // committed literal exists to stop.
+    break: () => {
+      const reg = JSON.parse(readFileSync(BRAIN_REGISTRATION, 'utf8'));
+      reg.summary.heldOut.maxMm = 1;
+      return substitute(BRAIN_REGISTRATION, `${JSON.stringify(reg, null, 1)}\n`);
+    },
+    check: () => run('check-crosswalk.mjs'),
+  },
+
+  // -------------------------------------------------------------------------
+  // The static research API (DOG-131).
+  // -------------------------------------------------------------------------
+  {
+    name: 'research-api-reads-the-committed-tree',
+    gate: 'research api',
+    criterion: 'the API gate validates both trees, agrees with the live index, and finds the committed region tree matching',
+    mustPass: true,
+    expect: [
+      /region tree \(CC BY-SA 4\.0, packages\/atlas-assets\/api\/v1 → dist\/assets\/api\/v1\/\): 1 region-index, \d+ region, 30 paper-regions/,
+      /paper tree \(Apache-2\.0, emitted by the site build to dist\/data\/api\/v1\/\): 1 index, 30 paper/,
+      /live index: papersFor and regionsFor agree with every region and paper-regions document/,
+      /committed: packages\/atlas-assets\/api\/v1 matches its inputs, and attribution entry research-api-regions lists exactly its files/,
+    ],
+    describe: 'the committed region tree, seed and region index, unchanged',
+    break: () => () => {},
+    check: () => run('build-research-api.mjs'),
+  },
+  {
+    name: 'research-api-region-doc-hand-edited',
+    gate: 'research api',
+    criterion: 'the API gate fails when a committed region document is not what its inputs produce',
+    expect: [/api\/v1\/regions\/.*\.json does not match what its inputs produce/],
+    describe: 'a committed region document renaming its structure',
+    break: () => {
+      const doc = JSON.parse(readFileSync(API_REGION_DOC, 'utf8'));
+      doc.structureName = `${doc.structureName} (edited)`;
+      return substitute(API_REGION_DOC, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('build-research-api.mjs'),
+  },
+  {
+    name: 'research-api-stray-endpoint',
+    gate: 'research api',
+    criterion: 'the API gate fails on a file in the region tree that no query answers for',
+    expect: [/api\/v1\/regions\/gate-verify\/0\.json is not an endpoint the API answers for/],
+    describe: 'a region document nobody generated, dropped into the committed tree',
+    break: () => {
+      mkdirSync(join(API_TREE, 'regions', 'gate-verify'), { recursive: true });
+      const restore = substitute(API_STRAY, readFileSync(API_REGION_DOC));
+      return () => {
+        restore();
+        removeIfEmpty(join(API_TREE, 'regions', 'gate-verify'));
+      };
+    },
+    check: () => run('build-research-api.mjs'),
+  },
+  {
+    name: 'research-api-stale-against-inputs',
+    gate: 'research api',
+    criterion: 'the API gate fails when the region tree no longer answers what the live index answers',
+    expect: [/the live index says/],
+    describe: 'crosswalk.json filing the hippocampus under the held precentral gyrus, with no regeneration',
+    // The region index and the tree are both stale now, and check-crosswalk
+    // catches the index. This pins that the API gate checks against the live
+    // inputs itself, rather than trusting the committed index it is built from.
+    break: () =>
+      withCrosswalk((doc) => {
+        const e = doc.entries.find((x) => x.term === 'ATLAS-LABEL:hippocampus');
+        if (!e) throw new Error('ATLAS-LABEL:hippocampus is no longer in the crosswalk to stage this against');
+        e.targets = [{ representation: 'zanatomy-gross-anatomy', label: 'Precentral gyrus' }];
+      }),
+    check: () => run('build-research-api.mjs'),
+  },
+  {
+    name: 'research-api-contract-at-pages-base',
+    gate: 'research api contract',
+    criterion: 'every response the site serves at /somasurfer/ equals the library answer, and every link resolves under it',
+    mustPass: true,
+    expect: [
+      /at base \/somasurfer\/ on http:\/\/127\.0\.0\.1:\d+, and read it back from \/somasurfer\/data\/atlas-index\.json alone/,
+      /\d+ distinct relative links followed under \/somasurfer\/, all 200/,
+      /self-test: a region document served with a link dropped is caught/,
+    ],
+    describe: 'a build at the Pages base, unchanged',
+    break: () => buildAtPagesBase(),
+    check: () => run('check-research-api-contract.mjs', ['--dist', BASE_BUILD_DIST]),
+  },
+  {
+    name: 'research-api-contract-served-doc-differs',
+    gate: 'research api contract',
+    criterion: 'the contract check fails when a served region document differs from the library answer',
+    expect: [/region\(.*\): the served answer differs from the library's/],
+    describe: 'dist/assets/api/v1/ serving a region document with one link dropped',
+    break: () => {
+      requireBuild();
+      const shipped = join(WEB, 'dist', 'assets', relative(ASSETS, API_REGION_DOC));
+      const doc = JSON.parse(readFileSync(shipped, 'utf8'));
+      doc.papers[0].links.pop();
+      if (doc.papers[0].links.length === 0) doc.papers.shift();
+      if (doc.papers.length === 0) throw new Error(`${rel(shipped)} has no paper left to stage this against`);
+      return substitute(shipped, `${JSON.stringify(doc, null, 1)}\n`);
+    },
+    check: () => run('check-research-api-contract.mjs'),
+  },
+  {
+    name: 'research-api-contract-paper-missing',
+    gate: 'research api contract',
+    criterion: 'the contract check fails when a paper the library answers for is a 404 on the site',
+    expect: [/paper\(paper:[^)]+\): the served answer differs from the library's \(404\)/],
+    describe: 'dist/data/api/v1/papers/ missing one paper document',
+    break: () => {
+      requireBuild();
+      const dir = join(WEB, 'dist', 'data', 'api', 'v1', 'papers');
+      const first = readdirSync(dir).sort()[0];
+      if (!first) throw new Error('dist/data/api/v1/papers/ is empty');
+      return hide(join(dir, first));
+    },
+    check: () => run('check-research-api-contract.mjs'),
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -1328,6 +2314,20 @@ const touched = [
   rel(NC_DIR),
   rel(LEAKED_NC),
   rel(MERGED),
+  rel(BRAIN_LOW),
+  rel(BRAIN_FULL),
+  rel(BRAIN_STRUCTURES),
+  rel(BRAIN_REGISTRATION),
+  rel(BRAIN_QA_SAMPLE),
+  rel(BRAIN_PROVENANCE),
+  rel(BRAIN_ORIGIN_RESULT),
+  rel(ICBM_LOW),
+  rel(ICBM_STRUCTURES),
+  rel(ICBM_LOBES),
+  rel(CROSSWALK),
+  rel(REGION_INDEX),
+  // The whole committed region tree: a case edits one document and plants a stray one.
+  rel(API_TREE),
 ];
 const status = spawnSync('git', ['status', '--porcelain', '--', ...touched], { cwd: REPO_ROOT, encoding: 'utf8' });
 if (status.status === 0 && status.stdout.trim()) {
@@ -1409,6 +2409,8 @@ for (const c of selected) {
 
 // A failed restore is worse than a failed case: leave nothing behind.
 rmSync(BASE_BUILD, { recursive: true, force: true });
+rmSync(API_STRAY, { force: true });
+removeIfEmpty(join(API_TREE, 'regions', 'gate-verify'));
 for (const path of [join(ALC, 'test', 'gate-verify.test.ts'), join(WEB, 'src', 'gate-verify.js'), GATE_TEMPLATE, LEAKED_NC, MERGED]) {
   rmSync(path, { force: true });
   rmSync(`${path}.gate-verify-stash`, { force: true });

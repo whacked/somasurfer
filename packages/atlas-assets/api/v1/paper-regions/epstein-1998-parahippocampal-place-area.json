@@ -1,0 +1,182 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:epstein-1998-parahippocampal-place-area",
+ "paperHref": "../../../../data/api/v1/papers/epstein-1998-parahippocampal-place-area.json",
+ "regions": [
+  {
+   "key": "icbm152-2009c-cortex-lobes/103",
+   "structureName": "Temporal lobe.l",
+   "href": "../regions/icbm152-2009c-cortex-lobes/103.json",
+   "links": [
+    {
+     "mappingId": "map:epstein-1998-parahippocampal-place-area/scene-selective-region/hcp-mmp1-pha1",
+     "findingId": "finding:epstein-1998-parahippocampal-place-area/scene-selective-region",
+     "paperId": "paper:epstein-1998-parahippocampal-place-area",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "103",
+     "structureName": "Temporal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under the temporal lobe only: that cortex draws the limbic lobe to the cingulate sulcus (cingulate gyrus and isthmus) and labels the parahippocampal gyrus temporal (lobes.json conventions.limbic, DOG-151), so a limbic target would contradict the label set it names."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PHA1",
+      "label": "Parahippocampal area 1"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Medial occipitotemporal gyrus (Parahippocampal*)"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:epstein-1998-parahippocampal-place-area/not-object-selective/hcp-mmp1-ffc",
+     "findingId": "finding:epstein-1998-parahippocampal-place-area/not-object-selective",
+     "paperId": "paper:epstein-1998-parahippocampal-place-area",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "103",
+     "structureName": "Temporal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. FFC is one area on the fusiform (lateral occipitotemporal) gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:FFC",
+      "label": "Fusiform face complex"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Lateral occipitotemporal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:epstein-1998-parahippocampal-place-area/peak-coordinate/hcp-mmp1-pha1",
+     "findingId": "finding:epstein-1998-parahippocampal-place-area/peak-coordinate",
+     "paperId": "paper:epstein-1998-parahippocampal-place-area",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "103",
+     "structureName": "Temporal lobe.l",
+     "side": "left",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under the temporal lobe only: that cortex draws the limbic lobe to the cingulate sulcus (cingulate gyrus and isthmus) and labels the parahippocampal gyrus temporal (lobes.json conventions.limbic, DOG-151), so a limbic target would contradict the label set it names."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PHA1",
+      "label": "Parahippocampal area 1"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Medial occipitotemporal gyrus (Parahippocampal*)"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "key": "icbm152-2009c-cortex-lobes/203",
+   "structureName": "Temporal lobe.r",
+   "href": "../regions/icbm152-2009c-cortex-lobes/203.json",
+   "links": [
+    {
+     "mappingId": "map:epstein-1998-parahippocampal-place-area/scene-selective-region/hcp-mmp1-pha1",
+     "findingId": "finding:epstein-1998-parahippocampal-place-area/scene-selective-region",
+     "paperId": "paper:epstein-1998-parahippocampal-place-area",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "203",
+     "structureName": "Temporal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under the temporal lobe only: that cortex draws the limbic lobe to the cingulate sulcus (cingulate gyrus and isthmus) and labels the parahippocampal gyrus temporal (lobes.json conventions.limbic, DOG-151), so a limbic target would contradict the label set it names."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PHA1",
+      "label": "Parahippocampal area 1"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Medial occipitotemporal gyrus (Parahippocampal*)"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:epstein-1998-parahippocampal-place-area/not-object-selective/hcp-mmp1-ffc",
+     "findingId": "finding:epstein-1998-parahippocampal-place-area/not-object-selective",
+     "paperId": "paper:epstein-1998-parahippocampal-place-area",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "203",
+     "structureName": "Temporal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. FFC is one area on the fusiform (lateral occipitotemporal) gyrus."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:FFC",
+      "label": "Fusiform face complex"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Lateral occipitotemporal gyrus"
+      ]
+     }
+    },
+    {
+     "mappingId": "map:epstein-1998-parahippocampal-place-area/peak-coordinate/hcp-mmp1-pha1",
+     "findingId": "finding:epstein-1998-parahippocampal-place-area/peak-coordinate",
+     "paperId": "paper:epstein-1998-parahippocampal-place-area",
+     "representation": "icbm152-2009c-cortex-lobes",
+     "structureId": "203",
+     "structureName": "Temporal lobe.r",
+     "side": "right",
+     "sideFromSource": false,
+     "how": "crosswalk",
+     "precision": {
+      "kind": "approximate",
+      "why": "an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. PHA1 lies on the posterior parahippocampal gyrus. On the lobe cortex it is filed under the temporal lobe only: that cortex draws the limbic lobe to the cingulate sulcus (cingulate gyrus and isthmus) and labels the parahippocampal gyrus temporal (lobes.json conventions.limbic, DOG-151), so a limbic target would contradict the label set it names."
+     },
+     "source": {
+      "scheme": "HCP-MMP1",
+      "term": "HCP-MMP1:PHA1",
+      "label": "Parahippocampal area 1"
+     },
+     "crosswalk": {
+      "completeness": "overlaps",
+      "heldTargets": [
+       "Medial occipitotemporal gyrus (Parahippocampal*)"
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

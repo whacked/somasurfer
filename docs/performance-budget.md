@@ -42,16 +42,89 @@ library added to the page shell.
 | --- | --- | --- |
 | `bundleGzipBytes` | 150 KiB | `index.html` + `app/*.js` + `app/*.css`, gzipped |
 | `indexGzipBytes` | 256 KiB | `data/*.json` **plus the name index**, gzipped |
-| `lowResAssetGzipBytes` | 2.5 MiB | `dist/assets/**`, gzipped, less LICENSE, ATTRIBUTION.md and the name index |
+| `lowResAssetGzipBytes` | 2.5 MiB | `dist/assets/**`, gzipped, less LICENSE, ATTRIBUTION.md, the name index and every file a mesh set declares lazy |
+| `lowResBrainAssetGzipBytes` | 1.00 MiB | the brain's share of the line above (DOG-127), counted in both |
+| `fullResBrainAssetGzipBytes` | 5.25 MiB | the lazily fetched full-resolution brain tier (DOG-127) |
+| `lowResBodyAssetGzipBytes` | 1.25 MiB | the body's share of `lowResAssetGzipBytes` (DOG-128), counted in both |
+| `fullResBodyAssetGzipBytes` | 7.00 MiB | the lazily fetched full-resolution body tier (DOG-128) |
 | `indexParseMsNormalised` | 40 ms | parse `data/*.json` and build the lookup maps |
 | `nameIndexBuildMsNormalised` | 100 ms | build the name index: `joinNameIndex` + `buildNameIndex` over the emitted documents |
 | `nameIndexBuildUsPerCell` | 28 us/cell | the same measurement, per cell the index binds |
-| `lowResAssetParseMsNormalised` | 400 ms | parse the low-resolution asset payloads |
+| `lowResAssetParseMsNormalised` | 400 ms | parse the low-resolution asset payloads: JSON, or the ATLM binary mesh reader |
 
 2.5 MiB at 25 Mbit/s is about 0.84 s of transfer, which fits the 2.5 s budget
 with room for parse. It is also roughly where a 20k-triangle body shell plus
 label sets lands, so it constrains the asset pipeline without being
 unachievable.
+
+### Brain meshes: the shared low-resolution line, and a lazy tier (DOG-127)
+
+The real brain (W2, DOG-127) and the full-body human (W3, DOG-128) share the
+2.5 MiB `lowResAssetGzipBytes` line. The split, agreed in W2 and binding on W3:
+
+| share | gzip | what it holds | today |
+| --- | ---: | --- | ---: |
+| brain, low tier | 1.00 MiB | `assets/brain/**` that is not declared lazy: the low mesh file and its `structures.json` | 810.4 KiB |
+| body, low tier | 1.25 MiB | `assets/body/**` that is not declared lazy: the low mesh file and its `structures.json` (`lowResBodyAssetGzipBytes`, DOG-128) | see below |
+| v1 templates and labels | 0.25 MiB | everything else under `assets/` | about 0.13 MiB |
+
+The body gets the larger share because it has more structures in view at once.
+`lowResBrainAssetGzipBytes` holds the brain to its share, so a brain that grows
+cannot spend the body's room. Those bytes are still counted in
+`lowResAssetGzipBytes` too; the share is a line inside it, not beside it.
+
+**The full-resolution tier is fetched lazily**, so it is not a low-resolution
+asset and has no business in `derivedLowResAssetLoadMs`. A file is lazy because
+its mesh set's `structures.json` says so (`tiers.*.loading: "lazy"`), never
+because of its name. That makes the failure one-sided: a lazy file nobody
+declared is costed as low-resolution, where it is paid for.
+
+`fullResBrainAssetGzipBytes` is **5,505,024 B (5.25 MiB), a literal derived
+once** on 2026-10-11 from the first full-tier build, which read 4,972,008 B:
+1.10 × that, rounded up to the next 256 KiB. It is not re-derived at gate time,
+so it cannot ratchet to whatever the next build weighs. The 10% was margin for
+re-encoding the set it was derived from, the 245-structure build. The origin
+test then added the corpus callosum and midbrain, about 349 KB, and holding the
+four colliculi took some of that back. The 244 structures that ship now read
+5,309,123 B, about 96.4% of the line and 3.6% under it, not 10%.
+A new clearance group, such as the cortex
+if it ever clears, is a new decision about this line, not headroom inside it.
+At 25 Mbit/s the tier is about 1.8 s of transfer after the low tier has drawn.
+
+**Binary meshes are parsed by the format's own reader.** `tools/lib/meshbin.mjs`
+is the single definition of the ATLM format. The gate recognises an ATLM file by
+its magic bytes, reads it with that module, and walks positions and indices
+once, which is the same work a JSON mesh gets. Before this, `JSON.parse` on a
+binary asset threw and took the gate down with it.
+
+### Body meshes: the body's share, and its lazy tier (DOG-128)
+
+The full-body human (W3) takes the 1.25 MiB share agreed in W2. `lowResBodyAssetGzipBytes`
+holds it there. The body's lazy tier gets a line of its own, as the brain's does.
+
+**The split of the 2.5 MiB line, as the perf gate read it** when the body landed
+(`tools/perf-budget.mjs` on the build of DOG-128's branch, 2026-10-12):
+
+| share | gzip | of its own line |
+| --- | ---: | ---: |
+| brain, low tier | 806.9 KiB | 79% of 1.00 MiB |
+| body, low tier | 1,236.0 KiB | 97% of 1.25 MiB |
+| v1 templates and labels | 114.3 KiB | of the 0.25 MiB left |
+| **all low-resolution assets** | **2,157.2 KiB** | **84% of 2.5 MiB** |
+
+These are a reading, not a contract: the gate re-measures them on every run, and
+only the limits are fixed. The body sits at 97% of its share because the build spends
+the share on purpose. Its ratio is tuned to the budget, and its shape floor
+(`docs/body-meshes.md`) gives thin vessels and nerves the triangles a plain ratio
+would take from them. Growing the body means shrinking something inside the body,
+not borrowing the brain's room.
+
+`fullResBodyAssetGzipBytes` is **7,340,032 B (7.00 MiB), a literal derived once** on
+2026-10-12 from the first body full tier that passed the mesh gate, which read
+6,525,597 B: 1.10 × that, rounded up to the next 256 KiB. That is the brain's rule. It is
+not re-derived at gate time. At 25 Mbit/s it is about 2.3 s of transfer after the
+low tier has drawn. The tier the gate passed after review (DOG-173 F1, undrawn
+vertices compacted away) reads 6,518,932 B, 89% of the line. The literal stays as derived.
 
 ### The name index is an index, not an asset (DOG-80)
 
@@ -204,6 +277,8 @@ file, not observed:
 critical path     = 2 × RTT + (bundle + index) / downlink + index parse
 low-res asset load = critical path + 1 × RTT + assets / downlink + asset parse
 first interaction  = critical path + render allowance
+first brain frame  = critical path + 1 × RTT + brain frame files / downlink
+                     + the viewer's decode of them + render allowance
 ```
 
 Two round trips for the critical path and one for the assets: HTTP/2 over a
@@ -220,6 +295,35 @@ clock speed and little else, so raw and normalised numbers are both always
 reported, and the gate will not quote a normalised number at all if the runner
 is more than 4× off the reference — at that distance the correction would be
 doing more work than the measurement.
+
+### The first brain frame (DOG-129)
+
+`derivedFirstBrainFrameMs` is the brain link: what it costs to go from
+navigation to the brain drawn, on the reference machine. DOG-123 set it at
+**≤ 3,500 ms modelled**, the `derivedFirstInteractionMs` limit, and asked for
+no loosened line. That line stops at the critical path, so it never saw the
+brain; this one is a second line at the **same** limit that prices the brain in.
+
+- **Bytes:** the files a brain link fetches, read from the atlas index's
+  `meshSets` the way `app.js` reads it: each brain set's `structures.json`, its
+  label file and registration where declared, and its eager (`low`) tier. It is
+  not `lowResBrainAssetGzipBytes`, which is a directory line and would cost a
+  file nobody fetches for this frame.
+- **Parse:** the viewer's own decode, `meshSetFrom` in
+  `packages/atlas-web/src/viewer/meshset.js` (dequantise, carry into MNI, split
+  the cortex into lobes, lay out by layer, box every structure). That is several
+  times the reader's walk that `lowResAssetParseMsNormalised` measures, and the
+  page draws nothing until it has run. Best of three, normalised like every
+  other parse term.
+- **Not in a build with no brain mesh set** (`main` today): reported as absent,
+  never as zero.
+
+`app.js` matches the model's ordering: the URL's atlas fetches its low tier
+first, the other atlas's low tier comes next, and full tiers load only after.
+So a brain link is not queued behind the body.
+
+At DOG-129's branch it reads **1,417 ms / 3,500 ms (40%)**: 6 files, 958.7 KiB
+gzip, and a 127 ms raw decode on a runner calibrated at 2.4× the reference.
 
 ## When the runner is too far from the reference
 

@@ -245,6 +245,12 @@ function readNames(text) {
   return names;
 }
 
+/** The concept and English name an element OBJ states in its own header; blank fields are null. */
+function headerOf(text) {
+  const field = (name) => text.match(new RegExp(`^# ${name} :[ \\t]*(.*)$`, 'm'))?.[1].trim() || null;
+  return { conceptId: field('Concept ID'), englishName: field('English name') };
+}
+
 /** Testable core: everything already read into memory. */
 export function buildSource({ zip, tables, dir }) {
   const trees = {};
@@ -258,20 +264,34 @@ export function buildSource({ zip, tables, dir }) {
     return t;
   };
 
+  /**
+   * One element mesh file, in LAS, with the concept its own header names.
+   * The header is the file's own statement of what it is; a blank field comes
+   * back as null and is never filled in here.
+   */
+  const loadFile = (f) => {
+    const text = zip.read(`${ENTRY_PREFIX}${f}.obj`).toString('utf8');
+    const part = parseObj(text);
+    const V = new Float64Array(part.V.length);
+    for (let i = 0; i < part.V.length; i += 3) {
+      // LPS -> LAS: negate y so `+y` is anterior. See the header.
+      V[i] = part.V[i];
+      V[i + 1] = -part.V[i + 1];
+      V[i + 2] = part.V[i + 2];
+    }
+    return { file: f, V, F: part.F, header: headerOf(text) };
+  };
+
+  /** The same header, without parsing the geometry: what grouping needs, at a fraction of the memory. */
+  const loadHeader = (f) => ({ file: f, header: headerOf(zip.read(`${ENTRY_PREFIX}${f}.obj`).toString('utf8')) });
+
   /** Element mesh files for a concept, as separate closed parts. */
   const loadParts = (fma, which = 'isa') => {
     const t = tree(which);
     const files = (t.elements.get(fma) ?? []).filter((f) => zip.has(`${ENTRY_PREFIX}${f}.obj`));
     return files.map((f) => {
-      const part = parseObj(zip.read(`${ENTRY_PREFIX}${f}.obj`).toString('utf8'));
-      const V = new Float64Array(part.V.length);
-      for (let i = 0; i < part.V.length; i += 3) {
-        // LPS -> LAS: negate y so `+y` is anterior. See the header.
-        V[i] = part.V[i];
-        V[i + 1] = -part.V[i + 1];
-        V[i + 2] = part.V[i + 2];
-      }
-      return { file: f, V, F: part.F };
+      const { V, F } = loadFile(f);
+      return { file: f, V, F };
     });
   };
 
@@ -299,6 +319,15 @@ export function buildSource({ zip, tables, dir }) {
     trees,
     loadMesh,
     loadParts,
+    loadFile,
+    loadHeader,
+    /** Every element mesh file id in the archive, sorted. */
+    files: () => zip.names()
+      .filter((n) => n.startsWith(ENTRY_PREFIX) && n.endsWith('.obj'))
+      .map((n) => n.slice(ENTRY_PREFIX.length, -'.obj'.length))
+      .sort(),
+    /** The element mesh file ids a concept is made of, in one tree. */
+    elementsOf: (fma, which = 'isa') => tree(which).elements.get(fma) ?? [],
     nameOf: (fma, which = 'isa') => tree(which).names.get(fma) ?? null,
     inclusionOf: (which = 'isa') => tree(which).inclusion,
   };

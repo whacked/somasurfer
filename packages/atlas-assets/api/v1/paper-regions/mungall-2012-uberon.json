@@ -1,0 +1,142 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:mungall-2012-uberon",
+ "paperHref": "../../../../data/api/v1/papers/mungall-2012-uberon.json",
+ "regions": [
+  {
+   "key": "bodyparts3d-bd/FMA16202",
+   "structureName": "sacrum",
+   "href": "../regions/bodyparts3d-bd/FMA16202.json",
+   "links": [
+    {
+     "mappingId": "map:mungall-2012-uberon/structure-classes-not-geometry/fma16202",
+     "findingId": "finding:mungall-2012-uberon/structure-classes-not-geometry",
+     "paperId": "paper:mungall-2012-uberon",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA16202",
+     "structureName": "sacrum",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA16202",
+      "label": "sacrum"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7148",
+   "structureName": "stomach",
+   "href": "../regions/bodyparts3d-bd/FMA7148.json",
+   "links": [
+    {
+     "mappingId": "map:mungall-2012-uberon/multi-species-integration/fma7148",
+     "findingId": "finding:mungall-2012-uberon/multi-species-integration",
+     "paperId": "paper:mungall-2012-uberon",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7148",
+     "structureName": "stomach",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7148",
+      "label": "stomach"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7197",
+   "structureName": "liver",
+   "href": "../regions/bodyparts3d-bd/FMA7197.json",
+   "links": [
+    {
+     "mappingId": "map:mungall-2012-uberon/multi-species-integration/fma7197",
+     "findingId": "finding:mungall-2012-uberon/multi-species-integration",
+     "paperId": "paper:mungall-2012-uberon",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7197",
+     "structureName": "liver",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7197",
+      "label": "liver"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7309",
+   "structureName": "right lung",
+   "href": "../regions/bodyparts3d-bd/FMA7309.json",
+   "links": [
+    {
+     "mappingId": "map:mungall-2012-uberon/taxon-constraints/fma7309",
+     "findingId": "finding:mungall-2012-uberon/taxon-constraints",
+     "paperId": "paper:mungall-2012-uberon",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7309",
+     "structureName": "right lung",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7309",
+      "label": "right lung"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7647",
+   "structureName": "spinal cord",
+   "href": "../regions/bodyparts3d-bd/FMA7647.json",
+   "links": [
+    {
+     "mappingId": "map:mungall-2012-uberon/cross-ontology-bridges/fma7647",
+     "findingId": "finding:mungall-2012-uberon/cross-ontology-bridges",
+     "paperId": "paper:mungall-2012-uberon",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7647",
+     "structureName": "spinal cord",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7647",
+      "label": "spinal cord"
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

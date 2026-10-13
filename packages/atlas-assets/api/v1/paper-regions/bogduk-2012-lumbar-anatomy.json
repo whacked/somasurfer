@@ -1,0 +1,90 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:bogduk-2012-lumbar-anatomy",
+ "paperHref": "../../../../data/api/v1/papers/bogduk-2012-lumbar-anatomy.json",
+ "regions": [
+  {
+   "key": "bodyparts3d-bd/FMA13075",
+   "structureName": "fourth lumbar vertebra",
+   "href": "../regions/bodyparts3d-bd/FMA13075.json",
+   "links": [
+    {
+     "mappingId": "map:bogduk-2012-lumbar-anatomy/lumbar-vertebra-structure/fma13075",
+     "findingId": "finding:bogduk-2012-lumbar-anatomy/lumbar-vertebra-structure",
+     "paperId": "paper:bogduk-2012-lumbar-anatomy",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA13075",
+     "structureName": "fourth lumbar vertebra",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA13075",
+      "label": "fourth lumbar vertebra"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA16202",
+   "structureName": "sacrum",
+   "href": "../regions/bodyparts3d-bd/FMA16202.json",
+   "links": [
+    {
+     "mappingId": "map:bogduk-2012-lumbar-anatomy/lumbosacral-junction/fma16202",
+     "findingId": "finding:bogduk-2012-lumbar-anatomy/lumbosacral-junction",
+     "paperId": "paper:bogduk-2012-lumbar-anatomy",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA16202",
+     "structureName": "sacrum",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA16202",
+      "label": "sacrum"
+     }
+    }
+   ]
+  },
+  {
+   "key": "bodyparts3d-bd/FMA7647",
+   "structureName": "spinal cord",
+   "href": "../regions/bodyparts3d-bd/FMA7647.json",
+   "links": [
+    {
+     "mappingId": "map:bogduk-2012-lumbar-anatomy/nerve-supply/fma7647",
+     "findingId": "finding:bogduk-2012-lumbar-anatomy/nerve-supply",
+     "paperId": "paper:bogduk-2012-lumbar-anatomy",
+     "representation": "bodyparts3d-bd",
+     "structureId": "FMA7647",
+     "structureName": "spinal cord",
+     "side": null,
+     "sideFromSource": false,
+     "how": "exact-term",
+     "precision": {
+      "kind": "exact"
+     },
+     "source": {
+      "scheme": "FMA",
+      "term": "FMA7647",
+      "label": "spinal cord"
+     }
+    }
+   ]
+  }
+ ],
+ "emptyBecause": []
+}

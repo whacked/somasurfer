@@ -66,6 +66,7 @@ export const DEFAULT_VIEW = Object.freeze({
   camera: DEFAULT_CAMERA,
   layers: Object.freeze({ hidden: Object.freeze([]), isolated: null, opacity: Object.freeze({}) }),
   labels: DEFAULT_LABELS,
+  structure: null,
 });
 
 const round = (value, decimals) => {
@@ -76,6 +77,9 @@ const round = (value, decimals) => {
 };
 
 const finiteOr = (value, fallback) => (Number.isFinite(value) ? value : fallback);
+
+/** A mesh structure key, `set.id` (viewer/meshset.js). Whether it exists is the shell's question. */
+const isStructureKey = (s) => typeof s === 'string' && /^[a-z0-9-]{1,40}\.\d{1,9}$/.test(s);
 
 /** A layer id: the viewer's own ids are ASCII words, and only those round-trip. */
 const isLayerId = (s) => typeof s === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(s);
@@ -127,6 +131,7 @@ export function encodeView(view) {
   // never from the address — this module carries an address as an opaque string
   // on purpose, and `parse()` lives downstream of it.
   if (atlas !== DEFAULT_VIEW.atlas || view?.atlasExplicit === true) params.set('atlas', atlas);
+  if (isStructureKey(view?.structure)) params.set('s', view.structure);
 
   const camera = view?.camera;
   if (camera && Number.isFinite(camera.distance) && camera.distance > 0) {
@@ -203,6 +208,13 @@ export function decodeView(search) {
     else problems.push(`unknown atlas ${JSON.stringify(atlasRaw)}; showing the body atlas`);
   }
 
+  let structure = null;
+  const sRaw = params.get('s');
+  if (sRaw !== null) {
+    if (isStructureKey(sRaw)) structure = sRaw;
+    else problems.push(`ignored an unusable structure in s=: ${JSON.stringify(sRaw.slice(0, 64))}`);
+  }
+
   let camera = { ...DEFAULT_CAMERA };
   const camRaw = params.get('cam');
   if (camRaw !== null) {
@@ -277,6 +289,7 @@ export function decodeView(search) {
       camera,
       layers: { hidden: [...new Set(hidden)].sort(), isolated, opacity },
       labels,
+      structure,
     },
     problems,
   };

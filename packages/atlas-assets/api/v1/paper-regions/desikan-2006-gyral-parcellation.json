@@ -1,0 +1,54 @@
+{
+ "schema": "atlas-research-api/1",
+ "kind": "paper-regions",
+ "licence": "CC-BY-SA-4.0",
+ "datasetVersion": "research-seed-2026.10.1",
+ "crosswalkVersion": "crosswalk-2026.10.3",
+ "paperId": "paper:desikan-2006-gyral-parcellation",
+ "paperHref": "../../../../data/api/v1/papers/desikan-2006-gyral-parcellation.json",
+ "regions": [],
+ "emptyBecause": [
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:desikan-2006-gyral-parcellation/gyral-labels/atlas-label-superior-temporal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:desikan-2006-gyral-parcellation/gyral-labels/atlas-label-middle-temporal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:desikan-2006-gyral-parcellation/automated-labelling/atlas-label-inferior-frontal-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:desikan-2006-gyral-parcellation/regions-per-hemisphere/atlas-label-precentral-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:desikan-2006-gyral-parcellation/regions-per-hemisphere/atlas-label-postcentral-gyrus"
+   ]
+  },
+  {
+   "code": "structure-held",
+   "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+   "mappingIds": [
+    "map:desikan-2006-gyral-parcellation/sulcal-boundaries/atlas-label-fusiform-gyrus"
+   ]
+  }
+ ]
+}
