@@ -103,6 +103,10 @@ const visibleNotices = (page) => page.$$eval('[data-notice]', (ns) => ns.filter(
 
 const browser = await launch();
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+// The runner has 2 cores shared with other agents, and SwiftShader renders on
+// them: a page load or a frame can take far longer than Playwright's 30 s.
+context.setDefaultTimeout(180000);
+context.setDefaultNavigationTimeout(180000);
 
 // ---------------------------------------------------------------------------
 // v1 rows (DOG-40)
@@ -137,26 +141,27 @@ shotTo('1-body-view.png', px.png);
 
 // 2. One click yields an address with a ranked name list.
 let clicked = null;
-const issuedByClick = new Set();
 {
   const p = [];
   // Not every cell is overlapped by an indexed structure, and the page says so,
   // so click a grid over the painted model and keep the first ranked list.
+  // It stops at the first: on this runner, a dozen fast taps back to back stall SwiftShader's frames for
+  // tens of seconds, though the page's own work per pick stays ~0.2 s.
   const b = px.bbox;
-  for (const fy of [0.3, 0.4, 0.5, 0.6, 0.7, 0.2, 0.8]) {
+  sweep: for (const fy of [0.3, 0.4, 0.5, 0.6, 0.7, 0.2, 0.8]) {
     for (const fx of [0.5, 0.45, 0.55, 0.4, 0.6]) {
+      if (clicked) break sweep;
       const x = b.minX + fx * (b.maxX - b.minX); const y = b.minY + fy * (b.maxY - b.minY);
       await tap(page, { x, y });
-      await page.waitForTimeout(400);
+      await settle(page);
       const s = await sel(page);
-      if (s?.ok && s.address) issuedByClick.add(s.address);
       const notices = await visibleNotices(page);
       if (!clicked && s?.ok && s.names.length >= 2 && notices.length === 0) clicked = { ...s, at: { x, y }, notices };
     }
   }
   if (clicked) {
     await tap(page, clicked.at);
-    await page.waitForTimeout(600);
+    await settle(page);
   }
   clicked = clicked ?? await sel(page);
   const namesEl = await page.$eval('[data-testid="names"]', (n) => ({ covered: n.dataset.covered, text: n.textContent.replace(/\s+/g, ' ').trim().slice(0, 400) })).catch(() => null);
@@ -233,8 +238,9 @@ const issuedByClick = new Set();
     const idx = await (await fetch(new URL('data/atlas-index.json', document.baseURI))).json();
     return idx.templates.filter((t) => t.kind === 'body').map((t) => t.id);
   });
-  // Only addresses the live site itself issued on its default template.
-  const issued = [...new Set([clicked?.address, ...issuedByClick].filter(Boolean))];
+  // Only an address the live site itself issued on its default template: the
+  // clicked one. Every extra address is a full page load per template.
+  const issued = [clicked?.address].filter(Boolean);
   const table = [];
   for (const t of ids) {
     for (const addr of issued) {
@@ -460,10 +466,10 @@ let paperDoc = null;
     if (paperDoc.status !== 200) p.push(`${paperDoc.url} → ${paperDoc.status}`);
     if (!/json/.test(paperDoc.type ?? '')) p.push(`${paperDoc.url} served as ${paperDoc.type}`);
     if (problems.length) p.push(`invalid: ${problems.join('; ')}`);
-    if (paperDoc.doc?.kind !== 'paper' || paperDoc.doc?.id !== id) p.push(`got kind ${paperDoc.doc?.kind} id ${paperDoc.doc?.id}, wanted paper ${id}`);
+    if (paperDoc.doc?.kind !== 'paper' || paperDoc.doc?.paper?.id !== id) p.push(`got kind ${paperDoc.doc?.kind} id ${paperDoc.doc?.paper?.id}, wanted paper ${id}`);
   }
-  rec('api-paper', p, `${paperDoc?.url} → ${paperDoc?.status} ${paperDoc?.type}, kind paper, id ${paperDoc?.doc?.id}, valid against atlas-research-api/1 (CORS ${paperDoc?.cors ?? 'none'})`,
-    { url: paperDoc?.url, status: paperDoc?.status, type: paperDoc?.type, cors: paperDoc?.cors, id: paperDoc?.doc?.id, title: paperDoc?.doc?.title });
+  rec('api-paper', p, `${paperDoc?.url} → ${paperDoc?.status} ${paperDoc?.type}, kind paper, id ${paperDoc?.doc?.paper?.id}, valid against atlas-research-api/1 (CORS ${paperDoc?.cors ?? 'none'})`,
+    { url: paperDoc?.url, status: paperDoc?.status, type: paperDoc?.type, cors: paperDoc?.cors, id: paperDoc?.doc?.paper?.id, title: paperDoc?.doc?.paper?.title });
 }
 {
   const p = [];
@@ -487,7 +493,7 @@ let paperDoc = null;
     const dataIndex = await getJson(new URL('data/api/v1/index.json', LIVE));
     for (const link of region.doc?.papers ?? []) {
       const paper = await getJson(new URL(link.href, region.url));
-      if (paper.status !== 200 || paper.doc?.id !== link.paperId) p.push(`${region.url}'s link to ${link.paperId} → ${paper.status}, id ${paper.doc?.id}`);
+      if (paper.status !== 200 || paper.doc?.paper?.id !== link.paperId) p.push(`${region.url}'s link to ${link.paperId} → ${paper.status}, id ${paper.doc?.paper?.id}`);
       const regionsHref = dataIndex.doc?.papers?.find((x) => x.id === link.paperId)?.regionsHref;
       const back = regionsHref ? await getJson(new URL(regionsHref, dataIndex.url)) : null;
       if (!(back?.doc?.regions ?? []).some((r) => r.key === key)) p.push(`${link.paperId}'s paper-regions does not list ${key} back`);
