@@ -267,6 +267,51 @@ If the per-cell line is **also** over, the sentence does not appear: that is a
 real regression in `covering()` or the join, and the per-cell line's own failure
 explains it.
 
+## Headroom, and why a green line can still be news
+
+A line at 98% of its limit passes. It is also one small module away from
+failing, and until DOG-83 the gate printed those two states identically: a
+budget was met or it was busted, and the room left over was not reported at
+all.
+
+Any line at or above `headroom.warnAtFraction` of its limit — **0.9** — is now
+reported as `TIGHT` on a run that still passes. On `main` at `4f6ef3c`, the
+Atlas v2 merge (2026-10-13, DOG-189), five byte lines read that way:
+
+```
+bundleGzipBytes                         149.8 KiB /    150.0 KiB   100%  TIGHT
+lowResAssetGzipBytes                   2381.7 KiB /   2560.0 KiB    93%  TIGHT
+lowResBrainAssetGzipBytes               956.6 KiB /   1024.0 KiB    93%  TIGHT
+fullResBrainAssetGzipBytes             5184.7 KiB /   5376.0 KiB    96%  TIGHT
+lowResBodyAssetGzipBytes               1236.0 KiB /   1280.0 KiB    97%  TIGHT
+```
+
+Every one of them passed, and until this report every one of them printed
+exactly as a line at 3% does.
+
+**This is not a second budget.** It changes no verdict, it changes no exit
+status, and it cannot fail a build. It exists so the cost of filling a budget
+lands on the change that fills it rather than on the next person to touch the
+page, who would otherwise meet the line as a red build for a change that was
+not the one that spent the room.
+
+One line is deliberately exempt. On a runner too slow to normalise, a
+calibrated line is an **upper** bound — "at most 95% of the limit" is equally
+consistent with 5% — so `at-most` figures are never reported as tight however
+high their utilisation reads. Calling one of them nearly full would be
+manufacturing a shortage out of slow hardware and sending someone to trim a
+budget that was never under pressure. `exact` and `normalised` figures are the
+occupancy and settle it; `at-least` is a lower bound on it, so a tight reading
+there can only understate how full the line is and is sound to report.
+
+An `unverified` line is not reported as tight either. Its limit is declared
+unsettled, and its own block already prints its utilisation on every run; "nearly
+full" of a limit nobody stands behind says nothing.
+
+Raising `warnAtFraction` to quiet a warning achieves nothing — it hides the
+notice and leaves the shortage. Raising a **limit** to make a change fit is the
+thing that must not happen; see "Changing a budget" below.
+
 ## How the two felt numbers are derived
 
 CI does not have a mid-range laptop or a 25 Mbit/s link, so the felt numbers
@@ -459,6 +504,11 @@ is for whatever reads it later, and it has to survive being read carelessly:
   different runner changes one and not the other.
 - `calibration.decisionBasis` is `normalised` or `one-sided-bound-from-raw`.
   Anything branching on the report should branch on that.
+- `headroom` is `{ warnAtFraction, tight }`, where `tight` lists the lines that
+  passed with less than `1 - warnAtFraction` of their limit to spare. Advisory
+  by construction: a consumer deciding whether the build is acceptable reads
+  `verdicts`, and will find nothing in `headroom` that contradicts it. A line
+  known only as an upper bound is never listed, however high its `utilisation`.
 
 Byte lines are exact on every runner and are never nulled; nulling them would
 be the fallback swallowing what it is supposed to gate.
@@ -468,6 +518,17 @@ does not fail the build, that its JSON report nulls what it did not establish
 while keeping the bound and the byte lines, that an off-band parse line still
 fails when the unnormalised time alone busts it, and that byte budgets survive a
 useless calibration.
+
+Two more pin the headroom reporting, and both are must-pass cases: a line staged
+at 95% of its limit is reported as `TIGHT` while the gate still exits 0, and a
+line known only as an upper bound is not, even at the same 95%. Each stages its
+limit from what the build actually measures — the bundle grew from 4 KiB to
+150 KiB while this report was in review, so a written-down size would have
+tested a different thing at every base. The first case also stages its control
+line, at 50%, rather than assuming one has room: on `main` most byte lines are
+past 90%. A warning is the kind of
+output that can stop appearing without anything going red, so the only thing
+that would notice is a case asserting it is still there.
 
 [dog29]: https://github.com/whacked/somasurfer/actions/runs/37890971145
 
@@ -549,3 +610,7 @@ Edit `ci/performance-budget.json` and this document in the same commit, and
 say in the commit message what changed about the product that justified it.
 Raising a budget to make CI green is the failure this file exists to make
 visible.
+
+"To make CI green" includes making it *stay* green. A limit raised while a line
+reads `TIGHT`, by whoever is trying to land the change that would have busted
+it, is the same failure arriving a commit earlier.
