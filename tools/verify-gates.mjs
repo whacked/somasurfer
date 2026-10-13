@@ -2277,6 +2277,123 @@ const CASES = [
     },
     check: () => run('check-research-api-contract.mjs'),
   },
+  {
+    name: 'perf-tight-line-warns-before-it-reds',
+    gate: 'performance budget',
+    criterion: 'a line nearly at its limit is reported as tight on a run that still passes',
+    mustPass: true,
+    expect: [
+      /TIGHT — within 10% of the limit, passing but nearly full:/,
+      /bundleGzipBytes: 9[45]% of [\d.]+ KiB, [\d.]+ KiB left/,
+      /not a failure and not a limit/,
+      /Do not raise the\s+limit to fit/,
+    ],
+    describe: 'a bundle at 95% of its byte budget: green, with about one addition of room left',
+    // DOG-83. bundleGzipBytes reached 98% of 150 KiB on the integration branch
+    // and the gate said "✓" with no more emphasis than it gives 3%. Nothing was
+    // broken, which was the problem: the next person to add a module would have
+    // taken the red for a change that did not spend the room.
+    //
+    // This is the must-pass half of that warning. It has to be a must-pass case:
+    // a warning that quietly stops being printed leaves no trace anywhere, and
+    // the only thing that would notice is a case asserting it is still there.
+    break: () => {
+      requireBuild();
+      // 95% of whatever this build actually is, not of a written-down size, so
+      // the case keeps constructing the same condition as the bundle grows. The
+      // control line is staged too, at 50%: on main most byte lines are already
+      // past 90% of their real limits, so no line has room by assumption.
+      const report = perfReport(25);
+      return withBudgetLimits({
+        bundleGzipBytes: Math.ceil(perfReading(report, 'bundleGzipBytes') / 0.95),
+        indexGzipBytes: Math.ceil(perfReading(report, 'indexGzipBytes') / 0.5),
+      });
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '25']),
+    // Two claims the console cannot make on its own: that the warning reached
+    // the JSON, and that it did not spray. `indexGzipBytes` is staged at 50%, so
+    // its absence is what distinguishes a threshold from a thing that fires on
+    // everything.
+    audit: () => {
+      const report = perfReport(25);
+      const problems = [];
+      const tight = report.headroom?.tight;
+      if (!Array.isArray(tight)) {
+        problems.push(`headroom.tight is ${JSON.stringify(tight)}, expected an array of line names.`);
+      } else {
+        if (!tight.includes('bundleGzipBytes')) {
+          problems.push(`headroom.tight is ${JSON.stringify(tight)}; the line at 95% of its limit is not in it.`);
+        }
+        if (tight.includes('indexGzipBytes')) {
+          problems.push(`headroom.tight contains indexGzipBytes, which is staged at half full:`);
+          problems.push(`  the threshold is firing on lines with room, which makes it worth nothing.`);
+        }
+      }
+      // The warning must not have become a verdict on its way to the report.
+      if (report.verdicts.bundleGzipBytes?.verdict !== 'within') {
+        problems.push(
+          `verdicts.bundleGzipBytes.verdict is ${JSON.stringify(report.verdicts.bundleGzipBytes?.verdict)}, ` +
+            `expected "within": a tight line still passes.`,
+        );
+      }
+      return problems;
+    },
+  },
+  {
+    name: 'perf-an-upper-bound-is-not-a-shortage',
+    gate: 'performance budget',
+    criterion: 'a line known only as an upper bound is never reported as tight',
+    mustPass: true,
+    expect: [/OUTSIDE \[0\.25, 4\]/, /Calibrated lines are shown unnormalised and marked ≤/],
+    describe: 'a derived line at 95% of an upper bound on a slow runner: not evidence of a shortage',
+    // The one kind of figure the warning must stay quiet about, and the reason
+    // it is not just `value / limit >= 0.9`. On a runner too slow to normalise,
+    // a calibrated line is an upper bound: "at most 95% of the limit" is equally
+    // consistent with 5%. Reporting that as nearly full would manufacture a
+    // shortage out of slow hardware, and would send someone trimming a budget
+    // that was never under pressure.
+    //
+    // derivedFirstInteractionMs is the line to construct it on: it is dominated
+    // by byte-derived transfer time and the fixed render allowance, with a parse
+    // term of a millisecond or two, so 95% here is stable rather than a reading
+    // that drifts across the threshold between runs.
+    break: () => {
+      requireBuild();
+      const measured = perfReading(perfReport(500), 'derivedFirstInteractionMs');
+      return withBudgetLimit('derivedFirstInteractionMs', Math.ceil(measured / 0.95));
+    },
+    check: () => run('perf-budget.mjs', ['--calibration-ms', '500']),
+    audit: () => {
+      const report = perfReport(500);
+      const problems = [];
+      const key = 'derivedFirstInteractionMs';
+      // If the construction did not land, the case proves nothing — and a case
+      // that silently proves nothing is worse than one that fails, so say so.
+      if (report.verdicts[key]?.kind !== 'at-most') {
+        problems.push(
+          `verdicts.${key}.kind is ${JSON.stringify(report.verdicts[key]?.kind)}, expected "at-most":`,
+          `  the --calibration-ms 500 runner should be below the band, and this case has`,
+          `  nothing to assert unless it is.`,
+        );
+      }
+      // `utilisation` is null for a bound, so the occupancy is the bound over the limit.
+      const used = report.verdicts[key]?.reported / report.budgets[key];
+      if (!(used >= 0.9)) {
+        problems.push(
+          `${key} reads ${JSON.stringify(used)} of its limit, expected >= 0.9:`,
+          `  the staged limit was meant to put this line inside the warning threshold, so`,
+          `  its absence from headroom.tight below would prove nothing.`,
+        );
+      }
+      if (report.headroom?.tight?.includes(key)) {
+        problems.push(
+          `headroom.tight contains ${key}, which is known only as an upper bound:`,
+          `  "at most 95% of the limit" does not establish that the line is nearly full.`,
+        );
+      }
+      return problems;
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------

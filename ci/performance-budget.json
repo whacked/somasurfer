@@ -103,6 +103,31 @@
       "why": "DOG-123 set the first brain frame at <= 3,500 ms modelled on this reference machine, as the derivedFirstInteractionMs limit, with no loosened line (CTO comment of 2026-10-11 17:02, carried into DOG-129). That line's derivation stops at the critical path, so it cannot see the brain at all; this one prices the brain in, under the same 3,500 ms. It is a second line at the same limit, not a looser one."
     }
   },
+  "headroom": {
+    "comment": [
+      "A line at 98% of its limit is green, and is one small addition away from",
+      "red. The gate used to say nothing about the difference: every budget was",
+      "either met or busted, and the room left over was not reported at all.",
+      "",
+      "Any line at or above this fraction of its limit is now reported as TIGHT on",
+      "a run that still passes. This is NOT a second limit. It changes no verdict",
+      "and no exit status, and it cannot fail a build. It exists so that the cost",
+      "of filling a budget falls on the change that fills it, instead of on the",
+      "next person to touch the page — who would otherwise meet the line as a red",
+      "build for a change that was not the one that spent the room.",
+      "",
+      "Raising this fraction to quiet a warning accomplishes nothing: it hides the",
+      "notice and leaves the limit, and the shortage, exactly where they were. The",
+      "thing that must not happen is raising a LIMIT to make a change fit. See",
+      "docs/performance-budget.md, 'Changing a budget'.",
+      "",
+      "0.9 leaves one tenth of the line. On bundleGzipBytes that is 15 KiB, which",
+      "is larger than any single module the page shell has gained so far, so a",
+      "line crossing this threshold still has about one addition of room — enough",
+      "warning to be able to act on it, which is the whole point of warning."
+    ],
+    "warnAtFraction": 0.9
+  },
   "renderAllowanceMs": {
     "value": 600,
     "comment": "Fixed allowance for layout, first paint and the viewer's first GPU upload on the reference machine. A placeholder with a stated basis, not a measurement: it needs the viewer and a real browser to measure. Flagged as such in every report."

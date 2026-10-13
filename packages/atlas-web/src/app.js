@@ -14,10 +14,10 @@ import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flag
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
 import { curatedModel, paperSource } from './viewer/corpus.js';
 import { comparePapers, comparisonLayers, papersOverlapping, researchModel, revealPaper } from './viewer/research.js';
-import { checkApiDocument, listedHref, overlayOf, paperRegions, regionPapers, treeUrl } from './viewer/regionpapers.js';
+import { apiModel, checkApiDocument, listedHref, overlayOf, paperFrame, paperRegions, regionPapers, treeUrl } from './viewer/regionpapers.js';
 import { boundsOfStructures, meshSetFrom, nextPick, pickStructures, searchStructures, withheldOf } from './viewer/meshset.js';
 import { nameIndexFrames, selectAddress } from './viewer/select.js';
-import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity, structureLayers } from './viewer/state.js';
+import { ATLAS_LAYERS, createViewer, isLayerVisible, layerOpacity, meshDraws, structureLayers } from './viewer/state.js';
 import {
   TemplateError,
   bodySpinePolyline,
@@ -289,11 +289,10 @@ function apiGet(url, kind) {
   return apiDocs.get(url);
 }
 
-/** The revealed paper's regions against what is drawn, or the API's answer while there is none. */
-function paperRegionsOf(paperId) {
-  const got = apiAnswer('paper-regions', paperId);
-  return got.doc ? { model: paperRegions(got.doc, meshEntries, ui.sets) } : got;
-}
+/** The revealed paper's regions against what is drawn. */
+const paperRegionsOf = (paperId) => apiModel(apiAnswer('paper-regions', paperId), (doc) => paperRegions(doc, meshEntries, ui.sets));
+/** A region's papers, titled from the loaded corpus. */
+const regionPapersOf = (key) => apiModel(apiAnswer('region', key), (doc) => ({ papers: regionPapers(doc, ui.research), crosswalkVersion: doc.crosswalkVersion }));
 
 viewer = createViewer({ templates, nameIndex });
 if (ui.unavailableBody) viewer.markUnavailable('body', ui.unavailableBody);
@@ -814,7 +813,8 @@ function renderResearch() {
 /** Reveal a paper (null hides it) and frame its structures once they can be. */
 function revealResearchPaper(paperId) {
   ui.revealed = paperId;
-  ui.framePaper = paperId;
+  // The frame belongs to the atlas the paper was revealed in, whichever path switches atlas.
+  ui.framePaper = paperId ? { paperId, atlas: viewer.atlas } : null;
   // A different paper ends the comparison rather than re-anchoring it.
   if (!comparing()) ui.comparison = null;
   uploadHighlights();
@@ -854,11 +854,11 @@ function regionPapersSection(s) {
   const box = el('section', { className: 'region-papers' }, [el('h4', { textContent: 'Papers on this structure' })]);
   box.dataset.testid = 'region-papers';
   if (!s.regionKey) return apiState(box, {}, `No research API representation covers the ${s.set} set yet, so no paper links its structures.`);
-  const got = apiAnswer('region', s.regionKey);
-  if (!got.doc) return apiState(box, got, `No paper in this corpus links ${s.regionKey}.`);
+  const got = regionPapersOf(s.regionKey);
+  if (!got.model) return apiState(box, got, `No paper in this corpus links ${s.regionKey}.`);
   box.dataset.state = 'listed';
-  box.append(el('p', { className: 'muted', textContent: `${s.regionKey}, linked by ${got.doc.papers.length} paper(s) through ${got.doc.crosswalkVersion}.` }));
-  for (const p of regionPapers(got.doc, ui.research)) {
+  box.append(el('p', { className: 'muted', textContent: `${s.regionKey}, linked by ${got.model.papers.length} paper(s) through ${got.model.crosswalkVersion}.` }));
+  for (const p of got.model.papers) {
     const open = el('button', { type: 'button', className: 'link', textContent: p.title });
     open.addEventListener('click', () => revealResearchPaper(p.paperId));
     const item = el('div', { className: 'region-paper' }, [open, el('span', { className: 'muted', textContent: ` ${p.year ?? ''}` })]);
@@ -1165,41 +1165,9 @@ function renderStructure() {
 function scene() {
   const canvas = $('canvas');
   const layers = viewer.layersOf();
-  const solids = [];
   const lines = [];
 
-  let xray = null;
-  const xrays = [];
-  for (const set of ui.sets[viewer.atlas]) {
-    if (!set.gpu) continue;
-    // A paper's structures also show through what is in front of them, whatever their layer.
-    const marked = [];
-    // One draw per run of equally opaque, same-coloured structures: the sets
-    // are laid out by layer, so a frame is a few dozen draws, not 1,605.
-    const byOpacity = new Map();
-    for (const s of set.structures) {
-      // The selected structure keeps its layer's opacity, so a faded skin stays
-      // faded. Opaque or hidden, an x-ray pass shows it through what is in front.
-      const chosen = s.key === viewer.structureOf();
-      const mark = ui.overlay.get(s.key);
-      const colour = chosen ? ui.palette.chosen : mark ? ui.palette.paper : ui.palette[s.lobe ? s.label : s.category] ?? ui.palette.other;
-      const hatch = !chosen && mark === 'approximate' ? ui.palette.paperStripe : null;
-      const { visible, opacity } = structureLayers(layers, s);
-      if (chosen && (!visible || opacity >= 1)) {
-        xray = { mesh: set.gpu, ranges: [{ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour }] };
-      } else if (mark) {
-        marked.push({ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour, hatch });
-      }
-      if (!visible || !(opacity > 0)) continue;
-      if (!byOpacity.has(opacity)) byOpacity.set(opacity, []);
-      const ranges = byOpacity.get(opacity);
-      const last = ranges[ranges.length - 1];
-      if (last && last.colour === colour && last.hatch === hatch && last.firstTriangle + last.triangleCount === s.firstTriangle) last.triangleCount += s.triangleCount;
-      else ranges.push({ firstTriangle: s.firstTriangle, triangleCount: s.triangleCount, colour, hatch });
-    }
-    for (const [opacity, ranges] of byOpacity) solids.push({ mesh: set.gpu, ranges, visible: true, opacity });
-    if (marked.length > 0) xrays.push({ mesh: set.gpu, ranges: marked });
-  }
+  const { solids, xray } = meshDraws(ui.sets[viewer.atlas], { layers, chosen: viewer.structureOf(), overlay: ui.overlay, palette: ui.palette });
   if (viewer.atlas === 'body' && ui.uploaded.spine) {
     lines.push({
       ...ui.uploaded.spine,
@@ -1215,8 +1183,7 @@ function scene() {
     height: Math.max(1, canvas.clientHeight),
     solids,
     lines,
-    // The selected structure last, so it reads on top of a paper's.
-    xray: xray ? [...xrays, xray] : xrays,
+    xray,
     cell: ui.uploaded.cell,
     highlights: ui.uploaded.highlights ?? [],
   };
@@ -1328,12 +1295,11 @@ function afterAtlasChange() {
 function commit({ push = false } = {}) {
   const regions = ui.revealed ? paperRegionsOf(ui.revealed).model : null;
   ui.overlay = overlayOf(regions, viewer.atlas);
-  if (ui.framePaper && ui.framePaper === ui.revealed && regions) {
+  if (ui.framePaper && ui.framePaper.paperId === ui.revealed && regions) {
     // Framed once, on reveal, as soon as its structures here are drawn; never by switching atlas.
-    const here = regions.regions.filter((r) => r.atlas === viewer.atlas);
-    const drawn = here.flatMap((r) => r.structures);
+    const { drawn, done } = paperFrame(regions, viewer.atlas, ui.meshStatus[viewer.atlas], ui.framePaper.atlas);
     if (drawn.length > 0) viewer.setCamera(flyToCell(viewer.cameraOf(), boundsOfStructures(drawn)));
-    if (drawn.length > 0 || here.length === 0 || !['pending', 'loading'].includes(ui.meshStatus[viewer.atlas])) ui.framePaper = null;
+    if (done) ui.framePaper = null;
   }
   renderChrome();
   renderLayers();
@@ -1720,8 +1686,8 @@ window.__atlas = {
   },
   /** DOG-132: what the panels read, as the API answered it; `pending` until it has. */
   regionPapers: (key) => {
-    const got = apiAnswer('region', key);
-    return got.doc ? regionPapers(got.doc, ui.research) : got;
+    const got = regionPapersOf(key);
+    return got.model ? got.model.papers : got;
   },
   paperRegions: (paperId) => {
     const got = paperRegionsOf(paperId);
