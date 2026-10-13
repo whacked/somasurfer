@@ -311,8 +311,9 @@ const unreadable = /The research API could not be read \(.+\)\. Names, addresses
   const ev = {};
   const regionIndex = await getJson(new URL('assets/api/v1/index.json', LIVE));
   const s = journeyRegion; const paperId = journeyPaper;
-  // A second structure with papers, to show the panels still move after the failure.
-  const other = regionIndex.doc?.regions?.find((r) => r.key !== s?.regionKey && r.paperIds?.length);
+  // A second region with papers, to show the panels still move after the failure:
+  // one the brain draws, so the index alone cannot choose it.
+  const withPapers = (regionIndex.doc?.regions ?? []).filter((r) => r.key !== s?.regionKey && r.paperIds?.length).map((r) => r.key);
   if (!s || !paperId) p.push('no structure and paper from region-papers to break');
   else {
     for (const mode of ['failed', 'malformed']) {
@@ -341,7 +342,7 @@ const unreadable = /The research API could not be read \(.+\)\. Names, addresses
       // Still usable: another structure is selected, named and linked after it.
       // Every commit rebuilds the revealed paper's model, so a throw there would stop this.
       const urlBefore = page.url();
-      const drawnOther = other && await page.evaluate((rk) => window.__atlas.structures('brain').find((x) => x.regionKey === rk), other.key);
+      const drawnOther = await page.evaluate((keys) => window.__atlas.structures('brain').find((x) => keys.includes(x.regionKey)), withPapers);
       if (drawnOther) {
         await page.evaluate((k) => window.__atlas.selectStructure(k), drawnOther.key);
         await page.waitForFunction(() => document.querySelector('[data-testid=region-papers]')?.dataset.state !== 'loading', null, { timeout: 30000 }).catch(() => {});
