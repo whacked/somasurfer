@@ -1,0 +1,48 @@
+PASS       nav: landing on body; landing→brain true, landing→body true, brain→body true, body→brain true, one click each
+pass 280 Posterior inferior cerebellar artery.l px=809 clicks=1 
+pass 281 Posterior inferior cerebellar artery.r px=857 clicks=1 
+pass 149 Internal carotid artery.l px=1895 clicks=1 
+pass 150 Internal carotid artery.r px=1981 clicks=1 
+pass 147 Insular branches of middle cerebral artery (M2).r px=209 clicks=1 
+pass 201 Midbrain.l px=792 clicks=1 
+pass 202 Midbrain.r px=855 clicks=1 
+fail 6 Accessory nucleus of oculomotor nerve.l px=35 clicks=12 none of 12 clicks on its own pixels picked it (got zanatomy-2929e94.34, zanatomy-2929e94.201)
+fail 7 Accessory nucleus of oculomotor nerve.r px=33 clicks=10 none of 10 clicks on its own pixels picked it (got zanatomy-2929e94.202, zanatomy-2929e94.34)
+pass 397 Tonsil of cerebellum.l px=707 clicks=1 
+pass 398 Tonsil of cerebellum.r px=1208 clicks=23 
+pass 378 Superior semilunar lobule.l px=1935 clicks=1 
+pass 379 Superior semilunar lobule.r px=2437 clicks=1 
+fail 122 Hippocampus.l px=1084 clicks=62 none of 62 clicks on its own pixels picked it (got icbm152-2009c.106, icbm152-2009c.104, icbm152-2009c.103, icbm152-2009c.1, icbm152-2009c.101, icbm152-2009c.105)
+fail 123 Hippocampus.r px=986 clicks=72 none of 72 clicks on its own pixels picked it (got icbm152-2009c.203, icbm152-2009c.204, icbm152-2009c.202, icbm152-2009c.201, icbm152-2009c.206, icbm152-2009c.2)
+pass 124 Hypoglossal nerve (XII).l px=520 clicks=1 
+pass 125 Hypoglossal nerve (XII).r px=612 clicks=1 
+pass 346 Subthalamic nucleus.l px=102 clicks=1 
+pass 347 Subthalamic nucleus.r px=59 clicks=1 
+pass 344 Substantia nigra.l px=182 clicks=1 
+pass 345 Substantia nigra.r px=122 clicks=1 
+pass 220 Nucleus accumbens.l px=153 clicks=1 
+pass 221 Nucleus accumbens.r px=188 clicks=2 
+pass 421 Ventral anterior nucleus.l px=255 clicks=2 
+pass 422 Ventral anterior nucleus.r px=327 clicks=8 
+pass 414 Tuberal hypothalamus.l px=90 clicks=2 
+pass 415 Tuberal hypothalamus.r px=93 clicks=1 
+pass 103 Falx cerebri px=16369 clicks=1 
+pass 394 Tentorium cerebelli.l px=3116 clicks=2 
+pass 395 Tentorium cerebelli.r px=2696 clicks=1 
+pass 81 Corticopontine tract (occipital).l px=276 clicks=1 
+pass 82 Corticopontine tract (occipital).r px=471 clicks=1 
+pass 91 Corticostriatal tract (superior).l px=365 clicks=1 
+pass 92 Corticostriatal tract (superior).r px=467 clicks=1 
+pass 51 Cavernous sinus.l px=352 clicks=1 
+pass 52 Cavernous sinus.r px=435 clicks=1 
+pass 375 Superior sagittal sinus px=3104 clicks=1 
+pass 109 Fourth ventricle px=1211 clicks=1 
+pass 396 Third ventricle px=752 clicks=1 
+pass 74 Corpus callosum px=5064 clicks=1 
+FAIL       picking: 36/40 picked back to their own key and name (21 distinct structures); brain full tier, 53726 px painted against an all-hidden view
+PASS       picking-controls: 1/1 withheld controls absent from the drawn and pickable set
+FAIL       picking-controls-say-why: 0/1 withheld controls explained on the page after searching their name (Anterior commissure: 0 visible mention(s), search results [], scope "258 structures drawn in this atlas, then BD names; no names exist for BV, and choosing one of those will not leave this atlas.")
+PASS       body: 1605 body structures (full tier), head-to-foot regions present: head, thorax, pelvis, arm, hand, leg, foot; 27297 px painted against an all-hidden view
+PASS       paper-regions: 30 papers; 29 with structures, 1 empty with a stated reason, 0 empty with none
+PASS       region-papers: 53 drawn structures with a region document (53 with papers; 1808 more carry a region key that nothing links to); 0 round-trip mismatches
+exit 1

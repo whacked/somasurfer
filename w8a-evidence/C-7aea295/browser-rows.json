@@ -1,0 +1,4244 @@
+{
+ "base": "dist served on 127.0.0.1:0",
+ "fixture": "packages/atlas-qa/fixtures/brain-structure-sample.json",
+ "rows": [
+  {
+   "id": "nav",
+   "status": "pass",
+   "detail": "landing on body; landing→brain true, landing→body true, brain→body true, body→brain true, one click each",
+   "evidence": {
+    "navs": [
+     {
+      "id": "nav-body",
+      "href": "/?atlas=body",
+      "text": "Body"
+     },
+     {
+      "id": "nav-brain",
+      "href": "/?atlas=brain",
+      "text": "Brain"
+     }
+    ],
+    "steps": [
+     {
+      "clicked": "nav-brain",
+      "atlas": "brain",
+      "url": "/?atlas=brain&cam=0.6%2C0.18%2C540%2C0%2C-17.5%2C5"
+     },
+     {
+      "clicked": "nav-body",
+      "atlas": "body",
+      "url": "/?cam=0.6%2C0.18%2C3623.8%2C-0.7%2C100.98%2C786.67"
+     },
+     {
+      "clicked": "nav-brain",
+      "atlas": "brain",
+      "url": "/?atlas=brain&cam=0.6%2C0.18%2C540%2C0%2C-17.5%2C5"
+     },
+     {
+      "clicked": "nav-body",
+      "atlas": "body",
+      "url": "/?cam=0.6%2C0.18%2C3623.8%2C-0.7%2C100.98%2C786.67"
+     }
+    ],
+    "errors": []
+   }
+  },
+  {
+   "id": "picking",
+   "status": "fail",
+   "detail": "36/40 picked back to their own key and name (21 distinct structures); brain full tier, 53726 px painted against an all-hidden view",
+   "evidence": {
+    "meshStatus": {
+     "body": "low",
+     "brain": "full"
+    },
+    "painted": 53726,
+    "perCategory": {
+     "arteries": {
+      "sample": 5,
+      "pass": 5
+     },
+     "brainstem": {
+      "sample": 4,
+      "pass": 2
+     },
+     "cerebellum": {
+      "sample": 4,
+      "pass": 4
+     },
+     "cortex": {
+      "sample": 2,
+      "pass": 0
+     },
+     "cranial_nerves": {
+      "sample": 2,
+      "pass": 2
+     },
+     "deep_grey": {
+      "sample": 6,
+      "pass": 6
+     },
+     "diencephalon": {
+      "sample": 4,
+      "pass": 4
+     },
+     "meninges_dura": {
+      "sample": 3,
+      "pass": 3
+     },
+     "tracts": {
+      "sample": 4,
+      "pass": 4
+     },
+     "veins_sinuses": {
+      "sample": 3,
+      "pass": 3
+     },
+     "ventricles": {
+      "sample": 2,
+      "pass": 2
+     },
+     "white_matter": {
+      "sample": 1,
+      "pass": 1
+     }
+    },
+    "results": [
+     {
+      "id": 280,
+      "name": "Posterior inferior cerebellar artery.l",
+      "category": "arteries",
+      "side": "left",
+      "expect": "Posterior inferior cerebellar artery",
+      "key": "zanatomy-2929e94.280",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "arteries",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 809
+       }
+      ],
+      "ownPixels": 809,
+      "pickedName": "Posterior inferior cerebellar artery",
+      "view": "default",
+      "panel": "Posterior inferior cerebellar artery (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 425,
+        "y": 423,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.280",
+        "panel": "Posterior inferior cerebellar artery (left)"
+       }
+      ]
+     },
+     {
+      "id": 281,
+      "name": "Posterior inferior cerebellar artery.r",
+      "category": "arteries",
+      "side": "right",
+      "expect": "Posterior inferior cerebellar artery",
+      "key": "zanatomy-2929e94.281",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "arteries",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 857
+       }
+      ],
+      "ownPixels": 857,
+      "pickedName": "Posterior inferior cerebellar artery",
+      "view": "default",
+      "panel": "Posterior inferior cerebellar artery (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 499,
+        "y": 440,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.281",
+        "panel": "Posterior inferior cerebellar artery (right)"
+       }
+      ]
+     },
+     {
+      "id": 149,
+      "name": "Internal carotid artery.l",
+      "category": "arteries",
+      "side": "left",
+      "expect": "Internal carotid artery",
+      "key": "zanatomy-2929e94.149",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "arteries",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 1895
+       }
+      ],
+      "ownPixels": 1895,
+      "pickedName": "Internal carotid artery",
+      "view": "default",
+      "panel": "Internal carotid artery (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 419,
+        "y": 569,
+        "depth": 6,
+        "picked": "zanatomy-2929e94.149",
+        "panel": "Internal carotid artery (left)"
+       }
+      ]
+     },
+     {
+      "id": 150,
+      "name": "Internal carotid artery.r",
+      "category": "arteries",
+      "side": "right",
+      "expect": "Internal carotid artery",
+      "key": "zanatomy-2929e94.150",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "arteries",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 1981
+       }
+      ],
+      "ownPixels": 1981,
+      "pickedName": "Internal carotid artery",
+      "view": "default",
+      "panel": "Internal carotid artery (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 504,
+        "y": 593,
+        "depth": 6,
+        "picked": "zanatomy-2929e94.150",
+        "panel": "Internal carotid artery (right)"
+       }
+      ]
+     },
+     {
+      "id": 147,
+      "name": "Insular branches of middle cerebral artery (M2).r",
+      "category": "arteries",
+      "side": "right",
+      "expect": "Insular branches of middle cerebral artery (M2)",
+      "key": "zanatomy-2929e94.147",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "arteries",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 209
+       }
+      ],
+      "ownPixels": 209,
+      "pickedName": "Insular branches of middle cerebral artery (M2)",
+      "view": "default",
+      "panel": "Insular branches of middle cerebral artery (M2) (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 588,
+        "y": 367,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.147",
+        "panel": "Insular branches of middle cerebral artery (M2) (right)"
+       }
+      ]
+     },
+     {
+      "id": 201,
+      "name": "Midbrain.l",
+      "category": "brainstem",
+      "side": "left",
+      "expect": "Midbrain",
+      "key": "zanatomy-2929e94.201",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "brainstem",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 792
+       }
+      ],
+      "ownPixels": 792,
+      "pickedName": "Midbrain",
+      "view": "default",
+      "panel": "Midbrain (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 501,
+        "y": 372,
+        "depth": 11,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       }
+      ]
+     },
+     {
+      "id": 202,
+      "name": "Midbrain.r",
+      "category": "brainstem",
+      "side": "right",
+      "expect": "Midbrain",
+      "key": "zanatomy-2929e94.202",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "brainstem",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 855
+       }
+      ],
+      "ownPixels": 855,
+      "pickedName": "Midbrain",
+      "view": "default",
+      "panel": "Midbrain (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 521,
+        "y": 371,
+        "depth": 8,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       }
+      ]
+     },
+     {
+      "id": 6,
+      "name": "Accessory nucleus of oculomotor nerve.l",
+      "category": "brainstem",
+      "side": "left",
+      "expect": "Accessory nucleus of oculomotor nerve",
+      "key": "zanatomy-2929e94.6",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "brainstem",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 35
+       },
+       {
+        "view": "yaw+90",
+        "ownPixels": 26
+       },
+       {
+        "view": "yaw+180",
+        "ownPixels": 24
+       },
+       {
+        "view": "yaw-90",
+        "ownPixels": 18
+       },
+       {
+        "view": "from below",
+        "ownPixels": 17
+       },
+       {
+        "view": "from above",
+        "ownPixels": 14
+       }
+      ],
+      "ownPixels": 35,
+      "pickedName": null,
+      "view": null,
+      "panel": null,
+      "status": "fail",
+      "why": "none of 12 clicks on its own pixels picked it (got zanatomy-2929e94.34, zanatomy-2929e94.201)",
+      "clicks": 12,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 508,
+        "y": 368,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.34",
+        "panel": "Aqueduct of midbrain"
+       },
+       {
+        "view": "default",
+        "x": 505,
+        "y": 375,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.34",
+        "panel": "Aqueduct of midbrain"
+       },
+       {
+        "view": "default",
+        "x": 504,
+        "y": 382,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 510,
+        "y": 368,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 506,
+        "y": 375,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 511,
+        "y": 369,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 513,
+        "y": 376,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 508,
+        "y": 370,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 511,
+        "y": 377,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       },
+       {
+        "view": "from below",
+        "x": 508,
+        "y": 348,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.34",
+        "panel": "Aqueduct of midbrain"
+       },
+       {
+        "view": "from below",
+        "x": 504,
+        "y": 355,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       },
+       {
+        "view": "from above",
+        "x": 504,
+        "y": 350,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.201",
+        "panel": "Midbrain (left)"
+       }
+      ]
+     },
+     {
+      "id": 7,
+      "name": "Accessory nucleus of oculomotor nerve.r",
+      "category": "brainstem",
+      "side": "right",
+      "expect": "Accessory nucleus of oculomotor nerve",
+      "key": "zanatomy-2929e94.7",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "brainstem",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 27
+       },
+       {
+        "view": "yaw+90",
+        "ownPixels": 33
+       },
+       {
+        "view": "yaw+180",
+        "ownPixels": 29
+       },
+       {
+        "view": "yaw-90",
+        "ownPixels": 32
+       },
+       {
+        "view": "from below",
+        "ownPixels": 9
+       },
+       {
+        "view": "from above",
+        "ownPixels": 15
+       }
+      ],
+      "ownPixels": 33,
+      "pickedName": null,
+      "view": null,
+      "panel": null,
+      "status": "fail",
+      "why": "none of 10 clicks on its own pixels picked it (got zanatomy-2929e94.202, zanatomy-2929e94.34)",
+      "clicks": 10,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 509,
+        "y": 369,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       },
+       {
+        "view": "default",
+        "x": 507,
+        "y": 376,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 509,
+        "y": 369,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 505,
+        "y": 376,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 509,
+        "y": 368,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 511,
+        "y": 375,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 509,
+        "y": 369,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 512,
+        "y": 376,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       },
+       {
+        "view": "from below",
+        "x": 510,
+        "y": 350,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.34",
+        "panel": "Aqueduct of midbrain"
+       },
+       {
+        "view": "from above",
+        "x": 506,
+        "y": 349,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.202",
+        "panel": "Midbrain (right)"
+       }
+      ]
+     },
+     {
+      "id": 397,
+      "name": "Tonsil of cerebellum.l",
+      "category": "cerebellum",
+      "side": "left",
+      "expect": "Tonsil of cerebellum",
+      "key": "zanatomy-2929e94.397",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "cerebellum",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 707
+       }
+      ],
+      "ownPixels": 707,
+      "pickedName": "Tonsil of cerebellum",
+      "view": "default",
+      "panel": "Tonsil of cerebellum (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 458,
+        "y": 430,
+        "depth": 9,
+        "picked": "zanatomy-2929e94.397",
+        "panel": "Tonsil of cerebellum (left)"
+       }
+      ]
+     },
+     {
+      "id": 398,
+      "name": "Tonsil of cerebellum.r",
+      "category": "cerebellum",
+      "side": "right",
+      "expect": "Tonsil of cerebellum",
+      "key": "zanatomy-2929e94.398",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "cerebellum",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 1208
+       },
+       {
+        "view": "yaw+90",
+        "ownPixels": 529
+       },
+       {
+        "view": "yaw+180",
+        "ownPixels": 760
+       }
+      ],
+      "ownPixels": 1208,
+      "pickedName": "Tonsil of cerebellum",
+      "view": "yaw+180",
+      "panel": "Tonsil of cerebellum (right)",
+      "status": "pass",
+      "clicks": 23,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 488,
+        "y": 435,
+        "depth": 12,
+        "picked": "zanatomy-2929e94.119",
+        "panel": "Gracile lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 495,
+        "y": 435,
+        "depth": 11,
+        "picked": "zanatomy-2929e94.119",
+        "panel": "Gracile lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 485,
+        "y": 442,
+        "depth": 9,
+        "picked": "zanatomy-2929e94.119",
+        "panel": "Gracile lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 484,
+        "y": 425,
+        "depth": 8,
+        "picked": "zanatomy-2929e94.142",
+        "panel": "Inferior semilunar lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 502,
+        "y": 434,
+        "depth": 7,
+        "picked": "zanatomy-2929e94.142",
+        "panel": "Inferior semilunar lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 492,
+        "y": 442,
+        "depth": 7,
+        "picked": "zanatomy-2929e94.119",
+        "panel": "Gracile lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 477,
+        "y": 443,
+        "depth": 7,
+        "picked": "zanatomy-2929e94.42",
+        "panel": "Biventral lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 491,
+        "y": 428,
+        "depth": 6,
+        "picked": "zanatomy-2929e94.142",
+        "panel": "Inferior semilunar lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 482,
+        "y": 418,
+        "depth": 5,
+        "picked": "zanatomy-2929e94.142",
+        "panel": "Inferior semilunar lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 481,
+        "y": 432,
+        "depth": 5,
+        "picked": "zanatomy-2929e94.142",
+        "panel": "Inferior semilunar lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 502,
+        "y": 441,
+        "depth": 5,
+        "picked": "zanatomy-2929e94.119",
+        "panel": "Gracile lobule (right)"
+       },
+       {
+        "view": "default",
+        "x": 498,
+        "y": 427,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.142",
+        "panel": "Inferior semilunar lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 454,
+        "y": 410,
+        "depth": 7,
+        "picked": "zanatomy-2929e94.42",
+        "panel": "Biventral lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 449,
+        "y": 417,
+        "depth": 7,
+        "picked": "zanatomy-2929e94.42",
+        "panel": "Biventral lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 459,
+        "y": 400,
+        "depth": 5,
+        "picked": "zanatomy-2929e94.318",
+        "panel": "Posterior quadrangular lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 456,
+        "y": 417,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.266",
+        "panel": "Peduncle of flocculus (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 448,
+        "y": 424,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.42",
+        "panel": "Biventral lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 447,
+        "y": 410,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.142",
+        "panel": "Inferior semilunar lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 452,
+        "y": 402,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.318",
+        "panel": "Posterior quadrangular lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 461,
+        "y": 407,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.318",
+        "panel": "Posterior quadrangular lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 441,
+        "y": 417,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.142",
+        "panel": "Inferior semilunar lobule (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 455,
+        "y": 424,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.42",
+        "panel": "Biventral lobule (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 532,
+        "y": 403,
+        "depth": 10,
+        "picked": "zanatomy-2929e94.398",
+        "panel": "Tonsil of cerebellum (right)"
+       }
+      ]
+     },
+     {
+      "id": 378,
+      "name": "Superior semilunar lobule.l",
+      "category": "cerebellum",
+      "side": "left",
+      "expect": "Superior semilunar lobule",
+      "key": "zanatomy-2929e94.378",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "cerebellum",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 1935
+       }
+      ],
+      "ownPixels": 1935,
+      "pickedName": "Superior semilunar lobule",
+      "view": "default",
+      "panel": "Superior semilunar lobule (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 429,
+        "y": 383,
+        "depth": 16,
+        "picked": "zanatomy-2929e94.378",
+        "panel": "Superior semilunar lobule (left)"
+       }
+      ]
+     },
+     {
+      "id": 379,
+      "name": "Superior semilunar lobule.r",
+      "category": "cerebellum",
+      "side": "right",
+      "expect": "Superior semilunar lobule",
+      "key": "zanatomy-2929e94.379",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "cerebellum",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 2437
+       }
+      ],
+      "ownPixels": 2437,
+      "pickedName": "Superior semilunar lobule",
+      "view": "default",
+      "panel": "Superior semilunar lobule (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 490,
+        "y": 387,
+        "depth": 13,
+        "picked": "zanatomy-2929e94.379",
+        "panel": "Superior semilunar lobule (right)"
+       }
+      ]
+     },
+     {
+      "id": 122,
+      "name": "Hippocampus.l",
+      "category": "cortex",
+      "side": "left",
+      "expect": "Hippocampus",
+      "key": "zanatomy-2929e94.122",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "cortex",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 566
+       },
+       {
+        "view": "yaw+90",
+        "ownPixels": 539
+       },
+       {
+        "view": "yaw+180",
+        "ownPixels": 1084
+       },
+       {
+        "view": "yaw-90",
+        "ownPixels": 458
+       },
+       {
+        "view": "from below",
+        "ownPixels": 423
+       },
+       {
+        "view": "from above",
+        "ownPixels": 555
+       }
+      ],
+      "ownPixels": 1084,
+      "pickedName": null,
+      "view": null,
+      "panel": null,
+      "status": "fail",
+      "why": "none of 62 clicks on its own pixels picked it (got icbm152-2009c.106, icbm152-2009c.104, icbm152-2009c.103, icbm152-2009c.1, icbm152-2009c.101, icbm152-2009c.105)",
+      "clicks": 62,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 468,
+        "y": 361,
+        "depth": 7,
+        "picked": "icbm152-2009c.106",
+        "panel": "Limbic lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 470,
+        "y": 369,
+        "depth": 7,
+        "picked": "icbm152-2009c.104",
+        "panel": "Occipital lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 470,
+        "y": 354,
+        "depth": 5,
+        "picked": "icbm152-2009c.106",
+        "panel": "Limbic lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 477,
+        "y": 372,
+        "depth": 4,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 463,
+        "y": 368,
+        "depth": 3,
+        "picked": "icbm152-2009c.104",
+        "panel": "Occipital lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 468,
+        "y": 376,
+        "depth": 3,
+        "picked": "icbm152-2009c.104",
+        "panel": "Occipital lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 489,
+        "y": 383,
+        "depth": 3,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "default",
+        "x": 479,
+        "y": 384,
+        "depth": 2,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 470,
+        "y": 346,
+        "depth": 1,
+        "picked": "icbm152-2009c.106",
+        "panel": "Limbic lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 463,
+        "y": 354,
+        "depth": 1,
+        "picked": "icbm152-2009c.106",
+        "panel": "Limbic lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 460,
+        "y": 361,
+        "depth": 1,
+        "picked": "icbm152-2009c.104",
+        "panel": "Occipital lobe (left)"
+       },
+       {
+        "view": "default",
+        "x": 475,
+        "y": 361,
+        "depth": 1,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 531,
+        "y": 370,
+        "depth": 5,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 535,
+        "y": 377,
+        "depth": 5,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 524,
+        "y": 357,
+        "depth": 4,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 536,
+        "y": 384,
+        "depth": 4,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 519,
+        "y": 347,
+        "depth": 3,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 539,
+        "y": 391,
+        "depth": 3,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 517,
+        "y": 337,
+        "depth": 2,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 531,
+        "y": 363,
+        "depth": 2,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 524,
+        "y": 364,
+        "depth": 2,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 553,
+        "y": 373,
+        "depth": 8,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 550,
+        "y": 381,
+        "depth": 8,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 552,
+        "y": 364,
+        "depth": 7,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 545,
+        "y": 388,
+        "depth": 7,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 538,
+        "y": 395,
+        "depth": 7,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 550,
+        "y": 357,
+        "depth": 5,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 535,
+        "y": 402,
+        "depth": 5,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 552,
+        "y": 388,
+        "depth": 4,
+        "picked": "icbm152-2009c.105",
+        "panel": "Insula (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 545,
+        "y": 395,
+        "depth": 4,
+        "picked": "icbm152-2009c.105",
+        "panel": "Insula (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 546,
+        "y": 349,
+        "depth": 3,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 546,
+        "y": 373,
+        "depth": 3,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 543,
+        "y": 380,
+        "depth": 3,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 493,
+        "y": 374,
+        "depth": 4,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 488,
+        "y": 381,
+        "depth": 4,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 484,
+        "y": 388,
+        "depth": 4,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 480,
+        "y": 395,
+        "depth": 4,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 497,
+        "y": 366,
+        "depth": 3,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 477,
+        "y": 402,
+        "depth": 3,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 501,
+        "y": 347,
+        "depth": 2,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 491,
+        "y": 388,
+        "depth": 1,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 468,
+        "y": 332,
+        "depth": 7,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 475,
+        "y": 328,
+        "depth": 5,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 471,
+        "y": 339,
+        "depth": 4,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 467,
+        "y": 324,
+        "depth": 3,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 482,
+        "y": 326,
+        "depth": 3,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 489,
+        "y": 325,
+        "depth": 2,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 461,
+        "y": 332,
+        "depth": 2,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 478,
+        "y": 341,
+        "depth": 2,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 475,
+        "y": 319,
+        "depth": 1,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from below",
+        "x": 464,
+        "y": 339,
+        "depth": 1,
+        "picked": "icbm152-2009c.101",
+        "panel": "Frontal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 468,
+        "y": 366,
+        "depth": 6,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 464,
+        "y": 373,
+        "depth": 6,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 465,
+        "y": 380,
+        "depth": 5,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 480,
+        "y": 390,
+        "depth": 4,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 471,
+        "y": 358,
+        "depth": 3,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "from above",
+        "x": 471,
+        "y": 389,
+        "depth": 3,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 478,
+        "y": 356,
+        "depth": 2,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 461,
+        "y": 366,
+        "depth": 2,
+        "picked": "icbm152-2009c.1",
+        "panel": "Not cortex (medial wall, cut faces) (left)"
+       },
+       {
+        "view": "from above",
+        "x": 471,
+        "y": 373,
+        "depth": 2,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 487,
+        "y": 388,
+        "depth": 2,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       },
+       {
+        "view": "from above",
+        "x": 464,
+        "y": 387,
+        "depth": 1,
+        "picked": "icbm152-2009c.103",
+        "panel": "Temporal lobe (left)"
+       }
+      ]
+     },
+     {
+      "id": 123,
+      "name": "Hippocampus.r",
+      "category": "cortex",
+      "side": "right",
+      "expect": "Hippocampus",
+      "key": "zanatomy-2929e94.123",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "cortex",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 662
+       },
+       {
+        "view": "yaw+90",
+        "ownPixels": 986
+       },
+       {
+        "view": "yaw+180",
+        "ownPixels": 628
+       },
+       {
+        "view": "yaw-90",
+        "ownPixels": 694
+       },
+       {
+        "view": "from below",
+        "ownPixels": 548
+       },
+       {
+        "view": "from above",
+        "ownPixels": 640
+       }
+      ],
+      "ownPixels": 986,
+      "pickedName": null,
+      "view": null,
+      "panel": null,
+      "status": "fail",
+      "why": "none of 72 clicks on its own pixels picked it (got icbm152-2009c.203, icbm152-2009c.204, icbm152-2009c.202, icbm152-2009c.201, icbm152-2009c.206, icbm152-2009c.2)",
+      "clicks": 72,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 547,
+        "y": 387,
+        "depth": 7,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 540,
+        "y": 373,
+        "depth": 5,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 544,
+        "y": 380,
+        "depth": 5,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 548,
+        "y": 394,
+        "depth": 5,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 535,
+        "y": 364,
+        "depth": 4,
+        "picked": "icbm152-2009c.204",
+        "panel": "Occipital lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 526,
+        "y": 346,
+        "depth": 2,
+        "picked": "icbm152-2009c.202",
+        "panel": "Parietal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 528,
+        "y": 353,
+        "depth": 2,
+        "picked": "icbm152-2009c.204",
+        "panel": "Occipital lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 551,
+        "y": 380,
+        "depth": 2,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 554,
+        "y": 387,
+        "depth": 2,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 555,
+        "y": 394,
+        "depth": 2,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 548,
+        "y": 401,
+        "depth": 2,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "default",
+        "x": 547,
+        "y": 372,
+        "depth": 1,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 479,
+        "y": 374,
+        "depth": 7,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 482,
+        "y": 381,
+        "depth": 7,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 485,
+        "y": 388,
+        "depth": 7,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 491,
+        "y": 395,
+        "depth": 7,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 477,
+        "y": 367,
+        "depth": 6,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 498,
+        "y": 399,
+        "depth": 6,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 478,
+        "y": 359,
+        "depth": 4,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 492,
+        "y": 388,
+        "depth": 4,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 498,
+        "y": 406,
+        "depth": 4,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 484,
+        "y": 395,
+        "depth": 3,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 487,
+        "y": 345,
+        "depth": 2,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 480,
+        "y": 351,
+        "depth": 2,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 473,
+        "y": 378,
+        "depth": 7,
+        "picked": "icbm152-2009c.206",
+        "panel": "Limbic lobe (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 472,
+        "y": 385,
+        "depth": 7,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 475,
+        "y": 371,
+        "depth": 6,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 479,
+        "y": 362,
+        "depth": 5,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 484,
+        "y": 355,
+        "depth": 4,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 470,
+        "y": 392,
+        "depth": 4,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 472,
+        "y": 363,
+        "depth": 1,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 482,
+        "y": 369,
+        "depth": 1,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 468,
+        "y": 370,
+        "depth": 1,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 466,
+        "y": 377,
+        "depth": 1,
+        "picked": "icbm152-2009c.206",
+        "panel": "Limbic lobe (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 480,
+        "y": 378,
+        "depth": 1,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "yaw+180",
+        "x": 465,
+        "y": 384,
+        "depth": 1,
+        "picked": "icbm152-2009c.206",
+        "panel": "Limbic lobe (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 534,
+        "y": 368,
+        "depth": 6,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 539,
+        "y": 352,
+        "depth": 5,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 538,
+        "y": 359,
+        "depth": 5,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 527,
+        "y": 375,
+        "depth": 5,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 520,
+        "y": 382,
+        "depth": 5,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 534,
+        "y": 375,
+        "depth": 3,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 519,
+        "y": 389,
+        "depth": 3,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 532,
+        "y": 340,
+        "depth": 2,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 539,
+        "y": 345,
+        "depth": 2,
+        "picked": "icbm152-2009c.206",
+        "panel": "Limbic lobe (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 541,
+        "y": 366,
+        "depth": 2,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 527,
+        "y": 368,
+        "depth": 2,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "yaw-90",
+        "x": 527,
+        "y": 382,
+        "depth": 2,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "from below",
+        "x": 545,
+        "y": 367,
+        "depth": 7,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 545,
+        "y": 374,
+        "depth": 7,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 538,
+        "y": 378,
+        "depth": 5,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 542,
+        "y": 359,
+        "depth": 4,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 545,
+        "y": 381,
+        "depth": 4,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 552,
+        "y": 370,
+        "depth": 3,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 530,
+        "y": 378,
+        "depth": 3,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 552,
+        "y": 377,
+        "depth": 2,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 549,
+        "y": 359,
+        "depth": 1,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 525,
+        "y": 369,
+        "depth": 1,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 538,
+        "y": 369,
+        "depth": 1,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from below",
+        "x": 536,
+        "y": 385,
+        "depth": 1,
+        "picked": "icbm152-2009c.201",
+        "panel": "Frontal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 542,
+        "y": 326,
+        "depth": 5,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 536,
+        "y": 319,
+        "depth": 4,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 545,
+        "y": 333,
+        "depth": 4,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 554,
+        "y": 326,
+        "depth": 3,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 553,
+        "y": 345,
+        "depth": 3,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 544,
+        "y": 349,
+        "depth": 3,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 546,
+        "y": 318,
+        "depth": 2,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 527,
+        "y": 323,
+        "depth": 2,
+        "picked": "icbm152-2009c.2",
+        "panel": "Not cortex (medial wall, cut faces) (right)"
+       },
+       {
+        "view": "from above",
+        "x": 552,
+        "y": 338,
+        "depth": 2,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 535,
+        "y": 326,
+        "depth": 1,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 543,
+        "y": 340,
+        "depth": 1,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       },
+       {
+        "view": "from above",
+        "x": 551,
+        "y": 352,
+        "depth": 1,
+        "picked": "icbm152-2009c.203",
+        "panel": "Temporal lobe (right)"
+       }
+      ]
+     },
+     {
+      "id": 124,
+      "name": "Hypoglossal nerve (XII).l",
+      "category": "cranial_nerves",
+      "side": "left",
+      "expect": "Hypoglossal nerve (XII)",
+      "key": "zanatomy-2929e94.124",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "cranial_nerves",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 520
+       }
+      ],
+      "ownPixels": 520,
+      "pickedName": "Hypoglossal nerve (XII)",
+      "view": "default",
+      "panel": "Hypoglossal nerve (XII) (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 480,
+        "y": 439,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.124",
+        "panel": "Hypoglossal nerve (XII) (left)"
+       }
+      ]
+     },
+     {
+      "id": 125,
+      "name": "Hypoglossal nerve (XII).r",
+      "category": "cranial_nerves",
+      "side": "right",
+      "expect": "Hypoglossal nerve (XII)",
+      "key": "zanatomy-2929e94.125",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "cranial_nerves",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 612
+       }
+      ],
+      "ownPixels": 612,
+      "pickedName": "Hypoglossal nerve (XII)",
+      "view": "default",
+      "panel": "Hypoglossal nerve (XII) (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 499,
+        "y": 447,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.125",
+        "panel": "Hypoglossal nerve (XII) (right)"
+       }
+      ]
+     },
+     {
+      "id": 346,
+      "name": "Subthalamic nucleus.l",
+      "category": "deep_grey",
+      "side": "left",
+      "expect": "Subthalamic nucleus",
+      "key": "zanatomy-2929e94.346",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "deep_grey",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 102
+       }
+      ],
+      "ownPixels": 102,
+      "pickedName": "Subthalamic nucleus",
+      "view": "default",
+      "panel": "Subthalamic nucleus (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 497,
+        "y": 361,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.346",
+        "panel": "Subthalamic nucleus (left)"
+       }
+      ]
+     },
+     {
+      "id": 347,
+      "name": "Subthalamic nucleus.r",
+      "category": "deep_grey",
+      "side": "right",
+      "expect": "Subthalamic nucleus",
+      "key": "zanatomy-2929e94.347",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "deep_grey",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 59
+       }
+      ],
+      "ownPixels": 59,
+      "pickedName": "Subthalamic nucleus",
+      "view": "default",
+      "panel": "Subthalamic nucleus (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 534,
+        "y": 365,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.347",
+        "panel": "Subthalamic nucleus (right)"
+       }
+      ]
+     },
+     {
+      "id": 344,
+      "name": "Substantia nigra.l",
+      "category": "deep_grey",
+      "side": "left",
+      "expect": "Substantia nigra",
+      "key": "zanatomy-2929e94.344",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "deep_grey",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 182
+       }
+      ],
+      "ownPixels": 182,
+      "pickedName": "Substantia nigra",
+      "view": "default",
+      "panel": "Substantia nigra (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 497,
+        "y": 369,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.344",
+        "panel": "Substantia nigra (left)"
+       }
+      ]
+     },
+     {
+      "id": 345,
+      "name": "Substantia nigra.r",
+      "category": "deep_grey",
+      "side": "right",
+      "expect": "Substantia nigra",
+      "key": "zanatomy-2929e94.345",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "deep_grey",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 122
+       }
+      ],
+      "ownPixels": 122,
+      "pickedName": "Substantia nigra",
+      "view": "default",
+      "panel": "Substantia nigra (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 531,
+        "y": 372,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.345",
+        "panel": "Substantia nigra (right)"
+       }
+      ]
+     },
+     {
+      "id": 220,
+      "name": "Nucleus accumbens.l",
+      "category": "deep_grey",
+      "side": "left",
+      "expect": "Nucleus accumbens",
+      "key": "zanatomy-2929e94.220",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "deep_grey",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 153
+       }
+      ],
+      "ownPixels": 153,
+      "pickedName": "Nucleus accumbens",
+      "view": "default",
+      "panel": "Nucleus accumbens (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 509,
+        "y": 371,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.220",
+        "panel": "Nucleus accumbens (left)"
+       }
+      ]
+     },
+     {
+      "id": 221,
+      "name": "Nucleus accumbens.r",
+      "category": "deep_grey",
+      "side": "right",
+      "expect": "Nucleus accumbens",
+      "key": "zanatomy-2929e94.221",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "deep_grey",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 188
+       }
+      ],
+      "ownPixels": 188,
+      "pickedName": "Nucleus accumbens",
+      "view": "default",
+      "panel": "Nucleus accumbens (right)",
+      "status": "pass",
+      "clicks": 2,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 536,
+        "y": 368,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.347",
+        "panel": "Subthalamic nucleus (right)"
+       },
+       {
+        "view": "default",
+        "x": 543,
+        "y": 374,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.221",
+        "panel": "Nucleus accumbens (right)"
+       }
+      ]
+     },
+     {
+      "id": 421,
+      "name": "Ventral anterior nucleus.l",
+      "category": "diencephalon",
+      "side": "left",
+      "expect": "Ventral anterior nucleus",
+      "key": "zanatomy-2929e94.421",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "diencephalon",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 255
+       }
+      ],
+      "ownPixels": 255,
+      "pickedName": "Ventral anterior nucleus",
+      "view": "default",
+      "panel": "Ventral anterior nucleus (left)",
+      "status": "pass",
+      "clicks": 2,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 500,
+        "y": 332,
+        "depth": 5,
+        "picked": "zanatomy-2929e94.423",
+        "panel": "Ventral laterodorsal nucleus (left)"
+       },
+       {
+        "view": "default",
+        "x": 507,
+        "y": 333,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.421",
+        "panel": "Ventral anterior nucleus (left)"
+       }
+      ]
+     },
+     {
+      "id": 422,
+      "name": "Ventral anterior nucleus.r",
+      "category": "diencephalon",
+      "side": "right",
+      "expect": "Ventral anterior nucleus",
+      "key": "zanatomy-2929e94.422",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "diencephalon",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 327
+       },
+       {
+        "view": "yaw+90",
+        "ownPixels": 262
+       }
+      ],
+      "ownPixels": 327,
+      "pickedName": "Ventral anterior nucleus",
+      "view": "yaw+90",
+      "panel": "Ventral anterior nucleus (right)",
+      "status": "pass",
+      "clicks": 8,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 533,
+        "y": 336,
+        "depth": 6,
+        "picked": "zanatomy-2929e94.424",
+        "panel": "Ventral laterodorsal nucleus (right)"
+       },
+       {
+        "view": "default",
+        "x": 540,
+        "y": 341,
+        "depth": 5,
+        "picked": "zanatomy-2929e94.162",
+        "panel": "Lateral geniculate body (right)"
+       },
+       {
+        "view": "default",
+        "x": 532,
+        "y": 343,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.291",
+        "panel": "Pulvinar (right)"
+       },
+       {
+        "view": "default",
+        "x": 539,
+        "y": 348,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.187",
+        "panel": "Medial geniculate body (right)"
+       },
+       {
+        "view": "default",
+        "x": 526,
+        "y": 333,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.424",
+        "panel": "Ventral laterodorsal nucleus (right)"
+       },
+       {
+        "view": "default",
+        "x": 540,
+        "y": 333,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.424",
+        "panel": "Ventral laterodorsal nucleus (right)"
+       },
+       {
+        "view": "default",
+        "x": 524,
+        "y": 340,
+        "depth": 1,
+        "picked": "zanatomy-2929e94.154",
+        "panel": "Intralaminar and lateral posterior nuclei (right)"
+       },
+       {
+        "view": "yaw+90",
+        "x": 510,
+        "y": 343,
+        "depth": 6,
+        "picked": "zanatomy-2929e94.422",
+        "panel": "Ventral anterior nucleus (right)"
+       }
+      ]
+     },
+     {
+      "id": 414,
+      "name": "Tuberal hypothalamus.l",
+      "category": "diencephalon",
+      "side": "left",
+      "expect": "Tuberal hypothalamus",
+      "key": "zanatomy-2929e94.414",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "diencephalon",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 90
+       }
+      ],
+      "ownPixels": 90,
+      "pickedName": "Tuberal hypothalamus",
+      "view": "default",
+      "panel": "Tuberal hypothalamus (left)",
+      "status": "pass",
+      "clicks": 2,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 515,
+        "y": 373,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.182",
+        "panel": "Mamillary body (left)"
+       },
+       {
+        "view": "default",
+        "x": 518,
+        "y": 380,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.414",
+        "panel": "Tuberal hypothalamus (left)"
+       }
+      ]
+     },
+     {
+      "id": 415,
+      "name": "Tuberal hypothalamus.r",
+      "category": "diencephalon",
+      "side": "right",
+      "expect": "Tuberal hypothalamus",
+      "key": "zanatomy-2929e94.415",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "diencephalon",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 93
+       }
+      ],
+      "ownPixels": 93,
+      "pickedName": "Tuberal hypothalamus",
+      "view": "default",
+      "panel": "Tuberal hypothalamus (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 526,
+        "y": 376,
+        "depth": 4,
+        "picked": "zanatomy-2929e94.415",
+        "panel": "Tuberal hypothalamus (right)"
+       }
+      ]
+     },
+     {
+      "id": 103,
+      "name": "Falx cerebri",
+      "category": "meninges_dura",
+      "side": "median",
+      "expect": "Falx cerebri",
+      "key": "zanatomy-2929e94.103",
+      "layers": {
+       "hidden": [],
+       "isolated": "meninges_dura",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 16369
+       }
+      ],
+      "ownPixels": 16369,
+      "pickedName": "Falx cerebri",
+      "view": "default",
+      "panel": "Falx cerebri",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 518,
+        "y": 266,
+        "depth": 39,
+        "picked": "zanatomy-2929e94.103",
+        "panel": "Falx cerebri"
+       }
+      ]
+     },
+     {
+      "id": 394,
+      "name": "Tentorium cerebelli.l",
+      "category": "meninges_dura",
+      "side": "left",
+      "expect": "Tentorium cerebelli",
+      "key": "zanatomy-2929e94.394",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "meninges_dura",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 3116
+       }
+      ],
+      "ownPixels": 3116,
+      "pickedName": "Tentorium cerebelli",
+      "view": "default",
+      "panel": "Tentorium cerebelli (left)",
+      "status": "pass",
+      "clicks": 2,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 455,
+        "y": 375,
+        "depth": 18,
+        "picked": "zanatomy-2929e94.103",
+        "panel": "Falx cerebri"
+       },
+       {
+        "view": "default",
+        "x": 462,
+        "y": 371,
+        "depth": 15,
+        "picked": "zanatomy-2929e94.394",
+        "panel": "Tentorium cerebelli (left)"
+       }
+      ]
+     },
+     {
+      "id": 395,
+      "name": "Tentorium cerebelli.r",
+      "category": "meninges_dura",
+      "side": "right",
+      "expect": "Tentorium cerebelli",
+      "key": "zanatomy-2929e94.395",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "meninges_dura",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 2696
+       }
+      ],
+      "ownPixels": 2696,
+      "pickedName": "Tentorium cerebelli",
+      "view": "default",
+      "panel": "Tentorium cerebelli (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 488,
+        "y": 362,
+        "depth": 12,
+        "picked": "zanatomy-2929e94.395",
+        "panel": "Tentorium cerebelli (right)"
+       }
+      ]
+     },
+     {
+      "id": 81,
+      "name": "Corticopontine tract (occipital).l",
+      "category": "tracts",
+      "side": "left",
+      "expect": "Corticopontine tract (occipital)",
+      "key": "zanatomy-2929e94.81",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "tracts",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 276
+       }
+      ],
+      "ownPixels": 276,
+      "pickedName": "Corticopontine tract (occipital)",
+      "view": "default",
+      "panel": "Corticopontine tract (occipital) (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 455,
+        "y": 329,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.81",
+        "panel": "Corticopontine tract (occipital) (left)"
+       }
+      ]
+     },
+     {
+      "id": 82,
+      "name": "Corticopontine tract (occipital).r",
+      "category": "tracts",
+      "side": "right",
+      "expect": "Corticopontine tract (occipital)",
+      "key": "zanatomy-2929e94.82",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "tracts",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 471
+       }
+      ],
+      "ownPixels": 471,
+      "pickedName": "Corticopontine tract (occipital)",
+      "view": "default",
+      "panel": "Corticopontine tract (occipital) (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 507,
+        "y": 316,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.82",
+        "panel": "Corticopontine tract (occipital) (right)"
+       }
+      ]
+     },
+     {
+      "id": 91,
+      "name": "Corticostriatal tract (superior).l",
+      "category": "tracts",
+      "side": "left",
+      "expect": "Corticostriatal tract (superior)",
+      "key": "zanatomy-2929e94.91",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "tracts",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 365
+       }
+      ],
+      "ownPixels": 365,
+      "pickedName": "Corticostriatal tract (superior)",
+      "view": "default",
+      "panel": "Corticostriatal tract (superior) (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 492,
+        "y": 245,
+        "depth": 2,
+        "picked": "zanatomy-2929e94.91",
+        "panel": "Corticostriatal tract (superior) (left)"
+       }
+      ]
+     },
+     {
+      "id": 92,
+      "name": "Corticostriatal tract (superior).r",
+      "category": "tracts",
+      "side": "right",
+      "expect": "Corticostriatal tract (superior)",
+      "key": "zanatomy-2929e94.92",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "tracts",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 467
+       }
+      ],
+      "ownPixels": 467,
+      "pickedName": "Corticostriatal tract (superior)",
+      "view": "default",
+      "panel": "Corticostriatal tract (superior) (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 556,
+        "y": 346,
+        "depth": 3,
+        "picked": "zanatomy-2929e94.92",
+        "panel": "Corticostriatal tract (superior) (right)"
+       }
+      ]
+     },
+     {
+      "id": 51,
+      "name": "Cavernous sinus.l",
+      "category": "veins_sinuses",
+      "side": "left",
+      "expect": "Cavernous sinus",
+      "key": "zanatomy-2929e94.51",
+      "layers": {
+       "hidden": [
+        "right"
+       ],
+       "isolated": "veins_sinuses",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 352
+       }
+      ],
+      "ownPixels": 352,
+      "pickedName": "Cavernous sinus",
+      "view": "default",
+      "panel": "Cavernous sinus (left)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 498,
+        "y": 407,
+        "depth": 7,
+        "picked": "zanatomy-2929e94.51",
+        "panel": "Cavernous sinus (left)"
+       }
+      ]
+     },
+     {
+      "id": 52,
+      "name": "Cavernous sinus.r",
+      "category": "veins_sinuses",
+      "side": "right",
+      "expect": "Cavernous sinus",
+      "key": "zanatomy-2929e94.52",
+      "layers": {
+       "hidden": [
+        "left"
+       ],
+       "isolated": "veins_sinuses",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 435
+       }
+      ],
+      "ownPixels": 435,
+      "pickedName": "Cavernous sinus",
+      "view": "default",
+      "panel": "Cavernous sinus (right)",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 531,
+        "y": 413,
+        "depth": 8,
+        "picked": "zanatomy-2929e94.52",
+        "panel": "Cavernous sinus (right)"
+       }
+      ]
+     },
+     {
+      "id": 375,
+      "name": "Superior sagittal sinus",
+      "category": "veins_sinuses",
+      "side": "median",
+      "expect": "Superior sagittal sinus",
+      "key": "zanatomy-2929e94.375",
+      "layers": {
+       "hidden": [],
+       "isolated": "veins_sinuses",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 3104
+       }
+      ],
+      "ownPixels": 3104,
+      "pickedName": "Superior sagittal sinus",
+      "view": "default",
+      "panel": "Superior sagittal sinus",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 522,
+        "y": 205,
+        "depth": 5,
+        "picked": "zanatomy-2929e94.375",
+        "panel": "Superior sagittal sinus"
+       }
+      ]
+     },
+     {
+      "id": 109,
+      "name": "Fourth ventricle",
+      "category": "ventricles",
+      "side": "median",
+      "expect": "Fourth ventricle",
+      "key": "zanatomy-2929e94.109",
+      "layers": {
+       "hidden": [],
+       "isolated": "ventricles",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 1211
+       }
+      ],
+      "ownPixels": 1211,
+      "pickedName": "Fourth ventricle",
+      "view": "default",
+      "panel": "Fourth ventricle",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 485,
+        "y": 412,
+        "depth": 11,
+        "picked": "zanatomy-2929e94.109",
+        "panel": "Fourth ventricle"
+       }
+      ]
+     },
+     {
+      "id": 396,
+      "name": "Third ventricle",
+      "category": "ventricles",
+      "side": "median",
+      "expect": "Third ventricle",
+      "key": "zanatomy-2929e94.396",
+      "layers": {
+       "hidden": [],
+       "isolated": "ventricles",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 752
+       }
+      ],
+      "ownPixels": 752,
+      "pickedName": "Third ventricle",
+      "view": "default",
+      "panel": "Third ventricle",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 516,
+        "y": 350,
+        "depth": 10,
+        "picked": "zanatomy-2929e94.396",
+        "panel": "Third ventricle"
+       }
+      ]
+     },
+     {
+      "id": 74,
+      "name": "Corpus callosum",
+      "category": "white_matter",
+      "side": "median",
+      "expect": "Corpus callosum",
+      "key": "zanatomy-2929e94.74",
+      "layers": {
+       "hidden": [],
+       "isolated": "white_matter",
+       "opacity": {}
+      },
+      "views": [
+       {
+        "view": "default",
+        "ownPixels": 5064
+       }
+      ],
+      "ownPixels": 5064,
+      "pickedName": "Corpus callosum",
+      "view": "default",
+      "panel": "Corpus callosum",
+      "status": "pass",
+      "clicks": 1,
+      "attempts": [
+       {
+        "view": "default",
+        "x": 485,
+        "y": 317,
+        "depth": 17,
+        "picked": "zanatomy-2929e94.74",
+        "panel": "Corpus callosum"
+       }
+      ]
+     }
+    ],
+    "errors": []
+   }
+  },
+  {
+   "id": "picking-controls",
+   "status": "pass",
+   "detail": "1/1 withheld controls absent from the drawn and pickable set",
+   "evidence": {
+    "controls": [
+     {
+      "id": 15,
+      "name": "Anterior commissure",
+      "reason": "zanatomy-undeclared-brain-materials",
+      "drawn": [],
+      "searchResults": [],
+      "searchScope": "258 structures drawn in this atlas, then BD names; no names exist for BV, and choosing one of those will not leave this atlas.",
+      "mentions": [],
+      "saysWhy": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "picking-controls-say-why",
+   "status": "fail",
+   "detail": "0/1 withheld controls explained on the page after searching their name (Anterior commissure: 0 visible mention(s), search results [], scope \"258 structures drawn in this atlas, then BD names; no names exist for BV, and choosing one of those will not leave this atlas.\")",
+   "evidence": {
+    "controls": [
+     {
+      "id": 15,
+      "name": "Anterior commissure",
+      "reason": "zanatomy-undeclared-brain-materials",
+      "drawn": [],
+      "searchResults": [],
+      "searchScope": "258 structures drawn in this atlas, then BD names; no names exist for BV, and choosing one of those will not leave this atlas.",
+      "mentions": [],
+      "saysWhy": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "body",
+   "status": "pass",
+   "detail": "1605 body structures (full tier), head-to-foot regions present: head, thorax, pelvis, arm, hand, leg, foot; 27297 px painted against an all-hidden view",
+   "evidence": {
+    "meshStatus": {
+     "body": "full",
+     "brain": "low"
+    },
+    "categories": {
+     "alimentary": 33,
+     "cardiovascular": 653,
+     "endocrine": 3,
+     "genital": 1,
+     "muscle": 380,
+     "nervous": 34,
+     "other": 235,
+     "respiratory": 23,
+     "skeleton": 236,
+     "skin": 1,
+     "urinary": 6
+    },
+    "regions": {
+     "head": [
+      "Frontal bone",
+      "Occipital bone",
+      "Right parietal bone",
+      "Left parietal bone"
+     ],
+     "thorax": [
+      "Tributary of plantar venous arch",
+      "Tributary of middle hepatic vein",
+      "Posterior superior segmental tributary of right hepatic vein",
+      "Posterior inferior segmental tributary of right hepatic vein"
+     ],
+     "pelvis": [
+      "Sacrum",
+      "Right hip bone",
+      "Left hip bone"
+     ],
+     "arm": [
+      "Right anterior ulnar recurrent artery",
+      "Left anterior ulnar recurrent artery",
+      "Right posterior ulnar recurrent artery",
+      "Left posterior ulnar recurrent artery"
+     ],
+     "hand": [
+      "Dorsal metacarpal vein",
+      "Lateral proper palmar digital artery of right middle finger",
+      "Lateral proper palmar digital artery of left middle finger",
+      "Right palmar metacarpal artery"
+     ],
+     "leg": [
+      "Right anterior tibial artery",
+      "Left anterior tibial artery",
+      "Right posterior tibial artery",
+      "Left posterior tibial artery"
+     ],
+     "foot": [
+      "Plantar metatarsal artery",
+      "Plantar metatarsal vein",
+      "Dorsal digital artery of foot",
+      "Dorsal venous arch of right foot"
+     ]
+    },
+    "painted": 27297,
+    "view": {
+     "atlas": "body",
+     "address": null,
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 3623.7960589433424,
+      "target": [
+       -0.702972412109375,
+       100.97713851928711,
+       786.6670188903809
+      ]
+     },
+     "layers": {
+      "hidden": [],
+      "isolated": null,
+      "opacity": {}
+     },
+     "labels": true,
+     "structure": null,
+     "atlasExplicit": false
+    },
+    "errors": []
+   }
+  },
+  {
+   "id": "paper-regions",
+   "status": "pass",
+   "detail": "30 papers; 29 with structures, 1 empty with a stated reason, 0 empty with none",
+   "evidence": {
+    "per": [
+     {
+      "id": "paper:brodmann-1909-localisation",
+      "regions": 4,
+      "drawnStructures": 4,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:glasser-2016-mmp1",
+      "regions": 4,
+      "drawnStructures": 4,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:amunts-1999-broca",
+      "regions": 2,
+      "drawnStructures": 2,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:amunts-2020-julich-brain",
+      "regions": 14,
+      "drawnStructures": 14,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:zilles-2010-brodmann-centenary",
+      "regions": 4,
+      "drawnStructures": 4,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:desikan-2006-gyral-parcellation",
+      "regions": 0,
+      "drawnStructures": 0,
+      "undrawnRegions": [],
+      "reasons": [
+       {
+        "code": "structure-held",
+        "detail": "every supplied target of ATLAS-LABEL:superior-temporal-gyrus (\"superior temporal gyrus\") is held by the asset owner: Superior temporal gyrus (Lateral part); Temporal plane; Transverse temporal gyri. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+        "mappingIds": [
+         "map:desikan-2006-gyral-parcellation/gyral-labels/atlas-label-superior-temporal-gyrus"
+        ]
+       },
+       {
+        "code": "structure-held",
+        "detail": "every supplied target of ATLAS-LABEL:middle-temporal-gyrus (\"middle temporal gyrus\") is held by the asset owner: Middle temporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+        "mappingIds": [
+         "map:desikan-2006-gyral-parcellation/gyral-labels/atlas-label-middle-temporal-gyrus"
+        ]
+       },
+       {
+        "code": "structure-held",
+        "detail": "every supplied target of ATLAS-LABEL:inferior-frontal-gyrus (\"inferior frontal gyrus\") is held by the asset owner: Opercular part of inferior frontal gyrus; Orbital part of  inferior frontal gyrus; Triangular part of inferior frontal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+        "mappingIds": [
+         "map:desikan-2006-gyral-parcellation/automated-labelling/atlas-label-inferior-frontal-gyrus"
+        ]
+       },
+       {
+        "code": "structure-held",
+        "detail": "every supplied target of ATLAS-LABEL:precentral-gyrus (\"precentral gyrus\") is held by the asset owner: Precentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+        "mappingIds": [
+         "map:desikan-2006-gyral-parcellation/regions-per-hemisphere/atlas-label-precentral-gyrus"
+        ]
+       },
+       {
+        "code": "structure-held",
+        "detail": "every supplied target of ATLAS-LABEL:postcentral-gyrus (\"postcentral gyrus\") is held by the asset owner: Postcentral gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+        "mappingIds": [
+         "map:desikan-2006-gyral-parcellation/regions-per-hemisphere/atlas-label-postcentral-gyrus"
+        ]
+       },
+       {
+        "code": "structure-held",
+        "detail": "every supplied target of ATLAS-LABEL:fusiform-gyrus (\"fusiform gyrus\") is held by the asset owner: Lateral occipitotemporal gyrus. Held because: zanatomy-undeclared-brain-materials: carries undeclared material(s) `Brain-Inner`",
+        "mappingIds": [
+         "map:desikan-2006-gyral-parcellation/sulcal-boundaries/atlas-label-fusiform-gyrus"
+        ]
+       }
+      ],
+      "failure": null
+     },
+     {
+      "id": "paper:tzourio-mazoyer-2002-aal",
+      "regions": 4,
+      "drawnStructures": 4,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:fan-2016-brainnetome",
+      "regions": 26,
+      "drawnStructures": 26,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:yeo-2011-intrinsic-networks",
+      "regions": 2,
+      "drawnStructures": 2,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:power-2011-functional-areas",
+      "regions": 22,
+      "drawnStructures": 22,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:hagmann-2008-structural-core",
+      "regions": 4,
+      "drawnStructures": 4,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:van-essen-2013-hcp",
+      "regions": 2,
+      "drawnStructures": 2,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:mazziotta-2001-icbm",
+      "regions": 25,
+      "drawnStructures": 24,
+      "undrawnRegions": [
+       "bodyparts3d-bd/FMA7647"
+      ],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:fonov-2011-unbiased-templates",
+      "regions": 6,
+      "drawnStructures": 6,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:fischl-2012-freesurfer",
+      "regions": 30,
+      "drawnStructures": 30,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:eickhoff-2005-anatomy-toolbox",
+      "regions": 6,
+      "drawnStructures": 6,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:mesulam-1998-sensation-to-cognition",
+      "regions": 10,
+      "drawnStructures": 10,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:raichle-2001-default-mode",
+      "regions": 2,
+      "drawnStructures": 2,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:buckner-2008-default-network",
+      "regions": 8,
+      "drawnStructures": 8,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:price-2012-language-review",
+      "regions": 4,
+      "drawnStructures": 4,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:hickok-2007-dual-stream",
+      "regions": 6,
+      "drawnStructures": 6,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:kanwisher-1997-fusiform-face-area",
+      "regions": 2,
+      "drawnStructures": 2,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:epstein-1998-parahippocampal-place-area",
+      "regions": 2,
+      "drawnStructures": 2,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:penfield-1937-somatotopy",
+      "regions": 4,
+      "drawnStructures": 4,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:catani-2008-virtual-dissection",
+      "regions": 4,
+      "drawnStructures": 4,
+      "undrawnRegions": [],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:mitsuhashi-2009-bodyparts3d",
+      "regions": 7,
+      "drawnStructures": 4,
+      "undrawnRegions": [
+       "bodyparts3d-bd/FMA7088",
+       "bodyparts3d-bd/FMA7197",
+       "bodyparts3d-bd/FMA7310"
+      ],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:rosse-2003-fma",
+      "regions": 5,
+      "drawnStructures": 3,
+      "undrawnRegions": [
+       "bodyparts3d-bd/FMA7088",
+       "bodyparts3d-bd/FMA7197"
+      ],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:mungall-2012-uberon",
+      "regions": 5,
+      "drawnStructures": 2,
+      "undrawnRegions": [
+       "bodyparts3d-bd/FMA7197",
+       "bodyparts3d-bd/FMA7309",
+       "bodyparts3d-bd/FMA7647"
+      ],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:panjabi-1991-thoracic-morphometry",
+      "regions": 4,
+      "drawnStructures": 3,
+      "undrawnRegions": [
+       "bodyparts3d-bd/FMA7647"
+      ],
+      "reasons": [],
+      "failure": null
+     },
+     {
+      "id": "paper:bogduk-2012-lumbar-anatomy",
+      "regions": 3,
+      "drawnStructures": 2,
+      "undrawnRegions": [
+       "bodyparts3d-bd/FMA7647"
+      ],
+      "reasons": [],
+      "failure": null
+     }
+    ],
+    "errors": []
+   }
+  },
+  {
+   "id": "region-papers",
+   "status": "pass",
+   "detail": "53 drawn structures with a region document (53 with papers; 1808 more carry a region key that nothing links to); 0 round-trip mismatches",
+   "evidence": {
+    "problems": [],
+    "checked": [
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.103",
+      "regionKey": "icbm152-2009c-cortex-lobes/103",
+      "name": "Temporal lobe.l",
+      "papers": [
+       "paper:buckner-2008-default-network",
+       "paper:epstein-1998-parahippocampal-place-area",
+       "paper:hickok-2007-dual-stream",
+       "paper:kanwisher-1997-fusiform-face-area",
+       "paper:mazziotta-2001-icbm",
+       "paper:mesulam-1998-sensation-to-cognition",
+       "paper:price-2012-language-review"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.101",
+      "regionKey": "icbm152-2009c-cortex-lobes/101",
+      "name": "Frontal lobe.l",
+      "papers": [
+       "paper:amunts-1999-broca",
+       "paper:amunts-2020-julich-brain",
+       "paper:brodmann-1909-localisation",
+       "paper:buckner-2008-default-network",
+       "paper:catani-2008-virtual-dissection",
+       "paper:eickhoff-2005-anatomy-toolbox",
+       "paper:glasser-2016-mmp1",
+       "paper:hickok-2007-dual-stream",
+       "paper:mesulam-1998-sensation-to-cognition",
+       "paper:penfield-1937-somatotopy",
+       "paper:price-2012-language-review",
+       "paper:zilles-2010-brodmann-centenary"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.106",
+      "regionKey": "icbm152-2009c-cortex-lobes/106",
+      "name": "Limbic lobe.l",
+      "papers": [
+       "paper:buckner-2008-default-network",
+       "paper:hagmann-2008-structural-core"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.102",
+      "regionKey": "icbm152-2009c-cortex-lobes/102",
+      "name": "Parietal lobe.l",
+      "papers": [
+       "paper:eickhoff-2005-anatomy-toolbox",
+       "paper:hagmann-2008-structural-core",
+       "paper:hickok-2007-dual-stream",
+       "paper:mesulam-1998-sensation-to-cognition",
+       "paper:penfield-1937-somatotopy",
+       "paper:power-2011-functional-areas",
+       "paper:raichle-2001-default-mode",
+       "paper:yeo-2011-intrinsic-networks"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.104",
+      "regionKey": "icbm152-2009c-cortex-lobes/104",
+      "name": "Occipital lobe.l",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:brodmann-1909-localisation",
+       "paper:eickhoff-2005-anatomy-toolbox",
+       "paper:fischl-2012-freesurfer",
+       "paper:fonov-2011-unbiased-templates",
+       "paper:glasser-2016-mmp1",
+       "paper:mazziotta-2001-icbm",
+       "paper:mesulam-1998-sensation-to-cognition",
+       "paper:van-essen-2013-hcp",
+       "paper:zilles-2010-brodmann-centenary"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.203",
+      "regionKey": "icbm152-2009c-cortex-lobes/203",
+      "name": "Temporal lobe.r",
+      "papers": [
+       "paper:buckner-2008-default-network",
+       "paper:epstein-1998-parahippocampal-place-area",
+       "paper:hickok-2007-dual-stream",
+       "paper:kanwisher-1997-fusiform-face-area",
+       "paper:mazziotta-2001-icbm",
+       "paper:mesulam-1998-sensation-to-cognition",
+       "paper:price-2012-language-review"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.201",
+      "regionKey": "icbm152-2009c-cortex-lobes/201",
+      "name": "Frontal lobe.r",
+      "papers": [
+       "paper:amunts-1999-broca",
+       "paper:amunts-2020-julich-brain",
+       "paper:brodmann-1909-localisation",
+       "paper:buckner-2008-default-network",
+       "paper:catani-2008-virtual-dissection",
+       "paper:eickhoff-2005-anatomy-toolbox",
+       "paper:glasser-2016-mmp1",
+       "paper:hickok-2007-dual-stream",
+       "paper:mesulam-1998-sensation-to-cognition",
+       "paper:penfield-1937-somatotopy",
+       "paper:price-2012-language-review",
+       "paper:zilles-2010-brodmann-centenary"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.206",
+      "regionKey": "icbm152-2009c-cortex-lobes/206",
+      "name": "Limbic lobe.r",
+      "papers": [
+       "paper:buckner-2008-default-network",
+       "paper:hagmann-2008-structural-core"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.204",
+      "regionKey": "icbm152-2009c-cortex-lobes/204",
+      "name": "Occipital lobe.r",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:brodmann-1909-localisation",
+       "paper:eickhoff-2005-anatomy-toolbox",
+       "paper:fischl-2012-freesurfer",
+       "paper:fonov-2011-unbiased-templates",
+       "paper:glasser-2016-mmp1",
+       "paper:mazziotta-2001-icbm",
+       "paper:mesulam-1998-sensation-to-cognition",
+       "paper:van-essen-2013-hcp",
+       "paper:zilles-2010-brodmann-centenary"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "icbm152-2009c.202",
+      "regionKey": "icbm152-2009c-cortex-lobes/202",
+      "name": "Parietal lobe.r",
+      "papers": [
+       "paper:eickhoff-2005-anatomy-toolbox",
+       "paper:hagmann-2008-structural-core",
+       "paper:hickok-2007-dual-stream",
+       "paper:mesulam-1998-sensation-to-cognition",
+       "paper:penfield-1937-somatotopy",
+       "paper:power-2011-functional-areas",
+       "paper:raichle-2001-default-mode",
+       "paper:yeo-2011-intrinsic-networks"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.201",
+      "regionKey": "zanatomy-gross-anatomy/201",
+      "name": "Midbrain.l",
+      "papers": [
+       "paper:mazziotta-2001-icbm"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.202",
+      "regionKey": "zanatomy-gross-anatomy/202",
+      "name": "Midbrain.r",
+      "papers": [
+       "paper:mazziotta-2001-icbm"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.122",
+      "regionKey": "zanatomy-gross-anatomy/122",
+      "name": "Hippocampus.l",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:buckner-2008-default-network",
+       "paper:catani-2008-virtual-dissection",
+       "paper:fischl-2012-freesurfer",
+       "paper:fonov-2011-unbiased-templates",
+       "paper:mesulam-1998-sensation-to-cognition"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.123",
+      "regionKey": "zanatomy-gross-anatomy/123",
+      "name": "Hippocampus.r",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:buckner-2008-default-network",
+       "paper:catani-2008-virtual-dissection",
+       "paper:fischl-2012-freesurfer",
+       "paper:fonov-2011-unbiased-templates",
+       "paper:mesulam-1998-sensation-to-cognition"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.39",
+      "regionKey": "zanatomy-gross-anatomy/39",
+      "name": "Basolateral complex.l",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.49",
+      "regionKey": "zanatomy-gross-anatomy/49",
+      "name": "Caudate nucleus.l",
+      "papers": [
+       "paper:fonov-2011-unbiased-templates",
+       "paper:tzourio-mazoyer-2002-aal"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.54",
+      "regionKey": "zanatomy-gross-anatomy/54",
+      "name": "Central nucleus.l",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.77",
+      "regionKey": "zanatomy-gross-anatomy/77",
+      "name": "Corticomedial group.l",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.165",
+      "regionKey": "zanatomy-gross-anatomy/165",
+      "name": "Lateral nucleus.l",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.325",
+      "regionKey": "zanatomy-gross-anatomy/325",
+      "name": "Putamen.l",
+      "papers": [
+       "paper:power-2011-functional-areas",
+       "paper:tzourio-mazoyer-2002-aal"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.40",
+      "regionKey": "zanatomy-gross-anatomy/40",
+      "name": "Basolateral complex.r",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.50",
+      "regionKey": "zanatomy-gross-anatomy/50",
+      "name": "Caudate nucleus.r",
+      "papers": [
+       "paper:fonov-2011-unbiased-templates",
+       "paper:tzourio-mazoyer-2002-aal"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.55",
+      "regionKey": "zanatomy-gross-anatomy/55",
+      "name": "Central nucleus.r",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.78",
+      "regionKey": "zanatomy-gross-anatomy/78",
+      "name": "Corticomedial group.r",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.166",
+      "regionKey": "zanatomy-gross-anatomy/166",
+      "name": "Lateral nucleus.r",
+      "papers": [
+       "paper:amunts-2020-julich-brain",
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.326",
+      "regionKey": "zanatomy-gross-anatomy/326",
+      "name": "Putamen.r",
+      "papers": [
+       "paper:power-2011-functional-areas",
+       "paper:tzourio-mazoyer-2002-aal"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.24",
+      "regionKey": "zanatomy-gross-anatomy/24",
+      "name": "Anterior nuclei of thalamus.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.153",
+      "regionKey": "zanatomy-gross-anatomy/153",
+      "name": "Intralaminar and lateral posterior nuclei.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.161",
+      "regionKey": "zanatomy-gross-anatomy/161",
+      "name": "Lateral geniculate body.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.186",
+      "regionKey": "zanatomy-gross-anatomy/186",
+      "name": "Medial geniculate body.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.194",
+      "regionKey": "zanatomy-gross-anatomy/194",
+      "name": "Mediodorsal nucleus.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.290",
+      "regionKey": "zanatomy-gross-anatomy/290",
+      "name": "Pulvinar.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.421",
+      "regionKey": "zanatomy-gross-anatomy/421",
+      "name": "Ventral anterior nucleus.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.423",
+      "regionKey": "zanatomy-gross-anatomy/423",
+      "name": "Ventral laterodorsal nucleus.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.425",
+      "regionKey": "zanatomy-gross-anatomy/425",
+      "name": "Ventral lateroventral nucleus.l",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.25",
+      "regionKey": "zanatomy-gross-anatomy/25",
+      "name": "Anterior nuclei of thalamus.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.154",
+      "regionKey": "zanatomy-gross-anatomy/154",
+      "name": "Intralaminar and lateral posterior nuclei.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.162",
+      "regionKey": "zanatomy-gross-anatomy/162",
+      "name": "Lateral geniculate body.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.187",
+      "regionKey": "zanatomy-gross-anatomy/187",
+      "name": "Medial geniculate body.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.195",
+      "regionKey": "zanatomy-gross-anatomy/195",
+      "name": "Mediodorsal nucleus.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.291",
+      "regionKey": "zanatomy-gross-anatomy/291",
+      "name": "Pulvinar.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.422",
+      "regionKey": "zanatomy-gross-anatomy/422",
+      "name": "Ventral anterior nucleus.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.424",
+      "regionKey": "zanatomy-gross-anatomy/424",
+      "name": "Ventral laterodorsal nucleus.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "brain",
+      "key": "zanatomy-2929e94.426",
+      "regionKey": "zanatomy-gross-anatomy/426",
+      "name": "Ventral lateroventral nucleus.r",
+      "papers": [
+       "paper:fan-2016-brainnetome",
+       "paper:fischl-2012-freesurfer",
+       "paper:mazziotta-2001-icbm",
+       "paper:power-2011-functional-areas"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.7148",
+      "regionKey": "bodyparts3d-bd/FMA7148",
+      "name": "Stomach",
+      "papers": [
+       "paper:mungall-2012-uberon",
+       "paper:rosse-2003-fma"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.7198",
+      "regionKey": "bodyparts3d-bd/FMA7198",
+      "name": "Pancreas",
+      "papers": [
+       "paper:rosse-2003-fma"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.13295",
+      "regionKey": "bodyparts3d-bd/FMA13295",
+      "name": "Diaphragm",
+      "papers": [
+       "paper:mitsuhashi-2009-bodyparts3d"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.13075",
+      "regionKey": "bodyparts3d-bd/FMA13075",
+      "name": "Fourth lumbar vertebra",
+      "papers": [
+       "paper:bogduk-2012-lumbar-anatomy",
+       "paper:panjabi-1991-thoracic-morphometry"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.16202",
+      "regionKey": "bodyparts3d-bd/FMA16202",
+      "name": "Sacrum",
+      "papers": [
+       "paper:bogduk-2012-lumbar-anatomy",
+       "paper:mungall-2012-uberon",
+       "paper:panjabi-1991-thoracic-morphometry"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.9968",
+      "regionKey": "bodyparts3d-bd/FMA9968",
+      "name": "Seventh thoracic vertebra",
+      "papers": [
+       "paper:mitsuhashi-2009-bodyparts3d",
+       "paper:panjabi-1991-thoracic-morphometry"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.15900",
+      "regionKey": "bodyparts3d-bd/FMA15900",
+      "name": "Urinary bladder",
+      "papers": [
+       "paper:rosse-2003-fma"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.7204",
+      "regionKey": "bodyparts3d-bd/FMA7204",
+      "name": "Right kidney",
+      "papers": [
+       "paper:mitsuhashi-2009-bodyparts3d"
+      ]
+     },
+     {
+      "atlas": "body",
+      "key": "bp3d-4066585.7205",
+      "regionKey": "bodyparts3d-bd/FMA7205",
+      "name": "Left kidney",
+      "papers": [
+       "paper:mitsuhashi-2009-bodyparts3d"
+      ]
+     }
+    ],
+    "unlinkedCount": 1808,
+    "errors": []
+   }
+  }
+ ]
+}

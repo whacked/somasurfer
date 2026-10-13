@@ -1,0 +1,32 @@
+§7 FAIL (harness FAIL against product build qa-integrated-v2@127fbd20 state-machine only (app.js/DOM NOT observed; page dataset research-seed-2026.10.1))
+  fixture research-seed-2026.10.1 (curated) sha256 5eb23f140310606c…
+  exercised: structure FMA13295, region ATLAS-LABEL:precentral-gyrus, papers paper:fischl-2012-freesurfer + paper:brodmann-1909-localisation
+  41 passed, 1 failed, 1 unverified of 43; must-pass 39/41
+
+  ✗ FAIL [MUST-PASS] journey/paper-reveals-all-its-regions
+      covers: a user can select a paper to reveal all its mapped brain regions
+      expected: Selecting a paper found through one region highlights EVERY region that paper maps, including the ones the active filter excludes. The filter itself does not change — it narrows the paper list, never a selected paper's own mappings. Every highlight names its paper and its finding, and a finding with no spatial detail is marked region-level only rather than being given a position.
+      - finding finding:fischl-2012-freesurfer/surface-reconstruction must be marked region-level only: expected true, got false
+      - finding finding:fischl-2012-freesurfer/thickness-measurement must be marked region-level only: expected true, got false
+      - finding finding:fischl-2012-freesurfer/subcortical-segmentation must be marked region-level only: expected true, got false
+      - finding finding:fischl-2012-freesurfer/registration-to-template must be marked region-level only: expected true, got false
+      - a finding with no spatial detail is present but the region-level-only marker is not shown
+
+  ? UNVERIFIED [MUST-PASS] journey/compare-two-papers
+      covers: a user can compare papers through the agreed display modes
+      expected: Adding a second paper keeps the first selected, gives each paper its own colour, and hatches exactly the cells both cover. The overlap is the COVERING INTERSECTION of the two papers — not the set of address strings they have in common — and every highlight still names its finding.
+      not evaluated: blocked: paper-reveals-all-its-regions failed, so this step never ran
+
+  passed: matrix/default-no-address, matrix/canonical-body, matrix/loose-body-same-view, matrix/check-symbol-accepted, matrix/check-symbol-mismatch-rejected, matrix/over-precise, matrix/clamped-cranial, matrix/clamped-caudal, matrix/clamped-address-replayed-is-not-a-clamp, matrix/folded-reports-fold-not-clamp, matrix/same-address-unfolded-in-a-sound-template, matrix/variant-T13, matrix/variant-L06, matrix/variant-S06, matrix/absent-S02, matrix/absent-S03, matrix/absent-S04, matrix/absent-S05, matrix/sacrum-S01-is-not-absent, matrix/malformed-bad-digit, matrix/malformed-unknown-frame, matrix/malformed-empty-address, matrix/c08-rejected-with-the-correction-named, matrix/length-at-the-64-character-cap, matrix/length-over-the-64-character-cap, matrix/br-frame-disabled, matrix/no-template, matrix/br-offer-is-not-fabricated-by-truncation, matrix/brain-deep-link-resolves, matrix/brain-deep-link-restores, matrix/cross-atlas-link-honours-the-explicit-atlas, matrix/assets-unavailable-addresses-still-resolve, matrix/equality-guard-different-strings-same-place, matrix/equality-guard-same-string-not-asserted-same, matrix/url-unknown-params, journey/default-body-view, journey/change-layers, journey/select-structure-without-leaving-atlas, journey/explicit-brain-navigation, journey/region-research, journey/return-to-body-with-previous-view-intact
+
+  which index answered:
+    · research structures from packages/atlas-research/data/names-seed.json
+    · anatomical names resolved against packages/atlas-assets/labels/names.json + packages/atlas-assets/labels/coverings.json@bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da — the index the page binds
+    · 14 research structures painted from that index
+    · 66 research structures carry cells the seed script INVENTED (ATLAS-LABEL:amygdala, ATLAS-LABEL:angular-gyrus, ATLAS-LABEL:anterior-cingulate-cortex, ATLAS-LABEL:aortic-arch, …). A spatial comparison involving one of them is a comparison against a placeholder, not a measurement. There is no real index for their frame to replace them with.
+
+  provenance gaps in the fixture (2), carried so task 7 knows:
+    · paper paper:brodmann-1909-localisation has no source link, so the UI must show "no source link recorded" rather than a dead link or an empty field
+    · paper paper:bogduk-2012-lumbar-anatomy has no source link, so the UI must show "no source link recorded" rather than a dead link or an empty field
+
+  report written to w8a-evidence/C-7aea295/journey-state.json

@@ -22,7 +22,7 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ROOT, launch, openPage, row, serve } from './lib.mjs';
+import { ROOT, assertServesOwnDist, launch, openPage, row, serve } from './lib.mjs';
 import { DEEP_LINK_MATRIX, QA_URL_PARAMS } from '../src/matrix.ts';
 import { realAssets, realTemplates } from '../../atlas-web/test/real-assets.js';
 import { decodeView } from '../../atlas-web/src/viewer/deeplink.js';
@@ -54,7 +54,9 @@ function expected(url) {
   };
 }
 
-const server = await serve(8937);
+// QA_PORT: a fixed port has served another worktree's build (DOG-133 runs pick a free one).
+const server = await serve(Number(process.env.QA_PORT ?? 8937));
+await assertServesOwnDist(server.base);
 const browser = await launch();
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 
@@ -119,6 +121,7 @@ for (const r of rows) {
   }
   results.push(row(`matrix/${r.id}`, problems.length ? 'fail' : 'pass', problems.length ? problems : `shown as decided (${exp.notices.join(', ') || 'no notice'}${exp.selected?.ok === false ? ', refused' : ''}); link round-trips`,
     { mustPass: r.mustPass, url, expected: exp, seen: { ...seen, panel: undefined }, trip }));
+  console.error(`[${results.length}/${rows.length}] ${results.at(-1).status} ${results.at(-1).id}`);
   await page.close();
 }
 

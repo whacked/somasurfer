@@ -1,0 +1,69 @@
+[1/33] pass matrix/default-no-address
+[2/33] pass matrix/canonical-body
+[3/33] pass matrix/loose-body-same-view
+[4/33] pass matrix/check-symbol-accepted
+[5/33] pass matrix/check-symbol-mismatch-rejected
+[6/33] pass matrix/over-precise
+[7/33] pass matrix/clamped-address-replayed-is-not-a-clamp
+[8/33] pass matrix/folded-reports-fold-not-clamp
+[9/33] pass matrix/same-address-unfolded-in-a-sound-template
+[10/33] pass matrix/variant-T13
+[11/33] pass matrix/variant-L06
+[12/33] pass matrix/variant-S06
+[13/33] pass matrix/absent-S02
+[14/33] pass matrix/absent-S03
+[15/33] pass matrix/absent-S04
+[16/33] pass matrix/absent-S05
+[17/33] pass matrix/sacrum-S01-is-not-absent
+[18/33] pass matrix/malformed-bad-digit
+[19/33] pass matrix/malformed-unknown-frame
+[20/33] pass matrix/malformed-empty-address
+[21/33] pass matrix/c08-rejected-with-the-correction-named
+[22/33] pass matrix/length-at-the-64-character-cap
+[23/33] pass matrix/length-over-the-64-character-cap
+[24/33] pass matrix/br-frame-disabled
+[25/33] pass matrix/no-template
+[26/33] pass matrix/br-offer-is-not-fabricated-by-truncation
+[27/33] pass matrix/brain-deep-link-resolves
+[28/33] pass matrix/brain-deep-link-restores
+[29/33] pass matrix/cross-atlas-link-honours-the-explicit-atlas
+[30/33] pass matrix/assets-unavailable-addresses-still-resolve
+[31/33] pass matrix/equality-guard-different-strings-same-place
+[32/33] pass matrix/equality-guard-same-string-not-asserted-same
+[33/33] pass matrix/url-unknown-params
+PASS       matrix/default-no-address
+PASS       matrix/canonical-body
+PASS       matrix/loose-body-same-view
+PASS       matrix/check-symbol-accepted
+PASS       matrix/check-symbol-mismatch-rejected
+PASS       matrix/over-precise
+PASS       matrix/clamped-address-replayed-is-not-a-clamp
+PASS       matrix/folded-reports-fold-not-clamp
+PASS       matrix/same-address-unfolded-in-a-sound-template
+PASS       matrix/variant-T13
+PASS       matrix/variant-L06
+PASS       matrix/variant-S06
+PASS       matrix/absent-S02
+PASS       matrix/absent-S03
+PASS       matrix/absent-S04
+PASS       matrix/absent-S05
+PASS       matrix/sacrum-S01-is-not-absent
+PASS       matrix/malformed-bad-digit
+PASS       matrix/malformed-unknown-frame
+PASS       matrix/malformed-empty-address
+PASS       matrix/c08-rejected-with-the-correction-named
+PASS       matrix/length-at-the-64-character-cap
+PASS       matrix/length-over-the-64-character-cap
+PASS       matrix/br-frame-disabled
+PASS       matrix/no-template
+PASS       matrix/br-offer-is-not-fabricated-by-truncation
+PASS       matrix/brain-deep-link-resolves
+PASS       matrix/brain-deep-link-restores
+PASS       matrix/cross-atlas-link-honours-the-explicit-atlas
+PASS       matrix/assets-unavailable-addresses-still-resolve
+PASS       matrix/equality-guard-different-strings-same-place
+PASS       matrix/equality-guard-same-string-not-asserted-same
+PASS       matrix/url-unknown-params
+PASS       matrix/folded-shown-in-the-page
+{"pass":34,"fail":0,"unverified":0,"notUrlRows":["clamped-cranial (click-point)","clamped-caudal (click-point)"]}
+exit 0

@@ -1,0 +1,637 @@
+
+> @gstack/atlas@0.1.0 ci
+> npm run check:node && npm run test:counted && npm run audit:check && npm run audit:template && npm run check:research && npm run check:meshes && npm run check:icbm && npm run check:crosswalk && npm run check:api && npm run check:licences && npm run build && npm run check:licences && npm run check:api-contract && npm run perf:check && npm run verify:gates
+
+
+> @gstack/atlas@0.1.0 check:node
+> node tools/check-node-version.mjs
+
+✓ node version
+  Node 24.21.0, matching .nvmrc exactly.
+
+> @gstack/atlas@0.1.0 test:counted
+> node tools/check-test-count.mjs
+
+✓ test count
+  alc-conformance: 172 tests ran, 172 passed (floor 172).
+  atlas-web-viewer: 232 tests ran, 232 passed (floor 232).
+  atlas-qa-journey: 78 tests ran, 78 passed (floor 78).
+  atlas-research: 169 tests ran, 169 passed (floor 169).
+
+> @gstack/atlas@0.1.0 audit:check
+> node tools/check-audit-drift.mjs
+
+✓ audit report drift
+  docs/alc-1-admissibility.md: byte-identical to the generator (10643 bytes).
+  packages/atlas-assets/ATTRIBUTION.md: byte-identical to the generator (25167 bytes).
+  docs/alc-1-body-template-audit.md: byte-identical to the generator (19470 bytes).
+
+> @gstack/atlas@0.1.0 audit:template
+> node tools/audit-real-template.mjs
+
+✓ body template audit
+  bp3d-4.0-adult-body-centroid.body.json: no fold found. Worst level T04 at utilisation 0.71, margin 32 mm; 5000 interior probe and 64800 fold scan sample(s) clean (scanBodyTemplateFolds()).
+
+> @gstack/atlas@0.1.0 check:research
+> node tools/check-research-dataset.mjs
+
+✓ research dataset
+  self-test: the gate goes red on a hostile link and on an unknown structure id,
+    and on all eight ways to defeat the citation rule — an invented identifier, a swapped one,
+    a dropped row, a verdict with no evidence, an undeclared source, a stale report version,
+    a hand-edited tally and a hand-edited summary.
+    It also binds the real index by shape rather than by path order: a covering index listed
+    first is joined, not mistaken for a name index, and half an index is reported, not measured.
+  real index: 57 structures, frame BD, version bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da
+    joined from packages/atlas-assets/labels/names.json and packages/atlas-assets/labels/coverings.json
+  templates: body <- packages/atlas-assets/templates/bp3d-4.0-adult-body-centroid.body.json, brainVolume <- packages/atlas-assets/templates/icbm152-2009c-asym.brain-volume.json
+  fixture: 5 papers, 14 findings, 19 mappings {"region-level":17,"cells":1,"coordinates":1} — the 5-paper fixture the viewer and QA build against
+    identifiers recorded: 3/5, each justified by a named source in data/citation-report.json
+    evidence locators recorded: 0/19; curator inferences: 5 (each with a note, enforced at load)
+    resolved against fixture-names-2026.10.1: 18/18 non-coordinate mappings
+    coordinates: all 1 resolve through the template to cells and to NO name, which is the pinned contract for a frame with no name index.
+  seed: 30 papers, 120 findings, 170 mappings {"region-level":164,"cells":3,"coordinates":3} — the curated seed set
+    identifiers recorded: 28/30, each justified by a named source in data/citation-report.json
+    evidence locators recorded: 0/170; curator inferences: 46 (each with a note, enforced at load)
+    body-bd: all 26 non-coordinate mappings resolve against packages/atlas-assets/labels/names.json + packages/atlas-assets/labels/coverings.json, and its one curated sub-region lies wholly inside its structure.
+    brain-parcellation: 137 mapping(s) on declared placeholders, resolved against data/names-seed.json.
+      recorded reason: docs/asset-licensing.md §4 returns VERDICT: NOT CLEARED for brain parcellation, and the verdict is final for v1: Harvard-Oxford is distributed under FSL's non-commercial terms, AAL requires registration and restricts redistribution, and Julich-Brain is CC BY-NC-SA 4.0, whose NC term forecloses commercial use outright. Two further facts make this permanent rather than pending: the cleared index declares "frame": "BD" and has NO BV name index, and the brain is absent from the BD index by measurement (0.2% of its interior samples fall inside the BD frame, because the brain sits almost entirely above C01). So BV addresses locate and round-trip but do not resolve to a name. These ids stay on declared placeholders: the anatomical TERMS are usable and are not what is licensed; the parcellation that would delineate them is.
+    body-not-in-index: 4 mapping(s) on declared placeholders, resolved against data/names-seed.json.
+      recorded reason: these are gross body structures that the cleared BD index does not carry at the specificity the finding claims. It names 57 structures from the BodyParts3D release: there is a generic rib (FMA7574) but no individual rib, so filing a 7th-rib finding under it would paint all of them, and neither the coronary artery nor the quadratus lumborum is in the subset at all. This is a coverage gap in the index rather than a licence refusal, and it is recorded separately for that reason: if the release subset grows, these move to FMA ids and the licence-blocked partition does not.
+    coordinates: all 3 resolve through the template to cells and to NO name, which is the pinned contract for a frame with no name index.
+  drift: data/ matches scripts/author-seed.mjs.
+  citations: all 30 seed papers have a row in data/citation-report.json (retrieved 2026-10-09); {"unresolved":2,"verified":28}.
+    28 identifiers each justified by a named source; 2 papers carry none.
+    no dataset carries an identifier this report does not justify — checked, not asserted.
+
+> @gstack/atlas@0.1.0 check:meshes
+> node tools/check-mesh-assets.mjs
+
+✓ mesh assets
+  zanatomy-2929e94: provenance re-derived for all 437 structures; 244 of 244 shippable structures in both tiers; 193 held structures in neither.
+  Floor 128 met by all; no degenerate triangle; no sliver; area low/full 0.90-1.02.
+  Published error re-measured for all 244: Hausdorff median 0.28 mm, max 1.26 mm.
+  Registration re-derived: held-out 8.55 mm; QA sample 40 structures, 1 withheld control(s), every rule met.
+  bp3d-4066585: 1605 body structures in both tiers; 60 element files excluded and listed. Floor 16 met by all; no degenerate triangle; no sliver; area low/full 0.84-1.12.
+  Published error re-measured for all 1605: Hausdorff median 1.87 mm, max 61.73 mm.
+  Registered to BD: 25 level points re-derived from the shipped vertebrae, worst 0.027 mm (axis point), 0.007 mm (centroid), tolerance 1 mm.
+
+> @gstack/atlas@0.1.0 check:icbm
+> node tools/check-icbm-cortex.mjs
+
+✓ icbm cortex
+  cortex.lowres.bin: 2 structures, left 8,446 triangles, right 8,618 triangles; 0 non-manifold edges, 0 inconsistently wound, 0 degenerate.
+  Native MNI152 2009c asymmetric, identity mapping; published counts, area and volume match the file.
+  lobes.json bound to the mesh by SHA-256; all 6 lobes in both hemispheres; 35 boundaries with landmark, placement and coordinates; no third-party parcellation.
+  Cerebellar leak published with its method; the cut is labelled not validated. Not re-measured here: the error against the full surface and the leak (build-time; they need the template volumes).
+
+> @gstack/atlas@0.1.0 check:crosswalk
+> node tools/check-crosswalk.mjs
+
+✓ crosswalk
+  self-test: red on a coordinate link labelled exact-term or tighter than the registration, an HCP-MMP1 link labelled
+    exact-term or without its area name, a mapping or paper with nothing and no reason, a lost inverted entry,
+    and on crosswalks with an exact HCP-MMP1 entry, a misspelt target or lobe target, a renumbered lobe, a missing term
+    and an unexplained entry.
+  locator: putamen.l inside, putamen.r inside, caudate.l outside, caudate.r outside, mammillary-body.l inside, mammillary-body.r inside, red-nucleus.l outside, red-nucleus.r outside; putamen.l, putamen.r, mammillary-body.l, mammillary-body.r required.
+  coverage: 109 of 170 mappings reach a named structure, covering 29 of 30 papers.
+    by how: exact-term 36, crosswalk 73, coordinate 0 (a mapping may count under more than one).
+    baseline (v1, cells): 31 of 170 mappings, 10 of 30 papers; of those, 26 mappings and 6 papers reach a named structure.
+    57 mapping(s) reach only held structures. 1 paper(s) have no region, each with a stated reason: paper:desikan-2006-gyral-parcellation (structure-held).
+  index: packages/atlas-assets/crosswalk/region-index-zanatomy-2929e94.json matches its inputs.
+  floors (committed): coverage ≥ 109 of 170 mappings and ≥ 29 of 30 papers, met; coordinate precision ≥ ±7 mm from ≥ 2 held-out landmarks, met.
+  lobes: 24 crosswalk target(s) in icbm152-2009c-cortex-lobes checked against packages/atlas-assets/brain/icbm152-2009c/lobes.json (Frontal lobe, Limbic lobe, Occipital lobe, Parietal lobe, Temporal lobe);
+    130 link(s), each label one structure per side with DOG-151's id.
+  NOT PLACED: coordinates on icbm152-2009c-cortex-lobes, no locator: the low tier puts the A1 peak nearest Parietal-lobe vertices and the PHA1 and FFC peaks nearest unlabelled faces, so a nearest-label rule would mislabel them. 0 coordinate link(s) there.
+  VACUOUS: 0 coordinate links: "no coordinate link is exact-term" and the precision floor have nothing to check on this data. Covered only by region-index.test.ts and this gate's self-test.
+  VACUOUS: 0 HCP-MMP1 → gyrus links (every target gyrus is held): "crosswalk, approximate, area name kept" has nothing to check on this data. Covered only by region-index.test.ts and this gate's self-test.
+
+> @gstack/atlas@0.1.0 check:api
+> node tools/build-research-api.mjs
+
+✓ research api
+  self-test: red on a region document labelled Apache-2.0, a link whose how and precision disagree, an absolute href,
+    a dangling link, a missing document, trees from different datasets, an unnamed field, a paper with nothing and no
+    reason, and a region tree that lost a paper or swapped a link against the live index.
+  paper tree (Apache-2.0, emitted by the site build to dist/data/api/v1/): 1 index, 30 paper.
+  region tree (CC BY-SA 4.0, packages/atlas-assets/api/v1 → dist/assets/api/v1/): 1 region-index, 58 region, 30 paper-regions.
+    1 paper(s) reach no region; each document says why.
+  schema: all 120 documents validate, and every link lands on a document.
+  live index: papersFor and regionsFor agree with every region and paper-regions document, link for link.
+  committed: packages/atlas-assets/api/v1 matches its inputs, and attribution entry research-api-regions lists exactly its files.
+
+> @gstack/atlas@0.1.0 check:licences
+> node tools/check-licence-separation.mjs
+
+✓ licence separation
+  4 code package(s): @gstack/alc, @gstack/atlas-qa, @gstack/atlas-research, @gstack/atlas-web
+  1 asset package(s): @gstack/atlas-assets
+  No dependency, import or workspace edge from code to assets.
+  dist/: not built, artefact rules skipped. Run `npm run build` first to check them.
+  rule 10: 3 brain file(s), 732 structure slot(s), each checked against the generated provenance manifest; 3 body file(s), 4815 structure slot(s), each checked against the body's structures.json; 2 volume-derived file(s), 4 slot(s), each checked against its set's record and a volume source in the registry.
+  0 asset-nc entries, none reachable in a default build; 7 entries citing upstream sources, all cleared.
+
+> @gstack/atlas@0.1.0 build
+> node packages/atlas-web/build.mjs
+
+✓ build → packages/atlas-web/dist (base /)
+  surface: atlas-research.js: 4 exports, asked for by 1 import site(s) in dist/app/ — app/viewer/corpus.js:4
+         0  .nojekyll
+    198675  app/alc.js
+     74823  app/app.js
+     56019  app/atlas-research.js
+      8378  app/style.css
+      3323  app/viewer/atlm.js
+      5424  app/viewer/camera.js
+      7037  app/viewer/cell.js
+     12534  app/viewer/corpus.js
+     12427  app/viewer/deeplink.js
+     13152  app/viewer/flags.js
+     14052  app/viewer/meshset.js
+      8298  app/viewer/nameindex.js
+      4534  app/viewer/regionpapers.js
+     15614  app/viewer/renderer.js
+     16896  app/viewer/research.js
+     10932  app/viewer/select.js
+     13631  app/viewer/state.js
+      7444  app/viewer/template.js
+      3467  app/viewer/vec.js
+     35702  assets/api/v1/index.json
+      6287  assets/api/v1/paper-regions/amunts-1999-broca.json
+     18317  assets/api/v1/paper-regions/amunts-2020-julich-brain.json
+      2497  assets/api/v1/paper-regions/bogduk-2012-lumbar-anatomy.json
+      8624  assets/api/v1/paper-regions/brodmann-1909-localisation.json
+      9516  assets/api/v1/paper-regions/buckner-2008-default-network.json
+      4298  assets/api/v1/paper-regions/catani-2008-virtual-dissection.json
+      2919  assets/api/v1/paper-regions/desikan-2006-gyral-parcellation.json
+     11519  assets/api/v1/paper-regions/eickhoff-2005-anatomy-toolbox.json
+      7855  assets/api/v1/paper-regions/epstein-1998-parahippocampal-place-area.json
+     27207  assets/api/v1/paper-regions/fan-2016-brainnetome.json
+     31295  assets/api/v1/paper-regions/fischl-2012-freesurfer.json
+      6113  assets/api/v1/paper-regions/fonov-2011-unbiased-templates.json
+     15946  assets/api/v1/paper-regions/glasser-2016-mmp1.json
+      4944  assets/api/v1/paper-regions/hagmann-2008-structural-core.json
+      6955  assets/api/v1/paper-regions/hickok-2007-dual-stream.json
+      4578  assets/api/v1/paper-regions/kanwisher-1997-fusiform-face-area.json
+     26430  assets/api/v1/paper-regions/mazziotta-2001-icbm.json
+     11159  assets/api/v1/paper-regions/mesulam-1998-sensation-to-cognition.json
+      5256  assets/api/v1/paper-regions/mitsuhashi-2009-bodyparts3d.json
+      3769  assets/api/v1/paper-regions/mungall-2012-uberon.json
+      3959  assets/api/v1/paper-regions/panjabi-1991-thoracic-morphometry.json
+      9124  assets/api/v1/paper-regions/penfield-1937-somatotopy.json
+     23139  assets/api/v1/paper-regions/power-2011-functional-areas.json
+     14195  assets/api/v1/paper-regions/price-2012-language-review.json
+      2525  assets/api/v1/paper-regions/raichle-2001-default-mode.json
+      3629  assets/api/v1/paper-regions/rosse-2003-fma.json
+      3704  assets/api/v1/paper-regions/tzourio-mazoyer-2002-aal.json
+      2529  assets/api/v1/paper-regions/van-essen-2013-hcp.json
+      4404  assets/api/v1/paper-regions/yeo-2011-intrinsic-networks.json
+      6861  assets/api/v1/paper-regions/zilles-2010-brodmann-centenary.json
+      1868  assets/api/v1/regions/bodyparts3d-bd/FMA13075.json
+      1039  assets/api/v1/regions/bodyparts3d-bd/FMA13295.json
+       994  assets/api/v1/regions/bodyparts3d-bd/FMA15900.json
+      2471  assets/api/v1/regions/bodyparts3d-bd/FMA16202.json
+      1653  assets/api/v1/regions/bodyparts3d-bd/FMA7088.json
+      1641  assets/api/v1/regions/bodyparts3d-bd/FMA7148.json
+      2331  assets/api/v1/regions/bodyparts3d-bd/FMA7197.json
+       962  assets/api/v1/regions/bodyparts3d-bd/FMA7198.json
+      1027  assets/api/v1/regions/bodyparts3d-bd/FMA7204.json
+      1024  assets/api/v1/regions/bodyparts3d-bd/FMA7205.json
+       993  assets/api/v1/regions/bodyparts3d-bd/FMA7309.json
+      1026  assets/api/v1/regions/bodyparts3d-bd/FMA7310.json
+      3113  assets/api/v1/regions/bodyparts3d-bd/FMA7647.json
+      2449  assets/api/v1/regions/bodyparts3d-bd/FMA9968.json
+     28097  assets/api/v1/regions/icbm152-2009c-cortex-lobes/101.json
+     11222  assets/api/v1/regions/icbm152-2009c-cortex-lobes/102.json
+     15739  assets/api/v1/regions/icbm152-2009c-cortex-lobes/103.json
+     13161  assets/api/v1/regions/icbm152-2009c-cortex-lobes/104.json
+      2700  assets/api/v1/regions/icbm152-2009c-cortex-lobes/106.json
+     28124  assets/api/v1/regions/icbm152-2009c-cortex-lobes/201.json
+     11232  assets/api/v1/regions/icbm152-2009c-cortex-lobes/202.json
+     15753  assets/api/v1/regions/icbm152-2009c-cortex-lobes/203.json
+     13173  assets/api/v1/regions/icbm152-2009c-cortex-lobes/204.json
+      2702  assets/api/v1/regions/icbm152-2009c-cortex-lobes/206.json
+      5442  assets/api/v1/regions/zanatomy-gross-anatomy/122.json
+      5448  assets/api/v1/regions/zanatomy-gross-anatomy/123.json
+      4534  assets/api/v1/regions/zanatomy-gross-anatomy/153.json
+      4538  assets/api/v1/regions/zanatomy-gross-anatomy/154.json
+      4444  assets/api/v1/regions/zanatomy-gross-anatomy/161.json
+      4448  assets/api/v1/regions/zanatomy-gross-anatomy/162.json
+      3315  assets/api/v1/regions/zanatomy-gross-anatomy/165.json
+      3318  assets/api/v1/regions/zanatomy-gross-anatomy/166.json
+      4439  assets/api/v1/regions/zanatomy-gross-anatomy/186.json
+      4443  assets/api/v1/regions/zanatomy-gross-anatomy/187.json
+      4424  assets/api/v1/regions/zanatomy-gross-anatomy/194.json
+      4428  assets/api/v1/regions/zanatomy-gross-anatomy/195.json
+      1315  assets/api/v1/regions/zanatomy-gross-anatomy/201.json
+      1316  assets/api/v1/regions/zanatomy-gross-anatomy/202.json
+      4458  assets/api/v1/regions/zanatomy-gross-anatomy/24.json
+      4462  assets/api/v1/regions/zanatomy-gross-anatomy/25.json
+      4369  assets/api/v1/regions/zanatomy-gross-anatomy/290.json
+      4373  assets/api/v1/regions/zanatomy-gross-anatomy/291.json
+      1973  assets/api/v1/regions/zanatomy-gross-anatomy/325.json
+      1975  assets/api/v1/regions/zanatomy-gross-anatomy/326.json
+      3326  assets/api/v1/regions/zanatomy-gross-anatomy/39.json
+      3329  assets/api/v1/regions/zanatomy-gross-anatomy/40.json
+      4449  assets/api/v1/regions/zanatomy-gross-anatomy/421.json
+      4453  assets/api/v1/regions/zanatomy-gross-anatomy/422.json
+      4469  assets/api/v1/regions/zanatomy-gross-anatomy/423.json
+      4473  assets/api/v1/regions/zanatomy-gross-anatomy/424.json
+      4474  assets/api/v1/regions/zanatomy-gross-anatomy/425.json
+      4478  assets/api/v1/regions/zanatomy-gross-anatomy/426.json
+      2055  assets/api/v1/regions/zanatomy-gross-anatomy/49.json
+      2057  assets/api/v1/regions/zanatomy-gross-anatomy/50.json
+      3310  assets/api/v1/regions/zanatomy-gross-anatomy/54.json
+      3313  assets/api/v1/regions/zanatomy-gross-anatomy/55.json
+      3326  assets/api/v1/regions/zanatomy-gross-anatomy/77.json
+      3329  assets/api/v1/regions/zanatomy-gross-anatomy/78.json
+     25167  assets/ATTRIBUTION.md
+   9009780  assets/body/bp3d-4066585/meshes.fullres.bin
+   1755776  assets/body/bp3d-4066585/meshes.lowres.bin
+    961345  assets/body/bp3d-4066585/structures.json
+    171304  assets/brain/icbm152-2009c/cortex.lowres.bin
+     46078  assets/brain/icbm152-2009c/lobes.json
+      6384  assets/brain/icbm152-2009c/structures.json
+   7270832  assets/brain/zanatomy-2929e94/meshes.fullres.bin
+   1121904  assets/brain/zanatomy-2929e94/meshes.lowres.bin
+    276318  assets/brain/zanatomy-2929e94/structures.json
+    446572  assets/geometry/placeholder-body-shell.lowres.json
+      1764  assets/labels/alc-1-levels.json
+     93088  assets/labels/coverings.json
+     14441  assets/labels/names.json
+      2697  assets/LICENSE
+      6605  assets/registration/mni-to-zanatomy-2929e94.json
+     61329  assets/templates/bp3d-4.0-adult-body-centroid.body.json
+      5250  assets/templates/icbm152-2009c-asym.brain-volume.json
+      8169  data/api/v1/index.json
+      5676  data/api/v1/papers/amunts-1999-broca.json
+      7015  data/api/v1/papers/amunts-2020-julich-brain.json
+      4336  data/api/v1/papers/bogduk-2012-lumbar-anatomy.json
+      6358  data/api/v1/papers/brodmann-1909-localisation.json
+      6126  data/api/v1/papers/buckner-2008-default-network.json
+      5990  data/api/v1/papers/catani-2008-virtual-dissection.json
+      5750  data/api/v1/papers/desikan-2006-gyral-parcellation.json
+      6756  data/api/v1/papers/eickhoff-2005-anatomy-toolbox.json
+      4660  data/api/v1/papers/epstein-1998-parahippocampal-place-area.json
+      4533  data/api/v1/papers/fan-2016-brainnetome.json
+      5993  data/api/v1/papers/fischl-2012-freesurfer.json
+      4564  data/api/v1/papers/fonov-2011-unbiased-templates.json
+      6463  data/api/v1/papers/glasser-2016-mmp1.json
+      5317  data/api/v1/papers/hagmann-2008-structural-core.json
+      6066  data/api/v1/papers/hickok-2007-dual-stream.json
+      4940  data/api/v1/papers/kanwisher-1997-fusiform-face-area.json
+      5373  data/api/v1/papers/mazziotta-2001-icbm.json
+      7014  data/api/v1/papers/mesulam-1998-sensation-to-cognition.json
+      6755  data/api/v1/papers/mitsuhashi-2009-bodyparts3d.json
+      4584  data/api/v1/papers/mungall-2012-uberon.json
+      5825  data/api/v1/papers/panjabi-1991-thoracic-morphometry.json
+      6541  data/api/v1/papers/penfield-1937-somatotopy.json
+      5366  data/api/v1/papers/power-2011-functional-areas.json
+      6514  data/api/v1/papers/price-2012-language-review.json
+      5253  data/api/v1/papers/raichle-2001-default-mode.json
+      5089  data/api/v1/papers/rosse-2003-fma.json
+      5568  data/api/v1/papers/tzourio-mazoyer-2002-aal.json
+      4412  data/api/v1/papers/van-essen-2013-hcp.json
+      5483  data/api/v1/papers/yeo-2011-intrinsic-networks.json
+      6563  data/api/v1/papers/zilles-2010-brodmann-centenary.json
+     30343  data/atlas-index.json
+    172881  data/research.json
+      8156  data/templates/anat-adult-p50.json
+      8146  data/templates/anat-child-7y.json
+      8530  data/templates/anat-hyperkyphotic-short-wide.json
+       204  data/templates/syn-brain-adult.json
+     11629  index.html
+     11358  LICENSE
+  22811645  total
+
+> @gstack/atlas@0.1.0 check:licences
+> node tools/check-licence-separation.mjs
+
+✓ licence separation
+  4 code package(s): @gstack/alc, @gstack/atlas-qa, @gstack/atlas-research, @gstack/atlas-web
+  1 asset package(s): @gstack/atlas-assets
+  No dependency, import or workspace edge from code to assets.
+  dist/: 60 file(s) outside assets/ checked against 105 asset payload(s), 8 windows each plus one per mesh structure per section, 44324 probes raw and base64.
+  rule 10: 3 brain file(s), 732 structure slot(s), each checked against the generated provenance manifest; 3 body file(s), 4815 structure slot(s), each checked against the body's structures.json; 2 volume-derived file(s), 4 slot(s), each checked against its set's record and a volume source in the registry.
+  0 asset-nc entries, none reachable in a default build; 7 entries citing upstream sources, all cleared.
+
+> @gstack/atlas@0.1.0 check:api-contract
+> node tools/check-research-api-contract.mjs
+
+✓ research api contract
+  served packages/atlas-web/dist at base / on http://127.0.0.1:37117, and read it back from /data/atlas-index.json alone.
+  123 queries: 120 documents equal the library's answer, 3 absent on both sides (404 = null).
+    the library answered from the seed and a region index resolved afresh from its inputs, not from anything served.
+  120 distinct relative links followed under /, all 200.
+  every one of the 120 files under data/api/v1/ and assets/api/v1/ was reached by a query.
+  self-test: a region document served with a link dropped is caught.
+
+> @gstack/atlas@0.1.0 perf:check
+> node tools/perf-budget.mjs
+
+✓ performance budget
+  reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+  calibration: 60 ms here vs 120 ms reference → parse times scaled by 1.99
+  raw parse: index 3.6 ms, assets 35.8 ms, name index build 21.8 ms (best of 15) on this machine
+    the name index app.js builds on the critical path, timed on its own lines and still inside the derived critical path: 57 structures, 3478 cells
+    its cold first attempt was 88.9 ms raw, against the 21.8 ms best-of-15 the limit is set against. The browser pays the cold one, once,
+    so the gated figure and derivedFirstInteractionMs are optimistic about this term. Not gated: one cold sample is too noisy for a limit.
+  files: 20 bundle, 39 index (2 of them the name index), 101 asset (5 of them the low-resolution brain, 2 the low-resolution body), 2 fetched lazily (1 brain, 1 body, full resolution)
+  first brain frame: 6 files, 958.7 KiB gzip, the viewer's decode 126.6 ms raw (best of 3)
+  
+  bundleGzipBytes                         149.8 KiB /    150.0 KiB   100% 
+  indexGzipBytes                           91.3 KiB /    256.0 KiB    36% 
+  lowResAssetGzipBytes                   2381.7 KiB /   2560.0 KiB    93% 
+  lowResBrainAssetGzipBytes               956.6 KiB /   1024.0 KiB    93% 
+  fullResBrainAssetGzipBytes             5184.7 KiB /   5376.0 KiB    96% 
+  lowResBodyAssetGzipBytes               1236.0 KiB /   1280.0 KiB    97% 
+  fullResBodyAssetGzipBytes              6366.1 KiB /   7168.0 KiB    89% 
+  indexParseMsNormalised                     7.2 ms /        40 ms    18% 
+  nameIndexBuildMsNormalised                  44 ms /       100 ms    44% 
+  nameIndexBuildUsPerCell              12.5 us/cell / 28.0 us/cell    45% 
+  lowResAssetParseMsNormalised                71 ms /       400 ms    18% 
+  derivedLowResAssetLoadMs                  1102 ms /      2500 ms    44% 
+  derivedFirstInteractionMs                  810 ms /      3500 ms    23% 
+  derivedFirstBrainFrameMs                  1416 ms /      3500 ms    40% 
+  
+  NOT MEASURED: the derived numbers in a real browser. That needs the
+  viewer and a headless browser in CI. Until then the 600 ms render allowance
+  in derivedFirstInteractionMs and derivedFirstBrainFrameMs is a stated placeholder, not an observation.
+
+> @gstack/atlas@0.1.0 verify:gates
+> node tools/verify-gates.mjs
+
+✓ conformance-fails
+    broke:   a conformance test that asserts something false
+    gate:    test count → alc-conformance (packages/alc): 1 of 173 tests failed.
+✓ tests-stop-being-discovered
+    broke:   a test file that quietly stops being picked up
+    gate:    test count → alc-conformance (packages/alc): ran 162 tests, expected at least 172.
+✓ zero-tests-run-silently
+    broke:   a test pattern that matches no files at all
+    gate:    test count → alc-conformance (packages/alc): ran 0 tests, expected at least 172.
+✓ historical-broken-glob
+    broke:   the `node --test test/` invocation that ran 0 of 37 real tests
+    gate:    test count → alc-conformance (packages/alc): 1 of 1 tests failed.
+✓ invented-identifier
+    broke:   a DOI hand-edited onto a paper, of the kind that is not checkable by eye
+    gate:    research dataset → the committed seed data has drifted from its curation source:
+✓ citation-report-row-dropped
+    broke:   a row deleted from the citation report, leaving a shipped identifier unjustified
+    gate:    research dataset → data/citation-report.json: 1 of 30 seed papers have no row:
+✓ real-index-binds-by-shape
+    allowed: a correctly shaped name index and covering index, both present
+    gate:    research dataset → self-test: the gate goes red on a hostile link and on an unknown structure id,
+✓ real-index-only-one-half
+    allowed: a covering index with no name index beside it
+    gate:    research dataset → self-test: the gate goes red on a hostile link and on an unknown structure id,
+✓ real-partition-loses-a-structure
+    broke:   an index that no longer carries one of the accessions the crosswalk claims
+    gate:    research dataset → seed (data/research-seed.json): partition body-bd declares status "real" but 2 of 26 of its non-coordinate mappings do not resolve against packages/atlas-assets/labels/names.json + packages/atlas-assets/labels/coverings.json (version bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da).
+✓ real-index-subregion-strays
+    broke:   a sub-region cell that is not a descendant of its structure in the real index
+    gate:    research dataset → seed (data/research-seed.json): partition body-bd has 1 curated sub-region(s) that do not lie wholly inside the structure they are filed under, in packages/atlas-assets/labels/names.json + packages/atlas-assets/labels/coverings.json:
+✓ placeholder-the-index-can-name
+    broke:   an index that has started naming a structure the dataset calls licence-blocked
+    gate:    research dataset → seed (data/research-seed.json): partition brain-parcellation is declared a placeholder, but the real index NAMES 3 of its structures (packages/atlas-assets/labels/names.json, version bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da).
+✓ audit-report-drift
+    broke:   one edited number in the published admissibility report
+    gate:    audit report drift → docs/alc-1-admissibility.md has drifted from the code that generates it.
+✓ template-folds-non-locally
+    broke:   a body template whose skin folds while the per-level audit calls it admissible
+    gate:    body template audit → gate-verify.body.json: fold scan FAILS: 310/54000 probed point(s) not claimed by exactly one level, across 8 level(s).
+✓ licence-dependency-edge
+    broke:   a code package taking a package.json dependency on the asset package
+    gate:    licence separation → packages/atlas-web/package.json: code package declares `dependencies.@gstack/atlas-assets`.
+✓ licence-import-edge
+    broke:   a code package importing geometry straight out of the asset package
+    gate:    licence separation → packages/atlas-web/src/gate-verify.js:2: code package imports "../../atlas-assets/geometry/placeholder-body-shell.lowres.json" from asset package @gstack/atlas-assets.
+✓ licence-inlined-bytes
+    broke:   a build that stringifies a mesh into the shipped JavaScript
+    gate:    licence separation → packages/atlas-web/dist/app/app.js: contains bytes from asset payload geometry/placeholder-body-shell.lowres.json.
+✓ licence-nc-segregated-is-not-a-failure
+    allowed: an asset-nc entry under ncPayloadDirs, citing the Allen source, merged into nothing
+    gate:    licence separation → 4 code package(s): @gstack/alc, @gstack/atlas-qa, @gstack/atlas-research, @gstack/atlas-web
+✓ licence-nc-in-default-build
+    broke:   an asset-nc payload filed under labels/, which every default build copies
+    gate:    licence separation → dist/assets/labels/gate-verify-nc.json is missing, but the asset exists in the package.
+✓ licence-nc-merged-into-share-alike
+    broke:   a correctly segregated NC payload whose bytes were also pasted into a BY-SA file
+    gate:    licence separation → dist/assets/labels/gate-verify-merged.json is missing, but the asset exists in the package.
+✓ licence-nc-in-dist
+    broke:   a build that copied the non-commercial directory into dist/assets/
+    gate:    licence separation → dist/assets/nc/ exists: the non-commercial directory reached a default build.
+✓ licence-uncleared-source
+    broke:   a BY-SA brain mesh entry citing the Z-Anatomy materials whose licence is undeclared
+    gate:    licence separation → dist/assets/labels/gate-verify-merged.json is missing, but the asset exists in the package.
+✓ licence-third-party-entry-cites-nothing
+    broke:   a BY-SA brain mesh entry that ships the Z-Anatomy materials and simply cites nothing
+    gate:    licence separation → dist/assets/labels/gate-verify-merged.json is missing, but the asset exists in the package.
+✓ licence-first-party-sources-not-an-array
+    broke:   a first-party entry citing a non-commercial source as a bare string instead of a list
+    gate:    licence separation → packages/atlas-assets/attribution.json: entry alc-1-level-index has `sources` "allen-brain-map"; `sources` must be an array of source ids.
+✓ perf-fast-runner-is-not-a-failure
+    allowed: a runner 4.8× faster than the reference, the DOG-29 case, with nothing else wrong
+    gate:    performance budget → reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+✓ perf-fast-runner-still-gates-on-certainty
+    broke:   an asset parse budget the raw time busts, on a runner too fast to normalise
+    gate:    performance budget → lowResAssetParseMsNormalised: at least 40 ms on the reference machine, against a budget of 1 ms.
+✓ perf-byte-budgets-survive-a-bad-calibration
+    broke:   a bundle over its byte budget on a runner too fast to normalise parse times
+    gate:    performance budget → bundleGzipBytes: 149.8 KiB against a budget of 1.0 KiB (14976%).
+✓ perf-unverified-declaration-is-load-bearing
+    broke:   the index parse line at a budget 10x under its own reading, with no unverified declaration over it
+    gate:    performance budget → indexParseMsNormalised: at least 4.1 ms on the reference machine, against a budget of 0.1 ms.
+✓ perf-unverified-declaration-suppresses-a-red-line
+    allowed: the same staged budget as the case above, with an unverified declaration over it
+    gate:    performance budget → reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+✓ perf-no-line-ships-ungated
+    allowed: the tree as committed, with nothing broken
+    gate:    performance budget → reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+✓ perf-unverified-needs-a-stated-reason
+    broke:   an unverified declaration with the reason emptied out
+    gate:    performance budget → Budget line(s) declared unverified without saying why: indexParseMsNormalised.
+✓ perf-name-index-absolute-line-cannot-be-deleted
+    broke:   ci/performance-budget.json with the nameIndexBuildMsNormalised line deleted
+    gate:    performance budget → The budget file and this gate's measurements do not name the same lines.
+✓ perf-name-index-per-cell-line-cannot-be-deleted
+    broke:   ci/performance-budget.json with the nameIndexBuildUsPerCell line deleted
+    gate:    performance budget → The budget file and this gate's measurements do not name the same lines.
+✓ perf-name-index-absent-is-not-a-failure
+    allowed: the built atlas index with its nameIndex descriptor removed, as on a base without one
+    gate:    performance budget → reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+✓ perf-name-index-growth-is-not-a-regression
+    broke:   the absolute name index line busted while the per-cell line is still comfortably within
+    gate:    performance budget → nameIndexBuildMsNormalised: 29 ms against a budget of 1 ms (2853%).
+✓ mesh-gate-reads-the-committed-files
+    allowed: the committed brain mesh files, unchanged
+    gate:    mesh assets → zanatomy-2929e94: provenance re-derived for all 437 structures; 244 of 244 shippable structures in both tiers; 193 held structures in neither.
+✓ mesh-structure-lost-to-decimation
+    broke:   a low tier with the left subthalamic nucleus decimated out of existence
+    gate:    mesh assets → Subthalamic nucleus.l (id 346) is in the source manifest but missing from the low tier.
+✓ mesh-structure-degenerate
+    broke:   the right substantia nigra kept in the table, every vertex collapsed onto one point
+    gate:    mesh assets → Substantia nigra.r (id 345): 150 degenerate triangle(s) in the low tier.
+✓ mesh-tract-flattened-to-a-sliver
+    broke:   the left corticospinal tract squashed flat onto one plane, triangle count untouched
+    gate:    mesh assets → Corticospinal tract.l (id 85): the low tier keeps 0.00 mm of its 26.91 mm x extent; it has collapsed toward a sliver.
+✓ mesh-published-error-drifts
+    broke:   structures.json claiming a 0.001 mm error for the left nucleus accumbens
+    gate:    mesh assets → Nucleus accumbens.l (id 220): structures.json publishes Hausdorff 0.001 mm / mean 0.063 mm; the files measure 0.301 / 0.063 mm.
+✓ mesh-registration-error-understated
+    broke:   the registration file claiming a 2 mm held-out error at the left red nucleus
+    gate:    mesh assets → registration: red-nucleus.l records errorMm 2; refitting gives 8.55.
+✓ mesh-qa-sample-drops-a-required-nucleus
+    broke:   the committed QA sample with the right subthalamic nucleus dropped
+    gate:    mesh assets → QA sample: the sample has 39 structures, not 40.
+✓ icbm-cortex-gate-reads-the-committed-files
+    allowed: the committed cortex, its structures.json and lobes.json, unchanged
+    gate:    icbm cortex → cortex.lowres.bin: 2 structures, left 8,446 triangles, right 8,618 triangles; 0 non-manifold edges, 0 inconsistently wound, 0 degenerate.
+✓ icbm-cortex-non-manifold-edge
+    broke:   the left hemisphere with its first triangle repeated, so each of its three edges is in three triangles
+    gate:    icbm cortex → structures.json says 171304 B; the file is 171312 B.
+✓ icbm-cortex-cut-called-validated
+    broke:   structures.json with cerebellarLeak.cutValidated set to true and nothing else changed
+    gate:    icbm cortex → structures.json labels the cerebrum cut validated (cutValidated true). Nothing has validated it: the leak is counted against one imperfect reference.
+✓ icbm-lobes-drawn-from-a-parcellation
+    broke:   lobes.json declaring Harvard-Oxford among the parcellations used to draw it
+    gate:    icbm cortex → lobes.json declares third-party parcellations used: ["harvard-oxford"]. The lobe labels are drawn from landmarks only (DOG-151); a parcellation is a separate label set.
+✓ licence-volume-set-cites-an-unrecorded-source
+    broke:   the cortex structures.json naming harvard-oxford among the left hemisphere's sources
+    gate:    licence separation → dist/assets/brain/icbm152-2009c/structures.json differs from its source in the asset package.
+✓ icbm-cortex-published-area-missing
+    broke:   structures.json with low.areaMm2 and low.enclosedVolumeCm3 deleted from both hemispheres (DOG-165 F2)
+    gate:    icbm cortex → Cerebral cortex.l (id 1): structures.json does not publish its area and enclosed volume (low.areaMm2 undefined, low.enclosedVolumeCm3 undefined).
+✓ licence-glb-set-relabelled-volume
+    broke:   the zanatomy structures.json with a held structure (id 0) appended, source.kind "volume", and brainproject-brain-glb pushed onto every structure's sources (DOG-165 F1, reproduction C)
+    gate:    licence separation → dist/assets/brain/zanatomy-2929e94/structures.json differs from its source in the asset package.
+✓ licence-glb-set-relabelled-volume-without-commit
+    broke:   the zanatomy structures.json relabelled source.kind "volume", its glb commit deleted and its upstream left as brainproject-brain-glb
+    gate:    licence separation → dist/assets/brain/zanatomy-2929e94/structures.json differs from its source in the asset package.
+✓ licence-rule-10-reads-the-brain-files
+    allowed: the committed brain mesh files and their attribution entry, unchanged
+    gate:    licence separation → 4 code package(s): @gstack/alc, @gstack/atlas-qa, @gstack/atlas-research, @gstack/atlas-web
+✓ licence-held-structure-in-cleared-file
+    broke:   the low tier with one slot relabelled as the left precentral gyrus, its entry citing only cleared sources
+    gate:    licence separation → dist/assets/brain/zanatomy-2929e94/meshes.lowres.bin differs from its source in the asset package.
+✓ licence-manifest-record-hand-cleared
+    broke:   the manifest record for the left precentral gyrus edited to `cleared`, and one low-tier slot relabelled as it
+    gate:    licence separation → dist/assets/brain/zanatomy-2929e94/meshes.lowres.bin differs from its source in the asset package.
+✓ mesh-origin-result-clears-a-failure
+    broke:   the origin-test result with the corpus callosum added to `clears`, its figures untouched
+    gate:    mesh assets → provenance: the provenance manifest does not re-derive: the origin result clears ["Corpus callosum","Midbrain.l","Midbrain.r"], but its own figures under the pre-registered thresholds clear ["Midbrain.l","Midbrain.r"] (negative control 0 of 17 passing, discriminating).
+✓ licence-one-structure-inlined-as-base64
+    broke:   a build that inlines only the left subthalamic nucleus's low-tier positions into app.js as base64
+    gate:    licence separation → packages/atlas-web/dist/app/app.js: contains bytes from asset payload brain/zanatomy-2929e94/meshes.lowres.bin, base64-encoded (structure id 346's positions).
+✓ licence-mesh-inlined-as-base64
+    broke:   a build that inlines the low-tier brain mesh into app.js as a base64 string
+    gate:    licence separation → packages/atlas-web/dist/app/app.js: contains bytes from asset payload brain/zanatomy-2929e94/meshes.lowres.bin, base64-encoded.
+✓ licence-mesh-copied-outside-assets
+    broke:   a build that also writes the full-tier brain mesh to dist/app/brain.bin
+    gate:    licence separation → packages/atlas-web/dist/app/brain.bin: contains bytes from asset payload brain/zanatomy-2929e94/meshes.fullres.bin.
+✓ perf-undeclared-lazy-tier-is-costed-as-low-res
+    broke:   a built structures.json whose full tier no longer says `loading: "lazy"`
+    gate:    performance budget → lowResAssetGzipBytes: 7566.4 KiB against a budget of 2560.0 KiB (296%).
+✓ perf-non-brain-asset-declared-lazy
+    broke:   a built brain structures.json that also declares the body template as a lazy tier
+    gate:    performance budget → A lazy declaration would take a file off every byte line:
+✓ body-mesh-gate-reads-the-committed-files
+    allowed: the committed body mesh files, unchanged
+    gate:    mesh assets → zanatomy-2929e94: provenance re-derived for all 437 structures; 244 of 244 shippable structures in both tiers; 193 held structures in neither.
+✓ body-skull-bone-lost-from-low-tier
+    broke:   a low tier with the frontal bone decimated out of existence
+    gate:    mesh assets → body: structures.json lists 1605 structures; the tiers hold 1604 (low) and 1605 (full).
+✓ body-limb-bone-degenerate
+    broke:   the left femur kept in the table, every vertex collapsed onto one point
+    gate:    mesh assets → body: Left femur (id 24475): 40 degenerate triangle(s) in the low tier.
+✓ body-rib-flattened-to-a-sliver
+    broke:   the left seventh rib squashed flat onto one plane, triangle count untouched
+    gate:    mesh assets → body: Left seventh rib (id 8256): the low tier keeps 0.00 mm of its 134.96 mm z extent; it has collapsed toward a sliver.
+✓ body-sliver-hidden-by-undrawn-vertices
+    broke:   the left seventh rib flattened onto one plane, with one undrawn vertex left at each end of the flattened axis
+    gate:    mesh assets → body: Left seventh rib (id 8256): 2 vertex(es) in the low tier that no triangle uses; every measure here must be of the drawn surface.
+✓ body-not-in-the-bd-frame
+    broke:   both body tiers mirrored front to back, as a build that kept the source's LPS chart would be
+    gate:    mesh assets → body: registration: BD C01 axis point re-derived from the shipped atlas is 73.95 mm from the template's, over 1 mm.
+✓ body-limb-given-an-address
+    broke:   body structures.json giving the left humerus a BD address
+    gate:    mesh assets → body: Left humerus (id 23131) carries an ALC-1 address; body meshes are display geometry, named and not addressed.
+✓ licence-rule-10-reads-the-body-files
+    allowed: the committed body mesh files and their attribution entry, unchanged
+    gate:    licence separation → 4 code package(s): @gstack/alc, @gstack/atlas-qa, @gstack/atlas-research, @gstack/atlas-web
+✓ licence-brain-carried-inside-the-body-file
+    broke:   the body low tier with one slot relabelled as an excluded brain concept
+    gate:    licence separation → dist/assets/body/bp3d-4066585/meshes.lowres.bin differs from its source in the asset package.
+✓ licence-body-entry-cites-the-wrong-source
+    broke:   the body attribution entry citing Z-Anatomy in place of BodyParts3D
+    gate:    licence separation → packages/atlas-assets/body/bp3d-4066585/meshes.lowres.bin: entry bp3d-body-meshes does not cite bodyparts3d, which Ascending aorta (id 3736) derives from.
+✓ licence-one-body-structure-inlined-as-base64
+    broke:   a build that inlines only the left femur's low-tier positions into app.js as base64
+    gate:    licence separation → packages/atlas-web/dist/app/app.js: contains bytes from asset payload body/bp3d-4066585/meshes.lowres.bin, base64-encoded (structure id 24475's positions).
+✓ perf-body-lines-read-the-built-body
+    allowed: the build as it stands
+    gate:    performance budget → reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+✓ perf-body-full-tier-undeclared-overruns-its-share
+    broke:   a built body structures.json whose full tier no longer says `loading: "lazy"`
+    gate:    performance budget → lowResAssetGzipBytes: 8747.9 KiB against a budget of 2560.0 KiB (342%).
+✓ perf-first-brain-frame-reads-the-built-brain
+    allowed: the build as it stands
+    gate:    performance budget → reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+✓ perf-first-brain-frame-reds-over-its-limit
+    broke:   a first-brain-frame limit staged well under this runner's own reading
+    gate:    performance budget → derivedFirstBrainFrameMs: 1361 ms against a budget of 100 ms (1361%).
+✓ perf-non-root-base-is-not-a-failure
+    allowed: a build at the Pages base /somasurfer, with nothing else wrong
+    gate:    performance budget → reference: mid-range laptop, 2026, 25 Mbit/s, 40 ms RTT
+✓ perf-non-root-base-still-needs-the-name-index
+    broke:   a build at the Pages base /somasurfer with its names.json deleted
+    gate:    performance budget → The atlas index points at a name index that is not in the build:
+✓ crosswalk-gate-reads-the-committed-files
+    allowed: the committed crosswalk, seed and brain assets, unchanged
+    gate:    crosswalk → self-test: red on a coordinate link labelled exact-term or tighter than the registration, an HCP-MMP1 link labelled
+✓ crosswalk-index-hand-edited
+    broke:   the committed region index claiming every paper is non-empty
+    gate:    crosswalk → packages/atlas-assets/crosswalk/region-index-zanatomy-2929e94.json does not match what its inputs produce.
+✓ crosswalk-hcp-entry-claims-exact
+    broke:   crosswalk.json filing HCP-MMP1 V1 as exact-term
+    gate:    crosswalk → crosswalk HCP-MMP1:V1: claims exact-term. HCP-MMP1 areas are never the structures they are projected onto,
+✓ crosswalk-target-misspelt
+    broke:   crosswalk.json naming the putamen "Putamen nucleus"
+    gate:    crosswalk → crosswalk ATLAS-LABEL:putamen: target "Putamen nucleus" is not a structure of zanatomy-gross-anatomy zanatomy-2929e94, shipped or held.
+✓ crosswalk-seed-term-unmapped
+    broke:   crosswalk.json with the thalamus entry deleted
+    gate:    crosswalk → mapping map:fan-2016-brainnetome/subcortical-subdivision/atlas-label-thalamus: term ATLAS-LABEL:thalamus has no crosswalk entry, and no representation is keyed by ATLAS-LABEL.
+✓ crosswalk-coverage-below-floor
+    broke:   crosswalk.json filing the hippocampus under the held precentral gyrus (6 mappings lost)
+    gate:    crosswalk → coverage floor: 103 of 170 mappings and 29 of 30 papers reach a named structure,
+✓ crosswalk-lobe-label-renamed
+    broke:   lobes.json calling the limbic lobe "Cingulate lobe", in its values and on both sides
+    gate:    crosswalk → crosswalk HCP-MMP1:RSC: target "Limbic lobe" is not a structure of icbm152-2009c-cortex-lobes icbm152-2009c-cortex-lobes, shipped or held.
+✓ crosswalk-registration-precision-below-floor
+    broke:   the registration summary claiming a 1 mm held-out error
+    gate:    crosswalk → precision floor: the registration claims a held-out error of ±1 mm, below the committed floor of ±7 mm.
+✓ research-api-reads-the-committed-tree
+    allowed: the committed region tree, seed and region index, unchanged
+    gate:    research api → self-test: red on a region document labelled Apache-2.0, a link whose how and precision disagree, an absolute href,
+✓ research-api-region-doc-hand-edited
+    broke:   a committed region document renaming its structure
+    gate:    research api → packages/atlas-assets/api/v1/regions/bodyparts3d-bd/FMA13075.json does not match what its inputs produce.
+✓ research-api-stray-endpoint
+    broke:   a region document nobody generated, dropped into the committed tree
+    gate:    research api → packages/atlas-assets/api/v1/regions/gate-verify/0.json is not an endpoint the API answers for.
+✓ research-api-stale-against-inputs
+    broke:   crosswalk.json filing the hippocampus under the held precentral gyrus, with no regeneration
+    gate:    research api → region index: lists 58 region(s); the live index has 56 with papers.
+✓ research-api-contract-at-pages-base
+    allowed: a build at the Pages base, unchanged
+    gate:    research api contract → served packages/atlas-web/.gate-verify-base/dist at base /somasurfer/ on http://127.0.0.1:37669, and read it back from /somasurfer/data/atlas-index.json alone.
+✓ research-api-contract-served-doc-differs
+    broke:   dist/assets/api/v1/ serving a region document with one link dropped
+    gate:    research api contract → region(bodyparts3d-bd/FMA13075): the served answer differs from the library's.
+✓ research-api-contract-paper-missing
+    broke:   dist/data/api/v1/papers/ missing one paper document
+    gate:    research api contract → paper(paper:amunts-1999-broca): the served answer differs from the library's (404).
+
+✓ verify gates: 72 deliberate breakage(s), 72 caught; 18 non-defect(s), 18 let through.
+
+EXIT 0
