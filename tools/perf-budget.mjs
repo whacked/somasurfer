@@ -715,7 +715,7 @@ const fmt = (key, v) =>
         : `${v >= 10 || Number.isInteger(v) ? v.toFixed(0) : Number(v.toPrecision(2))} ms`;
 
 /**
- * The fraction of a limit past which a passing line is reported as tight.
+ * The fraction of a limit past which a line not over it is reported as tight.
  *
  * Required rather than defaulted, for the reason an unclassified budget line
  * fails above: a number that decides what the gate says about a 98%-full budget
@@ -789,6 +789,7 @@ const notEvaluated = [];
 const unverified = [];
 const tight = [];
 const tightLines = [];
+let tightIncludesFloor = false;
 const verdicts = {};
 
 for (const [key, spec] of Object.entries(budget.budgets)) {
@@ -820,7 +821,9 @@ for (const [key, spec] of Object.entries(budget.budgets)) {
   // a measurement of the line the key is named after.
   verdicts[key] = { kind, verdict, reported: value };
 
-  // Nearly full, but not over: a passing line with little room left. Deliberately
+  // Nearly full, but not over: a line under its limit with little room left. An
+  // `at-least` line under its limit is `not evaluated`, not passing — its floor
+  // is under the limit, and the line itself may already be over. Deliberately
   // not part of the verdict above — nothing about the build's acceptability turns
   // on it, only what the run says out loud.
   // An unverified line already prints its utilisation in its own block, against
@@ -857,6 +860,7 @@ for (const [key, spec] of Object.entries(budget.budgets)) {
     // `at-least` lines know a floor on what is spent, so what is *left* is a
     // ceiling. Both figures are hedged in the direction the bound allows.
     const atLeast = kind === 'at-least';
+    if (atLeast) tightIncludesFloor = true;
     tight.push(key);
     tightLines.push(
       `  ${key}: ${atLeast ? 'at least ' : ''}${(used * 100).toFixed(0)}% of ${fmt(key, spec.limit)}, ` +
@@ -999,13 +1003,20 @@ const detail = [
         ``,
       ]
     : []),
-  // Said on a passing run, which is the only kind of run it can be said on.
-  // A line this full is a fact about the build that the pass/fail verdict has
-  // no way to carry.
+  // Said on a run that exits 0. A line this full is a fact about the build that
+  // the pass/fail verdict has no way to carry. "Not over" rather than "passing":
+  // an `at-least` line here is `not evaluated`, and its floor being under the
+  // limit is consistent with the line itself being over.
   ...(tight.length > 0
     ? [
-        `TIGHT — within ${((1 - warnAtFraction) * 100).toFixed(0)}% of the limit, passing but nearly full:`,
+        `TIGHT — within ${((1 - warnAtFraction) * 100).toFixed(0)}% of the limit, not over but nearly full:`,
         ...tightLines,
+        ...(tightIncludesFloor
+          ? [
+              `An "at least" line is a lower bound and its verdict is not evaluated: it is`,
+              `not known to pass, and may already be over its limit.`,
+            ]
+          : []),
         `This is not a failure and not a limit: no verdict and no exit status changed.`,
         `The room on these lines is nearly spent, and the next addition to one of them`,
         `is what turns this build red — for whoever makes it, not for whoever spent`,
@@ -1090,9 +1101,10 @@ const report = {
   unverified: Object.fromEntries(
     [...UNVERIFIED_LINES].map((k) => [k, { ...budget.budgets[k].unverified, measured: measurements[k] }]),
   ),
-  // Lines that pass with little room left. Advisory by construction: a consumer
-  // deciding whether the build is acceptable reads `verdicts`, and will find
-  // nothing here that contradicts it. `tight` lists only lines whose figure can
+  // Lines not over their limit with little room left. Advisory by construction:
+  // a consumer deciding whether the build is acceptable reads `verdicts`, which
+  // stays the authority — an `at-least` line listed here has verdict
+  // `not evaluated`, not `within`, and may already be over. `tight` lists only lines whose figure can
   // establish fullness, so an `at-most` line is never in it however high its
   // utilisation reads.
   headroom: { warnAtFraction, tight },
