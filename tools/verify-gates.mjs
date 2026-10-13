@@ -2283,7 +2283,7 @@ const CASES = [
     criterion: 'a line nearly at its limit is reported as tight on a run that still passes',
     mustPass: true,
     expect: [
-      /TIGHT — within 10% of the limit, passing but nearly full:/,
+      /TIGHT — within 10% of the limit, not over but nearly full:/,
       /bundleGzipBytes: 9[45]% of [\d.]+ KiB, [\d.]+ KiB left/,
       /not a failure and not a limit/,
       /Do not raise the\s+limit to fit/,
