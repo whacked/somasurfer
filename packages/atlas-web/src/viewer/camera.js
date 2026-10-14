@@ -50,6 +50,22 @@ export const rotate = (camera, dYaw, dPitch) => ({
   pitch: Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, camera.pitch + dPitch)),
 });
 
+/** Radians of orbit per CSS pixel of drag. */
+export const ORBIT_RAD_PER_PX = 0.008;
+
+/**
+ * Orbit by a pointer drag of `(dx, dy)` CSS pixels, y down.
+ *
+ * By default the model follows the pointer, as if grabbed: drag right and its
+ * near face moves right (seen from above the model turns anticlockwise), drag
+ * down and its near face moves down. `invert` swaps both axes, so the drag
+ * steers the camera round the model instead — the viewer's original behaviour.
+ */
+export function orbitByDrag(camera, dx, dy, { invert = false } = {}) {
+  const sign = invert ? 1 : -1;
+  return rotate(camera, sign * dx * ORBIT_RAD_PER_PX, -sign * dy * ORBIT_RAD_PER_PX);
+}
+
 /**
  * Zoom by a multiplicative factor, clamped to a sane span of the scene.
  *

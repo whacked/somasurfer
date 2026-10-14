@@ -505,10 +505,14 @@ is for whatever reads it later, and it has to survive being read carelessly:
 - `calibration.decisionBasis` is `normalised` or `one-sided-bound-from-raw`.
   Anything branching on the report should branch on that.
 - `headroom` is `{ warnAtFraction, tight }`, where `tight` lists the lines that
-  passed with less than `1 - warnAtFraction` of their limit to spare. Advisory
-  by construction: a consumer deciding whether the build is acceptable reads
-  `verdicts`, and will find nothing in `headroom` that contradicts it. A line
-  known only as an upper bound is never listed, however high its `utilisation`.
+  are not over their limit and have less than `1 - warnAtFraction` of it to
+  spare. "Not over" is not "passed": a line known only as a lower bound
+  (`at-least`) is listed when its floor is that close, and its verdict is
+  `not evaluated`, because a floor under the limit is consistent with the line
+  being over. Advisory by construction: a consumer deciding whether the build is
+  acceptable reads `verdicts`, which is the authority on every listed line. A
+  line known only as an upper bound is never listed, however high its
+  `utilisation`.
 
 Byte lines are exact on every runner and are never nulled; nulling them would
 be the fallback swallowing what it is supposed to gate.
