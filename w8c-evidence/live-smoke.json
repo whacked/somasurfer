@@ -1,0 +1,502 @@
+{
+ "summary": {
+  "url": "https://whacked.github.io/somasurfer/",
+  "sha": "abbf14988c129eac20e5dc5b424ab2814449f120",
+  "at": "2026-10-13T04:57:16.887Z",
+  "pass": 14,
+  "fail": 0,
+  "unverified": 0
+ },
+ "rows": [
+  {
+   "id": "deployed-sha",
+   "status": "pass",
+   "detail": "github-pages deployment 7029853538 at abbf149 (success, 2026-10-13T04:11:56Z); main at abbf149; all 167 files of a local --base /somasurfer/ build of it served byte for byte",
+   "evidence": {
+    "sha": "abbf14988c129eac20e5dc5b424ab2814449f120",
+    "deployment": {
+     "id": 7029853538,
+     "sha": "abbf14988c129eac20e5dc5b424ab2814449f120",
+     "created_at": "2026-10-13T04:11:56Z",
+     "state": "success"
+    },
+    "main": "abbf14988c129eac20e5dc5b424ab2814449f120",
+    "files": 167,
+    "differ": []
+   }
+  },
+  {
+   "id": "region-papers",
+   "status": "pass",
+   "detail": "icbm152-2009c.103 (icbm152-2009c-cortex-lobes/103) panel lists its papers; clicking paper:buckner-2008-default-network reveals it, and its structures list icbm152-2009c-cortex-lobes/103 back",
+   "evidence": {
+    "structure": {
+     "key": "icbm152-2009c.103",
+     "name": "Temporal lobe.l",
+     "title": "Temporal lobe (left)",
+     "label": "Temporal lobe",
+     "category": "cortex",
+     "parts": [
+      "left"
+     ],
+     "regionKey": "icbm152-2009c-cortex-lobes/103"
+    },
+    "paper": "paper:buckner-2008-default-network",
+    "errors": []
+   }
+  },
+  {
+   "id": "paper-regions",
+   "status": "pass",
+   "detail": "paper:buckner-2008-default-network → icbm152-2009c-cortex-lobes/101 → selected icbm152-2009c.101, panel \"Frontal lobe (left)\", https://whacked.github.io/somasurfer/?atlas=brain&s=icbm152-2009c.101&cam=0.6%2C0.18%2C466.01%2C-34.87%2C15.66%2C24.6",
+   "evidence": {
+    "target": {
+     "id": "paper:buckner-2008-default-network",
+     "region": {
+      "key": "icbm152-2009c-cortex-lobes/101",
+      "name": "Frontal lobe.l",
+      "atlas": "brain",
+      "exact": false,
+      "links": [
+       {
+        "mappingId": "map:buckner-2008-default-network/prefrontal-hub/hcp-mmp1-9-46d",
+        "how": "crosswalk",
+        "approximate": true,
+        "precision": "approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus.",
+        "source": "HCP-MMP1 area Area 9-46d (dorsolateral prefrontal) (HCP-MMP1:9-46d)",
+        "notes": [
+         "the term and this structure only overlap",
+         "also maps to held structures not drawn here: Middle frontal gyrus",
+         "the paper names no side; left is one of the structure's sides"
+        ]
+       }
+      ],
+      "structures": [
+       "icbm152-2009c.101"
+      ]
+     },
+     "selected": "icbm152-2009c.101",
+     "panel": "Frontal lobe (left)",
+     "url": "https://whacked.github.io/somasurfer/?atlas=brain&s=icbm152-2009c.101&cam=0.6%2C0.18%2C466.01%2C-34.87%2C15.66%2C24.6"
+    },
+    "errors": []
+   }
+  },
+  {
+   "id": "api-paper",
+   "status": "pass",
+   "detail": "https://whacked.github.io/somasurfer/data/api/v1/papers/buckner-2008-default-network.json → 200 application/json; charset=utf-8, kind paper, id paper:buckner-2008-default-network, valid against atlas-research-api/1 (CORS *)",
+   "evidence": {
+    "url": "https://whacked.github.io/somasurfer/data/api/v1/papers/buckner-2008-default-network.json",
+    "status": 200,
+    "type": "application/json; charset=utf-8",
+    "cors": "*",
+    "id": "paper:buckner-2008-default-network",
+    "title": "The brain's default network: anatomy, function, and relevance to disease"
+   }
+  },
+  {
+   "id": "api-region",
+   "status": "pass",
+   "detail": "https://whacked.github.io/somasurfer/assets/api/v1/regions/icbm152-2009c-cortex-lobes/103.json → 200 application/json; charset=utf-8, kind region, key icbm152-2009c-cortex-lobes/103, 7 papers, valid; each paper's paper-regions lists it back (CORS *)",
+   "evidence": {
+    "url": "https://whacked.github.io/somasurfer/assets/api/v1/regions/icbm152-2009c-cortex-lobes/103.json",
+    "status": 200,
+    "type": "application/json; charset=utf-8",
+    "cors": "*",
+    "key": "icbm152-2009c-cortex-lobes/103",
+    "papers": [
+     "paper:buckner-2008-default-network",
+     "paper:epstein-1998-parahippocampal-place-area",
+     "paper:hickok-2007-dual-stream",
+     "paper:kanwisher-1997-fusiform-face-area",
+     "paper:mazziotta-2001-icbm",
+     "paper:mesulam-1998-sensation-to-cognition",
+     "paper:price-2012-language-review"
+    ]
+   }
+  },
+  {
+   "id": "api-unreadable",
+   "status": "pass",
+   "detail": "?fail=api and two malformed documents (icbm152-2009c-cortex-lobes/103, paper:buckner-2008-default-network): both panels say \"could not be read (…)\", name, reveal and the next selection still work, and icbm152-2009c.101's papers still list",
+   "evidence": {
+    "failed": {
+     "regionPapers": {
+      "state": "failed",
+      "text": "Papers on this structureThe research API could not be read (forced by ?fail=api). Names, addresses and geometry are unaffected."
+     },
+     "structureName": "Temporal lobe (left)",
+     "paperRegions": {
+      "state": "failed",
+      "text": "Structures this paper maps toThe research API could not be read (forced by ?fail=api). Names, addresses and geometry are unaffected."
+     },
+     "revealed": [
+      "paper:buckner-2008-default-network"
+     ],
+     "after": {
+      "key": "icbm152-2009c.101",
+      "selected": "icbm152-2009c.101",
+      "name": "Frontal lobe (left)",
+      "regionPapers": {
+       "state": "failed",
+       "text": "Papers on this structureThe research API could not be read (forced by ?fail=api). Names, addresses and geometry are unaffected."
+      },
+      "urlChanged": true
+     },
+     "errors": []
+    },
+    "malformed": {
+     "served": [
+      "https://whacked.github.io/somasurfer/assets/api/v1/regions/icbm152-2009c-cortex-lobes/103.json",
+      "https://whacked.github.io/somasurfer/assets/api/v1/paper-regions/buckner-2008-default-network.json"
+     ],
+     "regionPapers": {
+      "state": "failed",
+      "text": "Papers on this structureThe research API could not be read (malformed document: Cannot read properties of null (reading 'map')). Names, addresses and geometry are unaffected."
+     },
+     "structureName": "Temporal lobe (left)",
+     "paperRegions": {
+      "state": "failed",
+      "text": "Structures this paper maps toThe research API could not be read (malformed document: Cannot read properties of null (reading 'map')). Names, addresses and geometry are unaffected."
+     },
+     "revealed": [
+      "paper:buckner-2008-default-network"
+     ],
+     "after": {
+      "key": "icbm152-2009c.101",
+      "selected": "icbm152-2009c.101",
+      "name": "Frontal lobe (left)",
+      "regionPapers": {
+       "state": "listed",
+       "text": "Papers on this structureicbm152-2009c-cortex-lobes/101, linked by 12 paper(s) through crosswalk-2026.10.3.Broca's region revisited: cytoarchitecture and intersubject variability 1999The cytoarchitectonic borders of areas 44 and 45 vary markedly between individuals, most at the posterior border of area 44.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidescrosswalk HCP-MMP1 area Area 45 (pars triangularis) (HCP-MMP1:45): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Triangular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesArea 44 shows a left-greater-than-right asymmetry in volume, while area 45 does not show the same pattern.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesJulich-Brain: a 3D probabilistic atlas of the human brain's cytoarchitecture 2020Cytoarchitectonic areas are published as probabilistic maps rather than single boundaries, quantifying intersubject variability.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidescrosswalk HCP-MMP1 area Area 45 (pars triangularis) (HCP-MMP1:45): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Triangular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesVergleichende Lokalisationslehre der Grosshirnrinde 1909Area 44 is defined cytoarchitectonically in the pars opercularis of the inferior frontal gyrus.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesArea 45 is defined cytoarchitectonically in the pars triangularis of the inferior frontal gyrus.crosswalk HCP-MMP1 area Area 45 (pars triangularis) (HCP-MMP1:45): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Triangular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesArea 4 is defined by its giant pyramidal cells in the precentral region.crosswalk HCP-MMP1 area Primary motor cortex (area 4) (HCP-MMP1:4): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus.; the term and this structure only overlap; also maps to held structures not drawn here: Central sulcus, Precentral gyrus; the paper names no side; left is one of the structure's sidesThe brain's default network: anatomy, function, and relevance to disease 2008Dorsomedial and dorsolateral prefrontal regions contribute to the network's anterior component.crosswalk HCP-MMP1 area Area 9-46d (dorsolateral prefrontal) (HCP-MMP1:9-46d): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus.; the term and this structure only overlap; also maps to held structures not drawn here: Middle frontal gyrus; the paper names no side; left is one of the structure's sidesA diffusion tensor imaging tractography atlas for virtual in vivo dissections 2008The arcuate fasciculus is reconstructed as connecting frontal and temporoparietal regions.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesA new SPM toolbox for combining probabilistic cytoarchitectonic maps and functional imaging data 2005Probabilistic cytoarchitectonic maps are combined with functional images so an activation can be assigned to areas with probabilities.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidescrosswalk HCP-MMP1 area Area 45 (pars triangularis) (HCP-MMP1:45): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Triangular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesA maximum probability map assigns each voxel to one area, which discards the probabilities it was derived from.crosswalk HCP-MMP1 area Primary motor cortex (area 4) (HCP-MMP1:4): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus.; the term and this structure only overlap; also maps to held structures not drawn here: Central sulcus, Precentral gyrus; the paper names no side; left is one of the structure's sidesA multi-modal parcellation of human cerebral cortex 2016The cortex is divided into 180 parcels per hemisphere using multi-modal gradients rather than a single measure.crosswalk HCP-MMP1 area Area 55b (HCP-MMP1:55b): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 55b lies at the junction of the posterior middle frontal gyrus and the precentral gyrus, so both are named.; the term and this structure only overlap; also maps to held structures not drawn here: Middle frontal gyrus, Precentral gyrus; the paper names no side; left is one of the structure's sidescrosswalk HCP-MMP1 area Superior frontal language area (HCP-MMP1:SFL): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. SFL lies on the superior frontal gyrus near its medial border.; the term and this structure only overlap; also maps to held structures not drawn here: Superior frontal gyrus; the paper names no side; left is one of the structure's sidesBroca's region is subdivided into areas 44 and 45, with the border placed on multi-modal gradients rather than gross landmarks.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidescrosswalk HCP-MMP1 area Area 45 (pars triangularis) (HCP-MMP1:45): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Triangular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesFrontopolar and dorsolateral prefrontal cortex are divided into several parcels that gross anatomy does not separate.crosswalk HCP-MMP1 area Area 10d (frontopolar) (HCP-MMP1:10d): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 10d is dorsal frontopolar cortex; the nearest Z-Anatomy unit is the frontopolar gyrus and sulcus.; the term and this structure only overlap; also maps to held structures not drawn here: Transverse frontopolar gyrus and sulcus*; the paper names no side; left is one of the structure's sidescrosswalk HCP-MMP1 area Area 9-46d (dorsolateral prefrontal) (HCP-MMP1:9-46d): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus.; the term and this structure only overlap; also maps to held structures not drawn here: Middle frontal gyrus; the paper names no side; left is one of the structure's sidesThe cortical organization of speech processing 2007A dorsal stream maps acoustic speech onto articulatory representations and is left-dominant.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesFrom sensation to cognition 1998Heteromodal cortex in parietal and prefrontal regions receives convergent input from several unimodal areas.crosswalk HCP-MMP1 area Area 9-46d (dorsolateral prefrontal) (HCP-MMP1:9-46d): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 9-46d lies on the dorsal middle frontal gyrus.; the term and this structure only overlap; also maps to held structures not drawn here: Middle frontal gyrus; the paper names no side; left is one of the structure's sidesSomatic motor and sensory representation in the cerebral cortex of man as studied by electrical stimulation 1937Electrical stimulation of the precentral gyrus produces movement, ordered somatotopically along the strip.crosswalk HCP-MMP1 area Primary motor cortex (area 4) (HCP-MMP1:4): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus.; the term and this structure only overlap; also maps to held structures not drawn here: Central sulcus, Precentral gyrus; the paper names no side; left is one of the structure's sidesThe evidence is intraoperative stimulation in patients, which gives causal but not population-representative localisation.crosswalk HCP-MMP1 area Frontal opercular area 4 (HCP-MMP1:FOP4): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. FOP4 lies on the inner frontal operculum toward the circular sulcus of the insula; both are named and neither is the area.; the term and this structure only overlap; also maps to held structures not drawn here: Circular sulcus of insula, Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidesA review and synthesis of the first 20 years of PET and fMRI studies of heard speech, spoken language and reading 2012Speech production engages inferior frontal and motor regions, with the inferior frontal contribution varying by task.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidescrosswalk HCP-MMP1 area Primary motor cortex (area 4) (HCP-MMP1:4): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 4 lies on the precentral gyrus and into the anterior bank of the central sulcus.; the term and this structure only overlap; also maps to held structures not drawn here: Central sulcus, Precentral gyrus; the paper names no side; left is one of the structure's sidesCentenary of Brodmann's map: conception and fate 2010Brodmann's map is widely used as a labelling scheme despite being based on one hemisphere's cytoarchitecture.crosswalk HCP-MMP1 area Area 44 (pars opercularis) (HCP-MMP1:44): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 44 occupies most of the pars opercularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Opercular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sidescrosswalk HCP-MMP1 area Area 45 (pars triangularis) (HCP-MMP1:45): approximate: an HCP-MMP1 area is a multimodal cortical parcel; it is smaller than the gyrus it is projected onto and its border follows no sulcus. Area 45 occupies most of the pars triangularis, not all of it.; the term and this structure only overlap; also maps to held structures not drawn here: Triangular part of inferior frontal gyrus; the paper names no side; left is one of the structure's sides"
+      },
+      "urlChanged": true
+     },
+     "errors": []
+    }
+   }
+  },
+  {
+   "id": "frame-stays-in-its-atlas",
+   "status": "pass",
+   "detail": "paper:mazziotta-2001-icbm revealed in the body with its meshes loading, then nav-brain: the brain camera is the no-paper camera exactly, and the paper stays revealed; revealed in the brain itself it is framed (camera moves)",
+   "evidence": {
+    "paperId": "paper:mazziotta-2001-icbm",
+    "control": {
+     "statusAtReveal": {
+      "body": "loading",
+      "brain": "pending"
+     },
+     "atlas": "brain",
+     "loaded": true,
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 540.0038293493311,
+      "target": [
+       0,
+       -17.5,
+       5
+      ]
+     },
+     "stillRevealed": [],
+     "errors": []
+    },
+    "test": {
+     "statusAtReveal": {
+      "body": "loading",
+      "brain": "pending"
+     },
+     "revealed": [
+      "paper:mazziotta-2001-icbm"
+     ],
+     "atlas": "brain",
+     "loaded": true,
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 540.0038293493311,
+      "target": [
+       0,
+       -17.5,
+       5
+      ]
+     },
+     "stillRevealed": [
+      "paper:mazziotta-2001-icbm"
+     ],
+     "errors": []
+    },
+    "own": {
+     "statusAtReveal": {
+      "body": "pending",
+      "brain": "loading"
+     },
+     "revealed": [
+      "paper:mazziotta-2001-icbm"
+     ],
+     "loaded": true,
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 599.3143294921452,
+      "target": [
+       0.3032493591308594,
+       -38.23902702331543,
+       1.178750991821289
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "brain-pick",
+   "status": "pass",
+   "detail": "258 brain structures drawn (full tier), 629278 px; tap 1 selected icbm152-2009c.204, panel \"Occipital lobe (right)\"",
+   "evidence": {
+    "meshStatus": {
+     "body": "low",
+     "brain": "full"
+    },
+    "drawn": 258,
+    "tries": [
+     {
+      "fx": 0.5,
+      "fy": 0.5,
+      "key": "icbm152-2009c.204",
+      "panel": "Occipital lobe (right)"
+     }
+    ],
+    "picked": {
+     "key": "icbm152-2009c.204",
+     "panel": "Occipital lobe (right)",
+     "at": {
+      "x": 449.5,
+      "y": 350.5
+     },
+     "name": "Occipital lobe.r",
+     "title": "Occipital lobe (right)",
+     "label": "Occipital lobe",
+     "category": "cortex",
+     "parts": [
+      "right"
+     ],
+     "regionKey": "icbm152-2009c-cortex-lobes/204"
+    }
+   }
+  },
+  {
+   "id": "body-view-loads",
+   "status": "pass",
+   "detail": "body atlas on bp3d-4.0-adult-body-centroid (full tier), 552258 px painted in 2504 colours",
+   "evidence": {
+    "boot": {
+     "ready": true,
+     "atlas": "body",
+     "template": "bp3d-4.0-adult-body-centroid",
+     "renderer": true,
+     "base": "https://whacked.github.io/somasurfer/?cam=0.6%2C0.18%2C3623.8%2C-0.7%2C100.98%2C786.67",
+     "meshStatus": {
+      "body": "full",
+      "brain": "low"
+     }
+    },
+    "painted": 552258,
+    "bbox": {
+     "minX": 0,
+     "minY": 1,
+     "maxX": 899,
+     "maxY": 614
+    }
+   }
+  },
+  {
+   "id": "click-gives-address-and-ranked-names",
+   "status": "pass",
+   "detail": "BD-S01-02O-75 → 2 names, top FMA7163 (1)",
+   "evidence": {
+    "clicked": {
+     "ok": true,
+     "address": "BD-S01-02O-75",
+     "atlas": "body",
+     "names": [
+      {
+       "id": "FMA7163",
+       "fraction": 1
+      },
+      {
+       "id": "FMA9611",
+       "fraction": 1
+      }
+     ]
+    },
+    "namesEl": {
+     "covered": "true",
+     "text": "Names bp3d-4.0+uberon-uberon/releases/2026-10-01/uberon-basic.owl+8772477294da100.0%skin100.0%femurContained by: skin › femurFractions are dimensionless frame measure: exact, and independent of any template."
+    }
+   }
+  },
+  {
+   "id": "pasted-deep-link-restores-view",
+   "status": "pass",
+   "detail": "https://whacked.github.io/somasurfer/?a=BD-S01-02O-75&cam=0.6%2C0.18%2C3623.8%2C-0.7%2C100.98%2C786.67 reopened in a fresh page restores an identical view() and selection BD-S01-02O-75",
+   "evidence": {
+    "href": "https://whacked.github.io/somasurfer/?a=BD-S01-02O-75&cam=0.6%2C0.18%2C3623.8%2C-0.7%2C100.98%2C786.67",
+    "before": {
+     "atlas": "body",
+     "address": "BD-S01-02O-75",
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 3623.7960589433424,
+      "target": [
+       -0.702972412109375,
+       100.97713851928711,
+       786.6670188903809
+      ]
+     },
+     "layers": {
+      "hidden": [],
+      "isolated": null,
+      "opacity": {}
+     },
+     "labels": true,
+     "structure": null,
+     "atlasExplicit": false
+    },
+    "after": {
+     "atlas": "body",
+     "address": "BD-S01-02O-75",
+     "camera": {
+      "yaw": 0.6,
+      "pitch": 0.18,
+      "distance": 3623.8,
+      "target": [
+       -0.7,
+       100.98,
+       786.67
+      ]
+     },
+     "layers": {
+      "hidden": [],
+      "isolated": null,
+      "opacity": {}
+     },
+     "labels": true,
+     "structure": null,
+     "atlasExplicit": false
+    }
+   }
+  },
+  {
+   "id": "attribution-present-on-live-site",
+   "status": "pass",
+   "detail": "visible; DBCLS + BodyParts3D credited; 3 links all 200",
+   "evidence": {
+    "text": "Placeholder body shell Apache-2.0 — GStack. First-party. Generated by tools/make-placeholder-geometry.mjs. ALC-1 vertebral level index Apache-2.0 — GStack. First-party. Derived from docs/alc-1-spec.md. BD body template, BodyParts3D 4.0 adult CC-BY-SA-4.0 — The Database Center for Life Science (DBCLS); adaptation by GStack. Derived by tools/build-bd-template.mjs from BodyParts3D/Anatomography 4.0, 99%-polygon-reduced OBJ set (IS-A tree), isa_BP3D_4.0_obj_99.zip, https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html Share-alike. BV brain-volume template, ICBM152 2009c MNI-BIC-permissiv",
+    "visible": true,
+    "status": "Asset licences as listed in the footer.",
+    "links": [
+     "https://whacked.github.io/somasurfer/assets/ATTRIBUTION.md",
+     "https://whacked.github.io/somasurfer/assets/LICENSE",
+     "https://whacked.github.io/somasurfer/LICENSE"
+    ],
+    "served": {
+     "https://whacked.github.io/somasurfer/assets/ATTRIBUTION.md": 200,
+     "https://whacked.github.io/somasurfer/assets/LICENSE": 200,
+     "https://whacked.github.io/somasurfer/LICENSE": 200
+    }
+   }
+  },
+  {
+   "id": "s11-addresses-survive-every-template",
+   "status": "pass",
+   "detail": "1 addresses × 4 body templates: every one selects, unchanged, on every template",
+   "evidence": {
+    "templates": [
+     "bp3d-4.0-adult-body-centroid",
+     "anat-adult-p50",
+     "anat-child-7y",
+     "anat-hyperkyphotic-short-wide"
+    ],
+    "issued": [
+     "BD-S01-02O-75"
+    ],
+    "table": [
+     {
+      "template": "bp3d-4.0-adult-body-centroid",
+      "address": "BD-S01-02O-75",
+      "bound": "bp3d-4.0-adult-body-centroid",
+      "sel": {
+       "ok": true,
+       "address": "BD-S01-02O-75"
+      },
+      "rejection": null
+     },
+     {
+      "template": "anat-adult-p50",
+      "address": "BD-S01-02O-75",
+      "bound": "anat-adult-p50",
+      "sel": {
+       "ok": true,
+       "address": "BD-S01-02O-75"
+      },
+      "rejection": null
+     },
+     {
+      "template": "anat-child-7y",
+      "address": "BD-S01-02O-75",
+      "bound": "anat-child-7y",
+      "sel": {
+       "ok": true,
+       "address": "BD-S01-02O-75"
+      },
+      "rejection": null
+     },
+     {
+      "template": "anat-hyperkyphotic-short-wide",
+      "address": "BD-S01-02O-75",
+      "bound": "anat-hyperkyphotic-short-wide",
+      "sel": {
+       "ok": true,
+       "address": "BD-S01-02O-75"
+      },
+      "rejection": null
+     }
+    ]
+   }
+  },
+  {
+   "id": "nav",
+   "status": "pass",
+   "detail": "landing on body; landing→brain, landing→body, brain→body, body→brain, one click each, all on https://whacked.github.io/somasurfer/",
+   "evidence": {
+    "landing": "body",
+    "steps": [
+     {
+      "clicked": "nav-brain",
+      "atlas": "brain",
+      "url": "https://whacked.github.io/somasurfer/?atlas=brain&cam=0.6%2C0.18%2C540%2C0%2C-17.5%2C5"
+     },
+     {
+      "clicked": "nav-body",
+      "atlas": "body",
+      "url": "https://whacked.github.io/somasurfer/?cam=0.6%2C0.18%2C3623.8%2C-0.7%2C100.98%2C786.67"
+     },
+     {
+      "clicked": "nav-brain",
+      "atlas": "brain",
+      "url": "https://whacked.github.io/somasurfer/?atlas=brain&cam=0.6%2C0.18%2C540%2C0%2C-17.5%2C5"
+     },
+     {
+      "clicked": "nav-body",
+      "atlas": "body",
+      "url": "https://whacked.github.io/somasurfer/?cam=0.6%2C0.18%2C3619.34%2C-0.18%2C100.47%2C786.48"
+     }
+    ],
+    "errors": []
+   }
+  }
+ ]
+}
