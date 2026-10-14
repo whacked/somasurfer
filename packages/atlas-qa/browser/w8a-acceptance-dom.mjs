@@ -85,7 +85,7 @@ async function open(search) {
 const press = (page, testid) => page.$eval(`[data-testid=${testid}]`, (el) => el.click());
 const uncheck = (page, testid) => page.$eval(`[data-testid=${testid}]`, (el) => { if (el.checked && !el.disabled) el.click(); });
 
-/** A real pointer drag on the canvas: `rotate` turns 0.008 rad per pixel. */
+/** A real pointer drag on the canvas: `orbitByDrag` turns 0.008 rad per pixel, the model following the pointer (invert-orbit off). */
 async function drag(page, dx, dy) {
   const b = await page.locator('[data-testid=canvas]').boundingBox();
   const x = b.x + b.width / 2; const y = b.y + b.height / 2;
@@ -96,8 +96,8 @@ async function drag(page, dx, dy) {
 const QUARTER = Math.round(Math.PI / 2 / 0.008);
 const VIEWS = [
   { name: 'default' },
-  { name: 'yaw+90', dx: QUARTER }, { name: 'yaw+180', dx: 2 * QUARTER }, { name: 'yaw-90', dx: -QUARTER },
-  { name: 'from below', dy: -QUARTER }, { name: 'from above', dy: QUARTER },
+  { name: 'yaw+90', dx: -QUARTER }, { name: 'yaw+180', dx: -2 * QUARTER }, { name: 'yaw-90', dx: QUARTER },
+  { name: 'from below', dy: QUARTER }, { name: 'from above', dy: -QUARTER },
 ];
 
 const settle = (page) => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 60)))));

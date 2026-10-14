@@ -8,7 +8,7 @@ import {
   findStructures,
   parse,
 } from './alc.js';
-import { fitCamera, flyToCell, missPoint, pan, rayThrough, rotate, zoom } from './viewer/camera.js';
+import { fitCamera, flyToCell, missPoint, orbitByDrag, pan, rayThrough, zoom } from './viewer/camera.js';
 import { decodeView, encodeView, viewHref } from './viewer/deeplink.js';
 import { atlasUnavailableNotice, nameIndexProvenanceNotice } from './viewer/flags.js';
 import { joinNameIndex, nameIndexSourceTemplate } from './viewer/nameindex.js';
@@ -1381,7 +1381,7 @@ function wireCanvas() {
     viewer.setCamera(
       drag.button === 2 || drag.shift
         ? pan(camera, dx / Math.max(1, canvas.clientWidth), dy / Math.max(1, canvas.clientHeight))
-        : rotate(camera, dx * 0.008, -dy * 0.008),
+        : orbitByDrag(camera, dx, dy, { invert: $('invert-orbit').checked }),
     );
     drag.x = event.clientX;
     drag.y = event.clientY;
@@ -1440,6 +1440,13 @@ function wireControls() {
     // toggle. Pushed rather than replaced: it is a deliberate change to the
     // view, so Back should undo it, the same as hiding a layer.
     commit({ push: true });
+  });
+  // A preference of the hand, not part of the view: kept in this browser and
+  // never in the URL, so a link opens with the recipient's own drag direction.
+  const invertOrbit = $('invert-orbit');
+  try { invertOrbit.checked = localStorage.getItem('atlas.invertOrbit') === '1'; } catch { /* storage blocked: default */ }
+  invertOrbit.addEventListener('change', () => {
+    try { localStorage.setItem('atlas.invertOrbit', invertOrbit.checked ? '1' : '0'); } catch { /* storage blocked: this page only */ }
   });
   $('precision').addEventListener('input', () => {
     $('precision-value').textContent = $('precision').value;
