@@ -26,5 +26,6 @@ export function brainAssetPaths(commit) {
     fullFile: `brain/${id}/meshes.fullres.bin`,
     structuresFile: `brain/${id}/structures.json`,
     provenance: `packages/atlas-assets/provenance/brain-${id}.json`,
+    containment: `packages/atlas-assets/provenance/cortex-containment-${id}.json`,
   };
 }

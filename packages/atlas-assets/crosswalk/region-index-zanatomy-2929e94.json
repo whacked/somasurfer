@@ -21,11 +21,11 @@
   },
   "structures": {
    "file": "packages/atlas-assets/brain/zanatomy-2929e94/structures.json",
-   "sha256": "ba3702156c1ababb612b4df0a2a159756b35d25c08893c597753d6d410dc1e6f"
+   "sha256": "a7108e60241a08341468ceb7ebaa47658f37a6b7dc427690dc3b72e5e834f831"
   },
   "meshes": {
    "file": "packages/atlas-assets/brain/zanatomy-2929e94/meshes.fullres.bin",
-   "sha256": "7685c4adfa06f3aa59aef94ee6c19667aee0ebbf6cf505ddeec9b88703a477e0"
+   "sha256": "752490f9470d745e4ca706acf06fcbac8c312cfc7fc579a57e5bff9b7445388e"
   },
   "registration": {
    "file": "packages/atlas-assets/registration/mni-to-zanatomy-2929e94.json",
@@ -8283,7 +8283,7 @@
      "paperId": "paper:hickok-2007-dual-stream",
      "route": "coordinate",
      "code": "coordinate-outside-shipped-structures",
-     "detail": "BV-L-5103 lies inside no shipped structure of zanatomy-gross-anatomy zanatomy-2929e94; the nearest is Superior sagittal sinus, 42.91 mm away in the mesh frame. Not linked: nearest is not containing, and the structure that does contain it may be held."
+     "detail": "BV-L-5103 lies inside no shipped structure of zanatomy-gross-anatomy zanatomy-2929e94; the nearest is Inferior fronto-occipital fasciculus.l, 53.75 mm away in the mesh frame. Not linked: nearest is not containing, and the structure that does contain it may be held."
     }
    ]
   },

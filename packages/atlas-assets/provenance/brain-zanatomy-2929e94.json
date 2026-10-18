@@ -16,8 +16,9 @@
  "counts": {
   "zanatomy-undeclared-brain-materials": 143,
   "dundee-cranial-nerves": 46,
-  "cleared": 244,
-  "held-by-decision": 4,
+  "cleared": 232,
+  "held-outside-cortex": 8,
+  "held-by-decision": 8,
   "cortical": 128,
   "corticalHeld": 126
  },
@@ -1026,13 +1027,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-outside-cortex",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: lies outside it, 11.82 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -1046,13 +1050,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-outside-cortex",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: lies outside it, 12.1 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -2187,13 +2194,16 @@
    "materials": [
     "Cartilage"
    ],
-   "group": "cleared",
+   "group": "held-outside-cortex",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: lies outside it, 22.93 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -5576,13 +5586,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-by-decision",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: under it, but 8-13 mm below the orbital surface of the frontal lobe it runs on (median 8 mm, max 13 mm; excused by the containment rule as under the cortex) (CTO decision on DOG-238, 2026-10-18, from DOG-240 review finding 1)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -5596,13 +5609,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-by-decision",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: under it, but 8-13 mm below the orbital surface of the frontal lobe it runs on (median 8 mm, max 13 mm; excused by the containment rule as under the cortex) (CTO decision on DOG-238, 2026-10-18, from DOG-240 review finding 1)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -5666,13 +5682,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-outside-cortex",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: lies outside it, 13.94 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -5686,13 +5705,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-outside-cortex",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: lies outside it, 11.41 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -5746,13 +5768,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-outside-cortex",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: lies outside it, 20.11 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -5766,13 +5791,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-outside-cortex",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: lies outside it, 20.86 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -8109,13 +8137,16 @@
    "materials": [
     "Artery"
    ],
-   "group": "cleared",
+   "group": "held-outside-cortex",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: lies outside it, 24.45 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -8533,13 +8564,16 @@
    "materials": [
     "Cartilage"
    ],
-   "group": "cleared",
+   "group": "held-by-decision",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: under it, but 26 mm short of the occipital pole it should carry (back edge MNI y -80.5 against -107) (CTO decision on DOG-238, 2026-10-18: hold the dura until it is registered to the ICBM brain)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",
@@ -8553,13 +8587,16 @@
    "materials": [
     "Cartilage"
    ],
-   "group": "cleared",
+   "group": "held-by-decision",
    "sources": [
     "bodyparts3d",
     "brainproject-brain-glb",
     "zanatomy"
    ],
-   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)"
+   "basis": "Z-Anatomy own system, cleared BY INFERENCE from its material names (docs/asset-licensing.md §7.3)",
+   "heldBecause": [
+    "not registered to the ICBM cortex: under it, but 26 mm short of the occipital pole it should carry (back edge MNI y -80.5 against -107) (CTO decision on DOG-238, 2026-10-18: hold the dura until it is registered to the ICBM brain)"
+   ]
   },
   {
    "shipsFrom": "brain.glb",

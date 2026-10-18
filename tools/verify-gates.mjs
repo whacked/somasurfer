@@ -1337,7 +1337,8 @@ const CASES = [
     gate: 'mesh assets',
     criterion: 'the mesh gate checks every shippable structure on the committed tree, not none',
     mustPass: true,
-    expect: [/provenance re-derived for all 437 structures; 244 of 244 shippable structures in both tiers/, /Published error re-measured for all 244/, /QA sample 40 structures, 1 withheld control/],
+    expect: [/provenance re-derived for all 437 structures; 232 of 232 shippable structures in both tiers/, /Published error re-measured for all 232/,
+      /Cortex containment re-measured for all 232: farthest beyond [\d.]+ mm, tolerance 3 mm; 8 held outside it/, /QA sample 40 structures, 4 withheld control/],
     describe: 'the committed brain mesh files, unchanged',
     // A gate that found no files would also pass. This pins that it found them.
     break: () => () => {},
@@ -1352,6 +1353,40 @@ const CASES = [
     break: () => {
       const stn = brainStructure('Subthalamic nucleus.l');
       return rewriteMesh(BRAIN_LOW, (records) => records.filter((r) => r.id !== stn.id));
+    },
+    check: () => run('check-mesh-assets.mjs'),
+  },
+  {
+    name: 'mesh-structure-outside-cortex',
+    gate: 'mesh assets',
+    criterion: 'the mesh gate fails when a shipped structure lies outside the ICBM cortex (DOG-238)',
+    expect: [/Septal nuclei \(deep_grey\) ships with a vertex [\d.]+ mm outside the ICBM cortex, past the 3 mm tolerance/],
+    describe: 'the septal nuclei lifted whole, both tiers, until their top is the quantisation frame\'s: the height of the held superior sagittal sinus, above the cortex',
+    // The falx's defect, staged on a structure that ships and is no landmark:
+    // shape, error and registration all still agree, and the containment result
+    // still says it is inside, so only the re-measurement can see it. Upward
+    // only: a downward displacement is excused as under the cortex, so the rule
+    // cannot fail on one and no case can stage it (DOG-240).
+    break: () => {
+      const septal = brainStructure('Septal nuclei');
+      // Mesh +y is superior; the frame's top is 32767. One lift for both tiers,
+      // from the full tier, whose vertices the low tier's are drawn from.
+      let lift = null;
+      const lifted = (r) => {
+        if (r.id !== septal.id) return r;
+        if (lift === null) {
+          let top = -Infinity;
+          for (let v = 1; v < r.positions.length; v += 3) top = Math.max(top, r.positions[v]);
+          lift = 32767 - top;
+        }
+        return { ...r, positions: Int16Array.from(r.positions, (q, i) => (i % 3 === 1 ? q + lift : q)) };
+      };
+      const restoreFull = rewriteMesh(BRAIN_FULL, (records) => records.map(lifted));
+      const restoreLow = rewriteMesh(BRAIN_LOW, (records) => records.map(lifted));
+      return () => {
+        restoreLow();
+        restoreFull();
+      };
     },
     check: () => run('check-mesh-assets.mjs'),
   },
@@ -1542,7 +1577,7 @@ const CASES = [
     mustPass: true,
     // `[^\n]*`: on a tree carrying W3 the body clause sits between the two
     // (DOG-129 merged W2c onto W3), and this case is about the brain's slots.
-    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\), each checked against the generated provenance manifest;[^\n]* 2 volume-derived file\(s\), 4 slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 696 structure slot\(s\), each checked against the generated provenance manifest;[^\n]* 2 volume-derived file\(s\), 4 slot\(s\)/],
     describe: 'the committed brain mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),
@@ -1844,7 +1879,7 @@ const CASES = [
     gate: 'licence separation',
     criterion: 'rule 10 checks every structure slot of the committed body files, not none',
     mustPass: true,
-    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\)[^\n]*; 3 body file\(s\), 4815 structure slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 696 structure slot\(s\)[^\n]*; 3 body file\(s\), 4815 structure slot\(s\)/],
     describe: 'the committed body mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),

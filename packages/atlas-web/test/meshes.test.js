@@ -216,8 +216,11 @@ describe('picking', () => {
       assert.deepEqual(picked.pointMm, [0, 1, 2].map((a) => origin[a] + direction[a] * picked.t), 'its address is from its own surface');
       if (clicks > 1) enclosed.push(want.id);
     }
-    // The four W8a found: the EW nuclei inside the midbrain, the hippocampi inside the ICBM lobes.
-    for (const id of [6, 7, 122, 123]) assert.ok(enclosed.includes(id), `fixture ${id} is not the nearest hit, so needs the click again`);
+    // W8a found four: the EW nuclei (6, 7) inside the midbrain, the hippocampi
+    // (122, 123) inside the ICBM lobes. The DOG-238 redraw kept the hippocampi.
+    const known = [6, 7, 122, 123].filter((id) => sample.sample.some((x) => x.id === id));
+    assert.ok(known.length > 0, 'the sample keeps a structure W8a found enclosed');
+    for (const id of known) assert.ok(enclosed.includes(id), `fixture ${id} is not the nearest hit, so needs the click again`);
   });
 
   it('cycles through the hits, deepest back to nearest', () => {
@@ -239,12 +242,15 @@ describe('picking', () => {
     const entry = ASSET_MESH_SETS.find((e) => e.id === ZA);
     const held = withheldOf(entry, json(entry.structures));
     for (const control of sample.withheldControls) {
-      const [w] = searchStructures(held, control.name, 4);
-      assert.ok(w, `${control.name} is found as withheld`);
-      assert.ok(w.title.includes(control.name), w.title);
+      // As a reader types it: `Tentorium cerebelli left`, not the file's `.l`.
+      const base = control.name.replace(/\.[lr]$/, '');
+      const query = control.side === 'left' || control.side === 'right' ? `${base} ${control.side}` : control.name;
+      const [w] = searchStructures(held, query, 4);
+      assert.ok(w, `${query} is found as withheld`);
+      assert.ok(w.title.includes(base), w.title);
       assert.equal(w.group, control.expect.reason);
       assert.deepEqual(w.reasons, control.expect.heldBecause);
-      assert.equal(searchStructures(za.structures, control.name).some((s) => s.title === w.title), false, 'and is not also offered as drawn');
+      assert.equal(searchStructures(za.structures, query).some((s) => s.title === w.title), false, 'and is not also offered as drawn');
     }
   });
 
@@ -262,7 +268,7 @@ describe('picking', () => {
     assert.ok(json(ASSET_MESH_SETS.find((e) => e.id === BODY).structures).excluded.some((x) => x.name === null));
     const za = ASSET_MESH_SETS.find((e) => e.id === ZA);
     assert.deepEqual([...new Set(withheldOf(za, json(za.structures)).map((w) => w.group))].sort(),
-      ['dundee-cranial-nerves', 'held-by-decision', 'zanatomy-undeclared-brain-materials']);
+      ['dundee-cranial-nerves', 'held-by-decision', 'held-outside-cortex', 'zanatomy-undeclared-brain-materials']);
   });
 
   it('returns the nearest structure the layers admit, not the first one listed', () => {
@@ -284,11 +290,11 @@ describe('picking', () => {
     assert.ok(faded.t > everything.t);
   });
 
-  it('encodes a brain pick unclamped everywhere but the vessels, nerves and dura', () => {
+  it('encodes a brain pick unclamped everywhere but the vessels and nerves', () => {
     // A click goes through encodeBrainVolume, so a pick outside the BV box
     // reads as `clamped` to the user. Only what runs below the box may.
     const bv = validateBrainVolumeTemplate(brainTemplate);
-    const outside = new Set(['arteries', 'cranial_nerves', 'meninges_dura', 'veins_sinuses']);
+    const outside = new Set(['arteries', 'cranial_nerves', 'veins_sinuses']);
     const clamped = (mesh, s) => {
       const P = mesh.positions;
       const out = [];
@@ -351,12 +357,28 @@ describe('layers on two axes', () => {
   it('shows a midline structure while either hemisphere shows, at the more opaque', () => {
     const v = createViewer();
     v.openAtlas('brain');
-    const falx = { category: 'meninges_dura', parts: ['left', 'right'] };
+    const midline = decoded(ZA).structures.find((s) => s.name === 'Fourth ventricle');
+    assert.deepEqual([...midline.parts].sort(), ['left', 'right']);
     v.setLayerHidden('left', true);
     v.setLayerOpacity('right', 0.4);
-    assert.deepEqual(structureLayers(v.layersOf(), falx), { visible: true, opacity: 0.4 });
+    assert.deepEqual(structureLayers(v.layersOf(), midline), { visible: true, opacity: 0.4 });
     v.setLayerHidden('right', true);
-    assert.equal(structureLayers(v.layersOf(), falx).visible, false);
+    assert.equal(structureLayers(v.layersOf(), midline).visible, false);
+  });
+
+  it('offers a brain category layer for exactly the categories that ship', () => {
+    // A layer with nothing in it is a control that does nothing (DOG-238: the
+    // dura is held whole); a shipped category with no layer cannot be hidden.
+    const shipped = new Set([ZA, ICBM].flatMap((id) => decoded(id).structures.map((s) => s.category)));
+    const offered = ATLAS_LAYERS.brain.filter((l) => l.axis === 'category').map((l) => l.id);
+    assert.deepEqual([...offered].sort(), [...shipped].sort());
+  });
+
+  it('opens a link naming the retired Dura layer without it, and says so', () => {
+    const { view, problems } = decodeView('?atlas=brain&hide=left,meninges_dura&iso=meninges_dura&op=meninges_dura:0.5,right:0.4');
+    assert.deepEqual(view.layers, { hidden: ['left'], isolated: null, opacity: { right: 0.4 } });
+    assert.equal(problems.length, 3);
+    for (const p of problems) assert.match(p, /meninges_dura.*Dura layer is withdrawn/);
   });
 
   it('multiplies a faded cortex by its hemisphere', () => {

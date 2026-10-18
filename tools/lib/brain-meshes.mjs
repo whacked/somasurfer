@@ -255,9 +255,11 @@ function shapeKeepingTarget(M, decimate, mesh, base, margin) {
 
 /**
  * Build both tiers for `structures` (the provenance records of one clearance
- * group) from decoded glb `nodes`.
+ * group) from decoded glb `nodes`. `frame`, if given, is used instead of the
+ * structures' own bounds: the brain is quantised in the frame of everything it
+ * measured (DOG-238), so a structure held after measuring moves no other vertex.
  */
-export async function buildTiers({ nodes, structures, floorTriangles, ratio, replacements = new Map() }) {
+export async function buildTiers({ nodes, structures, floorTriangles, ratio, replacements = new Map(), frame = null }) {
   const byId = new Map(nodes.map((n) => [n.extras.bx_id, n]));
   const meshes = structures.map((s) => {
     // A replaced structure's geometry comes from its replacement source, already
@@ -266,7 +268,7 @@ export async function buildTiers({ nodes, structures, floorTriangles, ratio, rep
     return { id: s.id, positions: merged.positions, indices: merged.indices };
   });
   // The glb is in metres.
-  return buildMeshTiers({ meshes, floorTriangles, ratio, mmPerUnit: 1000 });
+  return buildMeshTiers({ meshes, floorTriangles, ratio, mmPerUnit: 1000, frame });
 }
 
 /**
@@ -294,7 +296,7 @@ export async function buildTiers({ nodes, structures, floorTriangles, ratio, rep
  */
 export async function buildMeshTiers({
   meshes, floorTriangles, ratio, mmPerUnit, fullRatio = 1, fullFloorTriangles = 0, minComponentTriangles = null, shapeMargin = null,
-  compactVertices = false,
+  compactVertices = false, frame: givenFrame = null,
 }) {
   const M = await meshoptimizer();
   const mm2 = mmPerUnit * mmPerUnit;
@@ -316,7 +318,7 @@ export async function buildMeshTiers({
   };
   const lazy = meshes.some((m) => typeof m.load === 'function');
   const eager = lazy ? null : meshes.map(weldOf);
-  const frame = quantisationFrame(eager
+  const frame = givenFrame ?? quantisationFrame(eager
     ? eager.map((w) => w.mesh)
     : meshes.map((m) => {
       const b = bounds(weldOf(m).mesh.positions);

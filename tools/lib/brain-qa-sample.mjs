@@ -136,6 +136,12 @@ export function drawSample(doc, rules = SAMPLE_RULES) {
       if (out.length >= shortOf(c)) break;
       if (out.length + u.members.length <= shortOf(c)) out.push(...u.members);
     }
+    // As for the sample: one short with only pairs left, take a pair (DOG-238:
+    // the dura is held whole, the falx alone and the tentorium as a pair).
+    if (out.length < shortOf(c)) {
+      const u = pool.find((x) => !x.members.some((m) => out.includes(m)));
+      if (u) out.push(...u.members);
+    }
     return out.map((s) => ({
       id: s.id,
       name: s.name,

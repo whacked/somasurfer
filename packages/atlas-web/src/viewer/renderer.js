@@ -72,7 +72,7 @@ export const ANATOMY_COLOURS = Object.freeze({
   cortex: [0.82, 0.74, 0.70], deep_grey: [0.56, 0.62, 0.84], diencephalon: [0.60, 0.76, 0.62],
   brainstem: [0.78, 0.70, 0.56], cerebellum: [0.70, 0.62, 0.80], white_matter: [0.90, 0.90, 0.86],
   tracts: [0.62, 0.80, 0.86], ventricles: [0.42, 0.66, 0.90], arteries: [0.82, 0.36, 0.36],
-  veins_sinuses: [0.40, 0.46, 0.80], cranial_nerves: [0.94, 0.86, 0.48], meninges_dura: [0.66, 0.66, 0.62],
+  veins_sinuses: [0.40, 0.46, 0.80], cranial_nerves: [0.94, 0.86, 0.48],
   'Frontal lobe': [0.80, 0.72, 0.62], 'Parietal lobe': [0.70, 0.76, 0.66], 'Temporal lobe': [0.66, 0.72, 0.82],
   'Occipital lobe': [0.80, 0.68, 0.78], Insula: [0.88, 0.80, 0.56], 'Limbic lobe': [0.62, 0.80, 0.78],
   skin: [0.86, 0.73, 0.64], muscle: [0.74, 0.40, 0.38], skeleton: [0.90, 0.88, 0.80],

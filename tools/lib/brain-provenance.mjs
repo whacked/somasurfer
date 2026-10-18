@@ -25,6 +25,7 @@
  */
 
 import { ORIGIN_TEST, originPasses } from './origin-test.mjs';
+import { CONTAINMENT, outsideCortex } from './brain-cortex-containment.mjs';
 
 /** Held: the materials of the two models Z-Anatomy lists with no licence. */
 export const UNDECLARED_MATERIALS = new Set(['Brain', 'Brain-Inner', 'White matter']);
@@ -71,6 +72,7 @@ export const GROUPS = {
   undeclared: 'zanatomy-undeclared-brain-materials',
   nerves: 'dundee-cranial-nerves',
   decision: 'held-by-decision',
+  outsideCortex: 'held-outside-cortex',
 };
 
 /**
@@ -240,11 +242,33 @@ const COLLICULI_HOLD = Object.freeze({
   route: 'CTO decision on DOG-127, 2026-10-11 19:54: colliculi (b), hold them fail-closed',
   reason: 'cleared only by the material-name inference, which the origin test contradicted: not BodyParts3D\'s mesh (docs/brain-origin-test.md); source unsettled, held fail-closed',
 });
+/**
+ *   - the tentorium, which the cortex containment rule cannot flag: it lies under
+ *     the cortex, but ends at MNI y = -80.5 while the occipital lobes it should
+ *     carry run back to -107. The falx it joins is held by the rule.
+ */
+const TENTORIUM_HOLD = Object.freeze({
+  route: 'CTO decision on DOG-238, 2026-10-18: hold the dura until it is registered to the ICBM brain',
+  reason: 'not registered to the ICBM cortex: under it, but 26 mm short of the occipital pole it should carry (back edge MNI y -80.5 against -107)',
+});
+/**
+ *   - the orbitofrontal branches of the ACA, which the rule cannot flag either:
+ *     displaced downward, they hang under the frontal lobe, in the orbit, not
+ *     on its orbital surface. Found in review (DOG-240).
+ */
+const ORBITOFRONTAL_HOLD = Object.freeze({
+  route: 'CTO decision on DOG-238, 2026-10-18, from DOG-240 review finding 1',
+  reason: 'not registered to the ICBM cortex: under it, but 8-13 mm below the orbital surface of the frontal lobe it runs on (median 8 mm, max 13 mm; excused by the containment rule as under the cortex)',
+});
 export const DECISION_HOLDS = Object.freeze({
   'Inferior colliculus.l': COLLICULI_HOLD,
   'Inferior colliculus.r': COLLICULI_HOLD,
   'Superior colliculus.l': COLLICULI_HOLD,
   'Superior colliculus.r': COLLICULI_HOLD,
+  'Tentorium cerebelli.l': TENTORIUM_HOLD,
+  'Tentorium cerebelli.r': TENTORIUM_HOLD,
+  'Orbitofrontal branches of anterior cerebral artery.l': ORBITOFRONTAL_HOLD,
+  'Orbitofrontal branches of anterior cerebral artery.r': ORBITOFRONTAL_HOLD,
 });
 
 export function applyDecisionHold(structure) {
@@ -257,21 +281,45 @@ export function applyDecisionHold(structure) {
   };
 }
 
-/** One structure, start to finish: the material rules, then the measurement, then any decision. */
-function decide(classified, originResult) {
+/**
+ * Held for lying outside the ICBM cortex it is drawn with (DOG-238), read from
+ * the committed containment result (tools/lib/brain-cortex-containment.mjs).
+ * The verdict is re-judged from the row's figure here, never read from a flag,
+ * and a structure that would ship with no row is an error: unmeasured is not
+ * contained.
+ */
+export function applyContainmentHold(structure, containment) {
+  if (structure.group !== GROUPS.cleared) return structure;
+  const row = containment.structures.find((r) => r.id === structure.id);
+  if (!row) throw new Error(`${structure.name.trim()} (id ${structure.id}) would ship, but the cortex containment result has no row for it.`);
+  if (!outsideCortex(row)) return structure;
+  return {
+    ...structure,
+    group: GROUPS.outsideCortex,
+    heldBecause: [`not registered to the ICBM cortex: lies outside it, ${row.beyondMaxMm} mm at most, past the ${CONTAINMENT.toleranceMm} mm tolerance (docs/brain-mesh-report.md)`],
+  };
+}
+
+/**
+ * One structure, start to finish: the material rules, then the measurement,
+ * then any decision, then the cortex containment. `containment` null is the
+ * build's first pass, which decides what to measure.
+ */
+function decide(classified, originResult, containment) {
   let s = { shipsFrom: 'brain.glb', ...classified };
   if (originResult) s = applyOriginResult(s, originResult);
   s = applyDecisionHold(s);
+  if (containment) s = applyContainmentHold(s, containment);
   return JSON.parse(JSON.stringify(s));
 }
 
 /** The whole manifest, from decoded nodes, plus counts per group. */
-export function buildProvenance(nodes, originResult = null) {
+export function buildProvenance(nodes, originResult = null, containment = null) {
   const names = new Set(nodes.map((n) => n.name.trim()));
   const unmatched = Object.keys(DECISION_HOLDS).filter((n) => !names.has(n));
   if (unmatched.length > 0) throw new Error(`DECISION_HOLDS names ${unmatched.join(', ')}, which the glb does not contain; a hold that matches nothing holds nothing.`);
   const structures = nodes
-    .map((n) => decide(classifyStructure({ name: n.name, extras: n.extras, materials: n.parts.map((p) => p.material) }), originResult))
+    .map((n) => decide(classifyStructure({ name: n.name, extras: n.extras, materials: n.parts.map((p) => p.material) }), originResult, containment))
     .sort((a, b) => a.id - b.id);
   return { structures, ...countGroups(structures) };
 }
@@ -286,8 +334,8 @@ function countGroups(structures) {
 /**
  * Check a committed manifest without the glb: classify every record again from
  * the inputs it records (name, ids, materials, bx_source/bx_parent), apply the
- * committed origin result and the decision holds, and require the manifest to
- * be exactly that. A record hand-edited to `cleared`, a source dropped, a count
+ * committed origin result, the decision holds and the committed cortex
+ * containment result, and require the manifest to be exactly that. A record hand-edited to `cleared`, a source dropped, a count
  * nudged: each is a difference here.
  *
  * What this cannot check is the recorded inputs themselves: that a structure's
@@ -296,8 +344,9 @@ function countGroups(structures) {
  *
  * Returns a list of problems; empty means the manifest is what the rules give.
  */
-export function verifyProvenance(manifest, originResult) {
+export function verifyProvenance(manifest, originResult, containment) {
   const problems = [];
+  if (!containment) return ['there is no cortex containment result to re-derive the manifest with.'];
   let rebuilt;
   try {
     rebuilt = manifest.structures.map((rec) => decide(classifyStructure({
@@ -311,11 +360,17 @@ export function verifyProvenance(manifest, originResult) {
         ...(rec.bxParent != null ? { bx_parent: rec.bxParent } : {}),
       },
       materials: rec.materials ?? [],
-    }), originResult));
+    }), originResult, containment));
   } catch (err) {
     return [`the provenance manifest does not re-derive: ${err.message}`];
   }
   const names = new Set(manifest.structures.map((s) => s.name.trim()));
+  // Every row is a structure the decisions left to ship: one measured for
+  // nothing is a stale result, and it would hide a hold that moved.
+  const candidates = new Set(rebuilt.filter((s) => s.group === GROUPS.cleared || s.group === GROUPS.outsideCortex).map((s) => s.id));
+  for (const r of containment.structures) {
+    if (!candidates.has(r.id)) problems.push(`the cortex containment result measures ${r.name} (id ${r.id}), which is not a structure the earlier rules leave to ship.`);
+  }
   for (const n of Object.keys(DECISION_HOLDS)) {
     if (!names.has(n)) problems.push(`DECISION_HOLDS names ${n}, which the provenance manifest does not list.`);
   }
@@ -325,7 +380,7 @@ export function verifyProvenance(manifest, originResult) {
       .filter((k) => JSON.stringify(rec[k]) !== JSON.stringify(want[k]));
     if (fields.length > 0) {
       problems.push(`${rec.name.trim()} (id ${rec.id}): the manifest records ${fields.map((k) => `${k} ${JSON.stringify(rec[k])}`).join(', ')};`
-        + ` re-deriving it under §7.3, the origin result and the decision holds gives ${fields.map((k) => JSON.stringify(want[k])).join(', ')}.`);
+        + ` re-deriving it under §7.3, the origin result, the decision holds and the cortex containment gives ${fields.map((k) => JSON.stringify(want[k])).join(', ')}.`);
     }
   });
   const { counts, cortical, corticalHeld } = countGroups(rebuilt);

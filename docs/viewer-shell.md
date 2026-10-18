@@ -395,6 +395,13 @@ band its extent spans on the spine axis). Isolate works within one axis, so
 isolating the cortex keeps the hemisphere choice. The v1 ids (`left`,
 `right`, `cervical`… `spine`) keep their meaning, so v1 links restore.
 
+The brain offers a category layer only for a category that ships. The Dura
+layer (`meninges_dura`) was withdrawn in DOG-238: the falx is held for lying
+outside the ICBM cortex, and the tentorium by decision. A link naming a
+withdrawn layer in `hide=`, `iso=` or `op=` still opens, without it, and the
+decode says why (`RETIRED` in `viewer/deeplink.js`). An `iso=` of an empty
+layer would otherwise hide every structure on the category axis.
+
 ### `export function isLayerVisible(layers, id) {`
 
 Whether a layer is drawn, given the layer state.

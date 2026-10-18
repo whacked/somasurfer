@@ -84,6 +84,9 @@ const isStructureKey = (s) => typeof s === 'string' && /^[a-z0-9-]{1,40}\.\d{1,9
 /** A layer id: the viewer's own ids are ASCII words, and only those round-trip. */
 const isLayerId = (s) => typeof s === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(s);
 
+/** Layers no longer offered, and why (docs/viewer-shell.md). */
+const RETIRED = new Map([['meninges_dura', 'the Dura layer is withdrawn until the dura is registered to the ICBM brain']]);
+
 /**
  * "Is there an address here at all?" — as a predicate, on purpose.
  *
@@ -239,7 +242,8 @@ export function decodeView(search) {
   const hidden = [];
   if (hideRaw !== null) {
     for (const id of hideRaw.split(',').filter((s) => s !== '')) {
-      if (isLayerId(id)) hidden.push(id);
+      if (RETIRED.has(id)) problems.push(`ignored ${id} in hide=: ${RETIRED.get(id)}`);
+      else if (isLayerId(id)) hidden.push(id);
       else problems.push(`ignored an unusable layer id in hide=: ${JSON.stringify(id)}`);
     }
   }
@@ -247,7 +251,8 @@ export function decodeView(search) {
   let isolated = null;
   const isoRaw = params.get('iso');
   if (isoRaw !== null && isoRaw !== '') {
-    if (isLayerId(isoRaw)) isolated = isoRaw;
+    if (RETIRED.has(isoRaw)) problems.push(`ignored ${isoRaw} in iso=: ${RETIRED.get(isoRaw)}`);
+    else if (isLayerId(isoRaw)) isolated = isoRaw;
     else problems.push(`ignored an unusable layer id in iso=: ${JSON.stringify(isoRaw)}`);
   }
 
@@ -276,6 +281,10 @@ export function decodeView(search) {
       const value = at < 0 ? NaN : Number(pair.slice(at + 1));
       if (!isLayerId(id) || !Number.isFinite(value) || value < 0 || value > 1) {
         problems.push(`ignored an unusable opacity in op=: ${JSON.stringify(pair)}`);
+        continue;
+      }
+      if (RETIRED.has(id)) {
+        problems.push(`ignored ${id} in op=: ${RETIRED.get(id)}`);
         continue;
       }
       opacity[id] = round(value, OPACITY_DECIMALS);

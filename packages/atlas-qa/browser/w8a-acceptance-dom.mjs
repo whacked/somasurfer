@@ -299,7 +299,11 @@ if (want('picking')) {
   const controls = [];
   for (const c of FIXTURE.withheldControls) {
     const asDrawn = drawn.filter((s) => s.name === c.name || s.label === c.name || s.key.endsWith(`.${c.id}`) && s.key.startsWith('zanatomy'));
-    await page.fill('[data-testid=search-input]', c.name);
+    // Searched and looked for as the page titles it: `Tentorium cerebelli (left)`, not the file's `.l` (DOG-238).
+    const sided = c.side === 'left' || c.side === 'right';
+    const base = c.name.replace(/\.[lr]$/, '');
+    const title = sided ? `${base} (${c.side})` : c.name;
+    await page.fill('[data-testid=search-input]', sided ? `${base} ${c.side}` : c.name);
     await settle(page);
     const results = await page.$$eval('[data-testid=search-results] li', (ns) => ns.map((n) => n.textContent.trim()));
     const scope = await page.textContent('[data-testid=search-scope]').catch(() => '');
@@ -309,7 +313,7 @@ if (want('picking')) {
       const text = document.body.innerText; const out = [];
       for (let i = text.indexOf(name); i >= 0; i = text.indexOf(name, i + 1)) out.push(text.slice(Math.max(0, i - 120), i + name.length + 200));
       return out;
-    }, c.name);
+    }, title);
     const saysWhy = mentions.some((m) => /held|withheld|licen[cs]e|undeclared|not (drawn|shipped)/i.test(m));
     controls.push({ id: c.id, name: c.name, reason: c.expect.reason, drawn: asDrawn.map((s) => s.key), searchResults: results, searchScope: scope, mentions, saysWhy });
   }

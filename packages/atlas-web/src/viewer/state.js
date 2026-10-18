@@ -38,7 +38,6 @@ export const ATLAS_LAYERS = Object.freeze({
       ['brainstem', 'Brainstem'], ['cerebellum', 'Cerebellum'], ['white_matter', 'White matter'],
       ['tracts', 'Tracts'], ['ventricles', 'Ventricles'], ['arteries', 'Arteries'],
       ['veins_sinuses', 'Veins and sinuses'], ['cranial_nerves', 'Cranial nerves'],
-      ['meninges_dura', 'Dura'],
     ].map(layer('category')),
   ]),
 });
