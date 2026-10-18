@@ -85,6 +85,16 @@ const isStructureKey = (s) => typeof s === 'string' && /^[a-z0-9-]{1,40}\.\d{1,9
 const isLayerId = (s) => typeof s === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(s);
 
 /**
+ * Layers an earlier release offered and this one does not, and why. A link
+ * that names one still opens, without it, and says so: an `iso=` of a layer
+ * with nothing in it would otherwise hide every structure on its axis.
+ */
+export const RETIRED_LAYERS = Object.freeze({
+  meninges_dura: 'the Dura layer is withdrawn until the dura is registered to the ICBM brain (DOG-238)',
+});
+const retired = (id) => Object.hasOwn(RETIRED_LAYERS, id);
+
+/**
  * "Is there an address here at all?" — as a predicate, on purpose.
  *
  * Written inline, this is `typeof view.address === 'string' && view.address !==
@@ -239,7 +249,8 @@ export function decodeView(search) {
   const hidden = [];
   if (hideRaw !== null) {
     for (const id of hideRaw.split(',').filter((s) => s !== '')) {
-      if (isLayerId(id)) hidden.push(id);
+      if (retired(id)) problems.push(`ignored ${id} in hide=: ${RETIRED_LAYERS[id]}`);
+      else if (isLayerId(id)) hidden.push(id);
       else problems.push(`ignored an unusable layer id in hide=: ${JSON.stringify(id)}`);
     }
   }
@@ -247,7 +258,8 @@ export function decodeView(search) {
   let isolated = null;
   const isoRaw = params.get('iso');
   if (isoRaw !== null && isoRaw !== '') {
-    if (isLayerId(isoRaw)) isolated = isoRaw;
+    if (retired(isoRaw)) problems.push(`ignored ${isoRaw} in iso=: ${RETIRED_LAYERS[isoRaw]}`);
+    else if (isLayerId(isoRaw)) isolated = isoRaw;
     else problems.push(`ignored an unusable layer id in iso=: ${JSON.stringify(isoRaw)}`);
   }
 
@@ -276,6 +288,10 @@ export function decodeView(search) {
       const value = at < 0 ? NaN : Number(pair.slice(at + 1));
       if (!isLayerId(id) || !Number.isFinite(value) || value < 0 || value > 1) {
         problems.push(`ignored an unusable opacity in op=: ${JSON.stringify(pair)}`);
+        continue;
+      }
+      if (retired(id)) {
+        problems.push(`ignored ${id} in op=: ${RETIRED_LAYERS[id]}`);
         continue;
       }
       opacity[id] = round(value, OPACITY_DECIMALS);

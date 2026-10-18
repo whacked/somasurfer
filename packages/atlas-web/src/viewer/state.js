@@ -38,7 +38,7 @@ export const ATLAS_LAYERS = Object.freeze({
       ['brainstem', 'Brainstem'], ['cerebellum', 'Cerebellum'], ['white_matter', 'White matter'],
       ['tracts', 'Tracts'], ['ventricles', 'Ventricles'], ['arteries', 'Arteries'],
       ['veins_sinuses', 'Veins and sinuses'], ['cranial_nerves', 'Cranial nerves'],
-      ['meninges_dura', 'Dura'],
+      // No 'meninges_dura': nothing in it ships (DOG-238); see RETIRED_LAYERS in deeplink.js.
     ].map(layer('category')),
   ]),
 });
