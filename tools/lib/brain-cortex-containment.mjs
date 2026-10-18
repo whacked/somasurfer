@@ -27,8 +27,14 @@
  * TOLERANCE_MM outside: roughly the CSF gap between the brain and the dura.
  *
  * What this cannot see: a structure that is misplaced but stays inside or
- * under the cortex. The tentorium, 26 mm short of the occipital pole, is under
- * it and passes; it is held by decision, not by this rule.
+ * under the cortex, and so any structure displaced DOWNWARD: the exemption is
+ * everything below the cerebrum's overhang. The tentorium, 26 mm short of the
+ * occipital pole, and the orbitofrontal ACA branches, 8-13 mm below the orbital
+ * surface (DOG-240), are under it and pass; both are held by decision. So that
+ * the next one shows, each row also records `underMaxMm`, the farthest outside
+ * vertex the exemption excuses (above the cortex's lowest point), and the mesh
+ * report lists the largest. It is reported, not gated: the posterior fossa and
+ * the skull base are legitimately far outside the cerebrum.
  */
 
 import { readMeshBin, structureGeometry } from './meshbin.mjs';
@@ -144,17 +150,22 @@ export function measureContainment(ref, positions, meshToMni) {
   let beyond = 0;
   let beyondMaxMm = 0;
   let overTolerance = 0;
+  let underMaxMm = 0;
   for (let v = 0; v < positions.length; v += 3) {
     const p = applyAffine(meshToMni, [positions[v], positions[v + 1], positions[v + 2]]);
     if (ref.inside(p)) continue;
     outside += 1;
-    if (ref.under(p)) continue;
+    if (ref.under(p)) {
+      if (p[2] >= ref.zMin) underMaxMm = Math.max(underMaxMm, ref.distance(p));
+      continue;
+    }
     beyond += 1;
     const d = ref.distance(p);
     if (d > beyondMaxMm) beyondMaxMm = d;
     if (d > CONTAINMENT.toleranceMm) overTolerance += 1;
   }
-  return { vertices: positions.length / 3, outside, beyond, overTolerance, beyondMaxMm: Math.round(beyondMaxMm * 100) / 100 };
+  const r2 = (x) => Math.round(x * 100) / 100;
+  return { vertices: positions.length / 3, outside, beyond, overTolerance, beyondMaxMm: r2(beyondMaxMm), underMaxMm: r2(underMaxMm) };
 }
 
 /** Whether a measured row holds its structure. The only place the rule is applied. */

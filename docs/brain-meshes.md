@@ -10,18 +10,19 @@ cannot check.
 
 | | structures | where |
 | --- | ---: | --- |
-| cleared, shipped | 234 | `packages/atlas-assets/brain/zanatomy-2929e94/` (CC BY-SA 4.0, entry `zanatomy-brain-meshes-cleared`) |
+| cleared, shipped | 232 | `packages/atlas-assets/brain/zanatomy-2929e94/` (CC BY-SA 4.0, entry `zanatomy-brain-meshes-cleared`) |
 | undeclared Z-Anatomy materials, held | 143 (126 of the 128 cortical) | in neither mesh file; listed by name under `excluded` in `structures.json` |
 | Dundee cranial nerves, unverified | 46 | the same |
 | held by decision: the four colliculi | 4 | the same; CTO decision on DOG-127, 2026-10-11 19:54 |
 | held by decision: the tentorium L and R | 2 | the same; CTO decision on DOG-238, 2026-10-18 |
+| held by decision: the orbitofrontal ACA branches L and R | 2 | the same; CTO decision on DOG-238, from DOG-240 review |
 | outside the ICBM cortex, held | 8 | the same; measured, see below |
 
 These groups come from `docs/asset-licensing.md` §7.3. The cortex stays held after
 §7.8: the upstream title behind Brainder is not established. The fallback the CTO
 decided in advance is a first-party ICBM152 cortex; see
-`docs/brain-cortex-fallback.md`. The 234 are §7.3's 245, plus three that a measurement moved
-(`docs/brain-origin-test.md`), less the six a decision holds and the eight that lie outside the cortex:
+`docs/brain-cortex-fallback.md`. The 232 are §7.3's 245, plus three that a measurement moved
+(`docs/brain-origin-test.md`), less the eight a decision holds and the eight that lie outside the cortex:
 - **midbrain L and R** passed the pre-registered test as BodyParts3D's own meshes,
   and ship from the glb citing `bodyparts3d`;
 - **the corpus callosum** failed it, and ships BodyParts3D's FMA86464 mesh
@@ -45,6 +46,11 @@ decided in advance is a first-party ICBM152 cortex; see
   cortex, so the rule passes it, but it ends 26 mm short of the occipital pole it
   should carry. With the falx and the tentorium both held, nothing in
   `meninges_dura` ships, and the viewer offers no Dura layer.
+- **the orbitofrontal branches of the ACA, L and R**, are held by decision
+  (DOG-240 review). They hang 8-13 mm below the orbital surface of the frontal
+  lobe they run on. The rule cannot hold a structure displaced downward: it
+  excuses anything under the cortex. The mesh report lists every excused
+  distance over the tolerance, so the next one shows.
 
 A held structure comes back when it is registered to the ICBM brain with a
 held-out error measured at it, and passes the containment rule.

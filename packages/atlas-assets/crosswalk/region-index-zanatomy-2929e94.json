@@ -21,11 +21,11 @@
   },
   "structures": {
    "file": "packages/atlas-assets/brain/zanatomy-2929e94/structures.json",
-   "sha256": "ed3c12e7d910b3a2a65e636a37e1814ebb5e980da6e4eaa50de4aa9c666253f4"
+   "sha256": "a7108e60241a08341468ceb7ebaa47658f37a6b7dc427690dc3b72e5e834f831"
   },
   "meshes": {
    "file": "packages/atlas-assets/brain/zanatomy-2929e94/meshes.fullres.bin",
-   "sha256": "84d781aa1506784fc3899f825c8851d6fa00bd71e1b19fc855f75993e03549fb"
+   "sha256": "752490f9470d745e4ca706acf06fcbac8c312cfc7fc579a57e5bff9b7445388e"
   },
   "registration": {
    "file": "packages/atlas-assets/registration/mni-to-zanatomy-2929e94.json",

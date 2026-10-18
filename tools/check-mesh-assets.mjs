@@ -189,7 +189,7 @@ if (JSON.stringify(containment.rule) !== JSON.stringify({ ...CONTAINMENT, tier: 
   problems.push(`cortex containment: measured under ${JSON.stringify(containment.rule)}, not the rule in tools/lib/brain-cortex-containment.mjs. Rebuild.`);
 }
 const containmentRows = reg ? measureMeshSet(cortexReference(icbmDoc, icbmBytes), readFileSync(join(assets, paths.fullFile)), doc.structures, reg.meshToMni) : [];
-const FIELDS = ['vertices', 'outside', 'beyond', 'overTolerance', 'beyondMaxMm'];
+const FIELDS = ['vertices', 'outside', 'beyond', 'overTolerance', 'beyondMaxMm', 'underMaxMm'];
 for (const got of containmentRows) {
   const rec = containment.structures.find((r) => r.id === got.id);
   if (!rec) problems.push(`cortex containment: ${got.name} ships but has no row; it was never measured.`);
@@ -203,6 +203,7 @@ for (const got of containmentRows) {
 }
 const heldOutside = containment.structures.filter(outsideCortex).sort((a, b) => b.beyondMaxMm - a.beyondMaxMm);
 const nearest = containmentRows.filter((r) => r.beyondMaxMm > 0).sort((a, b) => b.beyondMaxMm - a.beyondMaxMm);
+const excused = containmentRows.filter((r) => r.underMaxMm > CONTAINMENT.toleranceMm).sort((a, b) => b.underMaxMm - a.underMaxMm);
 
 // --- The QA sample: checked against its rules and against what ships ----------
 const SAMPLE_FIXTURE = join(REPO_ROOT, 'packages', 'atlas-qa', 'fixtures', 'brain-structure-sample.json');
@@ -274,6 +275,16 @@ const reportLines = [
   ...heldOutside.map((r) => `| ${r.name} | ${r.category} | ${r.beyond} | ${r.overTolerance} | ${fmt(r.beyondMaxMm)} |`),
   '',
   `Of what ships, ${nearest.length} structure(s) have any vertex beyond the cortex: ${nearest.map((r) => `${r.name} ${fmt(r.beyondMaxMm)} mm`).join(', ') || 'none'}.`,
+  '',
+  '**Excused, not measured against any limit.** A vertex outside the cortex but under it is not gated, so a structure',
+  'displaced downward cannot be held by this rule (DOG-240 found the orbitofrontal ACA branches 8-13 mm below the orbital',
+  'surface; they are held by decision). Every shipped structure with an excused vertex, above the cortex\'s lowest point,',
+  `more than ${CONTAINMENT.toleranceMm} mm outside it, farthest first (${excused.length}). Most are the posterior fossa, the skull base and the basal`,
+  'cisterns, outside the cerebrum by anatomy; anything that should lie on the cortex is a candidate misregistration to judge.',
+  '',
+  '| ships | category | farthest excused (MNI mm) |',
+  '| --- | --- | ---: |',
+  ...excused.map((r) => `| ${r.name} | ${r.category} | ${fmt(r.underMaxMm)} |`),
   '',
   '## By category',
   '',

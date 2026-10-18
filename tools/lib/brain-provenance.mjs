@@ -251,6 +251,15 @@ const TENTORIUM_HOLD = Object.freeze({
   route: 'CTO decision on DOG-238, 2026-10-18: hold the dura until it is registered to the ICBM brain',
   reason: 'not registered to the ICBM cortex: under it, but 26 mm short of the occipital pole it should carry (back edge MNI y -80.5 against -107)',
 });
+/**
+ *   - the orbitofrontal branches of the ACA, which the rule cannot flag either:
+ *     displaced downward, they hang under the frontal lobe, in the orbit, not
+ *     on its orbital surface. Found in review (DOG-240).
+ */
+const ORBITOFRONTAL_HOLD = Object.freeze({
+  route: 'CTO decision on DOG-238, 2026-10-18, from DOG-240 review finding 1',
+  reason: 'not registered to the ICBM cortex: under it, but 8-13 mm below the orbital surface of the frontal lobe it runs on (median 8 mm, max 13 mm; excused by the containment rule as under the cortex)',
+});
 export const DECISION_HOLDS = Object.freeze({
   'Inferior colliculus.l': COLLICULI_HOLD,
   'Inferior colliculus.r': COLLICULI_HOLD,
@@ -258,6 +267,8 @@ export const DECISION_HOLDS = Object.freeze({
   'Superior colliculus.r': COLLICULI_HOLD,
   'Tentorium cerebelli.l': TENTORIUM_HOLD,
   'Tentorium cerebelli.r': TENTORIUM_HOLD,
+  'Orbitofrontal branches of anterior cerebral artery.l': ORBITOFRONTAL_HOLD,
+  'Orbitofrontal branches of anterior cerebral artery.r': ORBITOFRONTAL_HOLD,
 });
 
 export function applyDecisionHold(structure) {
