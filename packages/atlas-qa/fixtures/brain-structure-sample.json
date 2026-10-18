@@ -8,8 +8,8 @@
  ],
  "drawnFrom": {
   "mesh": "zanatomy-2929e94",
-  "structures": 248,
-  "excluded": 189
+  "structures": 234,
+  "excluded": 203
  },
  "seed": 13656359,
  "rules": {
@@ -45,13 +45,14 @@
    "cranial_nerves",
    "deep_grey",
    "diencephalon",
-   "meninges_dura",
    "tracts",
    "veins_sinuses",
    "ventricles",
    "white_matter"
   ],
-  "shippingNothing": []
+  "shippingNothing": [
+   "meninges_dura"
+  ]
  },
  "quota": {
   "arteries": 5,
@@ -60,14 +61,35 @@
   "cortex": 2,
   "cranial_nerves": 2,
   "deep_grey": 4,
-  "diencephalon": 4,
-  "meninges_dura": 2,
+  "diencephalon": 5,
   "tracts": 6,
   "veins_sinuses": 3,
-  "ventricles": 2,
+  "ventricles": 3,
   "white_matter": 1
  },
  "sample": [
+  {
+   "id": 171,
+   "name": "Lateral pontine branches of basilar artery.l",
+   "label": "Lateral pontine branches of basilar artery",
+   "category": "arteries",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Lateral pontine branches of basilar artery"
+   }
+  },
+  {
+   "id": 172,
+   "name": "Lateral pontine branches of basilar artery.r",
+   "label": "Lateral pontine branches of basilar artery",
+   "category": "arteries",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Lateral pontine branches of basilar artery"
+   }
+  },
   {
    "id": 280,
    "name": "Posterior inferior cerebellar artery.l",
@@ -91,124 +113,102 @@
    }
   },
   {
-   "id": 149,
-   "name": "Internal carotid artery.l",
-   "label": "Internal carotid artery",
+   "id": 37,
+   "name": "Basilar artery",
+   "label": "Basilar artery",
    "category": "arteries",
-   "side": "left",
+   "side": "median",
    "expect": {
     "pickable": true,
-    "name": "Internal carotid artery"
+    "name": "Basilar artery"
    }
   },
   {
-   "id": 150,
-   "name": "Internal carotid artery.r",
-   "label": "Internal carotid artery",
-   "category": "arteries",
-   "side": "right",
-   "expect": {
-    "pickable": true,
-    "name": "Internal carotid artery"
-   }
-  },
-  {
-   "id": 147,
-   "name": "Insular branches of middle cerebral artery (M2).r",
-   "label": "Insular branches of middle cerebral artery (M2)",
-   "category": "arteries",
-   "side": "right",
-   "expect": {
-    "pickable": true,
-    "name": "Insular branches of middle cerebral artery (M2)"
-   }
-  },
-  {
-   "id": 201,
-   "name": "Midbrain.l",
-   "label": "Midbrain",
+   "id": 431,
+   "name": "Vestibular nuclei.l",
+   "label": "Vestibular nuclei",
    "category": "brainstem",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Midbrain"
+    "name": "Vestibular nuclei"
    }
   },
   {
-   "id": 202,
-   "name": "Midbrain.r",
-   "label": "Midbrain",
+   "id": 432,
+   "name": "Vestibular nuclei.r",
+   "label": "Vestibular nuclei",
    "category": "brainstem",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Midbrain"
+    "name": "Vestibular nuclei"
    }
   },
   {
-   "id": 6,
-   "name": "Accessory nucleus of oculomotor nerve.l",
-   "label": "Accessory nucleus of oculomotor nerve",
+   "id": 376,
+   "name": "Superior salivatory nucleus.l",
+   "label": "Superior salivatory nucleus",
    "category": "brainstem",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Accessory nucleus of oculomotor nerve"
+    "name": "Superior salivatory nucleus"
    }
   },
   {
-   "id": 7,
-   "name": "Accessory nucleus of oculomotor nerve.r",
-   "label": "Accessory nucleus of oculomotor nerve",
+   "id": 377,
+   "name": "Superior salivatory nucleus.r",
+   "label": "Superior salivatory nucleus",
    "category": "brainstem",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Accessory nucleus of oculomotor nerve"
+    "name": "Superior salivatory nucleus"
    }
   },
   {
-   "id": 397,
-   "name": "Tonsil of cerebellum.l",
-   "label": "Tonsil of cerebellum",
+   "id": 355,
+   "name": "Superior cerebellar peduncle.l",
+   "label": "Superior cerebellar peduncle",
    "category": "cerebellum",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Tonsil of cerebellum"
+    "name": "Superior cerebellar peduncle"
    }
   },
   {
-   "id": 398,
-   "name": "Tonsil of cerebellum.r",
-   "label": "Tonsil of cerebellum",
+   "id": 356,
+   "name": "Superior cerebellar peduncle.r",
+   "label": "Superior cerebellar peduncle",
    "category": "cerebellum",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Tonsil of cerebellum"
+    "name": "Superior cerebellar peduncle"
    }
   },
   {
-   "id": 378,
-   "name": "Superior semilunar lobule.l",
-   "label": "Superior semilunar lobule",
+   "id": 317,
+   "name": "Posterior quadrangular lobule.l",
+   "label": "Posterior quadrangular lobule",
    "category": "cerebellum",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Superior semilunar lobule"
+    "name": "Posterior quadrangular lobule"
    }
   },
   {
-   "id": 379,
-   "name": "Superior semilunar lobule.r",
-   "label": "Superior semilunar lobule",
+   "id": 318,
+   "name": "Posterior quadrangular lobule.r",
+   "label": "Posterior quadrangular lobule",
    "category": "cerebellum",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Superior semilunar lobule"
+    "name": "Posterior quadrangular lobule"
    }
   },
   {
@@ -234,25 +234,25 @@
    }
   },
   {
-   "id": 124,
-   "name": "Hypoglossal nerve (XII).l",
-   "label": "Hypoglossal nerve (XII)",
+   "id": 330,
+   "name": "Sensory root of trigeminal nerve.l",
+   "label": "Sensory root of trigeminal nerve",
    "category": "cranial_nerves",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Hypoglossal nerve (XII)"
+    "name": "Sensory root of trigeminal nerve"
    }
   },
   {
-   "id": 125,
-   "name": "Hypoglossal nerve (XII).r",
-   "label": "Hypoglossal nerve (XII)",
+   "id": 331,
+   "name": "Sensory root of trigeminal nerve.r",
+   "label": "Sensory root of trigeminal nerve",
    "category": "cranial_nerves",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Hypoglossal nerve (XII)"
+    "name": "Sensory root of trigeminal nerve"
    }
   },
   {
@@ -322,6 +322,28 @@
    }
   },
   {
+   "id": 161,
+   "name": "Lateral geniculate body.l",
+   "label": "Lateral geniculate body",
+   "category": "diencephalon",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Lateral geniculate body"
+   }
+  },
+  {
+   "id": 162,
+   "name": "Lateral geniculate body.r",
+   "label": "Lateral geniculate body",
+   "category": "diencephalon",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Lateral geniculate body"
+   }
+  },
+  {
    "id": 421,
    "name": "Ventral anterior nucleus.l",
    "label": "Ventral anterior nucleus",
@@ -344,146 +366,124 @@
    }
   },
   {
-   "id": 414,
-   "name": "Tuberal hypothalamus.l",
-   "label": "Tuberal hypothalamus",
+   "id": 311,
+   "name": "Pineal gland",
+   "label": "Pineal gland",
    "category": "diencephalon",
-   "side": "left",
-   "expect": {
-    "pickable": true,
-    "name": "Tuberal hypothalamus"
-   }
-  },
-  {
-   "id": 415,
-   "name": "Tuberal hypothalamus.r",
-   "label": "Tuberal hypothalamus",
-   "category": "diencephalon",
-   "side": "right",
-   "expect": {
-    "pickable": true,
-    "name": "Tuberal hypothalamus"
-   }
-  },
-  {
-   "id": 103,
-   "name": "Falx cerebri",
-   "label": "Falx cerebri",
-   "category": "meninges_dura",
    "side": "median",
    "expect": {
     "pickable": true,
-    "name": "Falx cerebri"
+    "name": "Pineal gland"
    }
   },
   {
-   "id": 394,
-   "name": "Tentorium cerebelli.l",
-   "label": "Tentorium cerebelli",
-   "category": "meninges_dura",
-   "side": "left",
+   "id": 354,
+   "name": "Superior cerebellar peduncle",
+   "label": "Superior cerebellar peduncle",
+   "category": "tracts",
+   "side": "median",
    "expect": {
     "pickable": true,
-    "name": "Tentorium cerebelli"
+    "name": "Superior cerebellar peduncle"
    }
   },
   {
-   "id": 395,
-   "name": "Tentorium cerebelli.r",
-   "label": "Tentorium cerebelli",
-   "category": "meninges_dura",
-   "side": "right",
-   "expect": {
-    "pickable": true,
-    "name": "Tentorium cerebelli"
-   }
-  },
-  {
-   "id": 81,
-   "name": "Corticopontine tract (occipital).l",
-   "label": "Corticopontine tract (occipital)",
+   "id": 89,
+   "name": "Corticostriatal tract (posterior).l",
+   "label": "Corticostriatal tract (posterior)",
    "category": "tracts",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Corticopontine tract (occipital)"
+    "name": "Corticostriatal tract (posterior)"
    }
   },
   {
-   "id": 82,
-   "name": "Corticopontine tract (occipital).r",
-   "label": "Corticopontine tract (occipital)",
+   "id": 90,
+   "name": "Corticostriatal tract (posterior).r",
+   "label": "Corticostriatal tract (posterior)",
    "category": "tracts",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Corticopontine tract (occipital)"
+    "name": "Corticostriatal tract (posterior)"
    }
   },
   {
-   "id": 91,
-   "name": "Corticostriatal tract (superior).l",
-   "label": "Corticostriatal tract (superior)",
+   "id": 83,
+   "name": "Corticopontine tract (parietal).l",
+   "label": "Corticopontine tract (parietal)",
    "category": "tracts",
    "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Corticostriatal tract (superior)"
+    "name": "Corticopontine tract (parietal)"
    }
   },
   {
-   "id": 92,
-   "name": "Corticostriatal tract (superior).r",
-   "label": "Corticostriatal tract (superior)",
+   "id": 84,
+   "name": "Corticopontine tract (parietal).r",
+   "label": "Corticopontine tract (parietal)",
    "category": "tracts",
    "side": "right",
    "expect": {
     "pickable": true,
-    "name": "Corticostriatal tract (superior)"
+    "name": "Corticopontine tract (parietal)"
    }
   },
   {
-   "id": 51,
-   "name": "Cavernous sinus.l",
-   "label": "Cavernous sinus",
-   "category": "veins_sinuses",
-   "side": "left",
-   "expect": {
-    "pickable": true,
-    "name": "Cavernous sinus"
-   }
-  },
-  {
-   "id": 52,
-   "name": "Cavernous sinus.r",
-   "label": "Cavernous sinus",
-   "category": "veins_sinuses",
-   "side": "right",
-   "expect": {
-    "pickable": true,
-    "name": "Cavernous sinus"
-   }
-  },
-  {
-   "id": 375,
-   "name": "Superior sagittal sinus",
-   "label": "Superior sagittal sinus",
+   "id": 316,
+   "name": "Posterior intercavernous sinus",
+   "label": "Posterior intercavernous sinus",
    "category": "veins_sinuses",
    "side": "median",
    "expect": {
     "pickable": true,
-    "name": "Superior sagittal sinus"
+    "name": "Posterior intercavernous sinus"
    }
   },
   {
-   "id": 109,
-   "name": "Fourth ventricle",
-   "label": "Fourth ventricle",
+   "id": 333,
+   "name": "Sigmoid sinus.l",
+   "label": "Sigmoid sinus",
+   "category": "veins_sinuses",
+   "side": "left",
+   "expect": {
+    "pickable": true,
+    "name": "Sigmoid sinus"
+   }
+  },
+  {
+   "id": 334,
+   "name": "Sigmoid sinus.r",
+   "label": "Sigmoid sinus",
+   "category": "veins_sinuses",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Sigmoid sinus"
+   }
+  },
+  {
+   "id": 58,
+   "name": "Choroid plexus.l",
+   "label": "Choroid plexus",
    "category": "ventricles",
-   "side": "median",
+   "side": "left",
    "expect": {
     "pickable": true,
-    "name": "Fourth ventricle"
+    "name": "Choroid plexus"
+   }
+  },
+  {
+   "id": 59,
+   "name": "Choroid plexus.r",
+   "label": "Choroid plexus",
+   "category": "ventricles",
+   "side": "right",
+   "expect": {
+    "pickable": true,
+    "name": "Choroid plexus"
    }
   },
   {
@@ -510,6 +510,45 @@
   }
  ],
  "withheldControls": [
+  {
+   "id": 103,
+   "name": "Falx cerebri",
+   "category": "meninges_dura",
+   "side": "median",
+   "expect": {
+    "pickable": false,
+    "reason": "held-outside-cortex",
+    "heldBecause": [
+     "not registered to the ICBM cortex: lies outside it, 22.93 mm at most, past the 3 mm tolerance (docs/brain-mesh-report.md)"
+    ]
+   }
+  },
+  {
+   "id": 394,
+   "name": "Tentorium cerebelli.l",
+   "category": "meninges_dura",
+   "side": "left",
+   "expect": {
+    "pickable": false,
+    "reason": "held-by-decision",
+    "heldBecause": [
+     "not registered to the ICBM cortex: under it, but 26 mm short of the occipital pole it should carry (back edge MNI y -80.5 against -107) (CTO decision on DOG-238, 2026-10-18: hold the dura until it is registered to the ICBM brain)"
+    ]
+   }
+  },
+  {
+   "id": 395,
+   "name": "Tentorium cerebelli.r",
+   "category": "meninges_dura",
+   "side": "right",
+   "expect": {
+    "pickable": false,
+    "reason": "held-by-decision",
+    "heldBecause": [
+     "not registered to the ICBM cortex: under it, but 26 mm short of the occipital pole it should carry (back edge MNI y -80.5 against -107) (CTO decision on DOG-238, 2026-10-18: hold the dura until it is registered to the ICBM brain)"
+    ]
+   }
+  },
   {
    "id": 15,
    "name": "Anterior commissure",

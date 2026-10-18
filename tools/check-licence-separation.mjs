@@ -485,11 +485,14 @@ function brainStructuresIn(abs, upstream) {
   if (!existsSync(manifestPath)) return { error: `has no provenance manifest at ${rel(manifestPath)}.` };
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
   // The manifest is the judge here, so it is judged first: re-derived from the
-  // inputs it records, under §7.3, the committed origin result and the decision
-  // holds. A record hand-edited to `cleared` would otherwise clear its structure.
+  // inputs it records, under §7.3, the committed origin result, the decision
+  // holds and the cortex containment. A record hand-edited to `cleared` would
+  // otherwise clear its structure.
   const originPath = join(manifestPath, '..', 'origin-test-bodyparts3d.json');
   if (!existsSync(originPath)) return { error: `has no origin-test result at ${rel(originPath)} to re-derive its provenance with.` };
-  const drift = verifyProvenance(manifest, JSON.parse(readFileSync(originPath, 'utf8')));
+  const containmentPath = join(REPO_ROOT, brainAssetPaths(commit).containment);
+  if (!existsSync(containmentPath)) return { error: `has no cortex containment result at ${rel(containmentPath)} to re-derive its provenance with.` };
+  const drift = verifyProvenance(manifest, JSON.parse(readFileSync(originPath, 'utf8')), JSON.parse(readFileSync(containmentPath, 'utf8')));
   if (drift.length > 0) return { error: `has a provenance manifest that does not re-derive:\n    ${drift.join('\n    ')}` };
   return { ids, provenance: new Map(manifest.structures.map((s) => [s.id, s])) };
 }

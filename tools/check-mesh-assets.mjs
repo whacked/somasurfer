@@ -33,8 +33,16 @@
  * The thresholds were set from what decimation can and cannot do to a smooth
  * closed surface, not tuned to the current files: on the committed build the
  * area ratios run 0.90-1.02 and the floor is met exactly.
+ *
+ * And per shipped structure, in the full tier (DOG-238):
+ *
+ *   in the cortex   carried into MNI by the registration, no vertex more than
+ *                   3 mm outside the ICBM cortex where nothing of the cortex is
+ *                   above it (tools/lib/brain-cortex-containment.mjs), and the
+ *                   committed containment result says exactly what this measures
  */
 
+import { createHash } from 'node:crypto';
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { REPO_ROOT, fail, pass } from './lib/repo.mjs';
@@ -44,6 +52,7 @@ import { GROUPS, verifyProvenance } from './lib/brain-provenance.mjs';
 import { BRAIN_MESH_BUILD, brainAssetPaths } from './lib/brain-asset-paths.mjs';
 import { HELD_OUT, LANDMARKS, MAX_OPEN_EDGE_SHARE, evaluate, meshGeometries, volumeCentroid } from './lib/brain-registration.mjs';
 import { checkSample } from './lib/brain-qa-sample.mjs';
+import { CONTAINMENT, cortexReference, measureMeshSet, outsideCortex } from './lib/brain-cortex-containment.mjs';
 import { checkBodyMeshes } from './lib/body-mesh-gate.mjs';
 
 const GATE = 'mesh assets';
@@ -55,7 +64,7 @@ if (!pin) fail(GATE, ['attribution.json has no pinned brainproject-brain-glb sou
 const paths = brainAssetPaths(pin.commit);
 const assets = join(REPO_ROOT, 'packages', 'atlas-assets');
 
-const missingFiles = [paths.provenance, `${paths.dir}/structures.json`, `${paths.dir}/meshes.lowres.bin`, `${paths.dir}/meshes.fullres.bin`]
+const missingFiles = [paths.provenance, paths.containment, `${paths.dir}/structures.json`, `${paths.dir}/meshes.lowres.bin`, `${paths.dir}/meshes.fullres.bin`]
   .filter((p) => !existsSync(join(REPO_ROOT, p)));
 if (missingFiles.length > 0) {
   // Absent is a failure, never "nothing to check": a gate that passes because
@@ -65,6 +74,7 @@ if (missingFiles.length > 0) {
 }
 
 const provenance = JSON.parse(readFileSync(join(REPO_ROOT, paths.provenance), 'utf8'));
+const containment = JSON.parse(readFileSync(join(REPO_ROOT, paths.containment), 'utf8'));
 const doc = JSON.parse(readFileSync(join(assets, paths.structuresFile), 'utf8'));
 const problems = [];
 let low;
@@ -82,7 +92,7 @@ try {
 // again here from the inputs the manifest records.
 const ORIGIN_RESULT = join(assets, 'provenance', 'origin-test-bodyparts3d.json');
 if (!existsSync(ORIGIN_RESULT)) fail(GATE, ['packages/atlas-assets/provenance/origin-test-bodyparts3d.json is missing; the provenance manifest cannot be re-derived without it.']);
-for (const p of verifyProvenance(provenance, JSON.parse(readFileSync(ORIGIN_RESULT, 'utf8')))) problems.push(`provenance: ${p}`);
+for (const p of verifyProvenance(provenance, JSON.parse(readFileSync(ORIGIN_RESULT, 'utf8')), containment)) problems.push(`provenance: ${p}`);
 
 // --- Presence: the shippable manifest against both files' own tables -------
 const shippable = provenance.structures.filter((s) => s.group === GROUPS.cleared);
@@ -159,6 +169,41 @@ if (!existsSync(REG_FILE)) {
   }
 }
 
+// --- The cortex containment (DOG-238): re-measured for everything that ships ---
+// The result is measured against one registration and one cortex; if either has
+// changed since, every figure in it is stale, whatever the mesh says.
+const sha256 = (b) => createHash('sha256').update(b).digest('hex');
+const icbmDoc = JSON.parse(readFileSync(join(assets, 'brain', 'icbm152-2009c', 'structures.json'), 'utf8'));
+const icbmBytes = readFileSync(join(assets, icbmDoc.tiers.low.file));
+const containmentInputs = {
+  cortex: { file: icbmDoc.tiers.low.file, sha256: sha256(icbmBytes) },
+  registration: { file: `registration/mni-to-${paths.id}.json`, sha256: existsSync(REG_FILE) ? sha256(readFileSync(REG_FILE)) : null },
+};
+for (const [k, want] of Object.entries(containmentInputs)) {
+  const got = containment.inputs?.[k];
+  if (got?.file !== want.file || got?.sha256 !== want.sha256) {
+    problems.push(`cortex containment: measured against ${k} ${got?.file} ${got?.sha256?.slice(0, 12)}; the committed one is ${want.file} ${want.sha256?.slice(0, 12)}. Rebuild with tools/build-meshes.mjs.`);
+  }
+}
+if (JSON.stringify(containment.rule) !== JSON.stringify({ ...CONTAINMENT, tier: 'full' })) {
+  problems.push(`cortex containment: measured under ${JSON.stringify(containment.rule)}, not the rule in tools/lib/brain-cortex-containment.mjs. Rebuild.`);
+}
+const containmentRows = reg ? measureMeshSet(cortexReference(icbmDoc, icbmBytes), readFileSync(join(assets, paths.fullFile)), doc.structures, reg.meshToMni) : [];
+const FIELDS = ['vertices', 'outside', 'beyond', 'overTolerance', 'beyondMaxMm'];
+for (const got of containmentRows) {
+  const rec = containment.structures.find((r) => r.id === got.id);
+  if (!rec) problems.push(`cortex containment: ${got.name} ships but has no row; it was never measured.`);
+  else {
+    const off = FIELDS.filter((k) => rec[k] !== got[k]);
+    if (off.length > 0) problems.push(`cortex containment: ${got.name} records ${off.map((k) => `${k} ${rec[k]}`).join(', ')}; the committed full tier gives ${off.map((k) => got[k]).join(', ')}.`);
+  }
+  if (outsideCortex(got)) {
+    problems.push(`cortex containment: ${got.name} (${got.category}) ships with a vertex ${got.beyondMaxMm} mm outside the ICBM cortex, past the ${CONTAINMENT.toleranceMm} mm tolerance. It is drawn poking out of the brain; hold it.`);
+  }
+}
+const heldOutside = containment.structures.filter(outsideCortex).sort((a, b) => b.beyondMaxMm - a.beyondMaxMm);
+const nearest = containmentRows.filter((r) => r.beyondMaxMm > 0).sort((a, b) => b.beyondMaxMm - a.beyondMaxMm);
+
 // --- The QA sample: checked against its rules and against what ships ----------
 const SAMPLE_FIXTURE = join(REPO_ROOT, 'packages', 'atlas-qa', 'fixtures', 'brain-structure-sample.json');
 let sample = null;
@@ -215,6 +260,21 @@ const reportLines = [
       ]
     : []),
   '',
+  '## Containment in the ICBM cortex',
+  '',
+  'The cortex is ICBM152 2009c; every other structure is Z-Anatomy, carried into MNI by the affine above. A vertex is',
+  '*beyond* the cortex when it is outside the closed cortex surface and nothing of the cortex lies above it (an upward',
+  `ray from it, or from ${CONTAINMENT.roofOffsetMm} mm to any side, misses the cortex) and it is above the cortex's lowest point. A structure with a`,
+  `vertex more than ${CONTAINMENT.toleranceMm} mm beyond is held as \`held-outside-cortex\`: it would be drawn poking out of the brain. The`,
+  'rule is tools/lib/brain-cortex-containment.mjs; shipped structures are re-measured, full tier, on every CI run.',
+  'A misplaced structure that stays inside or under the cortex is not caught by this rule.',
+  '',
+  '| held | category | vertices beyond | of which > tolerance | farthest beyond (MNI mm) |',
+  '| --- | --- | ---: | ---: | ---: |',
+  ...heldOutside.map((r) => `| ${r.name} | ${r.category} | ${r.beyond} | ${r.overTolerance} | ${fmt(r.beyondMaxMm)} |`),
+  '',
+  `Of what ships, ${nearest.length} structure(s) have any vertex beyond the cortex: ${nearest.map((r) => `${r.name} ${fmt(r.beyondMaxMm)} mm`).join(', ') || 'none'}.`,
+  '',
   '## By category',
   '',
   '| category | structures | low triangles | Hausdorff median (mm) | Hausdorff max (mm) |',
@@ -259,6 +319,7 @@ pass(GATE, [
     + ` ${rows.length} of ${shippable.length} shippable structures in both tiers; ${doc.excluded.length} held structures in neither.`,
   `Floor ${BRAIN_MESH_BUILD.floorTriangles} met by all; no degenerate triangle; no sliver; area low/full ${fmt(Math.min(...rows.map((r) => r.ratio)))}-${fmt(Math.max(...rows.map((r) => r.ratio)))}.`,
   `Published error re-measured for all ${rows.length}: Hausdorff median ${fmt(pct(hs, 0.5))} mm, max ${fmt(Math.max(...hs))} mm.`,
+  `Cortex containment re-measured for all ${containmentRows.length}: farthest beyond ${fmt(nearest[0]?.beyondMaxMm ?? 0)} mm, tolerance ${CONTAINMENT.toleranceMm} mm; ${heldOutside.length} held outside it.`,
   `Registration re-derived: held-out ${reg.summary.heldOut.maxMm} mm; QA sample ${sample.sample.length} structures,`
     + ` ${sample.withheldControls.length} withheld control(s), every rule met.`,
   ...body.pass,
