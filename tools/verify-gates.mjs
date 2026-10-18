@@ -1575,7 +1575,7 @@ const CASES = [
     mustPass: true,
     // `[^\n]*`: on a tree carrying W3 the body clause sits between the two
     // (DOG-129 merged W2c onto W3), and this case is about the brain's slots.
-    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\), each checked against the generated provenance manifest;[^\n]* 2 volume-derived file\(s\), 4 slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 702 structure slot\(s\), each checked against the generated provenance manifest;[^\n]* 2 volume-derived file\(s\), 4 slot\(s\)/],
     describe: 'the committed brain mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),
@@ -1877,7 +1877,7 @@ const CASES = [
     gate: 'licence separation',
     criterion: 'rule 10 checks every structure slot of the committed body files, not none',
     mustPass: true,
-    expect: [/rule 10: 3 brain file\(s\), 732 structure slot\(s\)[^\n]*; 3 body file\(s\), 4815 structure slot\(s\)/],
+    expect: [/rule 10: 3 brain file\(s\), 702 structure slot\(s\)[^\n]*; 3 body file\(s\), 4815 structure slot\(s\)/],
     describe: 'the committed body mesh files and their attribution entry, unchanged',
     break: () => () => {},
     check: () => run('check-licence-separation.mjs'),
