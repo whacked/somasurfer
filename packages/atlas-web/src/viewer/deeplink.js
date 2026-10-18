@@ -84,15 +84,8 @@ const isStructureKey = (s) => typeof s === 'string' && /^[a-z0-9-]{1,40}\.\d{1,9
 /** A layer id: the viewer's own ids are ASCII words, and only those round-trip. */
 const isLayerId = (s) => typeof s === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(s);
 
-/**
- * Layers an earlier release offered and this one does not, and why. A link
- * that names one still opens, without it, and says so: an `iso=` of a layer
- * with nothing in it would otherwise hide every structure on its axis.
- */
-export const RETIRED_LAYERS = Object.freeze({
-  meninges_dura: 'the Dura layer is withdrawn until the dura is registered to the ICBM brain (DOG-238)',
-});
-const retired = (id) => Object.hasOwn(RETIRED_LAYERS, id);
+/** Layers no longer offered, and why (docs/viewer-shell.md). */
+const RETIRED = new Map([['meninges_dura', 'the Dura layer is withdrawn until the dura is registered to the ICBM brain']]);
 
 /**
  * "Is there an address here at all?" — as a predicate, on purpose.
@@ -249,7 +242,7 @@ export function decodeView(search) {
   const hidden = [];
   if (hideRaw !== null) {
     for (const id of hideRaw.split(',').filter((s) => s !== '')) {
-      if (retired(id)) problems.push(`ignored ${id} in hide=: ${RETIRED_LAYERS[id]}`);
+      if (RETIRED.has(id)) problems.push(`ignored ${id} in hide=: ${RETIRED.get(id)}`);
       else if (isLayerId(id)) hidden.push(id);
       else problems.push(`ignored an unusable layer id in hide=: ${JSON.stringify(id)}`);
     }
@@ -258,7 +251,7 @@ export function decodeView(search) {
   let isolated = null;
   const isoRaw = params.get('iso');
   if (isoRaw !== null && isoRaw !== '') {
-    if (retired(isoRaw)) problems.push(`ignored ${isoRaw} in iso=: ${RETIRED_LAYERS[isoRaw]}`);
+    if (RETIRED.has(isoRaw)) problems.push(`ignored ${isoRaw} in iso=: ${RETIRED.get(isoRaw)}`);
     else if (isLayerId(isoRaw)) isolated = isoRaw;
     else problems.push(`ignored an unusable layer id in iso=: ${JSON.stringify(isoRaw)}`);
   }
@@ -290,8 +283,8 @@ export function decodeView(search) {
         problems.push(`ignored an unusable opacity in op=: ${JSON.stringify(pair)}`);
         continue;
       }
-      if (retired(id)) {
-        problems.push(`ignored ${id} in op=: ${RETIRED_LAYERS[id]}`);
+      if (RETIRED.has(id)) {
+        problems.push(`ignored ${id} in op=: ${RETIRED.get(id)}`);
         continue;
       }
       opacity[id] = round(value, OPACITY_DECIMALS);
